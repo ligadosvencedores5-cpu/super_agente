@@ -487,8 +487,8 @@ REGRAS:
         # Corrige cifrão quebrado gerado pelo modelo — múltiplos padrões
         import re as _re
         # R` R' R´ R` seguido de número
-        txt = _re.sub('[Rr][\\s]*[\\u0060\\u00B4\'`]([\\d])', lambda m_: 'R$' + m_.group(1), txt)
-        txt = _re.sub('[Rr][\\s]*[\\u0060\\u00B4\'`]([A-Z])', lambda m_: 'R$ ' + m_.group(1), txt)
+        txt = _re.sub(r'R\\s*[`\\'´\\u0060]\\s*(\\d)', r'R$\\1', txt)
+        txt = _re.sub(r'R\\s*[`\\'´\\u0060]\\s*([A-Z])', r'R$ \\1', txt)
         txt = txt.replace('R` ', 'R$').replace('R`', 'R$')
         txt = txt.replace("R' ", 'R$').replace("R'", 'R$')
         txt = txt.replace('R´ ', 'R$').replace('R´', 'R$')
@@ -2280,7 +2280,7 @@ elif st.session_state.etapa == "App":
             dica = random.choice(DICAS_IA)
             frase = random.choice(FRASES_DIA)
             st.markdown(f"<div class='ia-preventiva'>🤖 <strong>IA Preventiva:</strong> {dica}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='card'><em>💬 '{frase}'</em></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='card'><em>💬 \\"{frase}\\"</em></div>", unsafe_allow_html=True)
 
             # COACH DIÁRIO
             st.markdown("### 🎯 Coach do Dia")
@@ -9372,10 +9372,11 @@ with tab_renda:
     with col_r1:
         st.markdown('<div class="card-green">', unsafe_allow_html=True)
         st.markdown("<b style='color:#1A1A2E;'>💵 Renda Principal</b>", unsafe_allow_html=True)
-        def _salvar_renda():
-            st.session_state.renda_total = st.session_state.oraculof9
-        st.number_input("Salário / Renda Mensal (R$)", min_value=0.0, value=st.session_state.renda_total, step=100.0, key="oraculof9", on_change=_salvar_renda)
-        st.caption("✅ Salvo automaticamente ao alterar")
+        with st.form("renda_principal"):
+            nr = st.number_input("Salário / Renda Mensal (R$)", min_value=0.0, value=st.session_state.renda_total, step=100.0, key="oraculof9")
+            if st.form_submit_button("💾 SALVAR", key="oraculoffsb502"):
+                st.session_state.renda_total = nr
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="card">', unsafe_allow_html=True)
@@ -9673,10 +9674,10 @@ with tab_res:
         st.markdown('<div class="card-green">', unsafe_allow_html=True)
         st.markdown("<b style='color:#1A1A2E;'>🛡️ Reserva de Emergência</b>", unsafe_allow_html=True)
         st.markdown(f"<p>Ideal: <b style='color:#065F46;'>{st.session_state.config_meta_reserva} meses</b> de despesas fixas = <b style='color:#065F46;'>{fmt(meta_res)}</b></p>", unsafe_allow_html=True)
-        def _salvar_reserva():
-            st.session_state.reserva_emergencia = st.session_state.oraculof36
-        st.number_input("Valor atual da sua reserva (R$)", min_value=0.0, value=st.session_state.reserva_emergencia, step=100.0, key="oraculof36", on_change=_salvar_reserva)
-        st.caption("✅ Salvo automaticamente ao alterar")
+        with st.form("reserva_form"):
+            novo_res = st.number_input("Valor atual da sua reserva (R$)", min_value=0.0, value=st.session_state.reserva_emergencia, step=100.0, key="oraculof36")
+            if st.form_submit_button("💾 SALVAR", key="oraculoffsb508"):
+                st.session_state.reserva_emergencia = novo_res; st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="card">', unsafe_allow_html=True)
