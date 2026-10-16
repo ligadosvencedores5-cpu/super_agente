@@ -22888,16 +22888,18 @@ def _sa_assinatura(valor):
         return str(id(valor))
 
 
-def _sa_instalar_rastreio(chaves_widgets: set):
-    """Anota as keys de widgets criados pelo agente (para não confundir com dados)."""
+def _sa_instalar_rastreio(chaves_widgets: set, tipos: dict = None):
+    """Anota as keys (e o tipo) dos widgets criados pelo agente."""
     from streamlit.delta_generator import DeltaGenerator
     originais = []
 
-    def _envolver(fn):
+    def _envolver(fn, nome_f):
         def _wrapper(*a, **kw):
             k = kw.get("key")
             if k is not None:
                 chaves_widgets.add(str(k))
+                if tipos is not None:
+                    tipos[str(k)] = nome_f
             return fn(*a, **kw)
         return _wrapper
 
@@ -22908,7 +22910,7 @@ def _sa_instalar_rastreio(chaves_widgets: set):
                 continue
             originais.append((alvo, nome_f, orig))
             try:
-                setattr(alvo, nome_f, _envolver(orig))
+                setattr(alvo, nome_f, _envolver(orig, nome_f))
             except Exception:
                 originais.pop()
     return originais
@@ -23447,25 +23449,39 @@ _SA_RODAPE_CSS = """<style>
 </style>"""
 
 
+_SA_WIDGETS_AJUSTAVEIS = {
+    "text_input", "text_area", "number_input", "selectbox", "multiselect", "radio", "checkbox",
+    "toggle", "slider", "select_slider", "date_input", "time_input", "color_picker", "pills",
+    "segmented_control",
+}
+_SA_LOGIN = re.compile(r"api|chave|senha|token|login|logado|autentic|hora_entrada")
+
+
 def _sa_resetar_agente(codigo_key: str):
-    """Apaga da sessão tudo o que o agente criou: dados, flags e campos digitados."""
+    """Volta o agente ao estado de quando foi aberto: apaga os dados e devolve os campos
+    ao valor inicial. Login, chave da API e os outros agentes não são tocados.
+    Deve rodar ANTES de o agente desenhar os campos (início da execução)."""
     tocadas = set(st.session_state.get(f"_sa_tocadas_{codigo_key}", set()))
     tocadas |= set(st.session_state.get(f"_sa_dados_{codigo_key}", []))
+    wbase   = st.session_state.get(f"_sa_wbase_{codigo_key}", {})
     for k in tocadas:
         if not isinstance(k, str) or k.startswith("sa_") or k.startswith("_sa_"):
             continue
-        if k in _SA_CHAVES_IGNORADAS:
+        if k in _SA_CHAVES_IGNORADAS or _SA_LOGIN.search(k.lower()):
             continue
         try:
-            if k in st.session_state:
+            if k in wbase:
+                st.session_state[k] = wbase[k]       # campo volta ao valor de abertura
+            elif k in st.session_state:
                 del st.session_state[k]
         except Exception:
-            pass
+            try:
+                del st.session_state[k]
+            except Exception:
+                pass
+    for sufixo in ("tocadas", "base", "iniciado", "wbase"):
+        st.session_state.pop(f"_sa_{sufixo}_{codigo_key}", None)
     st.session_state[f"_sa_dados_{codigo_key}"] = []
-    st.session_state[f"_sa_tocadas_{codigo_key}"] = set()
-    st.session_state.pop(f"_sa_base_{codigo_key}", None)
-    st.session_state.pop(f"_sa_iniciado_{codigo_key}", None)
-    st.session_state[f"_sa_reset_ok_{codigo_key}"] = True
 
 
 def _sa_rodape_download(agente: dict):
@@ -23529,7 +23545,7 @@ def _sa_rodape_conteudo(agente: dict):
         with c_sim:
             if st.button("✅ Sim, apagar tudo", key=f"sa_rodape_reset_sim_{codigo_key}",
                          use_container_width=True):
-                _sa_resetar_agente(codigo_key)
+                st.session_state[f"_sa_reset_pendente_{codigo_key}"] = True
                 del st.session_state[conf_key]
                 st.rerun()
         with c_nao:
@@ -23551,14 +23567,10 @@ def _executar_agente(agente: dict):
 
     codigo = _CODIGOS_AGENTES[codigo_key]
 
-    # Depois de um reset, mostra uma tela intermediária SEM os campos do agente:
-    # isso faz o navegador descartar o que estava digitado nos campos antigos.
-    if st.session_state.get(f"_sa_reset_ok_{codigo_key}"):
-        st.success(f"✅ Pronto! Tudo o que você tinha feito no {agente['nome']} foi apagado.")
-        if st.button("▶ Continuar", key=f"sa_reset_continuar_{codigo_key}", type="primary"):
-            del st.session_state[f"_sa_reset_ok_{codigo_key}"]
-            st.rerun()
-        return
+    # Reset pedido no rodapé: aplicado aqui, ANTES de o agente desenhar os campos
+    if st.session_state.pop(f"_sa_reset_pendente_{codigo_key}", False):
+        _sa_resetar_agente(codigo_key)
+        st.toast(f"🗑️ Dados do {agente['nome']} apagados.")
 
     # Propaga credenciais do hub
     st.session_state["usuario"] = st.session_state.sa_usuario
@@ -23625,7 +23637,8 @@ def _executar_agente(agente: dict):
     _tocadas   = st.session_state.setdefault(f"_sa_tocadas_{codigo_key}", set())
     _antes     = {k: _sa_assinatura(v) for k, v in st.session_state.items()}
     _wk_run    = set()
-    _originais = _sa_instalar_rastreio(_wk_run)
+    _wtipos    = st.session_state.setdefault(f"_sa_wtipos_{codigo_key}", {})
+    _originais = _sa_instalar_rastreio(_wk_run, _wtipos)
     try:
         exec(compile(codigo, f"<{codigo_key}>", "exec"), _ns)
     finally:
@@ -23652,6 +23665,16 @@ def _executar_agente(agente: dict):
                 st.session_state[f"_sa_base_{codigo_key}"] = {
                     k: _sa_assinatura(st.session_state[k]) for k in _registro if k in st.session_state
                 }
+                # valores iniciais dos campos (para o Resetar devolvê-los ao estado de abertura)
+                import copy as _copy
+                _wbase = {}
+                for _k in _wk_run:
+                    if _wtipos.get(_k) in _SA_WIDGETS_AJUSTAVEIS and _k in st.session_state:
+                        try:
+                            _wbase[_k] = _copy.deepcopy(st.session_state[_k])
+                        except Exception:
+                            pass
+                st.session_state[f"_sa_wbase_{codigo_key}"] = _wbase
                 st.session_state[_flag_ini] = True
         except Exception:
             pass
