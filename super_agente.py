@@ -8962,7 +8962,7 @@ def get_totais():
     renda  = st.session_state.renda_total + sum(x["valor"] for x in st.session_state.outras_rendas)
     gv     = sum(x["valor"] for x in st.session_state.gastos)
     gf     = sum(x["valor"] for x in st.session_state.contas_fixas if x.get("ativa", True))
-    gm     = sum(x["mensal"] for x in st.session_state.metas)
+    gm     = 0  # aba Metas removida
     div_m  = sum(x["parcela_mensal"] for x in st.session_state.dividas)
     saldo  = renda - gv - gf - gm - div_m
     if renda > 0:
@@ -8985,19 +8985,16 @@ def contexto_financeiro():
         cats[g["tipo"]] = cats.get(g["tipo"], 0) + g["valor"]
     cats_txt    = "\\\\n".join(f"  • {c}: R${v:.2f} ({pct(v, renda)}%)" for c, v in cats.items()) or "  Nenhum"
     dividas_txt = "\\\\n".join(f"  • {d['nome']}: saldo R${d['valor_total']-d['valor_pago']:.2f}, juros {d['juros_mensal']}%/mês" for d in st.session_state.dividas) or "  Nenhuma"
-    metas_txt   = "\\\\n".join(f"  • {m['nome']}: {fmt(m.get('atual',0))}/{fmt(m['valor'])}" for m in st.session_state.metas) or "  Nenhuma"
     return f'''
 DADOS DO USUÁRIO:
 Renda total: R${renda:.2f}
 Despesas fixas: R${gf:.2f} ({pct(gf,renda)}%)
 Gastos variáveis: R${gv:.2f} ({pct(gv,renda)}%)
 Parcelas de dívidas: R${div_m:.2f}
-Metas mensais: R${gm:.2f} ({pct(gm,renda)}%)
 Saldo livre: R${saldo:.2f} ({pct(saldo,renda)}%)
 Reserva atual: R${st.session_state.reserva_emergencia:.2f} (meta: R${meta_res:.2f})
 Gastos por categoria:\\\\n{cats_txt}
 Dívidas:\\\\n{dividas_txt}
-Metas:\\\\n{metas_txt}
 '''
 
 def consultor(prompt, historico):
@@ -9109,12 +9106,12 @@ st.markdown("<hr>", unsafe_allow_html=True)
 # TABS
 tabs = st.tabs([
     "🏠 Dashboard", "🧠 Consultor IA", "💵 Renda",
-    "💸 Gastos", "🎯 Metas", "🛡️ Fixas",
+    "💸 Gastos", "🛡️ Fixas",
     "💳 Dívidas", "🏦 Reserva", "📈 Investimentos",
     "⚖️ Patrimônio", "📊 Relatório", "⚙️ Config"
 ])
 
-(tab_dash, tab_ia, tab_renda, tab_gastos, tab_metas,
+(tab_dash, tab_ia, tab_renda, tab_gastos,
  tab_fixas, tab_div, tab_res, tab_inv,
  tab_pat, tab_rel, tab_cfg) = tabs
 
@@ -9147,14 +9144,13 @@ with tab_dash:
         st.markdown(f'<div class="alert-success">✅ Sistema saudável. {fmt(saldo)} livres para expandir.</div>', unsafe_allow_html=True)
 
     # MÉTRICAS PRINCIPAIS
-    c1, c2, c3, c4, c5 = st.columns(5)
+    c1, c2, c3, c5 = st.columns(4)
     def metrica(col, label, val, cor, sub=""):
         col.markdown(f'<div class="metric-box"><div class="metric-label">{label}</div><div class="metric-value" style="color:{cor};">{fmt(val)}</div><div class="metric-sub">{sub}</div></div>', unsafe_allow_html=True)
 
     metrica(c1, "💰 Renda",            renda,            "#6EE7B7", "total/mês")
     metrica(c2, "🛡️ Blindagem",        gf,               "#7DD3FC", f"{pct(gf,renda)}% da renda")
     metrica(c3, "💸 Gastos Variáveis",  gv,               "#FCD34D", f"{pct(gv,renda)}% da renda")
-    metrica(c4, "🚀 Metas/Mês",         gm,               "#6D28D9", f"{pct(gm,renda)}% da renda")
     cor_s = "#6EE7B7" if saldo >= 0 else "#FCA5A5"
     metrica(c5, "⚖️ Estabilidade",     saldo,            cor_s,     f"{pct(saldo,renda)}% livre")
 
@@ -9166,7 +9162,6 @@ with tab_dash:
         "🧠 Consultor IA":     "Mentor financeiro que conhece seus números e responde perguntas diretas",
         "💵 Renda":            "Cadastre seu salário e outras fontes de renda",
         "💸 Gastos":           "Registre e categorize seus gastos variáveis",
-        "🎯 Metas":            "Crie e acompanhe metas de economia e investimento",
         "🛡️ Fixas":            "Gerencie suas contas fixas mensais",
         "💳 Dívidas":          "Controle dívidas com estratégia avalanche ou bola de neve",
         "🏦 Reserva":          "Acompanhe sua reserva de emergência",
@@ -9188,7 +9183,6 @@ with tab_dash:
                 ("🛡️ Fixas",       gf,              "#38BDF8"),
                 ("💸 Variáveis",   gv,              "#FCD34D"),
                 ("💳 Dívidas",     div_m,           "#FCA5A5"),
-                ("🚀 Metas",       gm,              "#6D28D9"),
                 ("✅ Livre",       max(0, saldo),   "#6EE7B7"),
             ]:
                 pct_d = pct(val_d, renda)
@@ -9235,22 +9229,6 @@ with tab_dash:
         <span style='font-size:12px;color:#4B5563;'>{'✅ Completa!' if pct_res_d >= 100 else f'Faltam {fmt(max(0, meta_res_d - st.session_state.reserva_emergencia))}'}</span>
         </div>''', unsafe_allow_html=True)
 
-        if st.session_state.metas:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown("<b style='color:#1A1A2E;'>🎯 Metas em Andamento</b>", unsafe_allow_html=True)
-            for m in st.session_state.metas[:4]:
-                p_m   = pct(m.get("atual", 0), m["valor"])
-                rest  = round((m["valor"] - m.get("atual", 0)) / m["mensal"]) if m["mensal"] > 0 else "∞"
-                st.markdown(f'''
-                <div style="margin-bottom:10px;">
-                  <div style="display:flex;justify-content:space-between;">
-                    <span style="font-size:13px;color:#1A1A2E;">{m['nome']}</span>
-                    <span style="font-size:12px;color:#4B5563;">{p_m:.0f}% · {rest} meses</span>
-                  </div>{barra(p_m, "#7C6FFF")}
-                  <span style="font-size:11px;color:#4B5563;">{fmt(m.get('atual',0))} / {fmt(m['valor'])} · {fmt(m['mensal'])}/mês</span>
-                </div>''', unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-
         if st.session_state.dividas:
             total_div_d = sum(d["valor_total"] - d["valor_pago"] for d in st.session_state.dividas)
             st.markdown(f'''<div class="card-red">
@@ -9266,7 +9244,6 @@ with tab_dash:
         if renda > 0:
             if pct(gf, renda) > 50:    dicas.append(("⚠️", "Fixas acima de 50% da renda. Revise contratos e assinaturas.", "warn"))
             if pct(gv, renda) > 30:    dicas.append(("💸", "Variáveis acima de 30%. Identifique onde cortar.", "warn"))
-            if pct(gm, renda) < 10:    dicas.append(("🎯", "Menos de 10% alocado em metas. Aumente gradualmente.", "info"))
             if pct_res_d < 100:        dicas.append(("🛡️", "Reserva incompleta. Priorize antes de investir.", "warn"))
             if st.session_state.dividas: dicas.append(("💳", "Quite dívidas com juros altos primeiro (estratégia avalanche).", "warn"))
             if saldo < 0:              dicas.append(("🚨", "DÉFICIT! Você gasta mais do que ganha. Corte imediato necessário.", "danger"))
@@ -9467,76 +9444,6 @@ with tab_gastos:
                       <span style="font-size:12px;color:#555577;">{cat_n}</span>
                       <span style="font-size:12px;color:#1A1A2E;">{fmt(val_c)} ({p_c}%)</span>
                     </div>{barra(p_c, "#FCD34D")}''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 5. METAS
-# ══════════════════════════════════════════════
-with tab_metas:
-    col_m1, col_m2 = st.columns(2)
-    with col_m1:
-        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🎯 Criar Nova Meta</b>", unsafe_allow_html=True)
-        # Sem st.form: Enter não envia nem apaga os campos.
-        if st.session_state.pop("_meta_reset", False):
-            st.session_state["oraculof22"] = ""
-            st.session_state["oraculof24"] = 0.0
-            st.session_state["oraculof25"] = 12
-            st.session_state["oraculof26"] = 0.0
-        m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
-        m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
-        c1, c2  = st.columns(2)
-        with c1: m_val   = st.number_input("Valor total (R$)", min_value=0.0, step=100.0, key="oraculof24")
-        with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
-        m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
-        if st.button("🚀 CRIAR META", key="oraculoffsb505"):
-            if not m_nome.strip():
-                st.warning("Informe o nome da meta.")
-            elif m_val <= 0:
-                st.warning("Informe o valor total da meta.")
-            elif m_atual > m_val:
-                st.warning("O valor já guardado não pode ser maior que o valor total.")
-            else:
-                mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
-                st.session_state.metas.append({"id": datetime.now().strftime("%Y%m%d%H%M%S%f"), "nome":m_nome.strip(),"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
-                st.session_state["_meta_reset"] = True
-                st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_m2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown(f"<b style='color:#1A1A2E;'>📋 Metas Ativas — {fmt(gm)}/mês alocados</b>", unsafe_allow_html=True)
-        if not st.session_state.metas:
-            st.markdown("<p>Nenhuma meta criada ainda.</p>", unsafe_allow_html=True)
-        else:
-            for i, m in enumerate(st.session_state.metas):
-                p_m  = pct(m.get("atual", 0), m["valor"])
-                rest = max(0, round((m["valor"]-m.get("atual",0))/m["mensal"])) if m["mensal"] > 0 else "∞"
-                st.markdown(f'''<div class="card-purple" style="padding:12px;margin-bottom:8px;">
-                <div style="display:flex;justify-content:space-between;">
-                  <b style="color:#1A1A2E;">{m['nome']}</b>
-                  <span class="badge-purple">{m.get('categoria','')}</span>
-                </div>
-                <span style="font-size:12px;color:#555577;">{fmt(m.get('atual',0))} / {fmt(m['valor'])} · {fmt(m['mensal'])}/mês · {rest} meses</span>
-                {barra(p_m, "#7C6FFF")}
-                <span style="font-size:11px;color:#5B50E8;">{p_m:.1f}% concluído</span>
-                </div>''', unsafe_allow_html=True)
-                _mk = f"meta_atual_{m.get('id', i)}"
-                if _mk not in st.session_state:
-                    st.session_state[_mk] = float(m.get("atual", 0))
-                col_mi, col_md = st.columns([4, 1])
-                with col_mi:
-                    st.number_input("Valor já guardado (R$):", min_value=0.0, max_value=float(m["valor"]), step=50.0, key=_mk)
-                    if st.button("✅ Atualizar", key=f"upd_m_{i}"):
-                        novo_a = st.session_state[_mk]
-                        st.session_state.metas[i]["atual"]  = novo_a
-                        st.session_state.metas[i]["mensal"] = (m["valor"]-novo_a)/m["prazo"] if m["prazo"] > 0 else 0
-                        st.rerun()
-                with col_md:
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    if st.button("✕", key=f"del_m_{i}"):
-                        if _mk in st.session_state: del st.session_state[_mk]
-                        st.session_state.metas.pop(i); st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════
@@ -9892,7 +9799,6 @@ with tab_rel:
             ("🛡️ Despesas Fixas",         fmt(gf),                                     "#7DD3FC"),
             ("💸 Gastos Variáveis",       fmt(gv),                                     "#FCD34D"),
             ("💳 Parcelas de Dívidas",    fmt(div_m),                                  "#FCA5A5"),
-            ("🚀 Alocação em Metas",      fmt(gm),                                     "#6D28D9"),
             ("⚖️ Saldo Livre",            fmt(saldo),                                  "#6EE7B7" if saldo>=0 else "#FCA5A5"),
             ("🛡️ Reserva de Emergência",  fmt(st.session_state.reserva_emergencia),    "#6EE7B7"),
             ("💳 Total de Dívidas",       fmt(total_div_r),                            "#FCA5A5"),
@@ -9911,7 +9817,6 @@ with tab_rel:
                 ("🛡️ Fixas",          gf,              "#38BDF8"),
                 ("💸 Variáveis",      gv,              "#FCD34D"),
                 ("💳 Dívidas",        div_m,           "#FCA5A5"),
-                ("🚀 Metas",          gm,              "#6D28D9"),
                 ("✅ Saldo Livre",    max(0, saldo),   "#6EE7B7"),
             ]:
                 pct_f = pct(val_f, renda)
