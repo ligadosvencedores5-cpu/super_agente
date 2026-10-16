@@ -5591,7 +5591,7 @@ elif st.session_state.etapa == "App":
                         from groq import Groq as _Gr1
                         _r1 = _Gr1(api_key=st.session_state.api_key).chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":f"Crie um guia completo de redação {_tipo_guia} para concursos públicos. Inclua: estrutura, técnicas de argumentação, critérios das bancas, erros comuns e exemplo comentado."}],
+                            messages=[{"role":"system","content":"Você é um tutor especializado em concursos públicos brasileiros. Sempre responda em português do Brasil, de forma clara, didática e objetiva."}, {"role":"user","content":f"Crie um guia completo de redação {_tipo_guia} para concursos públicos. Inclua: estrutura, técnicas de argumentação, critérios das bancas, erros comuns e exemplo comentado."}],
                             max_tokens=2500
                         )
                         st.markdown(f"<div class='card'>{_r1.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -5617,7 +5617,7 @@ elif st.session_state.etapa == "App":
                                 'violência doméstica','acesso à justiça'])
                             _r2 = _Gr2(api_key=st.session_state.api_key).chat.completions.create(
                                 model="openai/gpt-oss-120b",
-                                messages=[{"role":"user","content":f"Gere um tema inédito de redação para concurso público banca {_banca} sobre {_area}. Inclua: TEMA (1 linha em negrito), CONTEXTO (2-3 linhas) e PROPOSTA DE REDAÇÃO (o que o candidato deve escrever). Seja objetivo."}],
+                                messages=[{"role":"system","content":"Você é um tutor especializado em concursos públicos brasileiros. Sempre responda em português do Brasil, de forma clara, didática e objetiva."}, {"role":"user","content":f"Gere um tema inédito de redação para concurso público banca {_banca} sobre {_area}. Inclua: TEMA (1 linha em negrito), CONTEXTO (2-3 linhas) e PROPOSTA DE REDAÇÃO (o que o candidato deve escrever). Seja objetivo."}],
                                 max_tokens=500
                             )
                             st.session_state['red_tema']     = _r2.choices[0].message.content
@@ -5703,7 +5703,7 @@ elif st.session_state.etapa == "App":
                             _palavras = len(_texto_final.split())
                             _corr = _Gr3(api_key=st.session_state.api_key).chat.completions.create(
                                 model="openai/gpt-oss-120b",
-                                messages=[{"role":"user","content":f'''Você é corretor oficial de concurso público. Avalie a redação abaixo.
+                                messages=[{"role":"system","content":"Você é um tutor especializado em concursos públicos brasileiros. Sempre responda em português do Brasil, de forma clara, didática e objetiva."}, {"role":"user","content":f'''Você é corretor oficial de concurso público. Avalie a redação abaixo.
 
 TEMA:
 {_tema_final}
@@ -5793,7 +5793,7 @@ Critérios (0-20 cada):
                                 _cli = _GrQ(api_key=st.session_state.api_key)
                                 _r = _cli.chat.completions.create(
                                     model="openai/gpt-oss-120b",
-                                    messages=[{"role":"user","content":f'''Gere exatamente {_qtd_quiz} questões de {_mat_quiz} no estilo {_banca_quiz}, nível {_nivel_quiz}.
+                                    messages=[{"role":"system","content":"Você é um tutor especializado em concursos públicos brasileiros. Sempre responda em português do Brasil, de forma clara, didática e objetiva."}, {"role":"user","content":f'''Gere exatamente {_qtd_quiz} questões de {_mat_quiz} no estilo {_banca_quiz}, nível {_nivel_quiz}.
 
 Responda APENAS em JSON válido, sem texto extra:
 {{"questoes": [{{"enunciado": "texto da questão", "alternativas": {{"A": "texto A", "B": "texto B", "C": "texto C", "D": "texto D", "E": "texto E"}}, "gabarito": "A", "explicacao": "Por que A está correta..."}}]}}'''}],
@@ -5924,7 +5924,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_cronograma}],
+                            messages=[{"role":"system","content":"Você é um especialista em planejamento de estudos para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Elabore cronogramas detalhados e personalizados, incluindo: (1) Diagnóstico das matérias prioritárias por banca e cargo; (2) Distribuição semanal e diária de horas de estudo por disciplina; (3) Técnicas de memorização e revisão espaçada; (4) Metas mensais e checkpoints de desempenho; (5) Estratégias para manter produtividade e evitar burnout; (6) Dicas de materiais e recursos por disciplina; (7) Simulados e cronograma de revisões finais. Seja extremamente detalhado e prático."}, {"role":"user","content":_prompt_cronograma}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -5946,7 +5946,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_flashcards}],
+                            messages=[{"role":"system","content":"Você é um especialista em criação de material didático para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao criar flashcards, inclua: (1) Pergunta objetiva e clara na frente; (2) Resposta completa com explicação aprofundada no verso; (3) Macetes, regras mnemônicas e dicas para memorizar; (4) Exemplos práticos e situações aplicadas; (5) Exceções e pegadinhas frequentes em provas; (6) Artigos de lei ou dispositivos normativos quando aplicável; (7) Nível de dificuldade e frequência de cobrança em concursos. Crie conjuntos extensos e abrangentes."}, {"role":"user","content":_prompt_flashcards}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6043,7 +6043,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_legislacao}],
+                            messages=[{"role":"system","content":"Você é um especialista em legislação para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao explicar qualquer tema legal, aborde: (1) Fundamento constitucional e hierarquia normativa; (2) Texto integral dos principais artigos com comentários doutrinários; (3) Histórico legislativo e exposição de motivos; (4) Jurisprudência do STF e STJ com súmulas relevantes; (5) Posições doutrinárias majoritárias e minoritárias; (6) Alterações recentes e reformas legislativas; (7) Questões de provas com gabarito e justificativa detalhada; (8) Tabelas comparativas e esquemas visuais em texto. Seja extremamente abrangente e técnico."}, {"role":"user","content":_prompt_legislacao}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6065,7 +6065,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_informatica}],
+                            messages=[{"role":"system","content":"Você é um especialista em informática para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao explicar qualquer tema de TI, inclua: (1) Conceitos fundamentais com definições precisas; (2) Funcionamento técnico detalhado com exemplos práticos; (3) Versões, atalhos de teclado e configurações mais cobradas; (4) Comparativos entre softwares e sistemas operacionais; (5) Redes de computadores: protocolos, topologias, segurança; (6) Segurança da informação: ameaças, criptografia, boas práticas; (7) Questões comentadas de bancas como CESPE, FCC, FGV e VUNESP. Seja detalhado e preciso."}, {"role":"user","content":_prompt_informatica}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6087,7 +6087,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_portugues}],
+                            messages=[{"role":"system","content":"Você é um especialista em Língua Portuguesa para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema gramatical, inclua: (1) Regra completa com embasamento na gramática normativa; (2) Exceções, casos especiais e variações aceitas; (3) Exemplos fartamente ilustrados com frases e textos; (4) Erros mais comuns e armadilhas de prova; (5) Diferenças entre norma culta e linguagem coloquial; (6) Questões comentadas das bancas CESPE, FCC, VUNESP; (7) Esquemas visuais de classificação e tabelas comparativas; (8) Macetes e técnicas para gabaritar questões. Seja extremamente detalhado e didático."}, {"role":"user","content":_prompt_portugues}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6109,7 +6109,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_matematica}],
+                            messages=[{"role":"system","content":"Você é um especialista em Matemática e Raciocínio Lógico para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao explicar qualquer tema, inclua: (1) Teoria completa com demonstrações e deduções; (2) Fórmulas essenciais com explicação de cada variável; (3) Resolução passo a passo de exemplos variados; (4) Técnicas de resolução rápida para prova (truques e atalhos); (5) Erros mais comuns e como evitá-los; (6) Exercícios resolvidos de diferentes níveis de dificuldade; (7) Questões comentadas de bancas diversas; (8) Tabelas, gráficos e esquemas de memorização. Seja extremamente detalhado e didático."}, {"role":"user","content":_prompt_matematica}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6131,7 +6131,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_atual}],
+                            messages=[{"role":"system","content":"Você é um especialista em atualidades para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, forneça: (1) Contexto histórico e evolução recente do assunto; (2) Principais fatos, datas e personagens envolvidos; (3) Impacto nacional e internacional; (4) Dados estatísticos e indicadores relevantes; (5) Relação com legislação ou políticas públicas; (6) Pontos mais cobrados em concursos; (7) Questões recentes de provas com gabarito comentado quando pertinente. Seja extremamente detalhado, didático e abrangente. Use títulos, subtítulos, listas e destaques para organizar o conteúdo."}, {"role":"user","content":_prompt_atual}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6152,7 +6152,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_dirconst}],
+                            messages=[{"role":"system","content":"Você é um especialista em Direito Constitucional para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Base constitucional com artigos, incisos e parágrafos transcritos; (2) Interpretação doutrinária (Barroso, Mendes, Novelino, Lenza); (3) Jurisprudência atualizada do STF com julgados paradigmáticos; (4) Evolução histórica do instituto no constitucionalismo brasileiro; (5) Controle de constitucionalidade: ações, legitimados e efeitos; (6) Direitos e garantias fundamentais com casos práticos; (7) Questões comentadas de alto nível (CESPE, FCC, FGV). Seja extremamente técnico e abrangente."}, {"role":"user","content":_prompt_dirconst}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6173,7 +6173,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_diradm}],
+                            messages=[{"role":"system","content":"Você é um especialista em Direito Administrativo para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Conceito, natureza jurídica e fundamentos; (2) Legislação aplicável (Lei 8.112, 8.666, 14.133, 9.784 etc.) com artigos transcritos; (3) Doutrina majoritária (Di Pietro, Meirelles, Carvalho Filho); (4) Jurisprudência do STJ e STF com precedentes vinculantes; (5) Atos administrativos: elementos, vícios e controle; (6) Licitações e contratos: modalidades, fases e irregularidades; (7) Responsabilidade civil do Estado; (8) Questões comentadas de concursos recentes. Seja extremamente detalhado."}, {"role":"user","content":_prompt_diradm}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6194,7 +6194,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_logico}],
+                            messages=[{"role":"system","content":"Você é um especialista em Raciocínio Lógico para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao explicar qualquer tema, inclua: (1) Teoria completa com definições formais e simbologia lógica; (2) Tabelas-verdade e conectivos lógicos com exemplos; (3) Proposições categóricas e quantificadores; (4) Silogismos, inferências válidas e falácias; (5) Lógica de conjuntos com diagramas de Venn; (6) Resolução detalhada passo a passo de problemas; (7) Técnicas de resolução rápida e eliminação de alternativas; (8) Questões comentadas de bancas como CESPE e CESGRANRIO. Seja extremamente detalhado e use exemplos concretos."}, {"role":"user","content":_prompt_logico}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6215,7 +6215,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_dirpenal}],
+                            messages=[{"role":"system","content":"Você é um especialista em Direito Penal para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Artigos do Código Penal transcritos com análise literal; (2) Elementos do tipo penal: objetivos e subjetivos; (3) Doutrina de referência (Greco, Bitencourt, Nucci, Masson); (4) Jurisprudência do STJ e STF com precedentes vinculantes; (5) Concurso de crimes, dosimetria da pena e causas de modificação; (6) Legislação extravagante relevante (Lei de Drogas, Crimes Hediondos, LGPD Penal); (7) Questões comentadas de concursos recentes de delegado, MP, defensoria. Seja extremamente técnico."}, {"role":"user","content":_prompt_dirpenal}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6236,7 +6236,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_dirproc}],
+                            messages=[{"role":"system","content":"Você é um especialista em Direito Processual para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Dispositivos legais do CPC/CPP transcritos com comentários; (2) Princípios processuais aplicáveis com embasamento constitucional; (3) Doutrina processualista de referência (Didier, Nery, Tourinho); (4) Jurisprudência do STJ e STF com teses firmadas; (5) Fluxograma dos procedimentos e prazos processuais; (6) Nulidades processuais: absolutas, relativas e convalidação; (7) Recursos: cabimento, prazo, preparo e efeitos; (8) Questões comentadas de concursos de magistratura e MP. Seja extremamente detalhado."}, {"role":"user","content":_prompt_dirproc}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6257,7 +6257,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_banc}],
+                            messages=[{"role":"system","content":"Você é um especialista em Conhecimentos Bancários para concursos do setor financeiro brasileiro (BB, CEF, BNB, BASA). Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Estrutura do Sistema Financeiro Nacional (SFN): órgãos, entidades e funções; (2) Produtos e serviços bancários com características detalhadas; (3) Mercado de capitais: ações, fundos, derivativos e títulos públicos; (4) Política monetária e instrumentos do BACEN; (5) Regulamentação: resoluções CMN, circulares BACEN; (6) Matemática financeira aplicada ao contexto bancário; (7) Questões comentadas de concursos BB, CEF e BNB. Seja extremamente abrangente."}, {"role":"user","content":_prompt_banc}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6278,7 +6278,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_cont}],
+                            messages=[{"role":"system","content":"Você é um especialista em Contabilidade para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Conceitos fundamentais com base nos CPCs e normas do CFC; (2) Plano de contas, lançamentos contábeis e balancetes; (3) Demonstrações financeiras: BP, DRE, DLPA, DFC e DMPL; (4) Contabilidade pública: MCASP, SIAFI e Lei 4.320; (5) Análise de balanços: índices, interpretação e comparativos; (6) Tributação e obrigações acessórias; (7) Questões resolvidas de concursos TCU, TCE, Receita Federal; (8) Tabelas, razonetes e esquemas de lançamentos. Seja extremamente detalhado e técnico."}, {"role":"user","content":_prompt_cont}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6299,7 +6299,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_geo}],
+                            messages=[{"role":"system","content":"Você é um especialista em Geografia para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema, inclua: (1) Conceitos geográficos fundamentais com definições precisas; (2) Dados estatísticos atualizados (IBGE, PNUD, ONU); (3) Mapas descritos em texto com localização e limites; (4) Geopolítica internacional: blocos, conflitos e organismos; (5) Geografia do Brasil: regiões, biomas, hidrografia e clima; (6) Questões ambientais e desenvolvimento sustentável; (7) Geopolítica brasileira: fronteiras, energia e recursos naturais; (8) Questões comentadas de concursos recentes. Seja extremamente abrangente com dados e fatos."}, {"role":"user","content":_prompt_geo}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6320,7 +6320,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_hist}],
+                            messages=[{"role":"system","content":"Você é um especialista em História para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer tema histórico, inclua: (1) Contexto político, econômico e social do período; (2) Cronologia detalhada com datas e eventos-chave; (3) Personagens históricos: papel, motivações e legado; (4) Causas imediatas e estruturais dos eventos; (5) Consequências de curto, médio e longo prazo; (6) Historiografia: interpretações de diferentes correntes; (7) Relação com o Brasil: impactos e influências; (8) Questões comentadas de concursos (ENEM, vestibulares, concursos públicos). Seja extremamente detalhado e analítico."}, {"role":"user","content":_prompt_hist}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
@@ -6341,7 +6341,7 @@ Responda APENAS em JSON válido, sem texto extra:
                         _cli = _GrT(api_key=st.session_state.api_key)
                         _r = _cli.chat.completions.create(
                             model="openai/gpt-oss-120b",
-                            messages=[{"role":"user","content":_prompt_espec}],
+                            messages=[{"role":"system","content":"Você é um especialista em conhecimentos específicos para concursos públicos brasileiros. Sempre responda EXCLUSIVAMENTE em português do Brasil. Ao abordar qualquer área ou disciplina específica, inclua: (1) Fundamentos teóricos completos da área; (2) Legislação específica aplicável com artigos transcritos; (3) Normas técnicas e regulamentações do setor; (4) Jurisprudência e precedentes relevantes quando aplicável; (5) Casos práticos e situações reais do exercício profissional; (6) Quadros comparativos e esquemas organizacionais; (7) Perfil das principais bancas para aquele cargo/área; (8) Questões comentadas de concursos específicos da área. Seja extremamente abrangente e especializado."}, {"role":"user","content":_prompt_espec}],
                             max_tokens=2048
                         )
                         st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
