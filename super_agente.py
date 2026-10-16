@@ -463,19 +463,17 @@ def normalizar_tabelas_frases(texto: str) -> str:
 def viagem_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é um especialista em turismo e planejamento de viagens no Brasil e no mundo. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
-            "Usuário: {st.session_state.usuario}.\n" +
-            "Cidade de origem: {st.session_state.cidade_origem or 'Brasil'}.\n" +
-            "Perfil de viagem: {st.session_state.perfil_viagem}.\n" +
-            "{system_extra}\n" +
-            "REGRAS:\n" +
-            "- Seja específico com nomes de lugares, restaurantes, hotéis e atrações reais\n" +
-            "- REGRA CRÍTICA DE FORMATAÇÃO: sempre escreva R$30, R$120, R$1.500 — NUNCA escreva \"R 30\" ou \"R 120\" sem o cifrão. O símbolo correto é R$ colado ao número, sem espaço entre R e $.\n" +
-            "- Indique horários de funcionamento quando relevante\n" +
-            "- Dê dicas práticas que guias normais não dão\n" +
-            "- Escreva em português brasileiro natural e animado\n"
-        )
+        system = f'''Você é um especialista em turismo e planejamento de viagens no Brasil e no mundo. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
+Usuário: {st.session_state.usuario}.
+Cidade de origem: {st.session_state.cidade_origem or 'Brasil'}.
+Perfil de viagem: {st.session_state.perfil_viagem}.
+{system_extra}
+REGRAS:
+- Seja específico com nomes de lugares, restaurantes, hotéis e atrações reais
+- REGRA CRÍTICA DE FORMATAÇÃO: sempre escreva R$30, R$120, R$1.500 — NUNCA escreva "R 30" ou "R 120" sem o cifrão. O símbolo correto é R$ colado ao número, sem espaço entre R e $.
+- Indique horários de funcionamento quando relevante
+- Dê dicas práticas que guias normais não dão
+- Escreva em português brasileiro natural e animado'''
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -489,8 +487,8 @@ def viagem_ia(prompt: str, system_extra: str = "") -> str:
         # Corrige cifrão quebrado gerado pelo modelo — múltiplos padrões
         import re as _re
         # R` R' R´ R` seguido de número
-        txt = _re.sub('[Rr][\\s]*[\\u0060\\u00B4\'`]([\\d])', lambda m_: 'R$' + m_.group(1), txt)
-        txt = _re.sub('[Rr][\\s]*[\\u0060\\u00B4\'`]([A-Z])', lambda m_: 'R$ ' + m_.group(1), txt)
+        txt = _re.sub(r'R\\s*[`\\'´\\u0060]\\s*(\\d)', r'R$\\1', txt)
+        txt = _re.sub(r'R\\s*[`\\'´\\u0060]\\s*([A-Z])', r'R$ \\1', txt)
         txt = txt.replace('R` ', 'R$').replace('R`', 'R$')
         txt = txt.replace("R' ", 'R$').replace("R'", 'R$')
         txt = txt.replace('R´ ', 'R$').replace('R´', 'R$')
@@ -1534,15 +1532,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Historia:
             st.header("🏛️ Conheça o Destino")
-            # ── EXPORTAR PLANILHA ──
-            import io as _io_csv, csv as _csv_mod
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'destino', 'tipo', 'roteiro'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_roteiros']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'destino', 'tipo', 'roteiro']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Guia_Viagens.csv", mime="text/csv", use_container_width=True, key="dl_historico_roteiros")
-
             st.markdown("Descubra a história, cultura e curiosidades antes de visitar.")
 
             destino_h = st.text_input("✈️ Destino:", placeholder="ex: Lisboa, Roma, Machu Picchu, Kyoto...", key="guiaviag48")
@@ -2248,36 +2237,33 @@ elif st.session_state.etapa == "App":
             xp = st.session_state.get('xp_total', 0)
             dias = st.session_state.get('dias_plano', 0)
 
-            _htmp_chef_1 = (
-                "'\n"
-                "            <div class='painel-nutri'>\n"
-                "                <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:12px;'>🍽️ NUTRIMIND AI — PAINEL DE SAÚDE</div>\n"
-                "                <div style='display:grid;grid-template-columns:repeat(5,1fr);gap:14px;'>\n"
-                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
-                "                        <div style='font-size:0.7em;opacity:0.6;'>🔥 META CALÓRICA</div>\n"
-                f"                        <div style='font-size:1.6em;font-weight:700;'>{st.session_state.calorias_padrao} kcal</div>\n"
-                "                    </div>\n"
-                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
-                "                        <div style='font-size:0.7em;opacity:0.6;'>❤️ SAÚDE NUTRI</div>\n"
-                f"                        <div style='font-size:1.6em;font-weight:700;'>{saude}/100</div>\n"
-                "                    </div>\n"
-                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
-                "                        <div style='font-size:0.7em;opacity:0.6;'>🔥 SEQUÊNCIA</div>\n"
-                f"                        <div style='font-size:1.6em;font-weight:700;'>{streak} dias</div>\n"
-                "                    </div>\n"
-                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
-                "                        <div style='font-size:0.7em;opacity:0.6;'>⭐ XP TOTAL</div>\n"
-                f"                        <div style='font-size:1.6em;font-weight:700;'>{xp}</div>\n"
-                "                    </div>\n"
-                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
-                "                        <div style='font-size:0.7em;opacity:0.6;'>📅 DIAS NO PLANO</div>\n"
-                f"                        <div style='font-size:1.6em;font-weight:700;'>{dias}</div>\n"
-                "                    </div>\n"
-                "                </div>\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_chef_1, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='painel-nutri'>
+                <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:12px;'>🍽️ NUTRIMIND AI — PAINEL DE SAÚDE</div>
+                <div style='display:grid;grid-template-columns:repeat(5,1fr);gap:14px;'>
+                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
+                        <div style='font-size:0.7em;opacity:0.6;'>🔥 META CALÓRICA</div>
+                        <div style='font-size:1.6em;font-weight:700;'>{st.session_state.calorias_padrao} kcal</div>
+                    </div>
+                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
+                        <div style='font-size:0.7em;opacity:0.6;'>❤️ SAÚDE NUTRI</div>
+                        <div style='font-size:1.6em;font-weight:700;'>{saude}/100</div>
+                    </div>
+                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
+                        <div style='font-size:0.7em;opacity:0.6;'>🔥 SEQUÊNCIA</div>
+                        <div style='font-size:1.6em;font-weight:700;'>{streak} dias</div>
+                    </div>
+                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
+                        <div style='font-size:0.7em;opacity:0.6;'>⭐ XP TOTAL</div>
+                        <div style='font-size:1.6em;font-weight:700;'>{xp}</div>
+                    </div>
+                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
+                        <div style='font-size:0.7em;opacity:0.6;'>📅 DIAS NO PLANO</div>
+                        <div style='font-size:1.6em;font-weight:700;'>{dias}</div>
+                    </div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
 
             # DASHBOARD
             st.markdown("### 📊 Dashboard")
@@ -2294,7 +2280,7 @@ elif st.session_state.etapa == "App":
             dica = random.choice(DICAS_IA)
             frase = random.choice(FRASES_DIA)
             st.markdown(f"<div class='ia-preventiva'>🤖 <strong>IA Preventiva:</strong> {dica}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='card'><em>💬 '{frase}'</em></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='card'><em>💬 \\"{frase}\\"</em></div>", unsafe_allow_html=True)
 
             # COACH DIÁRIO
             st.markdown("### 🎯 Coach do Dia")
@@ -3106,7 +3092,6 @@ elif st.session_state.etapa == "App":
                 st.download_button("⬇️ Exportar histórico completo (.txt)", data=hist_txt, file_name="historico_nutrimind.txt", mime="text/plain",
         key="dl_chef_cal_7"
     )
-
                 if st.button("🗑️ Limpar histórico", key="chefcalo51"):
                     st.session_state.historico_cardapios = []
                     st.rerun()
@@ -3114,8 +3099,6 @@ elif st.session_state.etapa == "App":
         # ──────────────────────────────────────────
         # RECEITAS SALVAS
         # ──────────────────────────────────────────
-
-
 
     with _tab_Salvos:
             st.header("❤️ Receitas Salvas")
@@ -3403,16 +3386,13 @@ elif st.session_state.etapa == "App":
                 elif clima_h == "Muito quente/Úmido": base += 600
                 meta_agua = base / 1000
 
-                _htmp_chef_2 = (
-                    "'\n"
-                    "                <div class='meta-box' style='margin:12px 0;'>\n"
-                    "                    <div style='font-size:0.82em;color:#C2410C;'>💧 SUA META DIÁRIA DE ÁGUA</div>\n"
-                    f"                    <div class='meta-numero'>{meta_agua:.1f} L</div>\n"
-                    f"                    <div style='font-size:0.85em;color:#C2410C;'>({int(meta_agua/0.25)} copos de 250ml)</div>\n"
-                    "                </div>\n"
-                    "                \n"
-                )
-                st.markdown(_htmp_chef_2, unsafe_allow_html=True)
+                st.markdown(f'''
+                <div class='meta-box' style='margin:12px 0;'>
+                    <div style='font-size:0.82em;color:#C2410C;'>💧 SUA META DIÁRIA DE ÁGUA</div>
+                    <div class='meta-numero'>{meta_agua:.1f} L</div>
+                    <div style='font-size:0.85em;color:#C2410C;'>({int(meta_agua/0.25)} copos de 250ml)</div>
+                </div>
+                ''', unsafe_allow_html=True)
 
                 if st.button("💧 GUIA COMPLETO DE HIDRATAÇÃO", key="chefcalo62"):
                     with st.spinner("..."):
@@ -3434,46 +3414,12 @@ elif st.session_state.etapa == "App":
                 if st.session_state.get('nutrint_hidra'):
                     st.markdown(f"<div class='card-blue'>{st.session_state['nutrint_hidra']}</div>", unsafe_allow_html=True)
 
-
-
     # --- RODAPÉ ---
     st.markdown(
         "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
         "© 2026 NutriMind AI — Nutricionista, Chef e Coach em um só lugar · MeusAgentesIA.com.br"
         "</div>", unsafe_allow_html=True
     )
-
-# ── EXPORTAR CHEF CSV (nivel raiz) ──
-import io as _io_chef_r, csv as _csv_chef_r
-_buf_chef_r = _io_chef_r.StringIO()
-_w_chef_r = _csv_chef_r.writer(_buf_chef_r)
-_w_chef_r.writerow(['data','tipo','nome','objetivo','calorias'])
-for _rc_r in st.session_state.get('historico_cardapios', []):
-    _w_chef_r.writerow([str(_rc_r.get(c,'') if isinstance(_rc_r,dict) else '') for c in ['data','tipo','nome','objetivo','calorias']])
-st.download_button('⬇️ Baixar histórico (.csv)', data=_buf_chef_r.getvalue().encode('utf-8-sig'), file_name='Chef_Calorico.csv', mime='text/csv', use_container_width=True, key='dl_chef_root')
-
-
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_chef_ca = st.session_state.get('historico_cardapios', [])
-_lines_chef_ca = []
-for _item_chef_ca in _hist_chef_ca:
-    if isinstance(_item_chef_ca, dict):
-        _role_chef_ca = _item_chef_ca.get('role', _item_chef_ca.get('tipo', 'item'))
-        _cont_chef_ca = _item_chef_ca.get('content', _item_chef_ca.get('texto', _item_chef_ca.get('resposta', str(_item_chef_ca))))
-        _lines_chef_ca.append(f'[{_role_chef_ca}] {_cont_chef_ca}')
-        _lines_chef_ca.append('')
-    else:
-        _lines_chef_ca.append(str(_item_chef_ca))
-_txt_chef_ca = "\n".join(_lines_chef_ca) if _lines_chef_ca else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_chef_ca.encode('utf-8'),
-    file_name="Chef_Calorico_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_chef_ca_txt"
-)
-
 
 # --- RODAPÉ ---
 st.markdown(
@@ -3641,22 +3587,20 @@ for k, v in defaults.items():
 def personal_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é um Personal Trainer profissional especialista em treinamento físico. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
-            "Usuário: {st.session_state.usuario}.\n" +
-            "Objetivo: {st.session_state.objetivo_treino}.\n" +
-            "Local de treino: {st.session_state.local_treino}.\n" +
-            "Nível: {st.session_state.nivel_treino}.\n" +
-            "Limitações físicas: {st.session_state.limitacoes or 'nenhuma'}.\n" +
-            "Tempo disponível: {st.session_state.tempo_treino}.\n" +
-            "{system_extra}\n" +
-            "REGRAS:\n" +
-            "- Sempre indique séries, repetições e tempo de descanso\n" +
-            "- Adapte ao nível e limitações do usuário\n" +
-            "- Explique brevemente como executar cada exercício\n" +
-            "- Use emojis para deixar visual e motivador\n" +
-            "- Escreva em português brasileiro\n"
-        )
+        system = f'''Você é um Personal Trainer profissional especialista em treinamento físico. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
+Usuário: {st.session_state.usuario}.
+Objetivo: {st.session_state.objetivo_treino}.
+Local de treino: {st.session_state.local_treino}.
+Nível: {st.session_state.nivel_treino}.
+Limitações físicas: {st.session_state.limitacoes or 'nenhuma'}.
+Tempo disponível: {st.session_state.tempo_treino}.
+{system_extra}
+REGRAS:
+- Sempre indique séries, repetições e tempo de descanso
+- Adapte ao nível e limitações do usuário
+- Explique brevemente como executar cada exercício
+- Use emojis para deixar visual e motivador
+- Escreva em português brasileiro'''
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -4772,15 +4716,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Biblioteca:
         st.header("📚 Biblioteca de Exercícios")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'duracao', 'treino'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_treinos']:
-            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'tipo', 'duracao', 'treino']})
-        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Personal_Trainer.csv', mime='text/csv', use_container_width=True, key='dl_historico_treinos')
-
 
         tab_b1, tab_b2, tab_b3 = st.tabs(["🔄 Substituições","📖 Guia do Exercício","💢 Adaptações para Lesão"])
 
@@ -5442,36 +5377,32 @@ elif st.session_state.etapa == "App":
                 dias_restantes = "—"
 
         ultima = st.session_state.get('ultima_atividade', 'Nenhuma')
-        _concurso_foco_val = st.session_state.concurso_foco or "\u2014"
-        _cargo_foco_val = ("\u2014 " + st.session_state.cargo_foco) if st.session_state.cargo_foco else ""
-        _streak_atual_val = st.session_state.get("streak_atual", 0)
-        _htmp_tc_1 = (
-            "<div class='painel-exec'>"
-            "<div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:8px;'>\U0001f393 MENTOR INTELIGENTE DE ESTUDOS</div>"
-            "<div style='font-size:1.1em;opacity:0.7;margin-bottom:16px;'>Seu treinador pessoal com Intelig\u00eancia Artificial \u00b7 <span style='color:#22C55E;'>\U0001f7e2 IA Online</span></div>"
-            "<div style='display:flex;flex-wrap:wrap;gap:20px;'>"
-            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f3af OBJETIVO</div><div style='font-size:1.1em;font-weight:700;'>{_concurso_foco_val} {_cargo_foco_val}</div></div>"
-            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f4c5 DIAS RESTANTES</div><div style='font-size:1.1em;font-weight:700;'>{dias_restantes}</div></div>"
-            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f525 SEQU\u00caNCIA</div><div style='font-size:1.1em;font-weight:700;'>{_streak_atual_val} dias</div></div>"
-            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f4d6 \u00daTIMA ATIVIDADE</div><div style='font-size:1.1em;font-weight:700;'>{ultima}</div></div>"
-            "</div></div>"
-        )
-        st.markdown(_htmp_tc_1, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class='painel-exec'>
+            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:8px;'>🎓 MENTOR INTELIGENTE DE ESTUDOS</div>
+            <div style='font-size:1.1em;opacity:0.7;margin-bottom:16px;'>Seu treinador pessoal com Inteligência Artificial · <span style='color:#22C55E;'>🟢 IA Online</span></div>
+            <div style='display:flex;flex-wrap:wrap;gap:20px;'>
+                <div><div style='font-size:0.75em;opacity:0.6;'>🎯 OBJETIVO</div><div style='font-size:1.1em;font-weight:700;'>{st.session_state.concurso_foco or "—"} {("— " + st.session_state.cargo_foco) if st.session_state.cargo_foco else ""}</div></div>
+                <div><div style='font-size:0.75em;opacity:0.6;'>📅 DIAS RESTANTES</div><div style='font-size:1.1em;font-weight:700;'>{dias_restantes}</div></div>
+                <div><div style='font-size:0.75em;opacity:0.6;'>🔥 SEQUÊNCIA</div><div style='font-size:1.1em;font-weight:700;'>{st.session_state.get("streak_atual",0)} dias</div></div>
+                <div><div style='font-size:0.75em;opacity:0.6;'>📖 ÚLTIMA ATIVIDADE</div><div style='font-size:1.1em;font-weight:700;'>{ultima}</div></div>
+            </div>
+        </div>
+        ''', unsafe_allow_html=True)
 
         # ÍNDICE DE PREPARAÇÃO
         idx = calcular_indice_preparacao()
         nivel_idx, prob, cor = classificar_indice(idx)
         col_idx, col_mot = st.columns([1, 2])
         with col_idx:
-            _htmp_tc_2 = (
-                "<div class='indice-box'>"
-                "<div style='font-size:0.85em;opacity:0.8;'>\u00cdNDICE DE PREPARA\u00c7\u00c3O</div>"
-                f"<div class='indice-numero'>{idx}%</div>"
-                f"<div style='font-size:0.9em;'>N\u00edvel: <strong>{nivel_idx}</strong></div>"
-                f"<div style='font-size:0.85em;opacity:0.8;'>Prob. estimada: {prob}</div>"
-                "</div>"
-            )
-            st.markdown(_htmp_tc_2, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='indice-box'>
+                <div style='font-size:0.85em;opacity:0.8;'>ÍNDICE DE PREPARAÇÃO</div>
+                <div class='indice-numero'>{idx}%</div>
+                <div style='font-size:0.9em;'>Nível: <strong>{nivel_idx}</strong></div>
+                <div style='font-size:0.85em;opacity:0.8;'>Prob. estimada: {prob}</div>
+            </div>
+            ''', unsafe_allow_html=True)
         with col_mot:
             frase_mot = random.choice(MOTIVACOES)
             streak = st.session_state.get('streak_atual', 0)
@@ -5703,24 +5634,23 @@ elif st.session_state.etapa == "App":
                 # Timer via JS usando components — roda no browser sem rerun
                 import streamlit.components.v1 as _comp
                 _inicio_ts = int(st.session_state.get('red_inicio', _tm.time()) * 1000)
-                _htmp_tc_3 = (
-                    '<div style="text-align:center;font-size:2em;font-weight:700;color:#64748B;'
-                    'background:#F8F9FA;border-radius:10px;padding:8px;margin-bottom:4px;'
-                    'font-family:monospace;">'
-                    '\u23f1\ufe0f <span id="tv">00:00</span>'
-                    '</div>'
-                    '<script>'
-                    f'var s0 = {_inicio_ts};'
-                    'function tick(){'
-                    '    var e = Math.floor((Date.now()-s0)/1000);'
-                    '    var m = Math.floor(e/60), ss = e%60;'
-                    '    var el = document.getElementById(\'tv\');'
-                    '    if(el) el.textContent=(m<10?\'0\':'')+m+\':\'+(ss<10?\'0\':\'\')+ss;'
-                    '}'
-                    'tick(); setInterval(tick,500);'
-                    '</script>'
-                )
-                _comp.html(_htmp_tc_3, height=70)
+                _comp.html(f'''
+                <div style="text-align:center;font-size:2em;font-weight:700;color:#64748B;
+                     background:#F8F9FA;border-radius:10px;padding:8px;margin-bottom:4px;
+                     font-family:monospace;">
+                  ⏱️ <span id="tv">00:00</span>
+                </div>
+                <script>
+                var s0 = {_inicio_ts};
+                function tick(){{
+                    var e = Math.floor((Date.now()-s0)/1000);
+                    var m = Math.floor(e/60), ss = e%60;
+                    var el = document.getElementById('tv');
+                    if(el) el.textContent=(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;
+                }}
+                tick(); setInterval(tick,500);
+                </script>
+                ''', height=70)
                 _elapsed = int(_tm.time() - st.session_state.get('red_inicio', _tm.time()))
 
                 with st.expander("📋 Tema", expanded=True):
@@ -6394,15 +6324,6 @@ Responda APENAS em JSON valido, sem texto extra: {{"questoes": [{{"enunciado": "
 
     with _tab_Hist:
         st.header("🕰️ História")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'materia', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_estudos']:
-            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'materia', 'conteudo']})
-        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Tutor_Concursos.csv", mime="text/csv", use_container_width=True, key="dl_historico_estudos")
-
         st.markdown("*Estude história do Brasil e geral: períodos coloniais, império, república, história contemporânea e eventos mundiais.*")
         _prompt_hist = st.text_area("Descreva sua dúvida ou peça explicação sobre o tema:", height=120, key="tutorc_hist_in", placeholder="Ex: História do Brasil colonial, período imperial, república velha, Segunda Guerra Mundial, Guerra Fria...")
         if st.button("🤖 GERAR COM IA", key="tutorc_hist_btn", use_container_width=True):
@@ -6831,15 +6752,6 @@ if "aula_historico" not in st.session_state: st.session_state.aula_historico = [
 if st.session_state.etapa == "login":
     st.markdown("<h1 style='text-align:center;font-size:2.4em;margin-bottom:4px'>🧠 Nexus English</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;color:#4F46E5;font-size:1.1em;margin-bottom:4px'>Seu professor particular adaptativo de inglês</p>", unsafe_allow_html=True)
-    # ── EXPORTAR PLANILHA ──
-    import io as _io_csv, csv as _csv_mod
-    _buf = _io_csv.StringIO()
-    _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
-    _writer.writeheader()
-    for _row in st.session_state.get('aula_historico', []):
-        _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else '') for c in ['role', 'content']})
-    st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Nexus_English.csv", mime="text/csv", use_container_width=True, key="dl_aula_historico")
-
     st.markdown("<div style='text-align:center'><span class='badge'>MeusAgentesIA.com.br</span></div>", unsafe_allow_html=True)
     st.markdown("---")
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -6923,17 +6835,14 @@ elif st.session_state.etapa == "diagnostico":
         # Diagnóstico concluído
         _nivel_final = st.session_state.diag_nivel
         _acertos = st.session_state.diag_acertos
-        _htmp_nexu_1 = (
-            "'\n"
-            "        <div class='card-professor'>\n"
-            "            <h3>🎉 Diagnóstico concluído!</h3>\n"
-            f"            <p>Você acertou <b>{_acertos} de {_total}</b> questões.</p>\n"
-            f"            <p>Seu nível estimado: <span class='nivel-tag nivel-{_nivel_final}'>{_nivel_final} — {NIVEL_DESC.get(_nivel_final,'')}</span></p>\n"
-            "            <p style='color:#475569;font-size:0.9em'>Este diagnóstico textual é uma estimativa inicial. O professor irá ajustar conforme você pratica.</p>\n"
-            "        </div>\n"
-            "        \n"
-        )
-        st.markdown(_htmp_nexu_1, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class='card-professor'>
+            <h3>🎉 Diagnóstico concluído!</h3>
+            <p>Você acertou <b>{_acertos} de {_total}</b> questões.</p>
+            <p>Seu nível estimado: <span class='nivel-tag nivel-{_nivel_final}'>{_nivel_final} — {NIVEL_DESC.get(_nivel_final,'')}</span></p>
+            <p style='color:#475569;font-size:0.9em'>Este diagnóstico textual é uma estimativa inicial. O professor irá ajustar conforme você pratica.</p>
+        </div>
+        ''', unsafe_allow_html=True)
 
         if st.button("🚀 COMEÇAR MINHA TRILHA PERSONALIZADA", key="diag_fim"):
             st.session_state.perfil["nivel_estimado"] = _nivel_final
@@ -6968,33 +6877,30 @@ elif st.session_state.etapa == "app":
     st.markdown("<div style='margin-bottom:10px'><span class='badge'>MeusAgentesIA.com.br</span></div>", unsafe_allow_html=True)
 
     # Stats
-    _htmp_nexu_2 = (
-        "'\n"
-        "    <div class='stat-grid'>\n"
-        "        <div class='stat-tile streak-tile'>\n"
-        f"            <div class='stat-num'>🔥 {p.get('streak_dias',0)}</div>\n"
-        "            <div class='stat-label'>Dias seguidos</div>\n"
-        "        </div>\n"
-        "        <div class='stat-tile'>\n"
-        f"            <div class='stat-num'>{p.get('pontos',0)}</div>\n"
-        "            <div class='stat-label'>Pontos</div>\n"
-        "        </div>\n"
-        "        <div class='stat-tile'>\n"
-        f"            <div class='stat-num'>{len(p.get('habilidades',{}))}</div>\n"
-        "            <div class='stat-label'>Habilidades</div>\n"
-        "        </div>\n"
-        "        <div class='stat-tile'>\n"
-        f"            <div class='stat-num'>{_dominio_medio}%</div>\n"
-        "            <div class='stat-label'>Domínio médio</div>\n"
-        "        </div>\n"
-        "        <div class='stat-tile'>\n"
-        f"            <div class='stat-num'>{len(_revisoes)}</div>\n"
-        "            <div class='stat-label'>Revisões pendentes</div>\n"
-        "        </div>\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_nexu_2, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class='stat-grid'>
+        <div class='stat-tile streak-tile'>
+            <div class='stat-num'>🔥 {p.get('streak_dias',0)}</div>
+            <div class='stat-label'>Dias seguidos</div>
+        </div>
+        <div class='stat-tile'>
+            <div class='stat-num'>{p.get('pontos',0)}</div>
+            <div class='stat-label'>Pontos</div>
+        </div>
+        <div class='stat-tile'>
+            <div class='stat-num'>{len(p.get('habilidades',{}))}</div>
+            <div class='stat-label'>Habilidades</div>
+        </div>
+        <div class='stat-tile'>
+            <div class='stat-num'>{_dominio_medio}%</div>
+            <div class='stat-label'>Domínio médio</div>
+        </div>
+        <div class='stat-tile'>
+            <div class='stat-num'>{len(_revisoes)}</div>
+            <div class='stat-label'>Revisões pendentes</div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
 
     # Alerta de revisões
     if _revisoes:
@@ -7011,16 +6917,13 @@ elif st.session_state.etapa == "app":
 
         # Info da unidade atual
         _uid, _utitulo, _utipo = _unidade
-        _htmp_nexu_3 = (
-            "'\n"
-            "        <div class='card-professor'>\n"
-            f"            <div style='font-size:0.8em;color:#4F46E5;margin-bottom:6px'>UNIDADE ATUAL · {_utipo.upper()}</div>\n"
-            f"            <h3 style='margin:0 0 8px 0'>{_utitulo}</h3>\n"
-            f"            <p style='color:#475569;margin:0'>Trilha: <b>{_nivel}</b> — {NIVEL_DESC.get(_nivel,'')}</p>\n"
-            "        </div>\n"
-            "        \n"
-        )
-        st.markdown(_htmp_nexu_3, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class='card-professor'>
+            <div style='font-size:0.8em;color:#4F46E5;margin-bottom:6px'>UNIDADE ATUAL · {_utipo.upper()}</div>
+            <h3 style='margin:0 0 8px 0'>{_utitulo}</h3>
+            <p style='color:#475569;margin:0'>Trilha: <b>{_nivel}</b> — {NIVEL_DESC.get(_nivel,'')}</p>
+        </div>
+        ''', unsafe_allow_html=True)
 
         # Histórico da aula
         _hist = st.session_state.aula_historico
@@ -7283,19 +7186,16 @@ elif st.session_state.etapa == "app":
             for _hid, _h in list(p["habilidades"].items())[:15]:
                 _dom = int(_h.get("dominio", 0) * 100)
                 _bar_color = "#10B981" if _dom >= 85 else "#6366F1" if _dom >= 50 else "#F59E0B"
-                _htmp_nexu_4 = (
-                    "'\n"
-                    "                <div style='margin-bottom:10px'>\n"
-                    "                    <div style='display:flex;justify-content:space-between;font-size:0.85em;color:#475569'>\n"
-                    f"                        <span>{_hid.replace('_',' ')}</span><span>{_dom}%</span>\n"
-                    "                    </div>\n"
-                    "                    <div class='prog-bar-bg'>\n"
-                    f"                        <div style='height:10px;border-radius:8px;background:{_bar_color};width:{_dom}%'></div>\n"
-                    "                    </div>\n"
-                    "                </div>\n"
-                    "                \n"
-                )
-                st.markdown(_htmp_nexu_4, unsafe_allow_html=True)
+                st.markdown(f'''
+                <div style='margin-bottom:10px'>
+                    <div style='display:flex;justify-content:space-between;font-size:0.85em;color:#475569'>
+                        <span>{_hid.replace('_',' ')}</span><span>{_dom}%</span>
+                    </div>
+                    <div class='prog-bar-bg'>
+                        <div style='height:10px;border-radius:8px;background:{_bar_color};width:{_dom}%'></div>
+                    </div>
+                </div>
+                ''', unsafe_allow_html=True)
 
         if p.get("erros_recorrentes"):
             st.markdown("---")
@@ -7329,15 +7229,6 @@ elif st.session_state.etapa == "app":
                     st.markdown(f"<div class='card-professor'>🎓 <b>Nexus:</b> {_r}</div>", unsafe_allow_html=True)
             else:
                 st.warning("Descreva o que você quer aprender.")
-
-
-# ── EXPORTAR HISTÓRICO TXT ──
-_hist_ne = st.session_state.get('aula_historico', [])
-_txt_ne = "\n".join(f"[{m.get('role','')}] {m.get('content','')}" for m in _hist_ne if isinstance(m,dict)) or "Nenhuma aula registrada ainda."
-st.download_button("⬇️ Baixar histórico completo (.txt)", data=_txt_ne.encode('utf-8'),
-    file_name="Nexus_English_historico.txt", mime="text/plain",
-    use_container_width=True, key="dl_exp_nexusen_txt")
-
 
 # --- RODAPÉ ---
 st.markdown(
@@ -7545,13 +7436,11 @@ investigações ou evidências reais.
 def sherlock_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é Sherlock IA — um consultor de investigação lógica, raciocínio dedutivo e pensamento REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
-            "crítico, inspirado nos grandes métodos investigativos clássicos.\n" +
-            "Usuário: {st.session_state.usuario}. Caso atual: {st.session_state.caso_padrao or 'não informado'}.\n" +
-            "{PRINCIPIO_RIGOR}\n" +
-            "{system_extra}\n"
-        )
+        system = f'''Você é Sherlock IA — um consultor de investigação lógica, raciocínio dedutivo e pensamento REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
+crítico, inspirado nos grandes métodos investigativos clássicos.
+Usuário: {st.session_state.usuario}. Caso atual: {st.session_state.caso_padrao or 'não informado'}.
+{PRINCIPIO_RIGOR}
+{system_extra}'''
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -7572,17 +7461,14 @@ def renderizar_indice(texto: str, titulo_indice: str = "CONSISTÊNCIA"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXA"
 
-    _htmp_sher_1 = (
-        "'\n"
-        f'    <div class="indice-box {classe}">\n'
-        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
-        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
-        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
-        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa baseada nas informações fornecidas</div>\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_sher_1, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class="indice-box {classe}">
+        <div style="font-size:2.2em;">{emoji}</div>
+        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
+        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa baseada nas informações fornecidas</div>
+    </div>
+    ''', unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -7954,15 +7840,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Diario:
         st.header("📖 Diário do Investigador")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'caso', 'status', 'conclusao'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_casos']:
-            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'caso', 'status', 'conclusao']})
-        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Sherlock_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_casos')
-
 
         col1, col2 = st.columns(2)
         with col1:
@@ -8024,15 +7901,12 @@ elif st.session_state.etapa == "App":
             ranking = sorted(modulos_count.items(), key=lambda x: x[1], reverse=True)
             for i, (modulo, count) in enumerate(ranking[:8]):
                 pct = round(count / total_casos * 100) if total_casos else 0
-                _htmp_sher_2 = (
-                    "'\n"
-                    "                <div style=\"margin-bottom:10px;\">\n"
-                    f'                    <div style="display:flex;justify-content:space-between;font-size:0.85em;font-weight:600;"><span>{i+1}. {modulo}</span><span>{count}x</span></div>\n'
-                    f'                    <div style="background:#E2E8F0;border-radius:999px;height:10px;overflow:hidden;"><div style="height:100%;border-radius:999px;background:#0F172A;width:{pct}%;"></div></div>\n'
-                    "                </div>\n"
-                    "                \n"
-                )
-                st.markdown(_htmp_sher_2, unsafe_allow_html=True)
+                st.markdown(f'''
+                <div style="margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;font-size:0.85em;font-weight:600;"><span>{i+1}. {modulo}</span><span>{count}x</span></div>
+                    <div style="background:#E2E8F0;border-radius:999px;height:10px;overflow:hidden;"><div style="height:100%;border-radius:999px;background:#0F172A;width:{pct}%;"></div></div>
+                </div>
+                ''', unsafe_allow_html=True)
 
         # ========================
         # ACADEMIA SHERLOCK
@@ -8884,665 +8758,1233 @@ st.markdown(
 
 """,
     "oraculo_financeiro": """
-import streamlit as st
-from datetime import date, datetime
-import json
+# [hub] import streamlit as st
+# [hub] from groq import Groq
+import pandas as pd
+# [hub] from datetime import datetime, date
+import math
 
-# ══════════════════════════════════════════════════
-# ORÁCULO FINANCEIRO IA — v3.0
-# Salva automaticamente — sem formulários
-# ══════════════════════════════════════════════════
+# ─────────────────────────────────────────────
+# CONFIG PÁGINA
+# ─────────────────────────────────────────────
+# set_page_config removido pelo super_agente
 
 st.markdown('''
 <style>
-.of-header{background:linear-gradient(135deg,#1a3c5e,#0d6e3f);
-  padding:2rem;border-radius:12px;color:#fff;text-align:center;margin-bottom:1.5rem;}
-.of-header h1{font-size:1.8rem;margin:0;font-weight:700;}
-.of-header p{margin:.4rem 0 0;opacity:.85;font-size:.95rem;}
-.kpi-box{background:#f0f7ff;border-left:4px solid #1a3c5e;
-  border-radius:8px;padding:1rem;margin:.4rem 0;}
-.kpi-box.verde{background:#f0fff4;border-left-color:#0d6e3f;}
-.kpi-box.vermelho{background:#fff0f0;border-left-color:#c0392b;}
-.kpi-box.amarelo{background:#fffbf0;border-left-color:#d4a017;}
-.kpi-label{font-size:.78rem;color:#555;font-weight:600;text-transform:uppercase;}
-.kpi-value{font-size:1.4rem;font-weight:700;color:#1a3c5e;margin-top:.2rem;}
-.secao{background:#f8f9fa;border-radius:10px;padding:1.2rem;margin:.8rem 0;}
-.tag{display:inline-block;background:#e8f4f8;color:#1a3c5e;
-  border-radius:20px;padding:.2rem .7rem;font-size:.75rem;font-weight:600;margin:.2rem;}
-.tag.urgente{background:#fff0e8;color:#c0392b;}
-.tag.ok{background:#e8fff0;color:#0d6e3f;}
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
 </style>
 ''', unsafe_allow_html=True)
 
-# ── INIT SESSION STATE ──
-def _of_init():
+
+# ─────────────────────────────────────────────
+# DESIGN
+# ─────────────────────────────────────────────
+st.markdown('''
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F6FBF4; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#16A34A,#15803D) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#15803D,#166534) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#14532D !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#14532D !important; }
+
+    .card-dark { background:linear-gradient(135deg,#DCFCE7,#D1FAE5); padding:20px; border-radius:14px; border:1px solid #6EE7B7; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#14532D !important; }
+
+    .card-green { background:linear-gradient(135deg,#DCFCE7,#BBF7D0); padding:20px; border-radius:14px; border:1px solid #4ADE80; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#14532D !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#14532D !important; }
+
+    .badge { background:#166534; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#14532D !important; }
+
+    .chat-persona { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#14532D !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#14532D !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#14532D !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#14532D !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+
+    /* ── CLASSES USADAS NO APP ── */
+    .card-purple { background:linear-gradient(135deg,#F5F3FF,#EDE9FE); padding:20px; border-radius:14px; border:1px solid #C4B5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-purple, .stApp .card-purple p, .stApp .card-purple span, .stApp .card-purple div { color:#3B0764 !important; }
+
+    .card-gold { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:20px; border-radius:14px; border:1px solid #FCD34D; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-gold, .stApp .card-gold p, .stApp .card-gold span, .stApp .card-gold div { color:#78350F !important; }
+
+    .alert-info { background:#EFF6FF; border:1px solid #93C5FD; border-radius:8px; padding:10px 14px; font-size:13px; color:#1E40AF !important; margin-bottom:8px; }
+    .alert-warn { background:#FFFBEB; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; font-size:13px; color:#92400E !important; margin-bottom:8px; }
+    .alert-danger { background:#FFF5F5; border:1px solid #FECACA; border-radius:8px; padding:10px 14px; font-size:13px; color:#991B1B !important; margin-bottom:8px; }
+    .alert-success { background:#F0FDF4; border:1px solid #86EFAC; border-radius:8px; padding:10px 14px; font-size:13px; color:#166534 !important; margin-bottom:8px; }
+
+    .metric-box { background:#FFFFFF; border-radius:12px; padding:14px 10px; text-align:center; border:1px solid #E5E7EB; }
+    .metric-label { font-size:11px; color:#6B7280; margin-bottom:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+    .metric-value { font-size:20px; font-weight:700; color:#1A1A2E; }
+    .metric-sub { font-size:11px; color:#9CA3AF; margin-top:2px; }
+
+    .prog-wrap { background:#E5E7EB; border-radius:999px; height:7px; overflow:hidden; margin:5px 0; }
+    .prog-fill { height:100%; border-radius:999px; transition:width 0.4s ease; }
+
+    .badge-green  { background:#059669; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-gold   { background:#B45309; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-red    { background:#DC2626; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-purple { background:#7C3AED; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
+
+    .list-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #F3F4F6; font-size:13px; }
+    .list-item:last-child { border-bottom:none; }
+
+    .chat-ai { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-ai, .stApp .chat-ai p, .stApp .chat-ai span, .stApp .chat-ai div { color:#14532D !important; }
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+
+# ── CACHE — persiste enquanto servidor não reiniciar ──────────
+@st.cache_resource
+def get_cache_oraculo():
+    return {"perfis": {}}   # {nome_user: dados}
+
+_cache = get_cache_oraculo()
+
+def salvar_perfil_cache(nome: str, dados: dict):
+    '''Salva no cache enquanto servidor estiver vivo.'''
+    _cache["perfis"][nome] = dados.copy()
+
+def carregar_perfil_cache(nome: str) -> dict | None:
+    return _cache["perfis"].get(nome)
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+# ─────────────────────────────────────────────
+# INICIALIZAÇÃO DE ESTADOS
+# ─────────────────────────────────────────────
+def init():
     defaults = {
-        'of_modulo': 'inicio',
-        'of_renda': '',
-        'of_reserva': '',
-        'of_idade': '',
-        'of_dependentes': '',
-        'of_renda_estavel': 'Sim',
-        'of_outras_rendas': [],
-        'of_gastos': [],
-        'of_dividas': [],
-        'of_metas': [],
-        'of_investimentos': [],
-        'of_patrimonios': [],
-        'of_historico_chat': [],
-        # campos temporários para adição
-        'of_tmp_or_nome': '',
-        'of_tmp_or_val': '',
-        'of_tmp_g_nome': '',
-        'of_tmp_g_val': '',
-        'of_tmp_g_cat': 'Moradia',
-        'of_tmp_g_tipo': 'Fixo',
-        'of_tmp_d_nome': '',
-        'of_tmp_d_saldo': '',
-        'of_tmp_d_juros': '',
-        'of_tmp_d_parcela': '',
-        'of_tmp_d_prazo': '',
-        'of_tmp_m_nome': '',
-        'of_tmp_m_total': '',
-        'of_tmp_m_guardado': '',
-        'of_tmp_m_prazo': '',
-        'of_tmp_p_nome': '',
-        'of_tmp_p_tipo': 'Imóvel',
-        'of_tmp_p_valor': '',
-        'of_tmp_p_divida': '',
-        'of_tmp_i_nome': '',
-        'of_tmp_i_valor': '',
-        'of_tmp_i_tipo': 'Renda Fixa',
-        'of_tmp_i_rent': '',
-        'of_diagnostico': None,
-        'of_chat_input': '',
+        "autenticado": False,
+        "nome_user": "",
+        "api_key": "",
+        "renda_total": 0.0,
+        "outras_rendas": [],
+        "gastos": [],
+        "metas": [],
+        "contas_fixas": [],
+        "dividas": [],
+        "historico_chat": [],
+        "categorias_gastos": ["Alimentação","Transporte","Moradia","Saúde","Lazer","Educação","Vestuário","Tecnologia","Outros"],
+        "nivel_evolucao": "Nível 1: Iniciante",
+        "perfil_decisao": "Não Identificado",
+        "reserva_emergencia": 0.0,
+        "patrimonio_itens": [],
+        "config_meta_reserva": 6,
+        "taxa_invest_anual": 10.0,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
 
-_of_init()
+init()
 
-# ── FUNÇÕES AUXILIARES ──
-def _of_parse(s):
-    if not s:
-        return 0.0
-    s = str(s).strip().replace('R$','').replace('.','').replace(',','.').strip()
-    try:
-        return float(s)
-    except:
-        return 0.0
+# ─────────────────────────────────────────────
+# UTILITÁRIOS
+# ─────────────────────────────────────────────
+def fmt(v):
+    return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-def _of_fmt(v):
-    try:
-        return f'R$ {float(v):,.2f}'.replace(',','X').replace('.',',').replace('X','.')
-    except:
-        return 'R$ 0,00'
+def pct(v, total):
+    return round(v / total * 100, 1) if total > 0 else 0.0
 
-def _of_renda_total():
-    r = _of_parse(st.session_state.of_renda)
-    for o in st.session_state.of_outras_rendas:
-        r += o.get('valor', 0)
-    return r
+def barra(valor_pct, cor="#7C6FFF"):
+    p = max(0, min(100, valor_pct))
+    return f'<div class="prog-wrap"><div class="prog-fill" style="width:{p}%;background:{cor};"></div></div>'
 
-def _of_gastos_total():
-    return sum(g.get('valor', 0) for g in st.session_state.of_gastos)
-
-def _of_saldo():
-    return _of_renda_total() - _of_gastos_total()
-
-def _of_divida_total():
-    return sum(d.get('saldo', 0) for d in st.session_state.of_dividas)
-
-def _of_patrimonio_bruto():
-    return sum(p.get('valor', 0) for p in st.session_state.of_patrimonios)
-
-def _of_patrimonio_liquido():
-    return _of_patrimonio_bruto() + sum(i.get('valor', 0) for i in st.session_state.of_investimentos) - _of_divida_total()
-
-# ── HEADER ──
-st.markdown('''
-<div class="of-header">
-  <h1>Oraculo Financeiro IA</h1>
-  <p>Consultor pessoal de financas — 12 modulos integrados</p>
-</div>
-''', unsafe_allow_html=True)
-
-# ── TABS ──
-tabs = st.tabs([
-    'Inicio',
-    'Renda',
-    'Gastos',
-    'Dividas',
-    'Metas',
-    'Patrimonio',
-    'Investimentos',
-    'Oraculo IA',
-    'Exportar',
-])
-
-# ══════════════════════════════════════════════════
-# TAB 0 — INÍCIO / PAINEL
-# ══════════════════════════════════════════════════
-with tabs[0]:
-    st.subheader('Painel Geral')
-
-    renda = _of_renda_total()
-    gastos = _of_gastos_total()
-    saldo = _of_saldo()
-    dividas = _of_divida_total()
-    reserva = _of_parse(st.session_state.of_reserva)
-
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        cor = 'verde' if renda > 0 else ''
-        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Renda Total</div><div class="kpi-value">{_of_fmt(renda)}</div></div>', unsafe_allow_html=True)
-    with c2:
-        cor = 'vermelho' if gastos > renda else 'amarelo' if gastos > renda*0.8 else 'verde'
-        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Total de Gastos</div><div class="kpi-value">{_of_fmt(gastos)}</div></div>', unsafe_allow_html=True)
-    with c3:
-        cor = 'verde' if saldo > 0 else 'vermelho'
-        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Saldo Mensal</div><div class="kpi-value">{_of_fmt(saldo)}</div></div>', unsafe_allow_html=True)
-
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown(f'<div class="kpi-box vermelho"><div class="kpi-label">Total de Dividas</div><div class="kpi-value">{_of_fmt(dividas)}</div></div>', unsafe_allow_html=True)
-    with c2:
-        meses_res = reserva / gastos if gastos > 0 else 0
-        cor = 'verde' if meses_res >= 6 else 'amarelo' if meses_res >= 3 else 'vermelho'
-        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Reserva de Emergencia</div><div class="kpi-value">{_of_fmt(reserva)} ({meses_res:.1f} meses)</div></div>', unsafe_allow_html=True)
-    with c3:
-        pl = _of_patrimonio_liquido()
-        cor = 'verde' if pl > 0 else 'vermelho'
-        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Patrimonio Liquido</div><div class="kpi-value">{_of_fmt(pl)}</div></div>', unsafe_allow_html=True)
-
+def get_totais():
+    renda  = st.session_state.renda_total + sum(x["valor"] for x in st.session_state.outras_rendas)
+    gv     = sum(x["valor"] for x in st.session_state.gastos)
+    gf     = sum(x["valor"] for x in st.session_state.contas_fixas if x.get("ativa", True))
+    gm     = sum(x["mensal"] for x in st.session_state.metas)
+    div_m  = sum(x["parcela_mensal"] for x in st.session_state.dividas)
+    saldo  = renda - gv - gf - gm - div_m
     if renda > 0:
-        tx = (saldo / renda * 100) if renda > 0 else 0
-        if tx >= 20:
-            st.success(f'Taxa de poupanca: {tx:.1f}% — Excelente!')
-        elif tx >= 10:
-            st.info(f'Taxa de poupanca: {tx:.1f}% — Boa, mas pode melhorar.')
-        elif tx >= 0:
-            st.warning(f'Taxa de poupanca: {tx:.1f}% — Atencao: margens apertadas.')
-        else:
-            st.error(f'Taxa de poupanca: {tx:.1f}% — Voce esta gastando mais do que ganha!')
+        r = saldo / renda
+        if r >= 0.4:    st.session_state.nivel_evolucao = "Nível 5: Independente 🏆"
+        elif r >= 0.25: st.session_state.nivel_evolucao = "Nível 4: Estratégico 🎯"
+        elif r >= 0.1:  st.session_state.nivel_evolucao = "Nível 3: Organizado ✅"
+        elif r >= 0:    st.session_state.nivel_evolucao = "Nível 2: Equilibrado ⚖️"
+        else:           st.session_state.nivel_evolucao = "Nível 1: Déficit 🚨"
+    return renda, gv, gf, gm, div_m, saldo
 
-    st.divider()
-    st.caption('Use as abas acima para preencher seus dados. Tudo salva automaticamente.')
+# ─────────────────────────────────────────────
+# IA — CONSULTOR
+# ─────────────────────────────────────────────
+def contexto_financeiro():
+    renda, gv, gf, gm, div_m, saldo = get_totais()
+    meta_res = gf * st.session_state.config_meta_reserva
+    cats = {}
+    for g in st.session_state.gastos:
+        cats[g["tipo"]] = cats.get(g["tipo"], 0) + g["valor"]
+    cats_txt    = "\\\\n".join(f"  • {c}: R${v:.2f} ({pct(v, renda)}%)" for c, v in cats.items()) or "  Nenhum"
+    dividas_txt = "\\\\n".join(f"  • {d['nome']}: saldo R${d['valor_total']-d['valor_pago']:.2f}, juros {d['juros_mensal']}%/mês" for d in st.session_state.dividas) or "  Nenhuma"
+    metas_txt   = "\\\\n".join(f"  • {m['nome']}: {fmt(m.get('atual',0))}/{fmt(m['valor'])}" for m in st.session_state.metas) or "  Nenhuma"
+    return f'''
+DADOS DO USUÁRIO:
+Renda total: R${renda:.2f}
+Despesas fixas: R${gf:.2f} ({pct(gf,renda)}%)
+Gastos variáveis: R${gv:.2f} ({pct(gv,renda)}%)
+Parcelas de dívidas: R${div_m:.2f}
+Metas mensais: R${gm:.2f} ({pct(gm,renda)}%)
+Saldo livre: R${saldo:.2f} ({pct(saldo,renda)}%)
+Reserva atual: R${st.session_state.reserva_emergencia:.2f} (meta: R${meta_res:.2f})
+Gastos por categoria:\\\\n{cats_txt}
+Dívidas:\\\\n{dividas_txt}
+Metas:\\\\n{metas_txt}
+'''
 
-# ══════════════════════════════════════════════════
-# TAB 1 — RENDA
-# ══════════════════════════════════════════════════
-with tabs[1]:
-    st.subheader('Sua Renda')
-    st.caption('Preencha e os valores sao salvos automaticamente.')
+def consultor(prompt, historico):
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        sys_msg = f'''Você é o Oráculo Financeiro — mentor de decisões financeiras pessoais. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
+Filosofia: direto, estratégico, sem rodeios. Aponta problemas sem medo.
+Nomenclatura: Blindagem = fixas+reserva | Expansão = metas/investimentos | Estabilidade = saldo livre.
+Regra 50/30/20: 50% necessidades, 30% desejos, 20% poupança.
+{contexto_financeiro()}
+Nível: {st.session_state.nivel_evolucao} | Perfil: {st.session_state.perfil_decisao}
+Responda em no máximo 4 parágrafos curtos. Sugira 1 ação concreta ao final.
+Termine sempre com: "⚠️ Análise baseada nos seus dados. Consulte um profissional certificado para decisões de grande impacto."
+'''
+        msgs = [{"role": "system", "content": sys_msg}]
+        for m in historico[-10:]:
+            msgs.append(m)
+        msgs.append({"role": "user", "content": prompt})
+        r = client.chat.completions.create(messages=msgs, model="openai/gpt-oss-120b", max_tokens=700, temperature=0.7)
+        return r.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Oráculo indisponível. Verifique sua chave API. Erro: {str(e)[:80]}"
 
-    c1, c2 = st.columns(2)
-    with c1:
-        st.text_input('Renda liquida mensal (R$)', placeholder='Ex: 5000',
-                      key='of_renda')
-    with c2:
-        st.text_input('Reserva de emergencia atual (R$)', placeholder='Ex: 3000',
-                      key='of_reserva')
+# ─────────────────────────────────────────────
+# TELA DE LOGIN
+# ─────────────────────────────────────────────
+# Garantia extra: init() já rodou acima, mas asseguramos valores padrão corretos
+if 'aporte_inv_salvo' not in st.session_state or st.session_state['aporte_inv_salvo'] is None:
+    st.session_state['aporte_inv_salvo'] = 0.0
+else:
+    st.session_state['aporte_inv_salvo'] = float(st.session_state['aporte_inv_salvo'])
+if 'cap_ini_inv_salvo' not in st.session_state or st.session_state['cap_ini_inv_salvo'] is None:
+    st.session_state['cap_ini_inv_salvo'] = 0.0
+else:
+    st.session_state['cap_ini_inv_salvo'] = float(st.session_state['cap_ini_inv_salvo'])
+if 'outras_rendas' not in st.session_state or st.session_state['outras_rendas'] is None:
+    st.session_state['outras_rendas'] = []
+if 'patrimonio_itens' not in st.session_state or st.session_state['patrimonio_itens'] is None:
+    st.session_state['patrimonio_itens'] = []
+if 'reserva_emergencia' not in st.session_state or st.session_state['reserva_emergencia'] is None:
+    st.session_state['reserva_emergencia'] = 0.0
+if 'config_meta_reserva' not in st.session_state or st.session_state['config_meta_reserva'] is None:
+    st.session_state['config_meta_reserva'] = 6
+if 'taxa_invest_anual' not in st.session_state or st.session_state['taxa_invest_anual'] is None:
+    st.session_state['taxa_invest_anual'] = 10.0
+if 'nivel_evolucao' not in st.session_state or st.session_state['nivel_evolucao'] is None:
+    st.session_state['nivel_evolucao'] = "Nível 1: Iniciante"
+if 'perfil_decisao' not in st.session_state or st.session_state['perfil_decisao'] is None:
+    st.session_state['perfil_decisao'] = "Não Identificado"
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.text_input('Sua idade', placeholder='Ex: 35', key='of_idade')
-    with c2:
-        st.text_input('Dependentes', placeholder='Ex: 2', key='of_dependentes')
-    with c3:
-        st.selectbox('Renda estavel?', ['Sim', 'Nao'], key='of_renda_estavel')
+if not st.session_state.autenticado:
+    st.markdown('''
+    <div style="text-align:center; padding:30px 20px 20px 20px;">
+      <div style="font-size:56px; margin-bottom:8px;">💰</div>
+      <h1 style="font-size:28px; margin:0; color:#1A1A2E;">Oráculo Financeiro</h1>
+      <p style="font-size:13px; color:#4B5563; letter-spacing:2px; margin-top:6px;">ECONOMIZE • GERENCIE • INVISTA • CRESÇA</p>
+    </div>
+    ''', unsafe_allow_html=True)
 
-    st.divider()
-    st.markdown('**Outras fontes de renda**')
+    st.markdown("<div class='card'><b>🔒 ACESSO RESTRITO A ASSOCIADOS DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
 
-    c1, c2, c3 = st.columns([3, 2, 1])
-    with c1:
-        st.text_input('Fonte', placeholder='Ex: Freelance, Aluguel', key='of_tmp_or_nome')
-    with c2:
-        st.text_input('Valor (R$)', placeholder='Ex: 800', key='of_tmp_or_val')
-    with c3:
-        st.write('')
-        st.write('')
-        if st.button('Adicionar', key='of_btn_add_or', use_container_width=True):
-            n = st.session_state.of_tmp_or_nome.strip()
-            v = st.session_state.of_tmp_or_val.strip()
-            if n and v:
-                st.session_state.of_outras_rendas.append({'nome': n, 'valor': _of_parse(v)})
-                st.session_state.of_tmp_or_nome = ''
-                st.session_state.of_tmp_or_val = ''
+    with st.form("login"):
+        nome  = st.text_input("👤 Seu nome", key="input_nome_login")
+        chave = st.text_input("🔑 Chave Groq API", type="password", key="input_chave_login")
+
+        # ── UPLOADER ─────────────────────
+        st.markdown('''<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;
+        padding:10px 14px;font-size:0.85em;color:#92400E;line-height:1.6;margin-top:8px;">
+        📥 <strong>Seus dados sumiram?</strong> Isso acontece quando o servidor reinicia.<br>
+        Selecione abaixo o arquivo <strong>.json</strong> que você salvou antes — tudo volta como era.
+        </div>''', unsafe_allow_html=True)
+
+        if st.form_submit_button("🚀 ENTRAR NO SISTEMA", key="oraculoffsb501"):
+            if nome and chave:
+                st.session_state.nome_user   = nome
+                st.session_state.api_key     = chave
+                st.session_state.autenticado = True
                 st.rerun()
             else:
-                st.warning('Preencha nome e valor.')
+                st.error("Preencha nome e chave API.")
 
-    for i, o in enumerate(st.session_state.of_outras_rendas):
-        c1, c2, c3 = st.columns([4, 2, 1])
-        with c1:
-            st.write(o['nome'])
-        with c2:
-            st.write(_of_fmt(o['valor']))
-        with c3:
-            if st.button('X', key=f'of_del_or_{i}'):
-                st.session_state.of_outras_rendas.pop(i)
+    st.markdown("🔑 Não tem chave Groq? Crie grátis em <a href='https://console.groq.com/keys' target='_blank' style='color:#5B50E8;font-weight:600;'>console.groq.com/keys</a>", unsafe_allow_html=True)
+    st.stop()
+
+# ─────────────────────────────────────────────
+# SISTEMA LOGADO
+# ─────────────────────────────────────────────
+renda, gv, gf, gm, div_m, saldo = get_totais()
+
+# HEADER
+c1, c2, c3 = st.columns([3, 2, 1])
+with c1:
+    st.markdown(f"<h1 style='margin:0;font-size:24px;color:#1A1A2E;'>💰 Oráculo de {st.session_state.nome_user}</h1>", unsafe_allow_html=True)
+with c2:
+    nivel = st.session_state.nivel_evolucao
+    cls   = "badge-green" if ("5" in nivel or "4" in nivel) else ("badge-gold" if ("3" in nivel or "2" in nivel) else "badge-red")
+    st.markdown(f"<div style='padding:14px 0;text-align:right;'><span class='{cls}' style='padding:6px 14px;font-size:12px;'>{nivel}</span></div>", unsafe_allow_html=True)
+with c3:
+    if st.button("🚪 Sair", key="oraculof1"):
+        st.session_state.autenticado = False
+        st.rerun()
+
+dados_atuais = {k: st.session_state.get(k) for k in st.session_state.keys()}
+salvar_perfil_cache(st.session_state.nome_user, dados_atuais)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# TABS
+tabs = st.tabs([
+    "🏠 Dashboard", "🧠 Consultor IA", "💵 Renda",
+    "💸 Gastos", "🎯 Metas", "🛡️ Fixas",
+    "💳 Dívidas", "🏦 Reserva", "📈 Investimentos",
+    "⚖️ Patrimônio", "📊 Relatório", "⚙️ Config"
+])
+
+(tab_dash, tab_ia, tab_renda, tab_gastos, tab_metas,
+ tab_fixas, tab_div, tab_res, tab_inv,
+ tab_pat, tab_rel, tab_cfg) = tabs
+
+# ══════════════════════════════════════════════
+# 1. DASHBOARD
+# ══════════════════════════════════════════════
+with tab_dash:
+
+    # ── AVISO SE DADOS SUMIRAM ────────────────────────────────
+    tem_dados_dash = (
+        len(st.session_state.gastos) > 0 or
+        len(st.session_state.contas_fixas) > 0 or
+        st.session_state.renda_total > 0
+    )
+    if not tem_dados_dash:
+        st.markdown('''<div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:12px;
+        padding:12px 18px;margin-bottom:4px;color:#92400E;font-size:0.9em;font-weight:600;">
+        ⚠️ Seus dados não estão mais no servidor.
+        </div>''', unsafe_allow_html=True)
+
+
+    # Alerta de situação
+    if renda == 0:
+        st.markdown('<div class="alert-info">ℹ️ Comece cadastrando sua renda na aba <b>Renda</b>.</div>', unsafe_allow_html=True)
+    elif saldo < 0:
+        st.markdown(f'<div class="alert-danger">🚨 <b>Déficit de {fmt(abs(saldo))}!</b> Você gasta mais do que ganha. Ação imediata necessária.</div>', unsafe_allow_html=True)
+    elif saldo < renda * 0.1:
+        st.markdown(f'<div class="alert-warn">⚠️ Margem muito baixa ({pct(saldo,renda)}%). Recomendado: mínimo 20% livre.</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="alert-success">✅ Sistema saudável. {fmt(saldo)} livres para expandir.</div>', unsafe_allow_html=True)
+
+    # MÉTRICAS PRINCIPAIS
+    c1, c2, c3, c4, c5 = st.columns(5)
+    def metrica(col, label, val, cor, sub=""):
+        col.markdown(f'<div class="metric-box"><div class="metric-label">{label}</div><div class="metric-value" style="color:{cor};">{fmt(val)}</div><div class="metric-sub">{sub}</div></div>', unsafe_allow_html=True)
+
+    metrica(c1, "💰 Renda",            renda,            "#6EE7B7", "total/mês")
+    metrica(c2, "🛡️ Blindagem",        gf,               "#7DD3FC", f"{pct(gf,renda)}% da renda")
+    metrica(c3, "💸 Gastos Variáveis",  gv,               "#FCD34D", f"{pct(gv,renda)}% da renda")
+    metrica(c4, "🚀 Metas/Mês",         gm,               "#6D28D9", f"{pct(gm,renda)}% da renda")
+    cor_s = "#6EE7B7" if saldo >= 0 else "#FCA5A5"
+    metrica(c5, "⚖️ Estabilidade",     saldo,            cor_s,     f"{pct(saldo,renda)}% livre")
+
+
+    # ── GUIA DAS ABAS ────────────────────────────────────────
+    st.markdown("### 🗺️ O que cada aba faz")
+    guia = {
+        "🏠 Dashboard":        "Visão geral da sua saúde financeira com alertas e diagnóstico automático",
+        "🧠 Consultor IA":     "Mentor financeiro que conhece seus números e responde perguntas diretas",
+        "💵 Renda":            "Cadastre seu salário e outras fontes de renda",
+        "💸 Gastos":           "Registre e categorize seus gastos variáveis",
+        "🎯 Metas":            "Crie e acompanhe metas de economia e investimento",
+        "🛡️ Fixas":            "Gerencie suas contas fixas mensais",
+        "💳 Dívidas":          "Controle dívidas com estratégia avalanche ou bola de neve",
+        "🏦 Reserva":          "Acompanhe sua reserva de emergência",
+        "📈 Investimentos":    "Simulações e estratégias de investimento por perfil",
+        "⚖️ Patrimônio":       "Balanço entre ativos e passivos — seu patrimônio líquido",
+        "📊 Relatório":        "Relatório completo com fluxo de caixa e exportação",
+        "⚙️ Config":           "Ajuste metas e configurações do sistema",
+    }
+    for aba, desc in guia.items():
+        st.markdown(f"**{aba}** — {desc}")
+
+    col_a, col_b = st.columns(2)
+
+    with col_a:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>📊 Distribuição da Renda</b>", unsafe_allow_html=True)
+        if renda > 0:
+            for nome_d, val_d, cor_d in [
+                ("🛡️ Fixas",       gf,              "#38BDF8"),
+                ("💸 Variáveis",   gv,              "#FCD34D"),
+                ("💳 Dívidas",     div_m,           "#FCA5A5"),
+                ("🚀 Metas",       gm,              "#6D28D9"),
+                ("✅ Livre",       max(0, saldo),   "#6EE7B7"),
+            ]:
+                pct_d = pct(val_d, renda)
+                st.markdown(f'''
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                  <span style="font-size:13px;color:#555577;">{nome_d}</span>
+                  <span style="font-size:13px;color:#1A1A2E;">{fmt(val_d)} <span style="color:#4B5563;">({pct_d}%)</span></span>
+                </div>{barra(pct_d, cor_d)}''', unsafe_allow_html=True)
+        else:
+            st.markdown("<p>Cadastre sua renda para ver a distribuição.</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>📐 Regra 50/30/20</b>", unsafe_allow_html=True)
+        if renda > 0:
+            cats_nec = ["Moradia","Alimentação","Saúde","Transporte"]
+            cats_des = ["Lazer","Vestuário","Tecnologia"]
+            nec = gf + sum(g["valor"] for g in st.session_state.gastos if g["tipo"] in cats_nec)
+            des = sum(g["valor"] for g in st.session_state.gastos if g["tipo"] in cats_des)
+            pou = gm
+            for rotulo_r, valor_r, ideal_r, cor_r in [
+                ("🏠 Necessidades (ideal 50%)", nec, 50, "#38BDF8"),
+                ("🎮 Desejos     (ideal 30%)",  des, 30, "#FCD34D"),
+                ("📈 Poupança    (ideal 20%)",  pou, 20, "#6EE7B7"),
+            ]:
+                real_r = pct(valor_r, renda)
+                ok_r   = "✅" if abs(real_r - ideal_r) <= 10 else "⚠️"
+                st.markdown(f'''
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                  <span style="font-size:13px;color:#555577;">{rotulo_r}</span>
+                  <span style="font-size:13px;color:#1A1A2E;">{ok_r} {real_r:.1f}%</span>
+                </div>{barra(real_r, cor_r)}''', unsafe_allow_html=True)
+        else:
+            st.markdown("<p>Cadastre sua renda para ver a análise.</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_b:
+        meta_res_d = gf * st.session_state.config_meta_reserva
+        pct_res_d  = pct(st.session_state.reserva_emergencia, meta_res_d) if meta_res_d > 0 else 0
+        st.markdown(f'''<div class="card-green">
+        <b style='color:#1A1A2E;'>🛡️ Reserva de Emergência</b><br>
+        <span style='font-size:13px;color:#555577;'>{fmt(st.session_state.reserva_emergencia)} de {fmt(meta_res_d)} ({st.session_state.config_meta_reserva} meses)</span>
+        {barra(pct_res_d, "#10B981")}
+        <span style='font-size:12px;color:#4B5563;'>{'✅ Completa!' if pct_res_d >= 100 else f'Faltam {fmt(max(0, meta_res_d - st.session_state.reserva_emergencia))}'}</span>
+        </div>''', unsafe_allow_html=True)
+
+        if st.session_state.metas:
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown("<b style='color:#1A1A2E;'>🎯 Metas em Andamento</b>", unsafe_allow_html=True)
+            for m in st.session_state.metas[:4]:
+                p_m   = pct(m.get("atual", 0), m["valor"])
+                rest  = round((m["valor"] - m.get("atual", 0)) / m["mensal"]) if m["mensal"] > 0 else "∞"
+                st.markdown(f'''
+                <div style="margin-bottom:10px;">
+                  <div style="display:flex;justify-content:space-between;">
+                    <span style="font-size:13px;color:#1A1A2E;">{m['nome']}</span>
+                    <span style="font-size:12px;color:#4B5563;">{p_m:.0f}% · {rest} meses</span>
+                  </div>{barra(p_m, "#7C6FFF")}
+                  <span style="font-size:11px;color:#4B5563;">{fmt(m.get('atual',0))} / {fmt(m['valor'])} · {fmt(m['mensal'])}/mês</span>
+                </div>''', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        if st.session_state.dividas:
+            total_div_d = sum(d["valor_total"] - d["valor_pago"] for d in st.session_state.dividas)
+            st.markdown(f'''<div class="card-red">
+            <b style='color:#1A1A2E;'>💳 Dívidas em Aberto</b><br>
+            <span style='font-size:22px;font-weight:700;color:#991B1B;'>{fmt(total_div_d)}</span>
+            <span style='font-size:12px;color:#4B5563;'> saldo total · {fmt(div_m)}/mês</span><br>
+            <span style='font-size:12px;color:#4B5563;'>{len(st.session_state.dividas)} dívida(s) ativa(s)</span>
+            </div>''', unsafe_allow_html=True)
+
+        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>💡 Diagnóstico Automático</b>", unsafe_allow_html=True)
+        dicas = []
+        if renda > 0:
+            if pct(gf, renda) > 50:    dicas.append(("⚠️", "Fixas acima de 50% da renda. Revise contratos e assinaturas.", "warn"))
+            if pct(gv, renda) > 30:    dicas.append(("💸", "Variáveis acima de 30%. Identifique onde cortar.", "warn"))
+            if pct(gm, renda) < 10:    dicas.append(("🎯", "Menos de 10% alocado em metas. Aumente gradualmente.", "info"))
+            if pct_res_d < 100:        dicas.append(("🛡️", "Reserva incompleta. Priorize antes de investir.", "warn"))
+            if st.session_state.dividas: dicas.append(("💳", "Quite dívidas com juros altos primeiro (estratégia avalanche).", "warn"))
+            if saldo < 0:              dicas.append(("🚨", "DÉFICIT! Você gasta mais do que ganha. Corte imediato necessário.", "danger"))
+            if saldo > renda * 0.3 and pct_res_d >= 100:
+                                        dicas.append(("🚀", "Ótima saúde financeira! Hora de acelerar os investimentos.", "success"))
+        if not dicas:
+            dicas = [("ℹ️", "Preencha seus dados para receber o diagnóstico completo.", "info")]
+        cls_map = {"warn":"alert-warn","info":"alert-info","danger":"alert-danger","success":"alert-success"}
+        for ic, tx, tp in dicas:
+            st.markdown(f'<div class="{cls_map[tp]}" style="margin-bottom:6px;">{ic} {tx}</div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════
+# 2. CONSULTOR IA
+# ══════════════════════════════════════════════
+with tab_ia:
+    col_d, col_c = st.columns([1, 1.5])
+
+    with col_d:
+        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🧬 Perfil de Decisão</b>", unsafe_allow_html=True)
+        d1 = st.select_slider("Sem renda, sobreviveria:", ["< 1 mês","1-3 meses","3-6 meses","6-12 meses","1 ano+"], key="oraf1001")
+        d2 = st.radio("Maior medo:", ["Perder o que tenho","Deixar de ganhar","Dívidas"], horizontal=True, key="oraculof2")
+        d3 = st.radio("Objetivo:", ["Liberdade financeira","Estabilidade","Crescimento"], horizontal=True, key="oraculof3")
+        d4 = st.radio("Tolerância ao risco:", ["Conservador","Moderado","Arrojado"], horizontal=True, key="oraculof4")
+        if st.button("🔍 MAPEAR MEU PERFIL", key="oraculof5"):
+            st.session_state.perfil_decisao = f"{d3} | Risco: {d4} | Reserva: {d1}"
+            st.success(f"Perfil mapeado: {d3}, {d4}")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="card-gold">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>📈 Simulador de Investimento</b>", unsafe_allow_html=True)
+        v_inv   = st.number_input("Aporte mensal (R$):", value=500.0, min_value=0.0, step=50.0, key="oraculof6")
+        t_inv   = st.slider("Prazo (anos):", 1, 40, 10, key="oraf1002")
+        cap_ini = st.number_input("Capital inicial (R$):", value=0.0, min_value=0.0, step=100.0, key="oraculof7")
+        taxa_a  = st.session_state.taxa_invest_anual
+        taxa_m  = (1 + taxa_a / 100) ** (1/12) - 1
+        if taxa_m > 0:
+            montante = cap_ini*(1+taxa_m)**(t_inv*12) + v_inv*(((1+taxa_m)**(t_inv*12)-1)/taxa_m)
+        else:
+            montante = cap_ini + v_inv*t_inv*12
+        investido = cap_ini + v_inv*t_inv*12
+        lucro     = montante - investido
+        st.markdown(f'''
+        <div style="display:flex;gap:10px;margin:10px 0;">
+          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:12px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Montante Final</div>
+            <div style="font-size:17px;font-weight:700;color:#065F46;">{fmt(montante)}</div>
+          </div>
+          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:12px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Lucro</div>
+            <div style="font-size:17px;font-weight:700;color:#6D28D9;">{fmt(lucro)}</div>
+          </div>
+        </div>
+        <span style="font-size:11px;color:#4B5563;">Taxa: {taxa_a}% a.a. | Total investido: {fmt(investido)}</span>
+        ''', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown("<b style='color:#1A1A2E;font-size:13px;'>⚡ Perguntas Rápidas</b>", unsafe_allow_html=True)
+        for q in [
+            "Analise minha saúde financeira completa",
+            "Como priorizar meus objetivos agora?",
+            "Onde posso cortar gastos sem sofrimento?",
+            "Quanto devo investir com meu saldo atual?",
+            "Como quitar minhas dívidas mais rápido?",
+        ]:
+            if st.button(f"→ {q}", key=f"qr_{q[:18]}"):
+                with st.spinner("Consultando o Oráculo..."):
+                    resp = consultor(q, st.session_state.historico_chat)
+                    if resp: st.session_state['res_bsc2_oraf1'] = str(resp)
+                st.session_state.historico_chat.append({"role":"user","content":q})
+                st.session_state.historico_chat.append({"role":"assistant","content":resp})
                 st.rerun()
 
-    renda_total = _of_renda_total()
-    if renda_total > 0:
-        st.success(f'Renda total: {_of_fmt(renda_total)}')
+    with col_c:
+        st.markdown("<b style='color:#1A1A2E;font-size:16px;'>💼 Mentor de Decisão</b>", unsafe_allow_html=True)
+        if not st.session_state.historico_chat:
+            st.markdown('<div class="alert-info" style="text-align:center;">💰 Faça sua primeira pergunta. O Oráculo conhece seus números e vai ser direto ao ponto.</div>', unsafe_allow_html=True)
+        for msg in st.session_state.historico_chat:
+            if msg["role"] == "user":
+                st.markdown(f'<div class="chat-user"><span style="font-size:11px;color:#4B5563;">👤 {st.session_state.nome_user}</span><br><span style="color:#1A1A2E;">{msg["content"]}</span></div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="chat-ai"><span style="font-size:11px;color:#5B50E8;">💰 Oráculo</span><br><span style="color:#333355;">{msg["content"]}</span></div>', unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 2 — GASTOS
-# ══════════════════════════════════════════════════
-with tabs[2]:
-    st.subheader('Controle de Gastos')
-
-    CATS = ['Moradia','Alimentacao','Transporte','Saude','Educacao',
-            'Lazer','Vestuario','Assinaturas','Seguros','Outros']
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.text_input('Descricao', placeholder='Ex: Aluguel', key='of_tmp_g_nome')
-        st.selectbox('Categoria', CATS, key='of_tmp_g_cat')
-    with c2:
-        st.text_input('Valor mensal (R$)', placeholder='Ex: 1200', key='of_tmp_g_val')
-        st.selectbox('Tipo', ['Fixo','Variavel'], key='of_tmp_g_tipo')
-
-    if st.button('Adicionar gasto', key='of_btn_add_g', use_container_width=True):
-        n = st.session_state.of_tmp_g_nome.strip()
-        v = st.session_state.of_tmp_g_val.strip()
-        if n and v:
-            st.session_state.of_gastos.append({
-                'nome': n,
-                'cat': st.session_state.of_tmp_g_cat,
-                'valor': _of_parse(v),
-                'tipo': st.session_state.of_tmp_g_tipo,
-            })
-            st.session_state.of_tmp_g_nome = ''
-            st.session_state.of_tmp_g_val = ''
+        if p := st.chat_input("Qual é sua dúvida ou decisão financeira?", key="oraf1003"):
+            with st.spinner("O Oráculo está analisando..."):
+                resp = consultor(p, st.session_state.historico_chat)
+                if resp: st.session_state['res_bsc2_oraf2'] = str(resp)
+            st.session_state.historico_chat.append({"role":"user","content":p})
+            st.session_state.historico_chat.append({"role":"assistant","content":resp})
             st.rerun()
-        else:
-            st.warning('Preencha descricao e valor.')
 
-    if st.session_state.of_gastos:
-        st.divider()
-        renda = _of_renda_total()
-        st.markdown(f'**Total: {_of_fmt(_of_gastos_total())}**')
-        for i, g in enumerate(st.session_state.of_gastos):
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
-            with c1:
-                st.write(g['nome'])
-            with c2:
-                pct = g['valor']/renda*100 if renda > 0 else 0
-                st.write(f"{_of_fmt(g['valor'])} ({pct:.0f}%)")
-            with c3:
-                st.write(f"{g['cat']} / {g.get('tipo','')}")
-            with c4:
-                if st.button('X', key=f'of_del_g_{i}'):
-                    st.session_state.of_gastos.pop(i)
+        if st.session_state.historico_chat:
+            if st.button("🗑️ Limpar conversa", key="oraculof8"):
+                st.session_state.historico_chat = []
+                st.rerun()
+
+# ══════════════════════════════════════════════
+# 3. RENDA
+# ══════════════════════════════════════════════
+with tab_renda:
+    col_r1, col_r2 = st.columns(2)
+    with col_r1:
+        st.markdown('<div class="card-green">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>💵 Renda Principal</b>", unsafe_allow_html=True)
+        with st.form("renda_principal"):
+            nr = st.number_input("Salário / Renda Mensal (R$)", min_value=0.0, value=st.session_state.renda_total, step=100.0, key="oraculof9")
+            if st.form_submit_button("💾 SALVAR", key="oraculoffsb502"):
+                st.session_state.renda_total = nr
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>➕ Outras Fontes de Renda</b>", unsafe_allow_html=True)
+        with st.form("outras_rendas_form", clear_on_submit=True):
+            c1, c2 = st.columns(2)
+            with c1: nr_nome = st.text_input("Fonte", placeholder="Freela, aluguel...", key="oraculof10")
+            with c2: nr_val  = st.number_input("Valor (R$)", min_value=0.0, step=50.0, key="oraculof11")
+            nr_rec = st.checkbox("Recorrente todo mês?", value=True, key="oraculof12")
+            if st.form_submit_button("ADICIONAR", key="oraculoffsb503"):
+                if nr_nome and nr_val > 0:
+                    st.session_state.outras_rendas.append({"nome":nr_nome,"valor":nr_val,"recorrente":nr_rec})
                     st.rerun()
-    else:
-        st.info('Nenhum gasto cadastrado ainda.')
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 3 — DÍVIDAS
-# ══════════════════════════════════════════════════
-with tabs[3]:
-    st.subheader('Gestao de Dividas')
+    with col_r2:
+        total_r = st.session_state.renda_total + sum(x["valor"] for x in st.session_state.outras_rendas)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown(f"<b style='color:#1A1A2E;'>📋 Todas as Fontes — Total: {fmt(total_r)}/mês</b>", unsafe_allow_html=True)
+        st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">💼 Salário principal</span><span style="color:#065F46;font-weight:600;">{fmt(st.session_state.renda_total)}</span></div>', unsafe_allow_html=True)
+        for i, r in enumerate(st.session_state.outras_rendas):
+            rec = "🔄" if r["recorrente"] else "1️⃣"
+            col_rx, col_rd = st.columns([4, 1])
+            with col_rx:
+                st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">{rec} {r["nome"]}</span><span style="color:#065F46;">{fmt(r["valor"])}</span></div>', unsafe_allow_html=True)
+            with col_rd:
+                if st.button("✕", key=f"del_or_{i}"):
+                    st.session_state.outras_rendas.pop(i); st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    c1, c2 = st.columns(2)
-    with c1:
-        st.text_input('Nome da divida', placeholder='Ex: Cartao Nubank', key='of_tmp_d_nome')
-        st.text_input('Saldo devedor (R$)', placeholder='Ex: 8000', key='of_tmp_d_saldo')
-        st.text_input('Juros ao mes (%)', placeholder='Ex: 3.5', key='of_tmp_d_juros')
-    with c2:
-        st.text_input('Parcela mensal (R$)', placeholder='Ex: 400', key='of_tmp_d_parcela')
-        st.text_input('Prazo restante (meses)', placeholder='Ex: 24', key='of_tmp_d_prazo')
-
-    if st.button('Adicionar divida', key='of_btn_add_d', use_container_width=True):
-        n = st.session_state.of_tmp_d_nome.strip()
-        s = st.session_state.of_tmp_d_saldo.strip()
-        if n and s:
-            st.session_state.of_dividas.append({
-                'nome': n,
-                'saldo': _of_parse(s),
-                'juros': _of_parse(st.session_state.of_tmp_d_juros),
-                'parcela': _of_parse(st.session_state.of_tmp_d_parcela),
-                'prazo': int(_of_parse(st.session_state.of_tmp_d_prazo) or 0),
-            })
-            for k in ['of_tmp_d_nome','of_tmp_d_saldo','of_tmp_d_juros','of_tmp_d_parcela','of_tmp_d_prazo']:
-                st.session_state[k] = ''
-            st.rerun()
-        else:
-            st.warning('Preencha pelo menos o nome e saldo.')
-
-    if st.session_state.of_dividas:
-        st.divider()
-        st.markdown(f'**Total de dividas: {_of_fmt(_of_divida_total())}**')
-        for i, d in enumerate(st.session_state.of_dividas):
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
-            with c1:
-                st.write(d['nome'])
-            with c2:
-                st.write(_of_fmt(d['saldo']))
-            with c3:
-                st.write(f"{d.get('juros',0):.1f}% a.m. | {d.get('prazo',0)} meses")
-            with c4:
-                if st.button('X', key=f'of_del_d_{i}'):
-                    st.session_state.of_dividas.pop(i)
+# ══════════════════════════════════════════════
+# 4. GASTOS VARIÁVEIS
+# ══════════════════════════════════════════════
+with tab_gastos:
+    col_g1, col_g2 = st.columns(2)
+    with col_g1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>💸 Registrar Gasto</b>", unsafe_allow_html=True)
+        with st.expander("⚙️ Gerenciar categorias"):
+            nova_c = st.text_input("Nova categoria:", key="oraculof13")
+            if st.button("Adicionar categoria", key="oraculof14"):
+                if nova_c and nova_c not in st.session_state.categorias_gastos:
+                    st.session_state.categorias_gastos.append(nova_c); st.rerun()
+            cat_rem = st.selectbox("Remover categoria:", ["—"] + st.session_state.categorias_gastos, key="oraculof15")
+            if st.button("Remover", key="oraculof16") and cat_rem != "—":
+                st.session_state.categorias_gastos.remove(cat_rem); st.rerun()
+        with st.form("gasto_form", clear_on_submit=True):
+            g_cat  = st.selectbox("Categoria", st.session_state.categorias_gastos, key="oraculof17")
+            g_desc = st.text_input("Descrição", placeholder="Ex: Supermercado extra", key="oraculof18")
+            c1, c2 = st.columns(2)
+            with c1: g_val  = st.number_input("Valor (R$)", min_value=0.0, step=10.0, key="oraculof19")
+            with c2: g_data = st.date_input("Data", value=date.today())
+            g_parc = st.checkbox("É parcelado?", key="oraculof20")
+            g_np   = st.number_input("Nº parcelas", min_value=1, max_value=48, value=1, key="oraculof21") if g_parc else 1
+            if st.form_submit_button("💾 REGISTRAR", key="oraculoffsb504"):
+                if g_val > 0:
+                    st.session_state.gastos.append({"tipo":g_cat,"descricao":g_desc,"valor":g_val,"data":str(g_data),"parcelado":g_parc,"parcelas":g_np})
                     st.rerun()
-    else:
-        st.info('Nenhuma divida cadastrada.')
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 4 — METAS
-# ══════════════════════════════════════════════════
-with tabs[4]:
-    st.subheader('Metas Financeiras')
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.text_input('Nome da meta', placeholder='Ex: Viagem para Europa', key='of_tmp_m_nome')
-        st.text_input('Valor total (R$)', placeholder='Ex: 15000', key='of_tmp_m_total')
-    with c2:
-        st.text_input('Ja guardei (R$)', placeholder='Ex: 2000', key='of_tmp_m_guardado')
-        st.text_input('Prazo (meses)', placeholder='Ex: 18', key='of_tmp_m_prazo')
-
-    if st.button('Adicionar meta', key='of_btn_add_m', use_container_width=True):
-        n = st.session_state.of_tmp_m_nome.strip()
-        t = st.session_state.of_tmp_m_total.strip()
-        if n and t:
-            total = _of_parse(t)
-            guardado = _of_parse(st.session_state.of_tmp_m_guardado)
-            prazo = int(_of_parse(st.session_state.of_tmp_m_prazo) or 12)
-            falta = total - guardado
-            mensal = falta / prazo if prazo > 0 else falta
-            st.session_state.of_metas.append({
-                'nome': n,
-                'total': total,
-                'guardado': guardado,
-                'prazo': prazo,
-                'mensal': mensal,
-            })
-            for k in ['of_tmp_m_nome','of_tmp_m_total','of_tmp_m_guardado','of_tmp_m_prazo']:
-                st.session_state[k] = ''
-            st.rerun()
+    with col_g2:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown(f"<b style='color:#1A1A2E;'>📋 Gastos Registrados — Total: {fmt(gv)}</b>", unsafe_allow_html=True)
+        if not st.session_state.gastos:
+            st.markdown("<p>Nenhum gasto registrado ainda.</p>", unsafe_allow_html=True)
         else:
-            st.warning('Preencha nome e valor total.')
+            cats_p  = list(set(g["tipo"] for g in st.session_state.gastos))
+            filtro  = st.multiselect("Filtrar por categoria:", cats_p, default=cats_p, key="oraf1004")
+            gastos_f = [g for g in st.session_state.gastos if g["tipo"] in filtro]
+            for i, g in enumerate(gastos_f):
+                parc_t = f" ({g['parcelas']}x)" if g.get("parcelado") else ""
+                desc_t = f'<br><span style="font-size:11px;color:#4B5563;">{g["descricao"]}</span>' if g.get("descricao") else ""
+                col_gi, col_gd = st.columns([5, 1])
+                with col_gi:
+                    st.markdown(f'<div class="list-item"><div><span style="color:#1A1A2E;">{g["tipo"]}{parc_t}</span>{desc_t}<br><span style="font-size:11px;color:#4B5563;">{g.get("data","")}</span></div><span style="color:#92400E;font-weight:600;">{fmt(g["valor"])}</span></div>', unsafe_allow_html=True)
+                with col_gd:
+                    idx = st.session_state.gastos.index(g)
+                    if st.button("✕", key=f"del_g_{i}"):
+                        st.session_state.gastos.pop(idx); st.rerun()
+            if gastos_f:
+                st.markdown("<hr>", unsafe_allow_html=True)
+                st.markdown("<b style='color:#1A1A2E;font-size:13px;'>Por categoria:</b>", unsafe_allow_html=True)
+                df_cat = pd.DataFrame(gastos_f).groupby("tipo")["valor"].sum().sort_values(ascending=False)
+                for cat_n, val_c in df_cat.items():
+                    p_c = pct(val_c, gv)
+                    st.markdown(f'''
+                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                      <span style="font-size:12px;color:#555577;">{cat_n}</span>
+                      <span style="font-size:12px;color:#1A1A2E;">{fmt(val_c)} ({p_c}%)</span>
+                    </div>{barra(p_c, "#FCD34D")}''', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    if st.session_state.of_metas:
-        st.divider()
-        for i, m in enumerate(st.session_state.of_metas):
-            pct = (m['guardado'] / m['total'] * 100) if m['total'] > 0 else 0
-            c1, c2, c3 = st.columns([4, 3, 0.7])
-            with c1:
-                st.write(f"**{m['nome']}** — {_of_fmt(m['total'])}")
-                st.progress(min(pct/100, 1.0))
-                st.caption(f"{pct:.0f}% concluida | Faltam {_of_fmt(m['total']-m['guardado'])} | {m['prazo']} meses")
-            with c2:
-                st.write(f"Poupar por mes: {_of_fmt(m['mensal'])}")
-            with c3:
-                if st.button('X', key=f'of_del_m_{i}'):
-                    st.session_state.of_metas.pop(i)
+# ══════════════════════════════════════════════
+# 5. METAS
+# ══════════════════════════════════════════════
+with tab_metas:
+    col_m1, col_m2 = st.columns(2)
+    with col_m1:
+        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🎯 Criar Nova Meta</b>", unsafe_allow_html=True)
+        with st.form("meta_form", clear_on_submit=True):
+            m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
+            m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
+            c1, c2  = st.columns(2)
+            with c1: m_val   = st.number_input("Valor total (R$)", min_value=1.0, step=100.0, key="oraculof24")
+            with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
+            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
+            if st.form_submit_button("🚀 CRIAR META", key="oraculoffsb505"):
+                if m_nome and m_val:
+                    mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
+                    st.session_state.metas.append({"nome":m_nome,"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
                     st.rerun()
-    else:
-        st.info('Nenhuma meta cadastrada.')
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 5 — PATRIMÔNIO
-# ══════════════════════════════════════════════════
-with tabs[5]:
-    st.subheader('Patrimonio')
-
-    TIPOS_P = ['Imovel','Veiculo','Empresa','Outros bens']
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.text_input('Descricao', placeholder='Ex: Apartamento Santana', key='of_tmp_p_nome')
-        st.selectbox('Tipo', TIPOS_P, key='of_tmp_p_tipo')
-    with c2:
-        st.text_input('Valor estimado (R$)', placeholder='Ex: 350000', key='of_tmp_p_valor')
-        st.text_input('Divida associada (R$)', placeholder='Ex: 0', key='of_tmp_p_divida')
-
-    if st.button('Adicionar bem', key='of_btn_add_p', use_container_width=True):
-        n = st.session_state.of_tmp_p_nome.strip()
-        v = st.session_state.of_tmp_p_valor.strip()
-        if n and v:
-            st.session_state.of_patrimonios.append({
-                'nome': n,
-                'tipo': st.session_state.of_tmp_p_tipo,
-                'valor': _of_parse(v),
-                'divida': _of_parse(st.session_state.of_tmp_p_divida),
-            })
-            st.session_state.of_tmp_p_nome = ''
-            st.session_state.of_tmp_p_valor = ''
-            st.session_state.of_tmp_p_divida = ''
-            st.rerun()
+    with col_m2:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown(f"<b style='color:#1A1A2E;'>📋 Metas Ativas — {fmt(gm)}/mês alocados</b>", unsafe_allow_html=True)
+        if not st.session_state.metas:
+            st.markdown("<p>Nenhuma meta criada ainda.</p>", unsafe_allow_html=True)
         else:
-            st.warning('Preencha descricao e valor.')
+            for i, m in enumerate(st.session_state.metas):
+                p_m  = pct(m.get("atual", 0), m["valor"])
+                rest = max(0, round((m["valor"]-m.get("atual",0))/m["mensal"])) if m["mensal"] > 0 else "∞"
+                st.markdown(f'''<div class="card-purple" style="padding:12px;margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;">
+                  <b style="color:#1A1A2E;">{m['nome']}</b>
+                  <span class="badge-purple">{m.get('categoria','')}</span>
+                </div>
+                <span style="font-size:12px;color:#555577;">{fmt(m.get('atual',0))} / {fmt(m['valor'])} · {fmt(m['mensal'])}/mês · {rest} meses</span>
+                {barra(p_m, "#7C6FFF")}
+                <span style="font-size:11px;color:#5B50E8;">{p_m:.1f}% concluído</span>
+                </div>''', unsafe_allow_html=True)
+                _mk = f"meta_atual_{i}"
+                if _mk not in st.session_state:
+                    st.session_state[_mk] = float(m.get("atual", 0))
+                col_mi, col_md = st.columns([4, 1])
+                with col_mi:
+                    st.number_input("Valor já guardado (R$):", min_value=0.0, max_value=float(m["valor"]), step=50.0, key=_mk)
+                    if st.button("✅ Atualizar", key=f"upd_m_{i}"):
+                        novo_a = st.session_state[_mk]
+                        st.session_state.metas[i]["atual"]  = novo_a
+                        st.session_state.metas[i]["mensal"] = (m["valor"]-novo_a)/m["prazo"] if m["prazo"] > 0 else 0
+                        st.rerun()
+                with col_md:
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("✕", key=f"del_m_{i}"):
+                        if _mk in st.session_state: del st.session_state[_mk]
+                        st.session_state.metas.pop(i); st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    if st.session_state.of_patrimonios:
-        st.divider()
-        bruto = _of_patrimonio_bruto()
-        st.markdown(f'**Patrimonio bruto: {_of_fmt(bruto)}**')
-        for i, p in enumerate(st.session_state.of_patrimonios):
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
-            with c1:
-                st.write(p['nome'])
-            with c2:
-                st.write(_of_fmt(p['valor']))
-            with c3:
-                st.write(p['tipo'])
-            with c4:
-                if st.button('X', key=f'of_del_p_{i}'):
-                    st.session_state.of_patrimonios.pop(i)
+# ══════════════════════════════════════════════
+# 6. CONTAS FIXAS
+# ══════════════════════════════════════════════
+with tab_fixas:
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🛡️ Adicionar Conta Fixa</b>", unsafe_allow_html=True)
+        with st.form("fixa_form", clear_on_submit=True):
+            f_nome = st.text_input("Nome", placeholder="Ex: Aluguel, Netflix...", key="oraculof27")
+            f_cat  = st.selectbox("Categoria", ["Moradia","Transporte","Alimentação","Saúde","Educação","Lazer","Serviços","Seguros","Outros"], key="oraculof28")
+            c1, c2 = st.columns(2)
+            with c1: f_val = st.number_input("Valor mensal (R$)", min_value=0.0, step=10.0, key="oraculof29")
+            with c2: f_dia = st.number_input("Dia do vencimento", min_value=1, max_value=31, value=10, key="oraculof30")
+            if st.form_submit_button("ADICIONAR", key="oraculoffsb506"):
+                if f_nome and f_val > 0:
+                    st.session_state.contas_fixas.append({"nome":f_nome,"valor":f_val,"dia_venc":f_dia,"categoria":f_cat,"ativa":True})
                     st.rerun()
-    else:
-        st.info('Nenhum bem cadastrado.')
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 6 — INVESTIMENTOS
-# ══════════════════════════════════════════════════
-with tabs[6]:
-    st.subheader('Investimentos')
-
-    TIPOS_I = ['Renda Fixa','Acoes','FII','Criptomoedas','Poupanca','Previdencia','Outros']
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.text_input('Investimento', placeholder='Ex: CDB Nubank 120% CDI', key='of_tmp_i_nome')
-        st.selectbox('Tipo', TIPOS_I, key='of_tmp_i_tipo')
-    with c2:
-        st.text_input('Valor atual (R$)', placeholder='Ex: 12000', key='of_tmp_i_valor')
-        st.text_input('Rentabilidade anual estimada (%)', placeholder='Ex: 12.5', key='of_tmp_i_rent')
-
-    if st.button('Adicionar investimento', key='of_btn_add_i', use_container_width=True):
-        n = st.session_state.of_tmp_i_nome.strip()
-        v = st.session_state.of_tmp_i_valor.strip()
-        if n and v:
-            st.session_state.of_investimentos.append({
-                'nome': n,
-                'tipo': st.session_state.of_tmp_i_tipo,
-                'valor': _of_parse(v),
-                'rent': _of_parse(st.session_state.of_tmp_i_rent),
-            })
-            st.session_state.of_tmp_i_nome = ''
-            st.session_state.of_tmp_i_valor = ''
-            st.session_state.of_tmp_i_rent = ''
-            st.rerun()
+    with col_f2:
+        total_fixas_ativas = sum(x["valor"] for x in st.session_state.contas_fixas if x.get("ativa", True))
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown(f"<b style='color:#1A1A2E;'>🔒 Contas Fixas — {fmt(total_fixas_ativas)}/mês</b>", unsafe_allow_html=True)
+        if not st.session_state.contas_fixas:
+            st.markdown("<p>Nenhuma conta fixa cadastrada.</p>", unsafe_allow_html=True)
         else:
-            st.warning('Preencha nome e valor.')
+            fixas_ord = sorted(st.session_state.contas_fixas, key=lambda x: x.get("dia_venc", 99))
+            for i, f in enumerate(fixas_ord):
+                idx   = st.session_state.contas_fixas.index(f)
+                ativa = f.get("ativa", True)
+                col_fi, col_ft, col_fd = st.columns([4, 1, 1])
+                with col_fi:
+                    op = "1" if ativa else "0.4"
+                    st.markdown(f'<div class="list-item" style="opacity:{op};"><div><span style="color:#1A1A2E;">{f["nome"]}</span><br><span style="font-size:11px;color:#4B5563;">Dia {f.get("dia_venc","?")} · {f.get("categoria","")}</span></div><span style="color:#0369A1;font-weight:600;">{fmt(f["valor"])}</span></div>', unsafe_allow_html=True)
+                with col_ft:
+                    if st.button("⏸" if ativa else "▶", key=f"tog_f_{i}"):
+                        st.session_state.contas_fixas[idx]["ativa"] = not ativa; st.rerun()
+                with col_fd:
+                    if st.button("✕", key=f"del_f_{i}"):
+                        st.session_state.contas_fixas.pop(idx); st.rerun()
+            st.markdown("<hr>", unsafe_allow_html=True)
+            cats_f = {}
+            for f in st.session_state.contas_fixas:
+                if f.get("ativa", True):
+                    cats_f[f["categoria"]] = cats_f.get(f["categoria"], 0) + f["valor"]
+            for cat_f, val_f in sorted(cats_f.items(), key=lambda x: -x[1]):
+                p_f = pct(val_f, total_fixas_ativas)
+                st.markdown(f'''
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                  <span style="font-size:12px;color:#555577;">{cat_f}</span>
+                  <span style="font-size:12px;color:#1A1A2E;">{fmt(val_f)}</span>
+                </div>{barra(p_f, "#38BDF8")}''', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    if st.session_state.of_investimentos:
-        st.divider()
-        total_inv = sum(i['valor'] for i in st.session_state.of_investimentos)
-        st.markdown(f'**Total investido: {_of_fmt(total_inv)}**')
-        for i, inv in enumerate(st.session_state.of_investimentos):
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
-            with c1:
-                st.write(inv['nome'])
-            with c2:
-                st.write(_of_fmt(inv['valor']))
-            with c3:
-                st.write(f"{inv['tipo']} | {inv.get('rent',0):.1f}% a.a.")
-            with c4:
-                if st.button('X', key=f'of_del_i_{i}'):
-                    st.session_state.of_investimentos.pop(i)
+# ══════════════════════════════════════════════
+# 7. DÍVIDAS
+# ══════════════════════════════════════════════
+with tab_div:
+    st.markdown('<div class="alert-info">💡 <b>Avalanche:</b> quite a dívida de maior juros primeiro. <b>Bola de Neve:</b> quite a menor primeiro.</div>', unsafe_allow_html=True)
+    col_dv1, col_dv2 = st.columns(2)
+    with col_dv1:
+        st.markdown('<div class="card-red">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>💳 Cadastrar Dívida</b>", unsafe_allow_html=True)
+        with st.form("div_form", clear_on_submit=True):
+            d_nome    = st.text_input("Nome", placeholder="Ex: Cartão Nubank, Financiamento Carro", key="oraculof31")
+            c1, c2    = st.columns(2)
+            with c1: d_total   = st.number_input("Valor total da dívida (R$)", min_value=0.0, step=100.0, key="oraculof32")
+            with c2: d_pago    = st.number_input("Já paguei (R$)", min_value=0.0, step=100.0, key="oraculof33")
+            c3, c4    = st.columns(2)
+            with c3: d_juros   = st.number_input("Juros ao mês (%)", min_value=0.0, max_value=100.0, step=0.1, key="oraculof34")
+            with c4: d_parcela = st.number_input("Parcela mensal (R$)", min_value=0.0, step=50.0, key="oraculof35")
+            if st.form_submit_button("REGISTRAR DÍVIDA", key="oraculoffsb507"):
+                if d_nome and d_total > 0:
+                    st.session_state.dividas.append({"nome":d_nome,"valor_total":d_total,"valor_pago":d_pago,"juros_mensal":d_juros,"parcela_mensal":d_parcela})
                     st.rerun()
-    else:
-        st.info('Nenhum investimento cadastrado.')
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 7 — ORÁCULO IA
-# ══════════════════════════════════════════════════
-with tabs[7]:
-    st.subheader('Oraculo IA — Consultor Financeiro')
-
-    # Monta contexto financeiro para a IA
-    def _of_contexto():
-        _of_idade_val = st.session_state.of_idade or "nao informada"
-        _of_dep_val = st.session_state.of_dependentes or 0
-        ctx = (
-            "SITUACAO FINANCEIRA DO USUARIO:\n"
-            "Renda total: " + _of_fmt(_of_renda_total()) + "\n"
-            "Gastos totais: " + _of_fmt(_of_gastos_total()) + "\n"
-            "Saldo mensal: " + _of_fmt(_of_saldo()) + "\n"
-            "Reserva de emergencia: " + _of_fmt(_of_parse(st.session_state.of_reserva)) + "\n"
-            "Total de dividas: " + _of_fmt(_of_divida_total()) + "\n"
-            "Patrimonio liquido: " + _of_fmt(_of_patrimonio_liquido()) + "\n"
-            "Numero de metas: " + str(len(st.session_state.of_metas)) + "\n"
-            "Numero de investimentos: " + str(len(st.session_state.of_investimentos)) + "\n"
-            "Idade: " + str(_of_idade_val) + "\n"
-            "Dependentes: " + str(_of_dep_val) + "\n"
-        )
-        return ctx
-
-    # Mostra histórico
-    for msg in st.session_state.of_historico_chat:
-        if msg['role'] == 'user':
-            st.chat_message('user').write(msg['content'])
+    with col_dv2:
+        total_div = sum(d["valor_total"] - d["valor_pago"] for d in st.session_state.dividas)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown(f"<b style='color:#1A1A2E;'>📋 Dívidas — Saldo Total: {fmt(total_div)}</b>", unsafe_allow_html=True)
+        if not st.session_state.dividas:
+            st.markdown('<div class="alert-success">✅ Nenhuma dívida cadastrada. Parabéns!</div>', unsafe_allow_html=True)
         else:
-            st.chat_message('assistant').write(msg['content'])
+            dividas_ord = sorted(st.session_state.dividas, key=lambda x: -x["juros_mensal"])
+            for i, d in enumerate(dividas_ord):
+                saldo_d = d["valor_total"] - d["valor_pago"]
+                p_d     = pct(d["valor_pago"], d["valor_total"])
+                idx     = st.session_state.dividas.index(d)
+                col_di, col_dd = st.columns([5, 1])
+                with col_di:
+                    st.markdown(f'''<div class="card-red" style="padding:12px;margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;">
+                      <b style="color:#1A1A2E;">{d['nome']}</b>
+                      <span class="badge-red">{d['juros_mensal']}%/mês</span>
+                    </div>
+                    <span style="font-size:12px;color:#555577;">Saldo: {fmt(saldo_d)} · Parcela: {fmt(d['parcela_mensal'])}/mês</span>
+                    {barra(p_d, "#B91C1C")}
+                    <span style="font-size:11px;color:#991B1B;">{p_d:.1f}% quitado</span>
+                    </div>''', unsafe_allow_html=True)
+                    _dk = f"div_pago_{i}"
+                    if _dk not in st.session_state:
+                        st.session_state[_dk] = float(d["valor_pago"])
+                    st.number_input("Valor já pago (R$):", min_value=0.0, max_value=float(d["valor_total"]), step=50.0, key=_dk)
+                    if st.button("Atualizar pagamento", key=f"upd_d_{i}"):
+                        novo_pago = st.session_state[_dk]
+                        st.session_state.dividas[idx]["valor_pago"] = novo_pago
+                        if novo_pago >= d["valor_total"]:
+                            st.session_state.dividas.pop(idx)
+                            st.success("🎉 Dívida quitada!")
+                        st.rerun()
+                with col_dd:
+                    if st.button("✕", key=f"del_d_{i}"):
+                        st.session_state.dividas.pop(idx); st.rerun()
 
-    # Input de mensagem
-    pergunta = st.chat_input('Pergunte ao Oraculo Financeiro...')
-    if pergunta:
-        st.session_state.of_historico_chat.append({'role': 'user', 'content': pergunta})
+            st.markdown("<hr>", unsafe_allow_html=True)
+            st.markdown("<b style='color:#1A1A2E;font-size:13px;'>⏱️ Previsão de Quitação</b>", unsafe_allow_html=True)
+            for d in dividas_ord:
+                saldo_d = d["valor_total"] - d["valor_pago"]
+                try:
+                    if d["parcela_mensal"] > 0 and d["juros_mensal"] > 0:
+                        taxa_md  = d["juros_mensal"] / 100
+                        meses_d  = math.ceil(math.log(d["parcela_mensal"] / (d["parcela_mensal"] - saldo_d*taxa_md)) / math.log(1+taxa_md)) if d["parcela_mensal"] > saldo_d*taxa_md else 999
+                    elif d["parcela_mensal"] > 0:
+                        meses_d  = math.ceil(saldo_d / d["parcela_mensal"])
+                    else:
+                        meses_d  = 999
+                except:
+                    meses_d = 999
+                txt_m = f"{meses_d} meses" if meses_d < 999 else "Revise a parcela"
+                st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">{d["nome"]}</span><span style="color:#991B1B;">{txt_m}</span></div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        ctx = _of_contexto()
-        prompt_sistema = (
-            "Voce e o Oraculo Financeiro IA, um consultor financeiro pessoal experiente e empatico.\n"
-            "Responda sempre em portugues brasileiro.\n"
-            "Seja direto, pratico e use linguagem clara.\n"
-            "Baseie suas respostas nos dados financeiros do usuario abaixo.\n\n"
-            + ctx +
-            "\nPergunta: " + pergunta
-        )
+# ══════════════════════════════════════════════
+# 8. RESERVA DE EMERGÊNCIA
+# ══════════════════════════════════════════════
+with tab_res:
+    meta_res = gf * st.session_state.config_meta_reserva
+    pct_res  = pct(st.session_state.reserva_emergencia, meta_res) if meta_res > 0 else 0
+    falta_res = max(0, meta_res - st.session_state.reserva_emergencia)
+    col_rv1, col_rv2 = st.columns(2)
 
-        try:
-            from openai import OpenAI as _OAI
-            import os as _os
-            _cli = _OAI(api_key=_os.environ.get('OPENAI_API_KEY',''))
-            _resp = _cli.chat.completions.create(
-                model='gpt-4o-mini',
-                messages=[{'role':'user','content': prompt_sistema}],
-                max_tokens=800,
-                temperature=0.7,
-            )
-            resposta = _resp.choices[0].message.content
-        except Exception as _e:
-            resposta = (
-                "Com base nos seus dados:\n\n"
-                + ctx +
-                "\nPara responder sua pergunta sobre \"" + pergunta + "\", analise seus numeros acima e consulte um especialista financeiro certificado (CFP) para orientacao personalizada.\n\n"
-                "(Servico de IA temporariamente indisponivel: " + str(_e)[:100] + ")"
-            )
+    with col_rv1:
+        st.markdown('<div class="card-green">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🛡️ Reserva de Emergência</b>", unsafe_allow_html=True)
+        st.markdown(f"<p>Ideal: <b style='color:#065F46;'>{st.session_state.config_meta_reserva} meses</b> de despesas fixas = <b style='color:#065F46;'>{fmt(meta_res)}</b></p>", unsafe_allow_html=True)
+        with st.form("reserva_form"):
+            novo_res = st.number_input("Valor atual da sua reserva (R$)", min_value=0.0, value=st.session_state.reserva_emergencia, step=100.0, key="oraculof36")
+            if st.form_submit_button("💾 SALVAR", key="oraculoffsb508"):
+                st.session_state.reserva_emergencia = novo_res; st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        st.session_state.of_historico_chat.append({'role': 'assistant', 'content': resposta})
-        st.rerun()
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🏦 Onde Guardar a Reserva</b>", unsafe_allow_html=True)
+        for nm_r, desc_r, st_r, cor_r in [
+            ("Tesouro Selic",     "Seguro, liquidez diária, rende ~CDI",   "✅ Ideal",   "#6EE7B7"),
+            ("CDB 100%+ CDI",     "Bancos digitais, FGC até R$250k",       "✅ Ótimo",   "#6EE7B7"),
+            ("Conta Remunerada",  "Nubank, Inter — resgate imediato",      "✅ Prático", "#6EE7B7"),
+            ("Poupança",          "Rende menos que a inflação",            "⚠️ Evite",   "#FCD34D"),
+            ("Debaixo do colchão","Zero rendimento, risco físico",         "❌ Não",     "#FCA5A5"),
+        ]:
+            st.markdown(f'<div class="list-item"><div><span style="color:#1A1A2E;">{nm_r}</span><br><span style="font-size:11px;color:#4B5563;">{desc_r}</span></div><span style="color:{cor_r};font-size:12px;">{st_r}</span></div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    if st.button('Limpar conversa', key='of_btn_limpar_chat'):
-        st.session_state.of_historico_chat = []
-        st.rerun()
+    with col_rv2:
+        cor_rv = "#6EE7B7" if pct_res >= 100 else "#FCA5A5"
+        st.markdown(f'''<div class="card">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:34px;font-weight:700;color:{cor_rv};">{fmt(st.session_state.reserva_emergencia)}</div>
+          <div style="font-size:13px;color:#4B5563;">de {fmt(meta_res)}</div>
+        </div>
+        {barra(pct_res, "#10B981")}
+        <div style="display:flex;gap:10px;margin:16px 0;">
+          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:10px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Meses cobertos</div>
+            <div style="font-size:20px;font-weight:700;color:#10B981;">{round(st.session_state.reserva_emergencia/gf, 1) if gf > 0 else "∞"}</div>
+          </div>
+          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:10px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Meta (meses)</div>
+            <div style="font-size:20px;font-weight:700;color:#1A1A2E;">{st.session_state.config_meta_reserva}</div>
+          </div>
+          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:10px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Concluído</div>
+            <div style="font-size:20px;font-weight:700;color:#5B50E8;">{min(100, pct_res):.0f}%</div>
+          </div>
+        </div>
+        </div>''', unsafe_allow_html=True)
+        if pct_res >= 100:
+            st.markdown('<div class="alert-success">✅ Reserva completa! Use o excedente para investimentos.</div>', unsafe_allow_html=True)
+        else:
+            m_comp = math.ceil(falta_res / max(1, saldo)) if saldo > 0 else "∞"
+            st.markdown(f'<div class="alert-warn">⚠️ Faltam {fmt(falta_res)}. Com seu saldo atual, ~{m_comp} meses para completar.</div>', unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════
-# TAB 8 — EXPORTAR
-# ══════════════════════════════════════════════════
-with tabs[8]:
-    st.subheader('Exportar Dados')
+# ══════════════════════════════════════════════
+# 9. INVESTIMENTOS
+# ══════════════════════════════════════════════
+with tab_inv:
+    st.markdown('<div class="card-gold">', unsafe_allow_html=True)
+    st.markdown("<b style='color:#1A1A2E;'>📈 Planejamento de Investimentos</b>", unsafe_allow_html=True)
+    ci1, ci2, ci3 = st.columns(3)
+    with ci1:
+        taxa_a_inv = st.number_input("Taxa anual esperada (%)", min_value=1.0, max_value=30.0, value=st.session_state.taxa_invest_anual, step=0.5, key="oraculof37")
+        st.session_state.taxa_invest_anual = taxa_a_inv
+    with ci2:
+        if "inv_aporte_mensal" not in st.session_state:
+            st.session_state["inv_aporte_mensal"] = float(st.session_state.aporte_inv_salvo)
+        aporte_inv = st.number_input("Aporte mensal (R$)", min_value=0.0, step=50.0, key="inv_aporte_mensal")
+        st.session_state.aporte_inv_salvo = aporte_inv
+    with ci3:
+        if "inv_capital_ini" not in st.session_state:
+            st.session_state["inv_capital_ini"] = float(st.session_state.cap_ini_inv_salvo)
+        cap_ini_inv = st.number_input("Capital inicial (R$)", min_value=0.0, step=500.0, key="inv_capital_ini")
+        st.session_state.cap_ini_inv_salvo = cap_ini_inv
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Monta relatório completo
-    _of_linhas = []
-    _of_linhas.append('ORACULO FINANCEIRO IA — Relatorio Completo')
-    _of_linhas.append('=' * 50)
-    _of_linhas.append(f'Gerado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}')
-    _of_linhas.append('')
-    _of_linhas.append('RESUMO FINANCEIRO')
-    _of_linhas.append(f'  Renda total mensal : {_of_fmt(_of_renda_total())}')
-    _of_linhas.append(f'  Total de gastos    : {_of_fmt(_of_gastos_total())}')
-    _of_linhas.append(f'  Saldo mensal       : {_of_fmt(_of_saldo())}')
-    _of_linhas.append(f'  Reserva emergencia : {_of_fmt(_of_parse(st.session_state.of_reserva))}')
-    _of_linhas.append(f'  Total de dividas   : {_of_fmt(_of_divida_total())}')
-    _of_linhas.append(f'  Patrimonio liquido : {_of_fmt(_of_patrimonio_liquido())}')
-    _of_linhas.append('')
-    if st.session_state.of_gastos:
-        _of_linhas.append('GASTOS:')
-        for g in st.session_state.of_gastos:
-            _of_linhas.append(f"  {g['nome']} ({g['cat']}): {_of_fmt(g['valor'])}")
-        _of_linhas.append('')
-    if st.session_state.of_dividas:
-        _of_linhas.append('DIVIDAS:')
-        for d in st.session_state.of_dividas:
-            _of_linhas.append(f"  {d['nome']}: {_of_fmt(d['saldo'])} @ {d.get('juros',0):.1f}% a.m.")
-        _of_linhas.append('')
-    if st.session_state.of_metas:
-        _of_linhas.append('METAS:')
-        for m in st.session_state.of_metas:
-            pct = m['guardado']/m['total']*100 if m['total'] > 0 else 0
-            _of_linhas.append(f"  {m['nome']}: {_of_fmt(m['total'])} ({pct:.0f}% concluida)")
-        _of_linhas.append('')
-    if st.session_state.of_investimentos:
-        _of_linhas.append('INVESTIMENTOS:')
-        for inv in st.session_state.of_investimentos:
-            _of_linhas.append(f"  {inv['nome']}: {_of_fmt(inv['valor'])} ({inv['tipo']})")
-        _of_linhas.append('')
-    if st.session_state.of_historico_chat:
-        _of_linhas.append('HISTORICO DE CONSULTAS:')
-        for msg in st.session_state.of_historico_chat:
-            _of_linhas.append(f"  [{msg['role'].upper()}] {msg['content']}")
-            _of_linhas.append('')
+    taxa_m_inv = (1 + taxa_a_inv/100)**(1/12) - 1
+    st.markdown("<br><b style='color:#1A1A2E;'>🗓️ Projeções de Crescimento</b>", unsafe_allow_html=True)
+    prazos_inv = [1, 2, 5, 10, 20, 30]
+    cols_inv   = st.columns(len(prazos_inv))
+    dados_proj = []
+    for i, anos in enumerate(prazos_inv):
+        n = anos * 12
+        if taxa_m_inv > 0:
+            mont = cap_ini_inv*(1+taxa_m_inv)**n + aporte_inv*(((1+taxa_m_inv)**n-1)/taxa_m_inv)
+        else:
+            mont = cap_ini_inv + aporte_inv*n
+        inv_t  = cap_ini_inv + aporte_inv*n
+        lucro_i = mont - inv_t
+        dados_proj.append((anos, mont, lucro_i))
+        with cols_inv[i]:
+            st.markdown(f'''<div class="card-gold" style="text-align:center;padding:12px;">
+            <div style="font-size:13px;color:#92400E;font-weight:600;">{anos} ano{'s' if anos>1 else ''}</div>
+            <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin:4px 0;">{fmt(mont)}</div>
+            <div style="font-size:11px;color:#4B5563;">+{fmt(lucro_i)}</div>
+            </div>''', unsafe_allow_html=True)
 
-    _of_txt = '\n'.join(_of_linhas)
+    col_inv_a, col_inv_b = st.columns(2)
 
-    st.text_area('Preview do relatorio', _of_txt, height=300)
+    with col_inv_a:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>📊 Crescimento Visual</b>", unsafe_allow_html=True)
+        max_m = max(d[1] for d in dados_proj) if dados_proj else 1
+        for anos, mont, lucro_i in dados_proj:
+            p_i = pct(mont, max_m)
+            st.markdown(f'''
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+              <span style="font-size:12px;color:#555577;">{anos} ano{'s' if anos>1 else ''}</span>
+              <span style="font-size:12px;color:#1A1A2E;">{fmt(mont)}</span>
+            </div>{barra(p_i, "#10B981")}''', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    st.download_button(
-        'Baixar relatorio completo (.txt)',
-        data=_of_txt.encode('utf-8'),
-        file_name='Oraculo_Financeiro_relatorio.txt',
-        mime='text/plain',
-        use_container_width=True,
-        key='of_dl_relatorio'
+    with col_inv_b:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🎓 Onde Investir — Por Perfil</b>", unsafe_allow_html=True)
+        perfil_inv = st.radio("Perfil de risco:", ["Conservador","Moderado","Arrojado"], horizontal=True, key="oraculof40")
+        inv_map = {
+            "Conservador": [
+                ("Tesouro Selic",    "Liquidez diária, ~CDI",               "✅"),
+                ("CDB 100%+ CDI",    "FGC até R$250k, bancos digitais",     "✅"),
+                ("LCI / LCA",        "Isento de IR, ótimo custo-benefício", "✅"),
+                ("Fundo DI",         "Gestão profissional, renda fixa",     "✅"),
+            ],
+            "Moderado": [
+                ("Tesouro IPCA+",    "Protege da inflação, longo prazo",    "📈"),
+                ("Fundos Multimercado","Mix renda fixa + variável",         "📈"),
+                ("FIIs",             "Renda passiva mensal em imóveis",     "📈"),
+                ("ETF Renda Fixa",   "Diversificação automática",           "📈"),
+            ],
+            "Arrojado": [
+                ("Ações (Buy&Hold)", "Empresas sólidas, foco longo prazo",  "🚀"),
+                ("ETFs de Ações",    "BOVA11, IVVB11 (S&P 500 em R$)",     "🚀"),
+                ("FIIs + Ações",     "Renda passiva + crescimento",         "🚀"),
+                ("BDRs",             "Empresas internacionais em R$",       "🚀"),
+            ]
+        }
+        for nm_i, desc_i, st_i in inv_map[perfil_inv]:
+            st.markdown(f'<div class="list-item"><div><b style="color:#1A1A2E;">{nm_i}</b><br><span style="font-size:11px;color:#4B5563;">{desc_i}</span></div><span style="color:#065F46;">{st_i}</span></div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════
+# 10. PATRIMÔNIO
+# ══════════════════════════════════════════════
+with tab_pat:
+    col_p1, col_p2 = st.columns(2)
+    with col_p1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>📦 Registrar Item Patrimonial</b>", unsafe_allow_html=True)
+        with st.form("patr_form", clear_on_submit=True):
+            p_nome = st.text_input("Nome", placeholder="Apartamento, Carro, FGTS...", key="oraculof41")
+            p_tipo = st.radio("Tipo:", ["Ativo (tenho)","Passivo (devo)"], horizontal=True, key="oraculof42")
+            p_cat  = st.selectbox("Categoria", ["Imóveis","Veículos","Investimentos","Poupança","FGTS","Dívidas","Outros"], key="oraculof43")
+            p_val  = st.number_input("Valor (R$)", min_value=0.0, step=1000.0, key="oraculof44")
+            if st.form_submit_button("ADICIONAR", key="oraculoffsb509"):
+                if p_nome and p_val > 0:
+                    st.session_state.patrimonio_itens.append({"nome":p_nome,"valor":p_val,"tipo":p_tipo,"categoria":p_cat})
+                    st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_p2:
+        ativos   = [x for x in st.session_state.patrimonio_itens if "Ativo"   in x["tipo"]]
+        passivos = [x for x in st.session_state.patrimonio_itens if "Passivo" in x["tipo"]]
+        total_a  = sum(x["valor"] for x in ativos)
+        total_p  = sum(x["valor"] for x in passivos)
+        pat_liq  = total_a - total_p
+        cor_pl   = "#6EE7B7" if pat_liq >= 0 else "#FCA5A5"
+
+        st.markdown(f'''<div class="card">
+        <b style='color:#1A1A2E;'>⚖️ Balanço Patrimonial</b>
+        <div style="display:flex;gap:10px;margin:14px 0;">
+          <div style="flex:1;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:9px;padding:12px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Ativos</div>
+            <div style="font-size:18px;font-weight:700;color:#065F46;">{fmt(total_a)}</div>
+          </div>
+          <div style="flex:1;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:9px;padding:12px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Passivos</div>
+            <div style="font-size:18px;font-weight:700;color:#991B1B;">{fmt(total_p)}</div>
+          </div>
+          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:12px;text-align:center;">
+            <div style="font-size:11px;color:#4B5563;">Patrimônio Líquido</div>
+            <div style="font-size:18px;font-weight:700;color:{cor_pl};">{fmt(pat_liq)}</div>
+          </div>
+        </div>''', unsafe_allow_html=True)
+        for rotulo_p, lista_p, cor_p in [("✅ Ativos", ativos, "#6EE7B7"), ("❌ Passivos", passivos, "#FCA5A5")]:
+            if lista_p:
+                st.markdown(f"<b style='color:#1A1A2E;font-size:13px;'>{rotulo_p}:</b>", unsafe_allow_html=True)
+                for i, item in enumerate(lista_p):
+                    idx = st.session_state.patrimonio_itens.index(item)
+                    col_pi, col_pd = st.columns([5, 1])
+                    with col_pi:
+                        st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">{item["nome"]} <span style="color:#4B5563;font-size:11px;">({item["categoria"]})</span></span><span style="color:{cor_p};font-weight:600;">{fmt(item["valor"])}</span></div>', unsafe_allow_html=True)
+                    with col_pd:
+                        if st.button("✕", key=f"del_pat_{rotulo_p}_{i}"):
+                            st.session_state.patrimonio_itens.pop(idx); st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════
+# 11. RELATÓRIO
+# ══════════════════════════════════════════════
+with tab_rel:
+    st.markdown("<b style='color:#1A1A2E;font-size:18px;'>📊 Relatório Financeiro Completo</b>", unsafe_allow_html=True)
+    col_rl1, col_rl2 = st.columns(2)
+
+    with col_rl1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>📋 Resumo Executivo</b>", unsafe_allow_html=True)
+        total_div_r = sum(d["valor_total"]-d["valor_pago"] for d in st.session_state.dividas)
+        pat_liq_r   = sum(x["valor"] for x in st.session_state.patrimonio_itens if "Ativo" in x["tipo"]) - sum(x["valor"] for x in st.session_state.patrimonio_itens if "Passivo" in x["tipo"])
+        for lbl, val_r, cor_r in [
+            ("💰 Renda Total",           fmt(renda),                                  "#6EE7B7"),
+            ("🛡️ Despesas Fixas",         fmt(gf),                                     "#7DD3FC"),
+            ("💸 Gastos Variáveis",       fmt(gv),                                     "#FCD34D"),
+            ("💳 Parcelas de Dívidas",    fmt(div_m),                                  "#FCA5A5"),
+            ("🚀 Alocação em Metas",      fmt(gm),                                     "#6D28D9"),
+            ("⚖️ Saldo Livre",            fmt(saldo),                                  "#6EE7B7" if saldo>=0 else "#FCA5A5"),
+            ("🛡️ Reserva de Emergência",  fmt(st.session_state.reserva_emergencia),    "#6EE7B7"),
+            ("💳 Total de Dívidas",       fmt(total_div_r),                            "#FCA5A5"),
+            ("⚖️ Patrimônio Líquido",     fmt(pat_liq_r),                              "#FCD34D"),
+            ("📊 % Renda Comprometida",   f"{pct(gf+gv+gm+div_m, renda):.1f}%",      "#A0A0C0"),
+        ]:
+            st.markdown(f'<div class="list-item"><span style="color:#555577;">{lbl}</span><span style="color:{cor_r};font-weight:600;">{val_r}</span></div>', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_rl2:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>💹 Fluxo de Caixa</b>", unsafe_allow_html=True)
+        if renda > 0:
+            for nome_f, val_f, cor_f in [
+                ("💰 Renda",          renda,           "#6EE7B7"),
+                ("🛡️ Fixas",          gf,              "#38BDF8"),
+                ("💸 Variáveis",      gv,              "#FCD34D"),
+                ("💳 Dívidas",        div_m,           "#FCA5A5"),
+                ("🚀 Metas",          gm,              "#6D28D9"),
+                ("✅ Saldo Livre",    max(0, saldo),   "#6EE7B7"),
+            ]:
+                pct_f = pct(val_f, renda)
+                st.markdown(f'''
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                  <span style="font-size:13px;color:#555577;">{nome_f}</span>
+                  <span style="font-size:13px;color:#1A1A2E;">{fmt(val_f)} <span style="color:#4B5563;">({pct_f}%)</span></span>
+                </div>{barra(pct_f, cor_f)}''', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        if st.session_state.gastos:
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown("<b style='color:#1A1A2E;'>💸 Gastos por Categoria</b>", unsafe_allow_html=True)
+            df_rel = pd.DataFrame(st.session_state.gastos).groupby("tipo")["valor"].sum().sort_values(ascending=False)
+            st.bar_chart(df_rel)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown("<b style='color:#1A1A2E;'>💾 Exportar Dados</b>", unsafe_allow_html=True)
+    if True:
+        dados_exp = {
+            "usuario": st.session_state.nome_user,
+            "exportado_em": str(datetime.now()),
+            "renda": renda, "gastos": st.session_state.gastos,
+            "contas_fixas": st.session_state.contas_fixas,
+            "metas": st.session_state.metas, "dividas": st.session_state.dividas,
+            "reserva": st.session_state.reserva_emergencia,
+            "patrimonio": st.session_state.patrimonio_itens,
+        }
+        st.download_button(
+            "📥 Exportar relatório (.json)",
+            data=json.dumps(dados_exp, indent=2, ensure_ascii=False, default=str),
+            file_name=f"relatorio_{st.session_state.nome_user}_{date.today()}.json",
+            mime="application/json",
+            use_container_width=True,
+        
+        key="oraf3003",
     )
 
-    # Export JSON
-    _of_dados = {
-        'renda': st.session_state.of_renda,
-        'reserva': st.session_state.of_reserva,
-        'outras_rendas': st.session_state.of_outras_rendas,
-        'gastos': st.session_state.of_gastos,
-        'dividas': st.session_state.of_dividas,
-        'metas': st.session_state.of_metas,
-        'investimentos': st.session_state.of_investimentos,
-        'patrimonios': st.session_state.of_patrimonios,
-    }
-    st.download_button(
-        'Baixar dados em JSON',
-        data=json.dumps(_of_dados, ensure_ascii=False, indent=2).encode('utf-8'),
-        file_name='Oraculo_Financeiro_dados.json',
-        mime='application/json',
-        use_container_width=True,
-        key='of_dl_json'
-    )
+# ══════════════════════════════════════════════
+# 12. CONFIGURAÇÕES
+# ══════════════════════════════════════════════
+with tab_cfg:
+    col_c1, col_c2 = st.columns(2)
+    with col_c1:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>⚙️ Configurações do Sistema</b>", unsafe_allow_html=True)
+        meses_cfg = st.slider("Meta de reserva (meses de despesas fixas):", 1, 12, st.session_state.config_meta_reserva, key="oraf1005")
+        st.session_state.config_meta_reserva = meses_cfg
+        taxa_cfg  = st.number_input("Taxa de retorno padrão para simulações (% a.a.):", min_value=1.0, max_value=30.0, value=st.session_state.taxa_invest_anual, step=0.5, key="oraculof45")
+        st.session_state.taxa_invest_anual = taxa_cfg
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>ℹ️ Sobre o Oráculo</b>", unsafe_allow_html=True)
+        st.markdown('''
+        <p style="font-size:13px;line-height:1.7;">
+        O <b style="color:#1A1A2E;">Oráculo Financeiro</b> é um sistema pessoal de organização e educação financeira.
+        </p>
+        <p style="font-size:12px;color:#4B5563;">⚠️ Este sistema não é um serviço regulamentado. As análises são educativas e não substituem um consultor financeiro certificado (CFP/CEA).</p>
+        ''', unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_c2:
+        st.markdown('<div class="card-red">', unsafe_allow_html=True)
+        st.markdown("<b style='color:#1A1A2E;'>🗑️ Zona de Perigo</b>", unsafe_allow_html=True)
+        st.markdown("<p>Apaga permanentemente todos os dados inseridos nesta sessão.</p>", unsafe_allow_html=True)
+        confirmar = st.checkbox("Confirmo que quero apagar tudo", key="oraculof46")
+        if confirmar:
+            if st.button("🗑️ APAGAR TODOS OS DADOS", key="oraculof47"):
+                for k in ["gastos","metas","contas_fixas","outras_rendas","patrimonio_itens","historico_chat","dividas"]:
+                    st.session_state[k] = []
+                st.session_state.renda_total        = 0.0
+                st.session_state.reserva_emergencia = 0.0
+                st.success("Dados apagados com sucesso.")
+                st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;padding-bottom:20px;'>"
+    "© 2026 Oráculo Financeiro IA — Gestão Financeira Inteligente · MeusAgentesIA.com.br"
+    "</div>", unsafe_allow_html=True
+)
+
 
 """,
     "seducao_ia": """
@@ -9714,12 +10156,10 @@ e confiante — não fingir ser alguém que não é.
 def presenca_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é um mentor de presença, charme e oratória — o coach que o protagonista de Hollywood teria.\n" +
-            "Usuário: {st.session_state.usuario}. Nível atual: {st.session_state.nivel_atual}.\n" +
-            "{PRINCIPIO}\n" +
-            "{system_extra}\n"
-        )
+        system = f'''Você é um mentor de presença, charme e oratória — o coach que o protagonista de Hollywood teria.
+Usuário: {st.session_state.usuario}. Nível atual: {st.session_state.nivel_atual}.
+{PRINCIPIO}
+{system_extra}'''
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -9790,16 +10230,13 @@ elif st.session_state.etapa == "App":
         pts = st.session_state.pontuacao_total
         treinos = st.session_state.treinos_completos
 
-        _htmp_sedu_1 = (
-            "'\n"
-            "        <div class=\"nivel-box\">\n"
-            "            <div style=\"font-size:0.85em;opacity:0.8;\">SEU NÍVEL ATUAL</div>\n"
-            f'            <div class="nivel-titulo">⚡ {nivel}</div>\n'
-            f'            <div style="font-size:0.9em;margin-top:4px;">{pts} pontos · {treinos} treinos completos</div>\n'
-            "        </div>\n"
-            "        \n"
-        )
-        st.markdown(_htmp_sedu_1, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class="nivel-box">
+            <div style="font-size:0.85em;opacity:0.8;">SEU NÍVEL ATUAL</div>
+            <div class="nivel-titulo">⚡ {nivel}</div>
+            <div style="font-size:0.9em;margin-top:4px;">{pts} pontos · {treinos} treinos completos</div>
+        </div>
+        ''', unsafe_allow_html=True)
 
         c1, c2, c3, c4 = st.columns(4)
         c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_consultas)}</div><div style='color:#CBD5E1'>Sessões</div></div>", unsafe_allow_html=True)
@@ -10282,15 +10719,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Historias:
         st.header("📖 A Arte de Contar Histórias")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_consultas']:
-            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Seducao_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
-
 
         tab_aprender, tab_praticar = st.tabs(["📖 Aprender a Técnica", "✍️ Transforme Sua História"])
 
@@ -10522,29 +10950,6 @@ elif st.session_state.etapa == "App":
         # BIBLIOTECA
         # ========================
 
-
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_seducao = st.session_state.get('historico_consultas', [])
-_lines_seducao = []
-for _item_seducao in _hist_seducao:
-    if isinstance(_item_seducao, dict):
-        _role_seducao = _item_seducao.get('role', _item_seducao.get('tipo', 'item'))
-        _cont_seducao = _item_seducao.get('content', _item_seducao.get('texto', _item_seducao.get('resposta', str(_item_seducao))))
-        _lines_seducao.append(f'[{_role_seducao}] {_cont_seducao}')
-        _lines_seducao.append('')
-    else:
-        _lines_seducao.append(str(_item_seducao))
-_txt_seducao = "\n".join(_lines_seducao) if _lines_seducao else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_seducao.encode('utf-8'),
-    file_name="Seducao_IA_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_seducao_txt"
-)
-
-
 # --- RODAPÉ ---
 st.markdown(
     "<div style='text-align:center;color:#4C1D95;font-size:0.8em;margin-top:60px;'>"
@@ -10737,13 +11142,11 @@ dependem de execução, mercado e fatores não previsíveis. Use como ponto de p
 def invencoes_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é um consultor de inovação completo — um misto de inventor, estrategista de negócios, REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
-            "pesquisador de mercado, designer de produtos e mentor de startups.\n" +
-            "Usuário: {st.session_state.usuario}. Ideia/projeto principal: {st.session_state.ideia_padrao or 'não informado'}.\n" +
-            "{PRINCIPIO_HONESTIDADE}\n" +
-            "{system_extra}\n"
-        )
+        system = f'''Você é um consultor de inovação completo — um misto de inventor, estrategista de negócios, REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
+pesquisador de mercado, designer de produtos e mentor de startups.
+Usuário: {st.session_state.usuario}. Ideia/projeto principal: {st.session_state.ideia_padrao or 'não informado'}.
+{PRINCIPIO_HONESTIDADE}
+{system_extra}'''
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -10764,17 +11167,14 @@ def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
 
-    _htmp_inve_1 = (
-        "'\n"
-        f'    <div class="indice-box {classe}">\n'
-        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
-        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
-        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
-        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa estratégica baseada nas informações fornecidas</div>\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_inve_1, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class="indice-box {classe}">
+        <div style="font-size:2.2em;">{emoji}</div>
+        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
+        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa estratégica baseada nas informações fornecidas</div>
+    </div>
+    ''', unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -11994,15 +12394,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Biblioteca:
         st.header("📚 Biblioteca de Projetos")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'nome', 'categoria', 'descricao'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_projetos']:
-            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'nome', 'categoria', 'descricao']})
-        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Invencoes_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_projetos')
-
 
         if not st.session_state.projetos_salvos:
             st.info("Biblioteca vazia. Gere análises nos módulos e salve as importantes aqui!")
@@ -12963,14 +13354,11 @@ if st.session_state.etapa == "Login":
                     msg = "Limite de requisições atingido."
                 else:
                     msg = err_msg[:80]
-                _htmp_nexu_1 = (
-                    "'<div style=\"background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;\n"
-                    "                padding:10px 14px;font-size:0.82em;color:#7F1D1D;\">\n"
-                    "                🔴 <strong>Groq API:</strong> erro<br>\n"
-                    f'                <span style="font-size:0.9em;">{msg}</span>\n'
-                    "                </div>\n"
-                )
-                st.markdown(_htmp_nexu_1, unsafe_allow_html=True)
+                st.markdown(f'''<div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;
+                padding:10px 14px;font-size:0.82em;color:#7F1D1D;">
+                🔴 <strong>Groq API:</strong> erro<br>
+                <span style="font-size:0.9em;">{msg}</span>
+                </div>''', unsafe_allow_html=True)
         else:
             st.markdown('''<div style="background:#F1F5F9;border:1px solid #CBD5E1;border-radius:8px;
             padding:10px 14px;font-size:0.82em;color:#64748B;">
@@ -13090,17 +13478,14 @@ elif st.session_state.etapa == "Formulario":
     if tudo_preenchido:
         st.divider()
         st.markdown("#### Resumo do que será gerado")
-        _htmp_nexu_2 = (
-            "'<div class=\"preview-box\">\n"
-            f"        📚 <strong>E-book:</strong> {d.get('nome_eb')} — 60 cartões educativos<br>\n"
-            "        🎁 <strong>3 E-books Bônus</strong> complementares<br>\n"
-            "        📣 <strong>1 Anúncio</strong> alinhado com a landing page<br>\n"
-            "        🌐 <strong>1 Landing Page</strong> alinhada com o anúncio<br>\n"
-            "        💬 <strong>Funil completo de Mensagens</strong> — boas-vindas + aquecimento + véspera + venda<br>\n"
-            f"        🚀 <strong>Lançamento:</strong> {d['data_lancto'].strftime('%d/%m/%Y') if hasattr(d.get('data_lancto'), 'strftime') else str(d.get('data_lancto', 'a definir'))}\n"
-            "        </div>\n"
-        )
-        st.markdown(_htmp_nexu_2, unsafe_allow_html=True)
+        st.markdown(f'''<div class="preview-box">
+        📚 <strong>E-book:</strong> {d.get('nome_eb')} — 60 cartões educativos<br>
+        🎁 <strong>3 E-books Bônus</strong> complementares<br>
+        📣 <strong>1 Anúncio</strong> alinhado com a landing page<br>
+        🌐 <strong>1 Landing Page</strong> alinhada com o anúncio<br>
+        💬 <strong>Funil completo de Mensagens</strong> — boas-vindas + aquecimento + véspera + venda<br>
+        🚀 <strong>Lançamento:</strong> {d['data_lancto'].strftime('%d/%m/%Y') if hasattr(d.get('data_lancto'), 'strftime') else str(d.get('data_lancto', 'a definir'))}
+        </div>''', unsafe_allow_html=True)
 
     if st.button("AVANÇAR →", key="nx52"):
         faltando = [c for c in campos_obrigatorios if not d.get(c,'').strip()]
@@ -13275,12 +13660,9 @@ elif st.session_state.etapa == "Copy_Face":
         # ── MODIFICAÇÃO: segundo texto com instruções completas ──
         link_lp_atual = st.session_state.dados.get('link_lp','')
         if link_lp_atual:
-            _htmp_nexu_3 = (
-                "'<div style=\"background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;\">\n"
-                f"            ✅ <strong>Link salvo:</strong> ao subir esse anúncio no Facebook Ads, coloque <strong>{link_lp_atual}</strong> como URL de destino do botão.\n"
-                "            </div>\n"
-            )
-            st.markdown(_htmp_nexu_3, unsafe_allow_html=True)
+            st.markdown(f'''<div style="background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;">
+            ✅ <strong>Link salvo:</strong> ao subir esse anúncio no Facebook Ads, coloque <strong>{link_lp_atual}</strong> como URL de destino do botão.
+            </div>''', unsafe_allow_html=True)
         else:
             st.markdown('''<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#78350F;margin-bottom:10px;">
             ⚠️ <strong>Importante:</strong> ao subir esse anúncio no Facebook Ads, insira o link da sua landing page como URL de destino do botão CTA.
@@ -13393,36 +13775,30 @@ elif st.session_state.etapa == "Copy_LP":
 
         link_grupo_atual = st.session_state.dados.get('link_grupo','')
         if link_grupo_atual:
-            _htmp_nexu_4 = (
-                "'<div style=\"background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;\">\n"
-                f"            ✅ <strong>Lembre-se:</strong> configure o botão CTA da sua landing page apontando para <strong>{link_grupo_atual}</strong>\n"
-                "            </div>\n"
-            )
-            st.markdown(_htmp_nexu_4, unsafe_allow_html=True)
+            st.markdown(f'''<div style="background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;">
+            ✅ <strong>Lembre-se:</strong> configure o botão CTA da sua landing page apontando para <strong>{link_grupo_atual}</strong>
+            </div>''', unsafe_allow_html=True)
         else:
             st.markdown('''<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#78350F;margin-bottom:10px;">
             ⚠️ <strong>Importante:</strong> configure o botão CTA da landing page apontando para o link de convite do seu grupo.
             </div>''', unsafe_allow_html=True)
 
         # ── NOVO: segundo bloco com workflow Gamma ──
-        _htmp_nexu_5 = (
-            "'<div class=\"dica-ferramenta\">\n"
-            "        <strong>🌐 Próximo passo — transformar em site com Gamma AI:</strong><br><br>\n"
-            "        <strong>1. Copie o texto</strong> com o botão acima (Copiar como .txt)<br><br>\n"
-            "        <strong>2. Acesse o Gamma AI:</strong><br>\n"
-            "        &nbsp;&nbsp;&nbsp;• Abra <a href=\"https://gamma.app\" target=\"_blank\" style=\"color:#92400E;\">gamma.app</a> e crie uma conta gratuita<br>\n"
-            "        &nbsp;&nbsp;&nbsp;• Clique em <strong>New → Page (site/landing page)</strong><br>\n"
-            "        &nbsp;&nbsp;&nbsp;• Cole o texto copiado no campo de geração<br>\n"
-            "        &nbsp;&nbsp;&nbsp;• Escolha o tema visual que combine com seu nicho<br>\n"
-            "        &nbsp;&nbsp;&nbsp;• Clique em <strong>Generate</strong> — o Gamma criará o site automaticamente<br><br>\n"
-            "        <strong>3. Configure o botão CTA:</strong><br>\n"
-            "        &nbsp;&nbsp;&nbsp;• No editor do Gamma, clique no botão CTA gerado<br>\n"
-            f"        &nbsp;&nbsp;&nbsp;• Insira o link do grupo: <strong>{link_grupo_atual if link_grupo_atual else '[link do seu grupo aqui]'}</strong><br>\n"
-            "        &nbsp;&nbsp;&nbsp;• Clique em <strong>Publish</strong> para obter o link público do site<br><br>\n"
-            "        <strong>4. Use o link do site</strong> como URL de destino do seu anúncio no Facebook Ads\n"
-            "        </div>\n"
-        )
-        st.markdown(_htmp_nexu_5, unsafe_allow_html=True)
+        st.markdown(f'''<div class="dica-ferramenta">
+        <strong>🌐 Próximo passo — transformar em site com Gamma AI:</strong><br><br>
+        <strong>1. Copie o texto</strong> com o botão acima (Copiar como .txt)<br><br>
+        <strong>2. Acesse o Gamma AI:</strong><br>
+        &nbsp;&nbsp;&nbsp;• Abra <a href="https://gamma.app" target="_blank" style="color:#92400E;">gamma.app</a> e crie uma conta gratuita<br>
+        &nbsp;&nbsp;&nbsp;• Clique em <strong>New → Page (site/landing page)</strong><br>
+        &nbsp;&nbsp;&nbsp;• Cole o texto copiado no campo de geração<br>
+        &nbsp;&nbsp;&nbsp;• Escolha o tema visual que combine com seu nicho<br>
+        &nbsp;&nbsp;&nbsp;• Clique em <strong>Generate</strong> — o Gamma criará o site automaticamente<br><br>
+        <strong>3. Configure o botão CTA:</strong><br>
+        &nbsp;&nbsp;&nbsp;• No editor do Gamma, clique no botão CTA gerado<br>
+        &nbsp;&nbsp;&nbsp;• Insira o link do grupo: <strong>{link_grupo_atual if link_grupo_atual else '[link do seu grupo aqui]'}</strong><br>
+        &nbsp;&nbsp;&nbsp;• Clique em <strong>Publish</strong> para obter o link público do site<br><br>
+        <strong>4. Use o link do site</strong> como URL de destino do seu anúncio no Facebook Ads
+        </div>''', unsafe_allow_html=True)
 
         if st.button("AVANÇAR →", key="nx38"): st.session_state.etapa = "Mensagens_Grupo"; st.rerun()
 
@@ -13448,14 +13824,11 @@ elif st.session_state.etapa == "Mensagens_Grupo":
     # ── AVISO REVISÃO BÔNUS ───────────────────────────────────
     bonus_resumo = st.session_state.dados.get('bonus_resumo','')
     if bonus_resumo:
-        _htmp_nexu_6 = (
-            "'<div style=\"background:#FEF9C3;border:1px solid #FDE047;border-radius:8px;padding:12px 16px;margin-bottom:8px;color:#713F12;font-size:0.88em;line-height:1.6;\">\n"
-            "        ⚠️ <strong>Confira os nomes dos seus bônus antes de gerar:</strong><br>\n"
-            f"        {bonus_resumo}<br>\n"
-            "        <em>Eles aparecerão na mensagem de venda. Se quiser alterar, volte em Bônus e regenere.</em>\n"
-            "        </div>\n"
-        )
-        st.markdown(_htmp_nexu_6, unsafe_allow_html=True)
+        st.markdown(f'''<div style="background:#FEF9C3;border:1px solid #FDE047;border-radius:8px;padding:12px 16px;margin-bottom:8px;color:#713F12;font-size:0.88em;line-height:1.6;">
+        ⚠️ <strong>Confira os nomes dos seus bônus antes de gerar:</strong><br>
+        {bonus_resumo}<br>
+        <em>Eles aparecerão na mensagem de venda. Se quiser alterar, volte em Bônus e regenere.</em>
+        </div>''', unsafe_allow_html=True)
 
     st.markdown('''<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:10px 16px;margin-bottom:8px;color:#78350F;font-size:0.85em;line-height:1.6;">
     ⚠️ <strong>Antes de enviar, revise:</strong>
@@ -13512,36 +13885,34 @@ elif st.session_state.etapa == "Visualizacao":
     st.title(f"PROJETO: {nome_projeto}")
     d = st.session_state.dados
 
-    texto_completo = (
-        "NEXUS LAUNCHER — PROJETO COMPLETO\n" +
-        "{'='*50}\n" +
-        "E-BOOK: {d.get('nome_eb','')}\n" +
-        "NICHO: {d.get('nicho','')}\n" +
-        "PÚBLICO: {d.get('publico','')}\n" +
-        "DATA DE LANÇAMENTO: {d.get('data_lancto','')}\n" +
-        "PREÇO: R${d.get('preco',47)}\n" +
-        "{'='*50}\n" +
-        "\n" +
-        "📚 E-BOOK PRINCIPAL\n" +
-        "{'-'*40}\n" +
-        "{limpar_html(d.get('ebook_cont','Não gerado.'))}\n" +
-        "\n" +
-        "🎁 E-BOOKS BÔNUS\n" +
-        "{'-'*40}\n" +
-        "{limpar_html(d.get('bonus_cont','Não gerado.'))}\n" +
-        "\n" +
-        "📣 ANÚNCIO\n" +
-        "{'-'*40}\n" +
-        "{limpar_html(d.get('fb_copy','Não gerado.'))}\n" +
-        "\n" +
-        "🌐 LANDING PAGE\n" +
-        "{'-'*40}\n" +
-        "{limpar_html(d.get('lp_copy','Não gerado.'))}\n" +
-        "\n" +
-        "💬 MENSAGENS DO GRUPO (FUNIL COMPLETO)\n" +
-        "{'-'*40}\n" +
-        "{limpar_html(d.get('msg_grupo','Não gerado.'))}\n"
-    )
+    texto_completo = f'''NEXUS LAUNCHER — PROJETO COMPLETO
+{'='*50}
+E-BOOK: {d.get('nome_eb','')}
+NICHO: {d.get('nicho','')}
+PÚBLICO: {d.get('publico','')}
+DATA DE LANÇAMENTO: {d.get('data_lancto','')}
+PREÇO: R${d.get('preco',47)}
+{'='*50}
+
+📚 E-BOOK PRINCIPAL
+{'-'*40}
+{limpar_html(d.get('ebook_cont','Não gerado.'))}
+
+🎁 E-BOOKS BÔNUS
+{'-'*40}
+{limpar_html(d.get('bonus_cont','Não gerado.'))}
+
+📣 ANÚNCIO
+{'-'*40}
+{limpar_html(d.get('fb_copy','Não gerado.'))}
+
+🌐 LANDING PAGE
+{'-'*40}
+{limpar_html(d.get('lp_copy','Não gerado.'))}
+
+💬 MENSAGENS DO GRUPO (FUNIL COMPLETO)
+{'-'*40}
+{limpar_html(d.get('msg_grupo','Não gerado.'))}'''.strip()
 
     nome_arquivo = nome_projeto.replace(' ', '_').lower()
 
@@ -13998,20 +14369,18 @@ elif st.session_state.etapa == "Video_Gerar":
         st.divider()
         st.success("✅ Lançamento CPL completo gerado!")
         nome_v = d.get('v_produto','curso').replace(' ','_')
-        texto_v = (
-            "NEXUS LAUNCHER — LANÇAMENTO DE VIDEOAULAS\n" +
-            "{'='*50}\n" +
-            "CURSO: {d.get('v_produto','')}\n" +
-            "NICHO: {d.get('v_nicho','')}\n" +
-            "{'='*50}\n" +
-            "\n" +
-            "PRÉ-PRÉ-LANÇAMENTO\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_pre_pre',''))}\n" +
-            "CPL 1\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_cpl1',''))}\n" +
-            "CPL 2\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_cpl2',''))}\n" +
-            "CPL 3\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_cpl3',''))}\n" +
-            "ABERTURA\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_abertura',''))}\n" +
-            "FECHAMENTO\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_fechamento',''))}\n"
-        )
+        texto_v = f'''NEXUS LAUNCHER — LANÇAMENTO DE VIDEOAULAS
+{'='*50}
+CURSO: {d.get('v_produto','')}
+NICHO: {d.get('v_nicho','')}
+{'='*50}
+
+PRÉ-PRÉ-LANÇAMENTO\\n{'-'*40}\\n{limpar_html(d.get('v_pre_pre',''))}
+CPL 1\\n{'-'*40}\\n{limpar_html(d.get('v_cpl1',''))}
+CPL 2\\n{'-'*40}\\n{limpar_html(d.get('v_cpl2',''))}
+CPL 3\\n{'-'*40}\\n{limpar_html(d.get('v_cpl3',''))}
+ABERTURA\\n{'-'*40}\\n{limpar_html(d.get('v_abertura',''))}
+FECHAMENTO\\n{'-'*40}\\n{limpar_html(d.get('v_fechamento',''))}'''
 
         col_txt_v, col_json_v = st.columns(2)
         with col_txt_v:
@@ -14063,23 +14432,6 @@ elif st.session_state.etapa == "Video_Gerar":
 
         if st.button("🔙 Voltar à escolha de lançamento", key="nx1"):
             st.session_state.etapa = "Escolha_Tipo"; st.rerun()
-
-
-# ── EXPORTAR DADOS DO PROJETO (.csv) ──
-import io as _io_csv_nx, csv as _csv_mod_nx
-if st.session_state.get('dados') and st.session_state.dados.get('nome_eb'):
-    _d_nx = st.session_state.dados
-    _campos_nx = ['nome_eb','nicho','preco','promessa','dor','desejada','publico','diferencial',
-                  'autor_nome','bonus_resumo','link_monetizze','whatsapp_contato']
-    _buf_nx = _io_csv_nx.StringIO()
-    _w_nx = _csv_mod_nx.writer(_buf_nx)
-    _w_nx.writerow(['Campo', 'Conteúdo'])
-    for _c_nx in _campos_nx:
-        _v_nx = str(_d_nx.get(_c_nx, ''))[:500]
-        _w_nx.writerow([_c_nx, _v_nx])
-    st.download_button('⬇️ Baixar dados do projeto (.csv)', data=_buf_nx.getvalue().encode('utf-8-sig'),
-        file_name=f"{_d_nx.get('nome_eb','projeto').replace(' ','_')}_nexus.csv",
-        mime='text/csv', use_container_width=True, key='dl_nexus_launcher_csv')
 
 
 # --- RODAPÉ ---
@@ -14265,12 +14617,10 @@ def juridico_ia(prompt: str, modulo: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
         contexto_estado = f"\\\\nEstado/região do usuário (se relevante para legislação local): {st.session_state.estado_padrao}." if st.session_state.estado_padrao else ""
-        system = (
-            "Você é um consultor de orientação jurídica geral, especialista em {modulo}, com conhecimento da legislação brasileira.\n" +
-            "Usuário: {st.session_state.usuario}.{contexto_estado}\n" +
-            "{PRINCIPIO_JURIDICO}\n" +
-            "{system_extra}\n"
-        )
+        system = f'''Você é um consultor de orientação jurídica geral, especialista em {modulo}, com conhecimento da legislação brasileira.
+Usuário: {st.session_state.usuario}.{contexto_estado}
+{PRINCIPIO_JURIDICO}
+{system_extra}'''
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -14818,15 +15168,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Biblioteca:
         st.header("📚 Biblioteca de Consultas")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_consultas']:
-            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Consultor_Juridico.csv", mime="text/csv", use_container_width=True, key="dl_historico_consultas")
-
         st.markdown("Todas as suas consultas salvas, organizadas por área.")
 
         if not st.session_state.consultas_salvas:
@@ -15042,20 +15383,18 @@ for k, v in defaults.items():
 def mente_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é um especialista em neurolinguística (PNL), meditação e reprogramação mental.\n" +
-            "Usuário: {st.session_state.usuario}.\n" +
-            "Maior bloqueio atual: {st.session_state.maior_bloqueio or 'não informado'}.\n" +
-            "Objetivo mental: {st.session_state.objetivo_mental or 'não informado'}.\n" +
-            "Estado emocional: {st.session_state.estado_emocional}.\n" +
-            "{system_extra}\n" +
-            "PRINCÍPIOS:\n" +
-            "- Baseie-se em PNL, Mindfulness, Terapia Cognitivo-Comportamental e Neurociência\n" +
-            "- Tom acolhedor, seguro e transformador — nunca julgue\n" +
-            "- Linguagem acessível, sem jargões técnicos desnecessários\n" +
-            "- Sempre oriente a buscar ajuda profissional para casos clínicos sérios\n" +
-            "- Escreva em português brasileiro natural e humanizado\n"
-        )
+        system = f'''Você é um especialista em neurolinguística (PNL), meditação e reprogramação mental.
+Usuário: {st.session_state.usuario}.
+Maior bloqueio atual: {st.session_state.maior_bloqueio or 'não informado'}.
+Objetivo mental: {st.session_state.objetivo_mental or 'não informado'}.
+Estado emocional: {st.session_state.estado_emocional}.
+{system_extra}
+PRINCÍPIOS:
+- Baseie-se em PNL, Mindfulness, Terapia Cognitivo-Comportamental e Neurociência
+- Tom acolhedor, seguro e transformador — nunca julgue
+- Linguagem acessível, sem jargões técnicos desnecessários
+- Sempre oriente a buscar ajuda profissional para casos clínicos sérios
+- Escreva em português brasileiro natural e humanizado'''
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -15499,15 +15838,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Diario:
         st.header("📖 Diário Mental")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'tema', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_sessoes']:
-            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'tema', 'conteudo']})
-        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Mente_Poderosa.csv", mime="text/csv", use_container_width=True, key="dl_historico_sessoes")
-
         st.markdown("Reflexões guiadas para autoconhecimento profundo — com prompts personalizados pela IA.")
 
         tab1, tab2 = st.tabs(["✍️ Escrever Hoje","📚 Entradas Anteriores"])
@@ -15603,29 +15933,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Progresso:
         pass
-
-
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_mente_po = st.session_state.get('historico_sessoes', [])
-_lines_mente_po = []
-for _item_mente_po in _hist_mente_po:
-    if isinstance(_item_mente_po, dict):
-        _role_mente_po = _item_mente_po.get('role', _item_mente_po.get('tipo', 'item'))
-        _cont_mente_po = _item_mente_po.get('content', _item_mente_po.get('texto', _item_mente_po.get('resposta', str(_item_mente_po))))
-        _lines_mente_po.append(f'[{_role_mente_po}] {_cont_mente_po}')
-        _lines_mente_po.append('')
-    else:
-        _lines_mente_po.append(str(_item_mente_po))
-_txt_mente_po = "\n".join(_lines_mente_po) if _lines_mente_po else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_mente_po.encode('utf-8'),
-    file_name="Mente_Poderosa_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_mente_po_txt"
-)
-
 
 # --- RODAPÉ ---
 st.markdown(
@@ -15871,17 +16178,14 @@ elif st.session_state.etapa == "App":
             # Tela de sucesso após cadastro
             if st.session_state.get('pet_cadastrado_ok'):
                 pet_nome_ok = st.session_state.get('pet_cadastrado_nome','')
-                _htmp_pet__1 = (
-                    "'\n"
-                    "                <div style='text-align:center;padding:40px 20px;'>\n"
-                    "                    <div style='font-size:4em;'>🐾</div>\n"
-                    "                    <h2 style='color:#065F46;'>Cadastro realizado!</h2>\n"
-                    f"                    <p style='font-size:1.1em;color:#065F46;'><b>{pet_nome_ok}</b> foi cadastrado com sucesso.</p>\n"
-                    "                    <p style='color:#6B7280;'>Agora você pode usar todas as funcionalidades personalizadas para o seu pet.</p>\n"
-                    "                </div>\n"
-                    "                \n"
-                )
-                st.markdown(_htmp_pet__1, unsafe_allow_html=True)
+                st.markdown(f'''
+                <div style='text-align:center;padding:40px 20px;'>
+                    <div style='font-size:4em;'>🐾</div>
+                    <h2 style='color:#065F46;'>Cadastro realizado!</h2>
+                    <p style='font-size:1.1em;color:#065F46;'><b>{pet_nome_ok}</b> foi cadastrado com sucesso.</p>
+                    <p style='color:#6B7280;'>Agora você pode usar todas as funcionalidades personalizadas para o seu pet.</p>
+                </div>
+                ''', unsafe_allow_html=True)
                 if st.button("➕ Cadastrar outro pet", key="btn_cad_outro", use_container_width=True):
                     st.session_state['pet_cadastrado_ok'] = False
                     st.rerun()
@@ -16520,43 +16824,13 @@ elif st.session_state.etapa == "App":
 
             # ── RODAPÉ ──
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            # ── EXPORTAR PLANILHA ──
-            import io as _io_csv, csv as _csv_mod
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'pet', 'tipo', 'observacao'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['hist_saude']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'pet', 'tipo', 'observacao']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Pet_Inteligente.csv", mime="text/csv", use_container_width=True, key="dl_hist_saude")
-
             st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
 
 # ── RODAPÉ ──
 st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
 
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_c_pet_inte = st.session_state.get('hist_chat', [])
-_hist_s_pet_inte = st.session_state.get('hist_saude', [])
-_lines_pet_inte = []
-for _h_pet_inte in [_hist_c_pet_inte, _hist_s_pet_inte]:
-    for _item_pet_inte in _h_pet_inte:
-        if isinstance(_item_pet_inte, dict):
-            _role_pet_inte = _item_pet_inte.get('role', _item_pet_inte.get('tipo', 'item'))
-            _cont_pet_inte = _item_pet_inte.get('content', _item_pet_inte.get('texto', _item_pet_inte.get('resposta', str(_item_pet_inte))))
-            _lines_pet_inte.append(f'[{_role_pet_inte}] {_cont_pet_inte}')
-            _lines_pet_inte.append('')
-        else:
-            _lines_pet_inte.append(str(_item_pet_inte))
-_txt_pet_inte = "\n".join(_lines_pet_inte) if _lines_pet_inte else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_pet_inte.encode('utf-8'),
-    file_name="Pet_Inteligente_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_pet_inte_txt"
-)
+
 
 """,
     "classicas_motos_ia": """
@@ -16743,13 +17017,11 @@ avaliadores e anúncios reais de motos similares no mercado atual.
 def motos_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é o maior especialista em motocicletas clássicas do Brasil — um misto de restaurador\n" +
-            "experiente, historiador, mecânico especializado em motos antigas e avaliador de mercado.\n" +
-            "Usuário: {st.session_state.usuario}. Moto de interesse: {st.session_state.moto_padrao or 'não informada'}.\n" +
-            "{PRINCIPIO_HONESTIDADE}\n" +
-            "{system_extra}\n"
-        )
+        system = f'''Você é o maior especialista em motocicletas clássicas do Brasil — um misto de restaurador
+experiente, historiador, mecânico especializado em motos antigas e avaliador de mercado.
+Usuário: {st.session_state.usuario}. Moto de interesse: {st.session_state.moto_padrao or 'não informada'}.
+{PRINCIPIO_HONESTIDADE}
+{system_extra}'''
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -16770,17 +17042,14 @@ def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
 
-    _htmp_clas_1 = (
-        "'\n"
-        f'    <div class="indice-box {classe}">\n'
-        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
-        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
-        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
-        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa educativa baseada na descrição fornecida</div>\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_clas_1, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class="indice-box {classe}">
+        <div style="font-size:2.2em;">{emoji}</div>
+        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
+        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa educativa baseada na descrição fornecida</div>
+    </div>
+    ''', unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -17512,15 +17781,6 @@ elif st.session_state.etapa == "App":
     with _tab_Historia:
         st.header("🌎 História da Motocicleta")
 
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_consultas']:
-            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Classicas_Motos.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
-
         modelo_hist = st.text_input("🏍️ Modelo:", value=st.session_state.moto_padrao.split(' ')[0] if st.session_state.moto_padrao else "", placeholder="ex: CB 450, RD 350...", key="ti_classica_112")
 
         if st.button("🌎 CONTAR A HISTÓRIA", key="classica22"):
@@ -18196,13 +18456,11 @@ avaliadores especializados e anúncios reais de veículos similares no mercado a
 def classicos_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é o maior especialista em carros antigos e clássicos do Brasil — um misto de restaurador\n" +
-            "experiente, historiador automotivo, mecânico especializado e avaliador de mercado.\n" +
-            "Usuário: {st.session_state.usuario}. Veículo de interesse: {st.session_state.veiculo_padrao or 'não informado'}.\n" +
-            "{PRINCIPIO_HONESTIDADE}\n" +
-            "{system_extra}\n"
-        )
+        system = f'''Você é o maior especialista em carros antigos e clássicos do Brasil — um misto de restaurador
+experiente, historiador automotivo, mecânico especializado e avaliador de mercado.
+Usuário: {st.session_state.usuario}. Veículo de interesse: {st.session_state.veiculo_padrao or 'não informado'}.
+{PRINCIPIO_HONESTIDADE}
+{system_extra}'''
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -18223,17 +18481,14 @@ def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
 
-    _htmp_clas_1 = (
-        "'\n"
-        f'    <div class="indice-box {classe}">\n'
-        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
-        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
-        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
-        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa educativa baseada na descrição fornecida</div>\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_clas_1, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class="indice-box {classe}">
+        <div style="font-size:2.2em;">{emoji}</div>
+        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
+        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa educativa baseada na descrição fornecida</div>
+    </div>
+    ''', unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -18962,15 +19217,6 @@ elif st.session_state.etapa == "App":
     with _tab_Historia:
         st.header("🌎 História do Modelo")
 
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_consultas']:
-            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Classicos_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
-
         modelo_hist = st.text_input("🚗 Modelo:", value=st.session_state.veiculo_padrao.split(' ')[0] if st.session_state.veiculo_padrao else "", placeholder="ex: Fusca, Opala, Maverick...", key="ti_classico_112")
 
         if st.button("🌎 CONTAR A HISTÓRIA", key="classico22"):
@@ -19287,29 +19533,6 @@ elif st.session_state.etapa == "App":
         # BIBLIOTECA
         # ========================
 
-
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_classico = st.session_state.get('historico_consultas', [])
-_lines_classico = []
-for _item_classico in _hist_classico:
-    if isinstance(_item_classico, dict):
-        _role_classico = _item_classico.get('role', _item_classico.get('tipo', 'item'))
-        _cont_classico = _item_classico.get('content', _item_classico.get('texto', _item_classico.get('resposta', str(_item_classico))))
-        _lines_classico.append(f'[{_role_classico}] {_cont_classico}')
-        _lines_classico.append('')
-    else:
-        _lines_classico.append(str(_item_classico))
-_txt_classico = "\n".join(_lines_classico) if _lines_classico else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_classico.encode('utf-8'),
-    file_name="Classicos_IA_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_classico_txt"
-)
-
-
 # --- RODAPÉ ---
 st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
@@ -19543,13 +19766,11 @@ FORMATO OBRIGATÓRIO — TODA resposta de relatório/análise deve:
 def guardiao_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é um consultor especializado em segurança pessoal e prevenção de riscos urbanos.\n" +
-            "Usuário: {st.session_state.usuario}.\n" +
-            "{PRINCIPIO_COMUNICACAO}\n" +
-            "{system_extra}\n" +
-            "Seja prático, específico e útil. Escreva em português brasileiro, tom calmo e responsável — nunca alarmista.\n"
-        )
+        system = f'''Você é um consultor especializado em segurança pessoal e prevenção de riscos urbanos.
+Usuário: {st.session_state.usuario}.
+{PRINCIPIO_COMUNICACAO}
+{system_extra}
+Seja prático, específico e útil. Escreva em português brasileiro, tom calmo e responsável — nunca alarmista.'''
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -19575,17 +19796,14 @@ def renderizar_nivel_risco(texto: str) -> int:
 
     indice = extrair_indice_seguranca(texto)
 
-    _htmp_guar_1 = (
-        "'\n"
-        f"    <div class='risco-box {classe}'>\n"
-        f"        <div style='font-size:2.5em;'>{emoji}</div>\n"
-        f"        <div class='risco-titulo'>ÍNDICE DE SEGURANÇA: {indice}/100</div>\n"
-        f"        <div style='font-size:0.95em;color:#444;margin-top:2px;font-weight:600;'>Nível de risco: {nivel}</div>\n"
-        "        <div style=\"font-size:0.85em;color:#555;margin-top:6px;\">Estimativa preventiva baseada nas informações fornecidas</div>\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_guar_1, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class="risco-box {classe}">
+        <div style="font-size:2.5em;">{emoji}</div>
+        <div class="risco-titulo">ÍNDICE DE SEGURANÇA: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;margin-top:2px;font-weight:600;">Nível de risco: {nivel}</div>
+        <div style="font-size:0.85em;color:#555;margin-top:6px;">Estimativa preventiva baseada nas informações fornecidas</div>
+    </div>
+    ''', unsafe_allow_html=True)
     return indice
 
 DISCLAIMER_PADRAO = '''
@@ -19677,16 +19895,13 @@ elif st.session_state.etapa == "App":
             else:
                 cor_idx, emoji_idx, msg_idx, classe_idx = "#B91C1C", "🔴", "Há recomendações importantes nas suas últimas análises.", "risco-elevado"
 
-            _htmp_guar_2 = (
-                "'\n"
-                f"            <div class='indice-protecao-box {classe_idx}' style='border-color:{cor_idx};'>\n"
-                "                <div style=\"font-size:0.85em;color:#555;letter-spacing:1px;\">ÍNDICE DE PROTEÇÃO (média recente)</div>\n"
-                f"                <div class='indice-numero' style='color:{cor_idx};'>{emoji_idx} {indice_medio}/100</div>\n"
-                f"                <div class='indice-sub'>{msg_idx}</div>\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_guar_2, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="indice-protecao-box {classe_idx}" style="border-color:{cor_idx};">
+                <div style="font-size:0.85em;color:#555;letter-spacing:1px;">ÍNDICE DE PROTEÇÃO (média recente)</div>
+                <div class="indice-numero" style="color:{cor_idx};">{emoji_idx} {indice_medio}/100</div>
+                <div class="indice-sub">{msg_idx}</div>
+            </div>
+            ''', unsafe_allow_html=True)
         else:
             st.markdown('''
             <div class="indice-protecao-box" style="border-color:#3B82F6;background:#EFF6FF;">
@@ -19745,15 +19960,12 @@ elif st.session_state.etapa == "App":
         ]
         for label, tipo_cat, meta in categorias_progresso:
             pct = calcular_progresso_categoria(tipo_cat, meta)
-            _htmp_guar_3 = (
-                "'\n"
-                "            <div class=\"progresso-categoria\">\n"
-                f"                <div class='progresso-categoria-label'><span>{label}</span><span>{pct}%</span></div>\n"
-                f"                <div class='progresso-barra-bg'><div class='progresso-barra-fill' style='width:{pct}%;'></div></div>\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_guar_3, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="progresso-categoria">
+                <div class="progresso-categoria-label"><span>{label}</span><span>{pct}%</span></div>
+                <div class="progresso-barra-bg"><div class="progresso-barra-fill" style="width:{pct}%;"></div></div>
+            </div>
+            ''', unsafe_allow_html=True)
 
 
         # ── CONQUISTAS ──
@@ -19764,18 +19976,15 @@ elif st.session_state.etapa == "App":
             desbloqueada = c['id'] in st.session_state.conquistas_desbloqueadas
             classe = "conquista-card" if desbloqueada else "conquista-card conquista-bloqueada"
             with col:
-                _htmp_guar_4 = (
-                    "'\n"
-                    f"                <div class='{classe}'>\n"
-                    f"                    <div class='conquista-emoji'>{c['emoji'] if desbloqueada else '🔒'}</div>\n"
-                    "                    <div>\n"
-                    f"                        <div style='font-weight:600;'>{c['nome']}</div>\n"
-                    f"                        <div style='font-size:0.78em;color:#888;'>{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>\n"
-                    "                    </div>\n"
-                    "                </div>\n"
-                    "                \n"
-                )
-                st.markdown(_htmp_guar_4, unsafe_allow_html=True)
+                st.markdown(f'''
+                <div class="{classe}">
+                    <div class="conquista-emoji">{c['emoji'] if desbloqueada else '🔒'}</div>
+                    <div>
+                        <div style="font-weight:600;">{c['nome']}</div>
+                        <div style="font-size:0.78em;color:#888;">{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>
+                    </div>
+                </div>
+                ''', unsafe_allow_html=True)
 
 
         # ── PERFIL ──
@@ -20270,15 +20479,12 @@ elif st.session_state.etapa == "App":
 
         pct_checklist = round(marcados / len(itens_checklist) * 100)
         cor_check = "#22C55E" if pct_checklist == 100 else ("#B45309" if pct_checklist >= 50 else "#B91C1C")
-        _htmp_guar_5 = (
-            "'\n"
-            "        <div class=\"progresso-categoria\">\n"
-            f"            <div class='progresso-categoria-label'><span>Checklist de hoje</span><span>{marcados}/{len(itens_checklist)}</span></div>\n"
-            f"            <div class='progresso-barra-bg'><div class='progresso-barra-fill' style='width:{pct_checklist}%;background:{cor_check};'></div></div>\n"
-            "        </div>\n"
-            "        \n"
-        )
-        st.markdown(_htmp_guar_5, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class="progresso-categoria">
+            <div class="progresso-categoria-label"><span>Checklist de hoje</span><span>{marcados}/{len(itens_checklist)}</span></div>
+            <div class="progresso-barra-bg"><div class="progresso-barra-fill" style="width:{pct_checklist}%;background:{cor_check};"></div></div>
+        </div>
+        ''', unsafe_allow_html=True)
 
         if pct_checklist == 100:
             st.success("✅ Checklist completo! Você está com tudo certo para sair.")
@@ -20291,15 +20497,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Biblioteca:
         st.header("📚 Histórico de Segurança")
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'titulo', 'conteudo'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico_relatorios']:
-            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'titulo', 'conteudo']})
-        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Guardiao_Pessoal.csv", mime="text/csv", use_container_width=True, key="dl_historico_relatorios")
-
         st.markdown("Linha do tempo de todas as suas análises, com o selo de risco de cada uma.")
 
         if not st.session_state.historico_relatorios:
@@ -20924,15 +21121,6 @@ if 'chave_api' not in st.session_state or not st.session_state.chave_api:
         st.markdown('''
         <div style='background:#FFF0F5;border:1px solid #FFB7C5;border-radius:12px;
         padding:14px 18px;margin-bottom:20px;font-size:0.9em;color:#000;line-height:1.8;text-align:center;'>
-        # ── EXPORTAR PLANILHA ──
-        import io as _io_csv, csv as _csv_mod
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['historico']:
-            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['role', 'content']})
-        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Tenda_Ravengar.csv", mime="text/csv", use_container_width=True, key="dl_historico")
-
         🔒 <strong>Exclusivo para Associados MeusAgentesIA.com.br</strong><br>
         🔗 <a href='https://meusagentesia.com.br/' target='_blank'
         style='color:#C2185B;font-weight:600;text-decoration:none;'>meusagentesia.com.br</a>
@@ -20983,14 +21171,23 @@ if 'frase_boas_vindas' not in st.session_state:
     st.session_state['frase_boas_vindas'] = random.choice(FRASES_RAVENGAR)
 
 frase = st.session_state['frase_boas_vindas']
-_htmp_tend_1 = (
-    "'\n"
-    "<div class='boas-vindas-box'>\n"
-    f"    <div class='boas-vindas-hora'>🕯️ Você chegou às {hora_fmt} de uma {dia_semana}. Os espíritos já te aguardavam. 🕯️</div>\n"
-    f"    <div class='boas-vindas-frase'>'{frase}'<br><br>— <strong>Ravengar</strong></div>\n"
-    "</div>\n"
-)
-st.markdown(_htmp_tend_1, unsafe_allow_html=True)
+st.markdown(f'''
+<div class='boas-vindas-box'>
+    <div class='boas-vindas-hora'>🕯️ Você chegou às {hora_fmt} de uma {dia_semana}. Os espíritos já te aguardavam. 🕯️</div>
+    <div class='boas-vindas-frase'>"{frase}"<br><br>— <strong>Ravengar</strong></div>
+</div>
+''', unsafe_allow_html=True)
+
+# --- SOM AMBIENTE ---
+with st.expander("🎵 Som Ambiente Místico (ativar/desativar)"):
+    st.markdown("<p style='font-size:0.88em;color:#888;margin-bottom:6px;'>Clique em ▶ para tocar. Ative o loop manualmente se desejar repetir.</p>", unsafe_allow_html=True)
+    SONS = {
+        "🌙 Atmosfera Mística": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        "🌊 Sons da Natureza": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        "🔮 Ambient Profundo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    }
+    som_escolhido = st.selectbox("Escolha o som:", list(SONS.keys()), key="select_som_ambiente", label_visibility="collapsed")
+    st.audio(SONS[som_escolhido], format="audio/mp3")
 
 
 # --- ABAS ---
@@ -21232,16 +21429,13 @@ with tab6:
 
     if 'carta_do_dia' in st.session_state:
         carta = st.session_state['carta_do_dia']
-        _htmp_tend_2 = (
-            "'\n"
-            "        <div class='tarot-card'>\n"
-            f"            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;'>ARCANO {carta['numero']}</div>\n"
-            f"            <div class='tarot-simbolo'>{carta['simbolo']}</div>\n"
-            f"            <div class='tarot-titulo'>{carta['nome']}</div>\n"
-            "        </div>\n"
-            "        \n"
-        )
-        st.markdown(_htmp_tend_2, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class='tarot-card'>
+            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;'>ARCANO {carta['numero']}</div>
+            <div class='tarot-simbolo'>{carta['simbolo']}</div>
+            <div class='tarot-titulo'>{carta['nome']}</div>
+        </div>
+        ''', unsafe_allow_html=True)
         if chave_api:
             with st.spinner("O Ravengar interpreta os símbolos..."):
                 sistema_tarot = (
@@ -21286,14 +21480,11 @@ with tab7:
                     f"Data: {data_nasc}. Hora: {hora_nasc or 'não informada'}. Cidade: {cidade_nasc or 'não informada'}.",
                     chave_api
                 )
-            _htmp_tend_3 = (
-                "'\n"
-                "            <div class='astral-box'>\n"
-                f"                ⭐ <strong>Seu Mapa Astral</strong><br><br>{leitura_astral}\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_tend_3, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='astral-box'>
+                ⭐ <strong>Seu Mapa Astral</strong><br><br>{leitura_astral}
+            </div>
+            ''', unsafe_allow_html=True)
         else:
             st.warning("Informe ao menos a data de nascimento.")
 
@@ -21448,17 +21639,14 @@ with tab12:
 
     if 'runa_do_dia' in st.session_state:
         runa = st.session_state['runa_do_dia']
-        _htmp_tend_4 = (
-            "'\n"
-            "        <div class='runa-card'>\n"
-            f"            <div style='font-size:0.82em;opacity:0.6;letter-spacing:2px;'>RUNA DO DIA · {runa['elemento'].upper()}</div>\n"
-            f"            <div class='runa-simbolo'>{runa['simbolo']}</div>\n"
-            f"            <div class='runa-nome'>{runa['nome']}</div>\n"
-            f"            <div style='font-size:0.95em;margin-top:6px;opacity:0.8;'>{runa['palavra']}</div>\n"
-            "        </div>\n"
-            "        \n"
-        )
-        st.markdown(_htmp_tend_4, unsafe_allow_html=True)
+        st.markdown(f'''
+        <div class='runa-card'>
+            <div style='font-size:0.82em;opacity:0.6;letter-spacing:2px;'>RUNA DO DIA · {runa['elemento'].upper()}</div>
+            <div class='runa-simbolo'>{runa['simbolo']}</div>
+            <div class='runa-nome'>{runa['nome']}</div>
+            <div style='font-size:0.95em;margin-top:6px;opacity:0.8;'>{runa['palavra']}</div>
+        </div>
+        ''', unsafe_allow_html=True)
 
         if chave_api:
             with st.spinner("As runas sussurram..."):
@@ -21512,17 +21700,14 @@ with tab13:
                 total = curso['total_aulas']
                 pct = int(concluidas / total * 100) if total > 0 else 0
                 with col:
-                    _htmp_tend_5 = (
-                        "'\n"
-                        "                    <div class='curso-card'>\n"
-                        f"                        <div style='font-size:2.2em;'>{curso['icone']}</div>\n"
-                        f"                        <div style='font-size:1.1em;font-weight:bold;margin:6px 0;'>{curso['titulo']}</div>\n"
-                        f"                        <div style='font-size:0.82em;opacity:0.8;'>{curso['descricao'][:80]}...</div>\n"
-                        f"                        <div style='margin-top:10px;font-size:0.85em;'>{total} aulas · {pct}% concluído</div>\n"
-                        "                    </div>\n"
-                        "                    \n"
-                    )
-                    st.markdown(_htmp_tend_5, unsafe_allow_html=True)
+                    st.markdown(f'''
+                    <div class='curso-card'>
+                        <div style='font-size:2.2em;'>{curso['icone']}</div>
+                        <div style='font-size:1.1em;font-weight:bold;margin:6px 0;'>{curso['titulo']}</div>
+                        <div style='font-size:0.82em;opacity:0.8;'>{curso['descricao'][:80]}...</div>
+                        <div style='margin-top:10px;font-size:0.85em;'>{total} aulas · {pct}% concluído</div>
+                    </div>
+                    ''', unsafe_allow_html=True)
                     if col.button(f"ENTRAR NO CURSO", key=f"entrar_{chave}"):
                         st.session_state.curso_ativo = chave
                         st.session_state.aula_ativa = None
@@ -21546,14 +21731,11 @@ with tab13:
             st.markdown(f"*{curso['descricao']}*")
 
             pct = int(len(concluidas) / curso['total_aulas'] * 100)
-            _htmp_tend_6 = (
-                "'\n"
-                "            <div class='progresso-curso'>\n"
-                f"                📚 {len(concluidas)} de {curso['total_aulas']} aulas concluídas — {pct}% do curso\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_tend_6, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='progresso-curso'>
+                📚 {len(concluidas)} de {curso['total_aulas']} aulas concluídas — {pct}% do curso
+            </div>
+            ''', unsafe_allow_html=True)
             st.progress(pct / 100)
 
             st.markdown("### 📋 Aulas do Curso")
@@ -21622,47 +21804,35 @@ with tab13:
             st.markdown(f"## Aula {num} — {aula['titulo']}")
 
             # Conteúdo
-            _htmp_tend_7 = (
-                "'\n"
-                "            <div class='aula-conteudo'>\n"
-                f"                {aula['conteudo'].replace(chr(10), '<br>')}\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_tend_7, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='aula-conteudo'>
+                {aula['conteudo'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
 
             # Exemplo
-            _htmp_tend_8 = (
-                "'\n"
-                "            <div class='aula-secao'>\n"
-                "                <strong>🎬 Exemplo Prático</strong><br><br>\n"
-                f"                {aula['exemplo'].replace(chr(10), '<br>')}\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_tend_8, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='aula-secao'>
+                <strong>🎬 Exemplo Prático</strong><br><br>
+                {aula['exemplo'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
 
             # Aplicação
-            _htmp_tend_9 = (
-                "'\n"
-                "            <div class='aula-secao'>\n"
-                "                <strong>⚙️ Como Aplicar</strong><br><br>\n"
-                f"                {aula['aplicacao'].replace(chr(10), '<br>')}\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_tend_9, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='aula-secao'>
+                <strong>⚙️ Como Aplicar</strong><br><br>
+                {aula['aplicacao'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
 
             # Exercício
-            _htmp_tend_10 = (
-                "'\n"
-                "            <div class='aula-secao'>\n"
-                "                <strong>🏋️ Exercício Prático</strong><br><br>\n"
-                f"                {aula['exercicio'].replace(chr(10), '<br>')}\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_tend_10, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class='aula-secao'>
+                <strong>🏋️ Exercício Prático</strong><br><br>
+                {aula['exercicio'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
 
             # Gabarito (oculto até clicar)
             with st.expander("✅ Ver Gabarito Comentado"):
@@ -21727,29 +21897,6 @@ with tab13:
                         st.success("✅ Esta aula já foi concluída!")
 
 st.markdown("<div class='rodape-ravengar'>✦ EXPLORANDO OS MISTÉRIOS DA MENTE E DO DESTINO ✦</div>", unsafe_allow_html=True)
-
-
-
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_rv = st.session_state.get('historico', [])
-_txt_rv_lines = []
-for _item_rv in _hist_rv:
-    if isinstance(_item_rv, dict):
-        _role_rv = _item_rv.get('role', _item_rv.get('tipo', 'item'))
-        _cont_rv = _item_rv.get('content', _item_rv.get('texto', _item_rv.get('resposta', str(_item_rv))))
-        _txt_rv_lines.append(f'[{_role_rv}] {_cont_rv}')
-        _txt_rv_lines.append('')
-    else:
-        _txt_rv_lines.append(str(_item_rv))
-_txt_out_rv = "\n".join(_txt_rv_lines) if _txt_rv_lines else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_rv.encode('utf-8'),
-    file_name="Tenda_Ravengar_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_tenda_ra_txt"
-)
 
 
 # --- RODAPÉ ---
@@ -21964,19 +22111,17 @@ def vida_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
         notas_txt = ", ".join([f"{a}: {n}/10" for a, n in st.session_state.notas_areas_vida.items()])
-        system = (
-            "Você é um Gerente Pessoal de Vida com IA — um misto de coach, planejador e consultor estratégico.\n" +
-            "Usuário: {st.session_state.usuario}.\n" +
-            "Notas atuais das áreas da vida: {notas_txt}.\n" +
-            "{system_extra}\n" +
-            "\n" +
-            "PRINCÍPIOS:\n" +
-            "- Seja prático, direto e organizado — sempre estruture em etapas claras\n" +
-            "- Considere o contexto real da pessoa, nunca dê conselhos genéricos\n" +
-            "- Quando relevante, mencione no final que existe uma ferramenta complementar no ecossistema para aprofundar\n" +
-            "  (mas só se for genuinamente útil, não force isso)\n" +
-            "- Português do Brasil, tom de gerente pessoal experiente — confiável e organizado, não robótico\n"
-        )
+        system = f'''Você é um Gerente Pessoal de Vida com IA — um misto de coach, planejador e consultor estratégico.
+Usuário: {st.session_state.usuario}.
+Notas atuais das áreas da vida: {notas_txt}.
+{system_extra}
+
+PRINCÍPIOS:
+- Seja prático, direto e organizado — sempre estruture em etapas claras
+- Considere o contexto real da pessoa, nunca dê conselhos genéricos
+- Quando relevante, mencione no final que existe uma ferramenta complementar no ecossistema para aprofundar
+  (mas só se for genuinamente útil, não force isso)
+- Português do Brasil, tom de gerente pessoal experiente — confiável e organizado, não robótico'''
 
         response = client.chat.completions.create(
             messages=[
@@ -22012,16 +22157,13 @@ def detectar_app_recomendado(texto: str) -> dict | None:
 # --- BARRA DE SALVAR ---
 
 def renderizar_encaminhamento(app_info: dict):
-    _htmp_vida_1 = (
-        "'\n"
-        "    <div class=\"encaminhamento-box\">\n"
-        "        💡 <strong>Dica do ecossistema:</strong> para se aprofundar nesse assunto, o app\n"
-        f"        <strong>{app_info['emoji']} {app_info['nome']}</strong> é especializado em {app_info['quando']}.\n"
-        "        Se você tiver esse app disponível, vale a pena consultá-lo.\n"
-        "    </div>\n"
-        "    \n"
-    )
-    st.markdown(_htmp_vida_1, unsafe_allow_html=True)
+    st.markdown(f'''
+    <div class="encaminhamento-box">
+        💡 <strong>Dica do ecossistema:</strong> para se aprofundar nesse assunto, o app
+        <strong>{app_info['emoji']} {app_info['nome']}</strong> é especializado em {app_info['quando']}.
+        Se você tiver esse app disponível, vale a pena consultá-lo.
+    </div>
+    ''', unsafe_allow_html=True)
 
 # ============================================================
 # TELA: LOGIN
@@ -22091,18 +22233,15 @@ elif st.session_state.etapa == "App":
                 with col:
                     nota_atual = st.session_state.notas_areas_vida.get(area, 5)
                     cor = "#22C55E" if nota_atual >= 7 else ("#B45309" if nota_atual >= 4 else "#B91C1C")
-                    _htmp_vida_2 = (
-                        "'\n"
-                        "                    <div class=\"area-vida-box\">\n"
-                        "                        <div class=\"area-vida-header\">\n"
-                        f"                            <span>{EMOJI_AREA[area]} {area}</span>\n"
-                        f"                            <span class='area-vida-nota' style='color:{cor};'>{nota_atual}/10</span>\n"
-                        "                        </div>\n"
-                        f"                        <div class='barra-bg'><div class='barra-fill' style='width:{nota_atual*10}%;background:{cor};'></div></div>\n"
-                        "                    </div>\n"
-                        "                    \n"
-                    )
-                    st.markdown(_htmp_vida_2, unsafe_allow_html=True)
+                    st.markdown(f'''
+                    <div class="area-vida-box">
+                        <div class="area-vida-header">
+                            <span>{EMOJI_AREA[area]} {area}</span>
+                            <span class="area-vida-nota" style="color:{cor};">{nota_atual}/10</span>
+                        </div>
+                        <div class="barra-bg"><div class="barra-fill" style="width:{nota_atual*10}%;background:{cor};"></div></div>
+                    </div>
+                    ''', unsafe_allow_html=True)
                     nova_nota = st.slider(f"Ajustar {area}", 0, 10, nota_atual, key=f"slider_{area}", label_visibility="collapsed")
                     st.session_state.notas_areas_vida[area] = nova_nota
 
@@ -22110,16 +22249,13 @@ elif st.session_state.etapa == "App":
             area_mais_fraca = min(st.session_state.notas_areas_vida, key=st.session_state.notas_areas_vida.get)
 
             cor_media = "#22C55E" if media_geral >= 7 else ("#B45309" if media_geral >= 4 else "#B91C1C")
-            _htmp_vida_3 = (
-                "'\n"
-                "            <div class=\"card\" style=\"text-align:center;\">\n"
-                "                <div style=\"font-size:0.85em;color:#555;\">SUA MÉDIA GERAL DE VIDA</div>\n"
-                f"                <div style='font-size:2.2em;font-weight:700;color:{cor_media};font-family:'Playfair Display',serif;'>{media_geral}/10</div>\n"
-                f"                <div style='font-size:0.9em;color:#555;margin-top:4px;'>🎯 Comece por: <strong>{EMOJI_AREA[area_mais_fraca]} {area_mais_fraca}</strong> — é sua área mais frágil agora</div>\n"
-                "            </div>\n"
-                "            \n"
-            )
-            st.markdown(_htmp_vida_3, unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="card" style="text-align:center;">
+                <div style="font-size:0.85em;color:#555;">SUA MÉDIA GERAL DE VIDA</div>
+                <div style="font-size:2.2em;font-weight:700;color:{cor_media};font-family:'Playfair Display',serif;">{media_geral}/10</div>
+                <div style="font-size:0.9em;color:#555;margin-top:4px;">🎯 Comece por: <strong>{EMOJI_AREA[area_mais_fraca]} {area_mais_fraca}</strong> — é sua área mais frágil agora</div>
+            </div>
+            ''', unsafe_allow_html=True)
 
             if st.button("🎯 CRIAR PLANO PARA MELHORAR ESSA ÁREA", key="btn_plano_area_fraca", use_container_width=True):
                 st.session_state.pagina = "Objetivos"
@@ -22322,15 +22458,12 @@ elif st.session_state.etapa == "App":
                 st.session_state.missoes_concluidas_hoje_temp = concluidas_hoje
                 pct = round(len(concluidas_hoje) / len(st.session_state.missoes_hoje) * 100) if st.session_state.missoes_hoje else 0
 
-                _htmp_vida_4 = (
-                    "'\n"
-                    "                <div class=\"missao-dia-box\">\n"
-                    f"                    <div style='text-align:center;font-size:1.3em;font-weight:700;'>{pct}% concluído hoje</div>\n"
-                    f"                    <div class='barra-bg'><div class='barra-fill' style='width:{pct}%;background:#6366F1;'></div></div>\n"
-                    "                </div>\n"
-                    "                \n"
-                )
-                st.markdown(_htmp_vida_4, unsafe_allow_html=True)
+                st.markdown(f'''
+                <div class="missao-dia-box">
+                    <div style="text-align:center;font-size:1.3em;font-weight:700;">{pct}% concluído hoje</div>
+                    <div class="barra-bg"><div class="barra-fill" style="width:{pct}%;background:#6366F1;"></div></div>
+                </div>
+                ''', unsafe_allow_html=True)
 
                 if pct == 100 and hoje not in st.session_state.missoes_concluidas_hoje:
                     st.session_state.missoes_concluidas_hoje.append(hoje)
@@ -22507,15 +22640,6 @@ elif st.session_state.etapa == "App":
 
     with _tab_Diario:
             st.header("📖 Diário Inteligente")
-            # ── EXPORTAR PLANILHA ──
-            import io as _io_csv, csv as _csv_mod
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'tema', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_planos']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'tema', 'conteudo']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Vida_Inteligente.csv", mime="text/csv", use_container_width=True, key="dl_historico_planos")
-
             st.markdown("Reflexão guiada de fim de dia.")
 
             col1, col2, col3 = st.columns(3)
@@ -22587,16 +22711,13 @@ elif st.session_state.etapa == "App":
                 for meta in st.session_state.grandes_metas:
                     pct = min(100, round(meta.get('valor_atual', '') / meta['valor_total'] * 100)) if meta['valor_total'] > 0 else 0
                     falta = max(0, meta['valor_total'] - meta.get('valor_atual', ''))
-                    _htmp_vida_5 = (
-                        "'\n"
-                        "                    <div class=\"card\">\n"
-                        f"                        <strong>🏆 {meta['nome']}</strong> — {meta.get('prazo','sem prazo definido')}<br>\n"
-                        f"                        <div class='barra-bg' style='margin:8px 0;'><div class='barra-fill' style='width:{pct}%;background:#6366F1;'></div></div>\n"
-                        f"                        R$ {meta.get('valor_atual', ''):,.2f} de R$ {meta['valor_total']:,.2f} ({pct}%) — faltam R$ {falta:,.2f}\n"
-                        "                    </div>\n"
-                        "                    \n"
-                    )
-                    st.markdown(_htmp_vida_5, unsafe_allow_html=True)
+                    st.markdown(f'''
+                    <div class="card">
+                        <strong>🏆 {meta['nome']}</strong> — {meta.get('prazo','sem prazo definido')}<br>
+                        <div class="barra-bg" style="margin:8px 0;"><div class="barra-fill" style="width:{pct}%;background:#6366F1;"></div></div>
+                        R$ {meta.get('valor_atual', ''):,.2f} de R$ {meta['valor_total']:,.2f} ({pct}%) — faltam R$ {falta:,.2f}
+                    </div>
+                    ''', unsafe_allow_html=True)
 
         # ========================
         # MODO CRISE
@@ -22721,18 +22842,15 @@ elif st.session_state.etapa == "App":
                 desbloqueada = c['id'] in st.session_state.conquistas_desbloqueadas
                 classe = "conquista-card" if desbloqueada else "conquista-card conquista-bloqueada"
                 with col:
-                    _htmp_vida_6 = (
-                        "'\n"
-                        f"                    <div class='{classe}'>\n"
-                        f"                        <div class='conquista-emoji'>{c['emoji'] if desbloqueada else '🔒'}</div>\n"
-                        "                        <div>\n"
-                        f"                            <div style='font-weight:600;'>{c['nome']}</div>\n"
-                        f"                            <div style='font-size:0.78em;color:#888;'>{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>\n"
-                        "                        </div>\n"
-                        "                    </div>\n"
-                        "                    \n"
-                    )
-                    st.markdown(_htmp_vida_6, unsafe_allow_html=True)
+                    st.markdown(f'''
+                    <div class="{classe}">
+                        <div class="conquista-emoji">{c['emoji'] if desbloqueada else '🔒'}</div>
+                        <div>
+                            <div style="font-weight:600;">{c['nome']}</div>
+                            <div style="font-size:0.78em;color:#888;">{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>
+                        </div>
+                    </div>
+                    ''', unsafe_allow_html=True)
 
             pct_conquistas = round(len(st.session_state.conquistas_desbloqueadas) / len(CONQUISTAS_DEFINIDAS) * 100)
             st.markdown(f"<div class='card' style='text-align:center;'>🎖️ Você desbloqueou <strong>{len(st.session_state.conquistas_desbloqueadas)}/{len(CONQUISTAS_DEFINIDAS)}</strong> conquistas ({pct_conquistas}%)</div>", unsafe_allow_html=True)
@@ -22789,29 +22907,6 @@ elif st.session_state.etapa == "App":
         "© 2026 Vida Inteligente — Gerente Pessoal de Vida com IA · MeusAgentesIA.com.br"
         "</div>", unsafe_allow_html=True
     )
-
-
-# ── EXPORTAR HISTÓRICO COMPLETO ──
-_hist_vida_int = st.session_state.get('historico_planos', [])
-_lines_vida_int = []
-for _item_vida_int in _hist_vida_int:
-    if isinstance(_item_vida_int, dict):
-        _role_vida_int = _item_vida_int.get('role', _item_vida_int.get('tipo', 'item'))
-        _cont_vida_int = _item_vida_int.get('content', _item_vida_int.get('texto', _item_vida_int.get('resposta', str(_item_vida_int))))
-        _lines_vida_int.append(f'[{_role_vida_int}] {_cont_vida_int}')
-        _lines_vida_int.append('')
-    else:
-        _lines_vida_int.append(str(_item_vida_int))
-_txt_vida_int = "\n".join(_lines_vida_int) if _lines_vida_int else "Nenhum histórico gerado ainda."
-st.download_button(
-    "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_vida_int.encode('utf-8'),
-    file_name="Vida_Inteligente_historico.txt",
-    mime="text/plain",
-    use_container_width=True,
-    key="dl_exp_vida_int_txt"
-)
-
 
 # --- RODAPÉ ---
 st.markdown(
