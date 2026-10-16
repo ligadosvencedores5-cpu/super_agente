@@ -487,8 +487,8 @@ REGRAS:
         # Corrige cifrão quebrado gerado pelo modelo — múltiplos padrões
         import re as _re
         # R` R' R´ R` seguido de número
-        txt = _re.sub(r'R\\s*[`\\'´\\u0060]\\s*(\\d)', r'R$\\1', txt)
-        txt = _re.sub(r'R\\s*[`\\'´\\u0060]\\s*([A-Z])', r'R$ \\1', txt)
+        txt = _re.sub('[Rr][\\s]*[\\u0060\\u00B4\'`]([\\d])', lambda m_: 'R$' + m_.group(1), txt)
+        txt = _re.sub('[Rr][\\s]*[\\u0060\\u00B4\'`]([A-Z])', lambda m_: 'R$ ' + m_.group(1), txt)
         txt = txt.replace('R` ', 'R$').replace('R`', 'R$')
         txt = txt.replace("R' ", 'R$').replace("R'", 'R$')
         txt = txt.replace('R´ ', 'R$').replace('R´', 'R$')
@@ -2289,7 +2289,7 @@ elif st.session_state.etapa == "App":
             dica = random.choice(DICAS_IA)
             frase = random.choice(FRASES_DIA)
             st.markdown(f"<div class='ia-preventiva'>🤖 <strong>IA Preventiva:</strong> {dica}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='card'><em>💬 \\"{frase}\\"</em></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='card'><em>💬 '{frase}'</em></div>", unsafe_allow_html=True)
 
             # COACH DIÁRIO
             st.markdown("### 🎯 Coach do Dia")
