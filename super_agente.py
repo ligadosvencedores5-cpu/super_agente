@@ -22869,6 +22869,316 @@ for _k, _v in _defaults.items():
     if _k not in st.session_state:
         st.session_state[_k] = _v
 
+# ── RODAPÉ DE DOWNLOAD: registra o que cada agente guardou na sessão ──────
+_SA_WIDGET_FUNCS = [
+    "button", "download_button", "form_submit_button", "link_button", "text_input",
+    "text_area", "number_input", "selectbox", "multiselect", "radio", "checkbox",
+    "toggle", "slider", "select_slider", "date_input", "time_input", "file_uploader",
+    "camera_input", "color_picker", "chat_input", "data_editor", "pills",
+    "segmented_control", "feedback", "audio_input", "form",
+]
+_SA_CHAVES_IGNORADAS = {"etapa", "api_key", "usuario", "nome", "autenticado", "nome_user"}
+_SA_PALAVRAS_SENSIVEIS = ("api", "senha", "password", "token", "secret")
+
+
+def _sa_assinatura(valor):
+    try:
+        return repr(valor)
+    except Exception:
+        return str(id(valor))
+
+
+def _sa_instalar_rastreio(chaves_widgets: set):
+    """Anota as keys de widgets criados pelo agente (para não confundir com dados)."""
+    from streamlit.delta_generator import DeltaGenerator
+    originais = []
+
+    def _envolver(fn):
+        def _wrapper(*a, **kw):
+            k = kw.get("key")
+            if k is not None:
+                chaves_widgets.add(str(k))
+            return fn(*a, **kw)
+        return _wrapper
+
+    for nome_f in _SA_WIDGET_FUNCS:
+        for alvo in (st, DeltaGenerator):
+            orig = getattr(alvo, nome_f, None)
+            if orig is None:
+                continue
+            originais.append((alvo, nome_f, orig))
+            try:
+                setattr(alvo, nome_f, _envolver(orig))
+            except Exception:
+                originais.pop()
+    return originais
+
+
+def _sa_remover_rastreio(originais):
+    for alvo, nome_f, orig in reversed(originais):
+        try:
+            setattr(alvo, nome_f, orig)
+        except Exception:
+            pass
+
+
+def _sa_chave_valida(k: str, valor, widgets: set) -> bool:
+    if not isinstance(k, str) or k.startswith("_") or k.startswith("sa_") or ":" in k:
+        return False
+    if k in _SA_CHAVES_IGNORADAS or k in widgets:
+        return False
+    if any(p in k.lower() for p in _SA_PALAVRAS_SENSIVEIS):
+        return False
+    if isinstance(valor, bool) or valor is None:
+        return False
+    if isinstance(valor, str) and valor.strip().startswith("gsk_"):
+        return False
+    return True
+
+
+def _sa_tem_conteudo(valor) -> bool:
+    if isinstance(valor, bool) or valor is None:
+        return False
+    if isinstance(valor, (int, float)):
+        return valor != 0
+    if isinstance(valor, str):
+        return bool(valor.strip())
+    if isinstance(valor, (list, tuple, dict, set)):
+        return len(valor) > 0
+    return hasattr(valor, "isoformat")
+
+
+def _sa_titulo(k: str) -> str:
+    t = k.replace("_", " ").strip()
+    return t[:1].upper() + t[1:]
+
+
+def _sa_fmt_simples(v) -> str:
+    if isinstance(v, float):
+        return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    if hasattr(v, "isoformat"):
+        return v.isoformat()
+    if isinstance(v, (dict, list, tuple, set)):
+        try:
+            return json.dumps(v, ensure_ascii=False, default=str)
+        except Exception:
+            return str(v)
+    return str(v)
+
+
+def _sa_fmt_valor(v, nivel: int = 0) -> str:
+    pad = "  " * nivel
+    if isinstance(v, dict):
+        if not v:
+            return pad + "(vazio)"
+        linhas = []
+        for kk, vv in v.items():
+            if isinstance(vv, (dict, list, tuple)) and vv:
+                linhas.append(f"{pad}{_sa_titulo(str(kk))}:")
+                linhas.append(_sa_fmt_valor(vv, nivel + 1))
+            else:
+                linhas.append(f"{pad}{_sa_titulo(str(kk))}: {_sa_fmt_simples(vv)}")
+        return "\n".join(linhas)
+    if isinstance(v, (list, tuple, set)):
+        linhas = []
+        for n, item in enumerate(list(v), 1):
+            if isinstance(item, dict) and "content" in item and ("role" in item or "autor" in item):
+                papel = str(item.get("role", item.get("autor", "")))
+                quem = "Você" if papel in ("user", "usuario", "usuário") else "IA"
+                linhas.append(f"{pad}[{quem}] {item.get('content', '')}")
+            elif isinstance(item, dict):
+                campos = " | ".join(
+                    f"{_sa_titulo(str(kk))}: {_sa_fmt_simples(vv)}" for kk, vv in item.items()
+                )
+                linhas.append(f"{pad}{n}. {campos}")
+            else:
+                linhas.append(f"{pad}{n}. {_sa_fmt_simples(item)}")
+        return "\n".join(linhas) if linhas else pad + "(vazio)"
+    return pad + _sa_fmt_simples(v)
+
+
+def _sa_texto_exportacao(agente: dict, chaves: list) -> str:
+    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+    cab = [
+        "=" * 60,
+        f"{agente['emoji']} {agente['nome']} — {agente['categoria']}",
+        f"Usuário: {st.session_state.get('sa_usuario', '')}",
+        f"Exportado em: {agora}",
+        "=" * 60,
+        "",
+    ]
+    blocos, vistos = [], set()
+    for k in chaves:
+        if k not in st.session_state:
+            continue
+        v = st.session_state[k]
+        if not _sa_tem_conteudo(v):
+            continue
+        assin = _sa_assinatura(v)
+        if isinstance(v, str) and assin in vistos:
+            continue  # mesmo texto guardado em duas chaves
+        vistos.add(assin)
+        try:
+            corpo = _sa_fmt_valor(v)
+        except Exception:
+            corpo = str(v)
+        blocos.append(f"■ {_sa_titulo(k)}\n{'-' * 60}\n{corpo}\n")
+    if not blocos:
+        return ""
+    return "\n".join(cab) + "\n".join(blocos)
+
+
+def _sa_nome_aba(nome: str, usados: set) -> str:
+    base = re.sub(r"[\[\]\:\*\?\/\\\\]", " ", nome).strip()[:28] or "Dados"
+    final, n = base, 2
+    while final.lower() in usados:
+        final = f"{base[:25]} {n}"
+        n += 1
+    usados.add(final.lower())
+    return final
+
+
+def _sa_celula(v):
+    if isinstance(v, (int, float, str)) or v is None:
+        return v
+    if hasattr(v, "isoformat"):
+        return v.isoformat()
+    try:
+        return json.dumps(v, ensure_ascii=False, default=str)
+    except Exception:
+        return str(v)
+
+
+def _sa_excel_exportacao(agente: dict, chaves: list):
+    """Gera um .xlsx: aba Resumo + uma aba por lista/tabela registrada. Retorna bytes ou None."""
+    import io
+    import pandas as pd
+    motor = None
+    for m in ("openpyxl", "xlsxwriter"):
+        try:
+            __import__(m)
+            motor = m
+            break
+        except ImportError:
+            continue
+    if motor is None:
+        return None
+
+    resumo = [
+        {"Item": "Agente", "Valor": f"{agente['nome']} — {agente['categoria']}"},
+        {"Item": "Usuário", "Valor": st.session_state.get("sa_usuario", "")},
+        {"Item": "Exportado em", "Valor": datetime.now().strftime("%d/%m/%Y %H:%M")},
+    ]
+    abas, vistos = [], set()
+    for k in chaves:
+        if k not in st.session_state:
+            continue
+        v = st.session_state[k]
+        if not _sa_tem_conteudo(v):
+            continue
+        assin = _sa_assinatura(v)
+        if isinstance(v, str) and assin in vistos:
+            continue
+        vistos.add(assin)
+        titulo = _sa_titulo(k)
+        try:
+            if isinstance(v, (list, tuple, set)):
+                itens = list(v)
+                if all(isinstance(i, dict) for i in itens):
+                    linhas = [{_sa_titulo(str(kk)): _sa_celula(vv) for kk, vv in i.items()} for i in itens]
+                else:
+                    linhas = [{titulo: _sa_celula(i)} for i in itens]
+                abas.append((titulo, pd.DataFrame(linhas)))
+            elif isinstance(v, dict):
+                linhas = [{"Campo": _sa_titulo(str(kk)), "Valor": _sa_celula(vv)} for kk, vv in v.items()]
+                abas.append((titulo, pd.DataFrame(linhas)))
+            elif isinstance(v, str) and len(v) > 200:
+                abas.append((titulo, pd.DataFrame({titulo: v.splitlines() or [v]})))
+            else:
+                resumo.append({"Item": titulo, "Valor": _sa_celula(v)})
+        except Exception:
+            resumo.append({"Item": titulo, "Valor": str(v)})
+
+    if len(resumo) == 3 and not abas:
+        return None
+    buf = io.BytesIO()
+    usados = set()
+    with pd.ExcelWriter(buf, engine=motor) as wr:
+        pd.DataFrame(resumo).to_excel(wr, sheet_name=_sa_nome_aba("Resumo", usados), index=False)
+        for titulo, df in abas:
+            df.to_excel(wr, sheet_name=_sa_nome_aba(titulo, usados), index=False)
+    return buf.getvalue()
+
+
+_SA_RODAPE_CSS = """<style>
+.st-key-sa_rodape_box {
+    background:#FFFFFF !important; border:2px solid #16A34A !important;
+    border-radius:14px !important; padding:18px 20px !important; margin-top:24px !important;
+}
+.st-key-sa_rodape_box textarea {
+    color:#1A1A2E !important; -webkit-text-fill-color:#1A1A2E !important;
+    opacity:1 !important; background:#F8FAFC !important; font-family:monospace !important;
+}
+.st-key-sa_rodape_box [data-testid="stDownloadButton"] > button {
+    background:#16A34A !important; background-color:#16A34A !important;
+    border:none !important; min-height:48px !important; font-weight:700 !important;
+}
+.st-key-sa_rodape_box [data-testid="stDownloadButton"] > button:hover {
+    background:#15803D !important; background-color:#15803D !important;
+}
+.st-key-sa_rodape_box [data-testid="stDownloadButton"] > button,
+.st-key-sa_rodape_box [data-testid="stDownloadButton"] > button * {
+    color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
+}
+</style>"""
+
+
+def _sa_rodape_download(agente: dict):
+    try:
+        caixa = st.container(key="sa_rodape_box")
+    except TypeError:  # Streamlit antigo sem key em container
+        caixa = st.container()
+    with caixa:
+        _sa_rodape_conteudo(agente)
+    st.markdown(_SA_RODAPE_CSS, unsafe_allow_html=True)
+
+
+def _sa_rodape_conteudo(agente: dict):
+    codigo_key = agente["codigo"]
+    chaves = st.session_state.get(f"_sa_dados_{codigo_key}", [])
+    texto = _sa_texto_exportacao(agente, chaves)
+    st.markdown("#### 📥 Baixar o que você fez")
+    if not texto:
+        st.caption("Ainda não há nada registrado nesta sessão. Assim que você usar o agente, "
+                   "seus registros e resultados aparecem aqui para baixar.")
+        return
+    st.text_area("Seus registros nesta sessão", value=texto, height=260, disabled=True)
+    nome_arq = re.sub(r"[^a-z0-9]+", "_", agente["nome"].lower()).strip("_")
+    carimbo  = datetime.now().strftime("%Y%m%d_%H%M")
+    col_txt, col_xls = st.columns(2)
+    with col_txt:
+        st.download_button(
+            "📥 Baixar (.txt)", data=texto.encode("utf-8"),
+            file_name=f"{nome_arq}_{carimbo}.txt",
+            mime="text/plain", key=f"sa_rodape_dl_{codigo_key}",
+            use_container_width=True,
+        )
+    with col_xls:
+        try:
+            dados_xlsx = _sa_excel_exportacao(agente, chaves)
+        except Exception:
+            dados_xlsx = None
+        if dados_xlsx:
+            st.download_button(
+                "📊 Baixar (Excel)", data=dados_xlsx,
+                file_name=f"{nome_arq}_{carimbo}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key=f"sa_rodape_xls_{codigo_key}", use_container_width=True,
+            )
+        else:
+            st.caption("Excel indisponível: adicione `openpyxl` ao requirements.txt.")
+
+
 # ── HELPER: EXECUTAR AGENTE EMBUTIDO ─────────────────────────────────────
 def _executar_agente(agente: dict):
     import math, random, pandas as pd
@@ -22939,7 +23249,25 @@ def _executar_agente(agente: dict):
         "date":       date,
         "timedelta":  timedelta,
     }
-    exec(compile(codigo, f"<{codigo_key}>", "exec"), _ns)
+    # Rastreia o que o agente grava na sessão (para o rodapé de download)
+    _reg_key   = f"_sa_dados_{codigo_key}"
+    _registro  = st.session_state.setdefault(_reg_key, [])
+    _widgets   = st.session_state.setdefault("_sa_widgets", set())
+    _antes     = {k: _sa_assinatura(v) for k, v in st.session_state.items()}
+    _originais = _sa_instalar_rastreio(_widgets)
+    try:
+        exec(compile(codigo, f"<{codigo_key}>", "exec"), _ns)
+    finally:
+        _sa_remover_rastreio(_originais)
+        try:
+            for _k, _v in list(st.session_state.items()):
+                if _k in _registro or not _sa_chave_valida(_k, _v, _widgets):
+                    continue
+                if _k not in _antes or _antes[_k] != _sa_assinatura(_v):
+                    _registro.append(_k)
+            _registro[:] = [k for k in _registro if k not in _widgets]
+        except Exception:
+            pass
 
     # CSS de reforço — aplicado DEPOIS do agente para sobrescrever estilos inline
     st.markdown("""<style>
@@ -22973,6 +23301,9 @@ p, span, label, div, li, td, th, h1, h2, h3, h4, h5, h6,
 [data-testid="stFileUploader"] svg,
 [data-testid="stFileUploader"] svg * { fill:#495057 !important; color:#495057 !important; }
 </style>""", unsafe_allow_html=True)
+
+    # Rodapé comum a todos os agentes: bloco de texto para baixar o que foi feito
+    _sa_rodape_download(agente)
 
 
 # ══════════════════════════════════════════════════════════════════════════
