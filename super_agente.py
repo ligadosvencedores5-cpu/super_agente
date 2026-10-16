@@ -23049,25 +23049,115 @@ def _sa_celula(v):
         return str(v)
 
 
-def _sa_excel_exportacao(agente: dict, chaves: list):
-    """Gera um .xlsx: aba Resumo + uma aba por lista/tabela registrada. Retorna bytes ou None."""
-    import io
-    import pandas as pd
-    motor = None
-    for m in ("openpyxl", "xlsxwriter"):
-        try:
-            __import__(m)
-            motor = m
-            break
-        except ImportError:
-            continue
-    if motor is None:
-        return None
+def _sa_xml(texto) -> str:
+    texto = str(texto)
+    texto = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", texto)[:32000]
+    return (texto.replace("&", "&amp;").replace("<", "&lt;")
+                 .replace(">", "&gt;").replace('"', "&quot;"))
 
+
+def _sa_col(n: int) -> str:
+    letras = ""
+    while n:
+        n, r = divmod(n - 1, 26)
+        letras = chr(65 + r) + letras
+    return letras
+
+
+def _sa_xlsx_bytes(abas: list) -> bytes:
+    """Gera um .xlsx só com a biblioteca padrão (sem openpyxl/pandas).
+    abas = [(nome, [[cabeçalho...], [linha...], ...]), ...]"""
+    import io, zipfile
+    planilhas = []
+    for nome, linhas in abas:
+        xml_linhas = []
+        larguras = {}
+        for i, linha in enumerate(linhas, 1):
+            cels = []
+            for j, v in enumerate(linha, 1):
+                ref = f"{_sa_col(j)}{i}"
+                estilo = ' s="1"' if i == 1 else ""
+                if isinstance(v, bool) or v is None:
+                    v = "" if v is None else ("Sim" if v else "Não")
+                if isinstance(v, (int, float)):
+                    cels.append(f'<c r="{ref}"{estilo}><v>{v}</v></c>')
+                    tam = len(str(v))
+                else:
+                    cels.append(f'<c r="{ref}"{estilo} t="inlineStr"><is><t xml:space="preserve">{_sa_xml(v)}</t></is></c>')
+                    tam = max((len(x) for x in str(v).splitlines()), default=0)
+                larguras[j] = max(larguras.get(j, 8), min(tam + 2, 80))
+            xml_linhas.append(f'<row r="{i}">{"".join(cels)}</row>')
+        cols = "".join(f'<col min="{j}" max="{j}" width="{w}" customWidth="1"/>' for j, w in sorted(larguras.items()))
+        planilhas.append(
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            + (f"<cols>{cols}</cols>" if cols else "")
+            + f'<sheetData>{"".join(xml_linhas)}</sheetData></worksheet>'
+        )
+    n = len(planilhas)
+    content_types = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+        + "".join(f'<Override PartName="/xl/worksheets/sheet{k}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' for k in range(1, n + 1))
+        + "</Types>"
+    )
+    rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+        "</Relationships>"
+    )
+    workbook = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'
+        + "".join(f'<sheet name="{_sa_xml(abas[k - 1][0])}" sheetId="{k}" r:id="rId{k}"/>' for k in range(1, n + 1))
+        + "</sheets></workbook>"
+    )
+    wb_rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        + "".join(f'<Relationship Id="rId{k}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet{k}.xml"/>' for k in range(1, n + 1))
+        + f'<Relationship Id="rId{n + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+        + "</Relationships>"
+    )
+    estilos = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>'
+        '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>'
+        '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'
+        '<fill><patternFill patternType="solid"><fgColor rgb="FF16A34A"/><bgColor indexed="64"/></patternFill></fill></fills>'
+        '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
+        '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+        '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>'
+        '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+        "</styleSheet>"
+    )
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", content_types)
+        z.writestr("_rels/.rels", rels)
+        z.writestr("xl/workbook.xml", workbook)
+        z.writestr("xl/_rels/workbook.xml.rels", wb_rels)
+        z.writestr("xl/styles.xml", estilos)
+        for k, xml in enumerate(planilhas, 1):
+            z.writestr(f"xl/worksheets/sheet{k}.xml", xml)
+    return buf.getvalue()
+
+
+def _sa_excel_exportacao(agente: dict, chaves: list):
+    """Gera o .xlsx: aba Resumo + uma aba por lista/tabela registrada. Retorna bytes ou None."""
     resumo = [
-        {"Item": "Agente", "Valor": f"{agente['nome']} — {agente['categoria']}"},
-        {"Item": "Usuário", "Valor": st.session_state.get("sa_usuario", "")},
-        {"Item": "Exportado em", "Valor": datetime.now().strftime("%d/%m/%Y %H:%M")},
+        ["Item", "Valor"],
+        ["Agente", f"{agente['nome']} — {agente['categoria']}"],
+        ["Usuário", st.session_state.get("sa_usuario", "")],
+        ["Exportado em", datetime.now().strftime("%d/%m/%Y %H:%M")],
     ]
     abas, vistos = [], set()
     for k in chaves:
@@ -23084,30 +23174,34 @@ def _sa_excel_exportacao(agente: dict, chaves: list):
         try:
             if isinstance(v, (list, tuple, set)):
                 itens = list(v)
-                if all(isinstance(i, dict) for i in itens):
-                    linhas = [{_sa_titulo(str(kk)): _sa_celula(vv) for kk, vv in i.items()} for i in itens]
+                if itens and all(isinstance(i, dict) for i in itens):
+                    colunas = []
+                    for i in itens:
+                        for kk in i.keys():
+                            if kk not in colunas:
+                                colunas.append(kk)
+                    linhas = [[_sa_titulo(str(c)) for c in colunas]]
+                    linhas += [[_sa_celula(i.get(c, "")) for c in colunas] for i in itens]
                 else:
-                    linhas = [{titulo: _sa_celula(i)} for i in itens]
-                abas.append((titulo, pd.DataFrame(linhas)))
+                    linhas = [[titulo]] + [[_sa_celula(i)] for i in itens]
+                abas.append((titulo, linhas))
             elif isinstance(v, dict):
-                linhas = [{"Campo": _sa_titulo(str(kk)), "Valor": _sa_celula(vv)} for kk, vv in v.items()]
-                abas.append((titulo, pd.DataFrame(linhas)))
+                linhas = [["Campo", "Valor"]] + [[_sa_titulo(str(kk)), _sa_celula(vv)] for kk, vv in v.items()]
+                abas.append((titulo, linhas))
             elif isinstance(v, str) and len(v) > 200:
-                abas.append((titulo, pd.DataFrame({titulo: v.splitlines() or [v]})))
+                abas.append((titulo, [[titulo]] + [[l] for l in v.splitlines()]))
             else:
-                resumo.append({"Item": titulo, "Valor": _sa_celula(v)})
+                resumo.append([titulo, _sa_celula(v)])
         except Exception:
-            resumo.append({"Item": titulo, "Valor": str(v)})
+            resumo.append([titulo, str(v)])
 
-    if len(resumo) == 3 and not abas:
+    if len(resumo) == 4 and not abas:
         return None
-    buf = io.BytesIO()
     usados = set()
-    with pd.ExcelWriter(buf, engine=motor) as wr:
-        pd.DataFrame(resumo).to_excel(wr, sheet_name=_sa_nome_aba("Resumo", usados), index=False)
-        for titulo, df in abas:
-            df.to_excel(wr, sheet_name=_sa_nome_aba(titulo, usados), index=False)
-    return buf.getvalue()
+    todas = [(_sa_nome_aba("Resumo", usados), resumo)]
+    for titulo, linhas in abas:
+        todas.append((_sa_nome_aba(titulo, usados), linhas))
+    return _sa_xlsx_bytes(todas)
 
 
 _SA_RODAPE_CSS = """<style>
@@ -23126,6 +23220,19 @@ _SA_RODAPE_CSS = """<style>
 .st-key-sa_rodape_box [data-testid="stDownloadButton"] > button:hover {
     background:#15803D !important; background-color:#15803D !important;
 }
+.st-key-sa_rodape_box .stButton > button {
+    background:#DC2626 !important; background-color:#DC2626 !important;
+    border:none !important; min-height:44px !important; font-weight:700 !important;
+}
+.st-key-sa_rodape_box .stButton > button:hover {
+    background:#B91C1C !important; background-color:#B91C1C !important;
+}
+[class*="st-key-sa_rodape_reset_nao_"] .stButton > button,
+.st-key-sa_rodape_box [class*="st-key-sa_rodape_reset_nao_"] button {
+    background:#6B7280 !important; background-color:#6B7280 !important;
+}
+.st-key-sa_rodape_box .stButton > button,
+.st-key-sa_rodape_box .stButton > button *,
 .st-key-sa_rodape_box [data-testid="stDownloadButton"] > button,
 .st-key-sa_rodape_box [data-testid="stDownloadButton"] > button * {
     color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
@@ -23153,7 +23260,9 @@ def _sa_rodape_conteudo(agente: dict):
                    "seus registros e resultados aparecem aqui para baixar.")
         return
     st.text_area("Seus registros nesta sessão", value=texto, height=260, disabled=True)
-    nome_arq = re.sub(r"[^a-z0-9]+", "_", agente["nome"].lower()).strip("_")
+    import unicodedata
+    nome_arq = unicodedata.normalize("NFKD", agente["nome"].lower()).encode("ascii", "ignore").decode()
+    nome_arq = re.sub(r"[^a-z0-9]+", "_", nome_arq).strip("_") or "agente"
     carimbo  = datetime.now().strftime("%Y%m%d_%H%M")
     col_txt, col_xls = st.columns(2)
     with col_txt:
@@ -23176,7 +23285,33 @@ def _sa_rodape_conteudo(agente: dict):
                 key=f"sa_rodape_xls_{codigo_key}", use_container_width=True,
             )
         else:
-            st.caption("Excel indisponível: adicione `openpyxl` ao requirements.txt.")
+            st.caption("Nada em formato de tabela para o Excel ainda.")
+
+    # ── RESETAR: apaga só os dados deste agente nesta sessão ──
+    conf_key = f"_sa_confirma_reset_{codigo_key}"
+    if not st.session_state.get(conf_key):
+        if st.button("🗑️ Resetar tudo deste agente", key=f"sa_rodape_reset_{codigo_key}",
+                     use_container_width=True):
+            st.session_state[conf_key] = True
+            st.rerun()
+    else:
+        st.warning("⚠️ Isso apaga tudo o que você registrou neste agente nesta sessão. "
+                   "Baixe antes se quiser guardar. Confirma?")
+        c_sim, c_nao = st.columns(2)
+        with c_sim:
+            if st.button("✅ Sim, apagar tudo", key=f"sa_rodape_reset_sim_{codigo_key}",
+                         use_container_width=True):
+                for k in list(chaves):
+                    if k in st.session_state:
+                        del st.session_state[k]
+                st.session_state[f"_sa_dados_{codigo_key}"] = []
+                del st.session_state[conf_key]
+                st.rerun()
+        with c_nao:
+            if st.button("✖ Cancelar", key=f"sa_rodape_reset_nao_{codigo_key}",
+                         use_container_width=True):
+                del st.session_state[conf_key]
+                st.rerun()
 
 
 # ── HELPER: EXECUTAR AGENTE EMBUTIDO ─────────────────────────────────────
