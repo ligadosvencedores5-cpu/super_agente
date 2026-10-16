@@ -3654,7 +3654,7 @@ if 'treinos_salvos' not in st.session_state: st.session_state['treinos_salvos'] 
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 PERSONAL TRAINER IA")
-    st.markdown("<div class=\'card\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -3784,12 +3784,6 @@ elif st.session_state.etapa == "App":
         # TREINO DO DIA
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
     with _tab_TreinoDia:
         st.header("💪 Treino do Dia")
         st.markdown("Treino completo personalizado — exercícios, séries, repetições e como executar.")
@@ -3820,32 +3814,32 @@ elif st.session_state.etapa == "App":
         if st.button("💪 GERAR TREINO DO DIA", key="personal6"):
             with st.spinner("Seu personal montando o treino..."):
                 prompt = (
-                    f"Monte um treino completo do dia.\n"
-                    f"Foco: {foco_dia}. Local: {local_d}. Nível: {nivel_d}.\n"
-                    f"Tempo: {tempo_d}. Objetivo: {st.session_state.objetivo_treino}.\n"
-                    f"Limitações: {limitacoes_d or 'nenhuma'}.\n\n"
-                    f"FORMATO OBRIGATÓRIO:\n\n"
-                    f"💪 TREINO DE {foco_dia.upper()}\n"
-                    f"Nível: {nivel_d} | Local: {local_d} | Tempo: {tempo_d}\n\n"
-                    f"🔥 AQUECIMENTO (5-10 min):\n"
-                    f"[3-4 exercícios de aquecimento específicos para esse foco]\n\n"
-                    f"📋 TREINO PRINCIPAL:\n\n"
-                    f"Para cada exercício use este formato:\n"
-                    f"[NÚMERO]. [NOME DO EXERCÍCIO] 💪\n"
-                    f"   • Séries: [X] | Repetições: [X] | Descanso: [X] segundos\n"
-                    f"   • Como executar: [instrução clara em 2 linhas]\n"
-                    f"   • Dica: [erro mais comum e como evitar]\n\n"
-                    f"[Mínimo 6 exercícios para o foco principal]\n\n"
-                    f"🧘 VOLTA À CALMA (5 min):\n"
-                    f"[3-4 alongamentos específicos para os músculos trabalhados]\n\n"
-                    f"📊 RESUMO DO TREINO:\n"
-                    f"Total de exercícios: [X]\n"
-                    f"Volume total (séries x rep): [X]\n"
-                    f"Calorias estimadas: [X] cal\n"
-                    f"Músculos trabalhados: [lista]\n\n"
-                    f"💡 DICA DO PERSONAL:\n"
-                    f"[1 dica específica para maximizar esse treino]\n\n"
-                    f"⚡ PRÓXIMO TREINO SUGERIDO:\n"
+                    f"Monte um treino completo do dia.\\n"
+                    f"Foco: {foco_dia}. Local: {local_d}. Nível: {nivel_d}.\\n"
+                    f"Tempo: {tempo_d}. Objetivo: {st.session_state.objetivo_treino}.\\n"
+                    f"Limitações: {limitacoes_d or 'nenhuma'}.\\n\\n"
+                    f"FORMATO OBRIGATÓRIO:\\n\\n"
+                    f"💪 TREINO DE {foco_dia.upper()}\\n"
+                    f"Nível: {nivel_d} | Local: {local_d} | Tempo: {tempo_d}\\n\\n"
+                    f"🔥 AQUECIMENTO (5-10 min):\\n"
+                    f"[3-4 exercícios de aquecimento específicos para esse foco]\\n\\n"
+                    f"📋 TREINO PRINCIPAL:\\n\\n"
+                    f"Para cada exercício use este formato:\\n"
+                    f"[NÚMERO]. [NOME DO EXERCÍCIO] 💪\\n"
+                    f"   • Séries: [X] | Repetições: [X] | Descanso: [X] segundos\\n"
+                    f"   • Como executar: [instrução clara em 2 linhas]\\n"
+                    f"   • Dica: [erro mais comum e como evitar]\\n\\n"
+                    f"[Mínimo 6 exercícios para o foco principal]\\n\\n"
+                    f"🧘 VOLTA À CALMA (5 min):\\n"
+                    f"[3-4 alongamentos específicos para os músculos trabalhados]\\n\\n"
+                    f"📊 RESUMO DO TREINO:\\n"
+                    f"Total de exercícios: [X]\\n"
+                    f"Volume total (séries x rep): [X]\\n"
+                    f"Calorias estimadas: [X] cal\\n"
+                    f"Músculos trabalhados: [lista]\\n\\n"
+                    f"💡 DICA DO PERSONAL:\\n"
+                    f"[1 dica específica para maximizar esse treino]\\n\\n"
+                    f"⚡ PRÓXIMO TREINO SUGERIDO:\\n"
                     f"[O que trabalhar na próxima sessão para equilíbrio muscular]"
                 )
                 res = personal_ia(prompt)
@@ -3905,30 +3899,30 @@ elif st.session_state.etapa == "App":
         if st.button("📅 GERAR PLANILHA DA SEMANA", key="personal10"):
             with st.spinner("Montando sua planilha semanal..."):
                 prompt = (
-                    f"Monte uma planilha de treino para {dias_s} dias na semana.\n"
-                    f"Objetivo: {objetivo_s}. Local: {local_s}. Nível: {nivel_s}.\n"
-                    f"Tempo por sessão: {tempo_s}. Limitações: {limitacoes_s or 'nenhuma'}.\n\n"
-                    f"ESTRUTURA:\n\n"
-                    f"📅 PLANILHA SEMANAL — {objetivo_s.upper()}\n"
-                    f"{dias_s} dias de treino · {tempo_s} por sessão · {nivel_s}\n\n"
-                    f"Para cada dia de treino use:\n\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━\n"
-                    f"💪 DIA [N] — [GRUPO MUSCULAR / FOCO]\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━\n"
-                    f"Exercício 1: [nome] — [X] séries x [X] rep — descanso [X]s\n"
-                    f"Exercício 2: [nome] — [X] séries x [X] rep — descanso [X]s\n"
-                    f"Exercício 3: [nome] — [X] séries x [X] rep — descanso [X]s\n"
-                    f"Exercício 4: [nome] — [X] séries x [X] rep — descanso [X]s\n"
-                    f"Exercício 5: [nome] — [X] séries x [X] rep — descanso [X]s\n"
-                    f"🔥 Finalizador: [exercício cardio/metabólico]\n\n"
-                    f"[Para os dias de descanso: indique recuperação ativa]\n\n"
-                    f"📊 VISÃO GERAL DA SEMANA:\n"
-                    f"[Tabela resumida: Dia | Foco | Volume | Intensidade]\n\n"
-                    f"📈 PROGRESSÃO NAS PRÓXIMAS SEMANAS:\n"
-                    f"Semana 2: [como aumentar]\n"
-                    f"Semana 3: [como aumentar]\n"
-                    f"Semana 4: [deload — semana de recuperação]\n\n"
-                    f"💡 DICA DA SEMANA:\n"
+                    f"Monte uma planilha de treino para {dias_s} dias na semana.\\n"
+                    f"Objetivo: {objetivo_s}. Local: {local_s}. Nível: {nivel_s}.\\n"
+                    f"Tempo por sessão: {tempo_s}. Limitações: {limitacoes_s or 'nenhuma'}.\\n\\n"
+                    f"ESTRUTURA:\\n\\n"
+                    f"📅 PLANILHA SEMANAL — {objetivo_s.upper()}\\n"
+                    f"{dias_s} dias de treino · {tempo_s} por sessão · {nivel_s}\\n\\n"
+                    f"Para cada dia de treino use:\\n\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\n"
+                    f"💪 DIA [N] — [GRUPO MUSCULAR / FOCO]\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\n"
+                    f"Exercício 1: [nome] — [X] séries x [X] rep — descanso [X]s\\n"
+                    f"Exercício 2: [nome] — [X] séries x [X] rep — descanso [X]s\\n"
+                    f"Exercício 3: [nome] — [X] séries x [X] rep — descanso [X]s\\n"
+                    f"Exercício 4: [nome] — [X] séries x [X] rep — descanso [X]s\\n"
+                    f"Exercício 5: [nome] — [X] séries x [X] rep — descanso [X]s\\n"
+                    f"🔥 Finalizador: [exercício cardio/metabólico]\\n\\n"
+                    f"[Para os dias de descanso: indique recuperação ativa]\\n\\n"
+                    f"📊 VISÃO GERAL DA SEMANA:\\n"
+                    f"[Tabela resumida: Dia | Foco | Volume | Intensidade]\\n\\n"
+                    f"📈 PROGRESSÃO NAS PRÓXIMAS SEMANAS:\\n"
+                    f"Semana 2: [como aumentar]\\n"
+                    f"Semana 3: [como aumentar]\\n"
+                    f"Semana 4: [deload — semana de recuperação]\\n\\n"
+                    f"💡 DICA DA SEMANA:\\n"
                     f"[1 estratégia para maximizar os resultados dessa divisão]"
                 )
                 res = personal_ia(prompt)
@@ -3985,32 +3979,32 @@ elif st.session_state.etapa == "App":
             with st.spinner("Montando treino em casa..."):
                 equip = ", ".join(equipamentos) if equipamentos else "só peso do corpo"
                 prompt = (
-                    f"Monte um treino em casa completo.\n"
-                    f"Foco: {foco_casa}. Espaço: {espaco}. Equipamentos: {equip}.\n"
-                    f"Nível: {nivel_c}. Tempo: {tempo_c}. Objetivo: {st.session_state.objetivo_treino}.\n"
-                    f"Limitações: {st.session_state.limitacoes or 'nenhuma'}.\n\n"
-                    f"FORMATO:\n\n"
-                    f"🏠 TREINO EM CASA — {foco_casa.upper()}\n"
-                    f"Sem academia · {equip} · {tempo_c}\n\n"
-                    f"🔥 AQUECIMENTO (3-5 min):\n"
-                    f"[Aquecimento sem equipamento, em espaço pequeno]\n\n"
-                    f"💪 CIRCUITO PRINCIPAL:\n"
-                    f"[Organize em blocos/circuitos de 3-4 exercícios]\n\n"
-                    f"BLOCO 1 — [nome do bloco]:\n"
-                    f"• [Exercício 1]: [X] séries x [X] rep (ou [X] segundos)\n"
-                    f"  Como fazer: [instrução simples]\n"
-                    f"• [Exercício 2]: ...\n"
-                    f"• [Exercício 3]: ...\n"
-                    f"Descanso entre blocos: [X] segundos\n\n"
-                    f"[Repita para todos os blocos]\n\n"
-                    f"🧘 ALONGAMENTO FINAL (5 min):\n"
-                    f"[Alongamentos no chão/em pé]\n\n"
-                    f"📊 RESUMO:\n"
-                    f"Calorias estimadas: [X] cal\n"
-                    f"Músculos trabalhados: [lista]\n\n"
-                    f"💡 VERSÃO MAIS DIFÍCIL:\n"
-                    f"[Como tornar esse treino mais intenso quando ficar fácil]\n\n"
-                    f"📱 TIMER SUGERIDO:\n"
+                    f"Monte um treino em casa completo.\\n"
+                    f"Foco: {foco_casa}. Espaço: {espaco}. Equipamentos: {equip}.\\n"
+                    f"Nível: {nivel_c}. Tempo: {tempo_c}. Objetivo: {st.session_state.objetivo_treino}.\\n"
+                    f"Limitações: {st.session_state.limitacoes or 'nenhuma'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🏠 TREINO EM CASA — {foco_casa.upper()}\\n"
+                    f"Sem academia · {equip} · {tempo_c}\\n\\n"
+                    f"🔥 AQUECIMENTO (3-5 min):\\n"
+                    f"[Aquecimento sem equipamento, em espaço pequeno]\\n\\n"
+                    f"💪 CIRCUITO PRINCIPAL:\\n"
+                    f"[Organize em blocos/circuitos de 3-4 exercícios]\\n\\n"
+                    f"BLOCO 1 — [nome do bloco]:\\n"
+                    f"• [Exercício 1]: [X] séries x [X] rep (ou [X] segundos)\\n"
+                    f"  Como fazer: [instrução simples]\\n"
+                    f"• [Exercício 2]: ...\\n"
+                    f"• [Exercício 3]: ...\\n"
+                    f"Descanso entre blocos: [X] segundos\\n\\n"
+                    f"[Repita para todos os blocos]\\n\\n"
+                    f"🧘 ALONGAMENTO FINAL (5 min):\\n"
+                    f"[Alongamentos no chão/em pé]\\n\\n"
+                    f"📊 RESUMO:\\n"
+                    f"Calorias estimadas: [X] cal\\n"
+                    f"Músculos trabalhados: [lista]\\n\\n"
+                    f"💡 VERSÃO MAIS DIFÍCIL:\\n"
+                    f"[Como tornar esse treino mais intenso quando ficar fácil]\\n\\n"
+                    f"📱 TIMER SUGERIDO:\\n"
                     f"[Como usar o cronômetro para esse treino — Tabata, EMOM, AMRAP...]"
                 )
                 res = personal_ia(prompt)
@@ -4051,7 +4045,7 @@ elif st.session_state.etapa == "App":
         with col1:
             semanas_atual= st.number_input("Há quantas semanas está treinando:", min_value=1, max_value=104, value=4, key="personal13")
             treino_atual = st.text_area("Seu treino atual (exercícios e cargas):", height=120,
-                placeholder="ex: Supino reto: 3x10 com 30kg\nAgachamento: 4x12 com 40kg\nRosca direta: 3x12 com 10kg...", key="pt28")
+                placeholder="ex: Supino reto: 3x10 com 30kg\\nAgachamento: 4x12 com 40kg\\nRosca direta: 3x12 com 10kg...", key="pt28")
         with col2:
             objetivo_e   = st.selectbox("Objetivo da progressão:", [
                 "Ganhar força (menos rep, mais carga)",
@@ -4068,27 +4062,27 @@ elif st.session_state.etapa == "App":
             if treino_atual.strip():
                 with st.spinner("Calculando sua progressão..."):
                     prompt = (
-                        f"Crie um plano de progressão de cargas para 8 semanas.\n"
-                        f"Semanas treinando: {semanas_atual}. Nível: {nivel_e}.\n"
-                        f"Objetivo: {objetivo_e}.\n"
-                        f"Treino atual:\n{treino_atual}\n\n"
-                        f"ESTRUTURA:\n\n"
-                        f"📈 PLANO DE PROGRESSÃO — 8 SEMANAS\n"
-                        f"Objetivo: {objetivo_e}\n\n"
-                        f"📊 ANÁLISE DO TREINO ATUAL:\n"
-                        f"[Avaliação honesta do volume e intensidade atual]\n\n"
-                        f"🗓️ PROGRESSÃO SEMANA A SEMANA:\n\n"
-                        f"Para cada semana:\n"
-                        f"Semana [N]:\n"
-                        f"• [Exercício]: [séries]x[rep] com [carga] kg\n"
-                        f"  Mudança: [o que aumentou e por quê]\n\n"
-                        f"[Semana 4: deload — redução de 40% do volume]\n"
-                        f"[Semana 8: teste de força máxima]\n\n"
-                        f"📏 REGRAS DE PROGRESSÃO:\n"
-                        f"[Quando aumentar carga, quando manter, quando recuar]\n\n"
-                        f"🚨 SINAIS DE ALERTA:\n"
-                        f"[Quando parar de progredir significa que algo está errado]\n\n"
-                        f"💡 PERIODIZAÇÃO:\n"
+                        f"Crie um plano de progressão de cargas para 8 semanas.\\n"
+                        f"Semanas treinando: {semanas_atual}. Nível: {nivel_e}.\\n"
+                        f"Objetivo: {objetivo_e}.\\n"
+                        f"Treino atual:\\n{treino_atual}\\n\\n"
+                        f"ESTRUTURA:\\n\\n"
+                        f"📈 PLANO DE PROGRESSÃO — 8 SEMANAS\\n"
+                        f"Objetivo: {objetivo_e}\\n\\n"
+                        f"📊 ANÁLISE DO TREINO ATUAL:\\n"
+                        f"[Avaliação honesta do volume e intensidade atual]\\n\\n"
+                        f"🗓️ PROGRESSÃO SEMANA A SEMANA:\\n\\n"
+                        f"Para cada semana:\\n"
+                        f"Semana [N]:\\n"
+                        f"• [Exercício]: [séries]x[rep] com [carga] kg\\n"
+                        f"  Mudança: [o que aumentou e por quê]\\n\\n"
+                        f"[Semana 4: deload — redução de 40% do volume]\\n"
+                        f"[Semana 8: teste de força máxima]\\n\\n"
+                        f"📏 REGRAS DE PROGRESSÃO:\\n"
+                        f"[Quando aumentar carga, quando manter, quando recuar]\\n\\n"
+                        f"🚨 SINAIS DE ALERTA:\\n"
+                        f"[Quando parar de progredir significa que algo está errado]\\n\\n"
+                        f"💡 PERIODIZAÇÃO:\\n"
                         f"[Como organizar os ciclos após as 8 semanas]"
                     )
                     res = personal_ia(prompt)
@@ -4142,21 +4136,21 @@ elif st.session_state.etapa == "App":
             if st.button("🔥 GERAR AQUECIMENTO", key="personal17"):
                 with st.spinner("Preparando aquecimento..."):
                     prompt = (
-                        f"Crie um protocolo de aquecimento completo para treino de {musculo_aq}.\n"
-                        f"Tempo: {tempo_aq}. Local: {local_aq}. Nível: {nivel_aq}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"🔥 AQUECIMENTO — {musculo_aq.upper()}\n"
-                        f"Duração: {tempo_aq}\n\n"
-                        f"FASE 1 — Ativação geral (2-3 min):\n"
-                        f"[Exercícios para elevar temperatura corporal]\n\n"
-                        f"FASE 2 — Mobilização articular (2-3 min):\n"
-                        f"[Movimentos para as articulações envolvidas no treino]\n\n"
-                        f"FASE 3 — Ativação específica (2-3 min):\n"
-                        f"[Exercícios leves dos músculos que vão ser treinados]\n\n"
-                        f"Para cada exercício:\n"
-                        f"• [Nome]: [X] repetições ou [X] segundos\n"
-                        f"  Como fazer: [instrução rápida]\n\n"
-                        f"✅ VOCÊ ESTÁ PRONTO PARA TREINAR QUANDO:\n"
+                        f"Crie um protocolo de aquecimento completo para treino de {musculo_aq}.\\n"
+                        f"Tempo: {tempo_aq}. Local: {local_aq}. Nível: {nivel_aq}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔥 AQUECIMENTO — {musculo_aq.upper()}\\n"
+                        f"Duração: {tempo_aq}\\n\\n"
+                        f"FASE 1 — Ativação geral (2-3 min):\\n"
+                        f"[Exercícios para elevar temperatura corporal]\\n\\n"
+                        f"FASE 2 — Mobilização articular (2-3 min):\\n"
+                        f"[Movimentos para as articulações envolvidas no treino]\\n\\n"
+                        f"FASE 3 — Ativação específica (2-3 min):\\n"
+                        f"[Exercícios leves dos músculos que vão ser treinados]\\n\\n"
+                        f"Para cada exercício:\\n"
+                        f"• [Nome]: [X] repetições ou [X] segundos\\n"
+                        f"  Como fazer: [instrução rápida]\\n\\n"
+                        f"✅ VOCÊ ESTÁ PRONTO PARA TREINAR QUANDO:\\n"
                         f"[Sinais de que o corpo está aquecido corretamente]"
                     )
                     res = personal_ia(prompt)
@@ -4185,22 +4179,22 @@ elif st.session_state.etapa == "App":
             if st.button("🧘 GERAR ALONGAMENTO", key="personal19"):
                 with st.spinner("Preparando alongamento..."):
                     prompt = (
-                        f"Crie um protocolo de alongamento após treino de {musculo_al}.\n"
-                        f"Tempo: {tempo_al}. Objetivo: {objetivo_al}.\n"
-                        f"Limitações: {limitacoes_al or 'nenhuma'}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"🧘 ALONGAMENTO — {musculo_al.upper()}\n"
-                        f"Duração: {tempo_al} | Foco: {objetivo_al}\n\n"
-                        f"Para cada alongamento:\n"
-                        f"[NÚMERO]. [NOME DO ALONGAMENTO]\n"
-                        f"   • Duração: [X] segundos por lado\n"
-                        f"   • Como fazer: [instrução clara]\n"
-                        f"   • Músculo alongado: [qual músculo]\n"
-                        f"   • Respiração: [como respirar durante]\n\n"
-                        f"[Mínimo 6 alongamentos]\n\n"
-                        f"💡 DICA DE RECUPERAÇÃO:\n"
-                        f"[O que mais fazer para recuperar bem após esse treino]\n\n"
-                        f"🥤 NUTRIÇÃO PÓS-TREINO:\n"
+                        f"Crie um protocolo de alongamento após treino de {musculo_al}.\\n"
+                        f"Tempo: {tempo_al}. Objetivo: {objetivo_al}.\\n"
+                        f"Limitações: {limitacoes_al or 'nenhuma'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧘 ALONGAMENTO — {musculo_al.upper()}\\n"
+                        f"Duração: {tempo_al} | Foco: {objetivo_al}\\n\\n"
+                        f"Para cada alongamento:\\n"
+                        f"[NÚMERO]. [NOME DO ALONGAMENTO]\\n"
+                        f"   • Duração: [X] segundos por lado\\n"
+                        f"   • Como fazer: [instrução clara]\\n"
+                        f"   • Músculo alongado: [qual músculo]\\n"
+                        f"   • Respiração: [como respirar durante]\\n\\n"
+                        f"[Mínimo 6 alongamentos]\\n\\n"
+                        f"💡 DICA DE RECUPERAÇÃO:\\n"
+                        f"[O que mais fazer para recuperar bem após esse treino]\\n\\n"
+                        f"🥤 NUTRIÇÃO PÓS-TREINO:\\n"
                         f"[O que comer/beber nas próximas 2 horas para maximizar a recuperação]"
                     )
                     res = personal_ia(prompt)
@@ -4288,8 +4282,8 @@ elif st.session_state.etapa == "App":
             with col_f:
                 filtro = st.selectbox("Filtrar:", ["Todos"] + list(tipos.keys()), key="personal23")
             with col_ex:
-                hist_txt = "\n\n".join(
-                    f"[{t['data']}] {t['tipo']} — {t['foco']}\n{t['conteudo']}\n{'─'*40}"
+                hist_txt = "\\n\\n".join(
+                    f"[{t['data']}] {t['tipo']} — {t['foco']}\\n{t['conteudo']}\\n{'─'*40}"
                     for t in st.session_state.historico_treinos
                 )
                 st.download_button("⬇️ Exportar TXT", data=hist_txt,
@@ -4407,18 +4401,18 @@ elif st.session_state.etapa == "App":
             if st.button("💊 GERAR RECOMENDAÇÃO PERSONALIZADA", key="personal36"):
                 with st.spinner("Analisando seu perfil..."):
                     prompt = (
-                        f"Crie uma recomendação completa e honesta de suplementação.\n"
-                        f"{contexto_anamnese()}\n"
+                        f"Crie uma recomendação completa e honesta de suplementação.\\n"
+                        f"{contexto_anamnese()}\\n"
                         f"Orçamento: {orcamento_sup}. Fase: {fase_sup}. Restrições: {', '.join(restricoes_sup) or 'nenhuma'}. "
-                        f"Experiência: {experiencia_sup}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"💊 SUPLEMENTAÇÃO RECOMENDADA\n\n"
-                        f"⭐ ESSENCIAIS (maior evidência científica para seu objetivo):\n"
-                        f"[Para cada: nome, dose, momento ideal, por que para ESTE perfil, custo estimado]\n\n"
-                        f"➕ OPCIONAIS (benefício real mas secundário):\n[mesma estrutura]\n\n"
-                        f"❌ NÃO NECESSÁRIOS PARA VOCÊ AGORA:\n[o que o marketing vende mas não faz sentido para esse perfil]\n\n"
-                        f"📅 PROTOCOLO DIÁRIO:\n[como encaixar cada suplemento na rotina do dia]\n\n"
-                        f"⚠️ IMPORTANTE:\n[interações com medicamentos se houver, contraindicações pelo perfil de saúde]"
+                        f"Experiência: {experiencia_sup}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💊 SUPLEMENTAÇÃO RECOMENDADA\\n\\n"
+                        f"⭐ ESSENCIAIS (maior evidência científica para seu objetivo):\\n"
+                        f"[Para cada: nome, dose, momento ideal, por que para ESTE perfil, custo estimado]\\n\\n"
+                        f"➕ OPCIONAIS (benefício real mas secundário):\\n[mesma estrutura]\\n\\n"
+                        f"❌ NÃO NECESSÁRIOS PARA VOCÊ AGORA:\\n[o que o marketing vende mas não faz sentido para esse perfil]\\n\\n"
+                        f"📅 PROTOCOLO DIÁRIO:\\n[como encaixar cada suplemento na rotina do dia]\\n\\n"
+                        f"⚠️ IMPORTANTE:\\n[interações com medicamentos se houver, contraindicações pelo perfil de saúde]"
                     )
                     res = personal_ia(prompt, "Seja honesto sobre evidências científicas. Não exagere benefícios. Sempre considere as condições de saúde reportadas.")
                     if res: st.session_state['res_suplementaca_person7'] = str(res)
@@ -4438,15 +4432,15 @@ elif st.session_state.etapa == "App":
             if st.button("📚 GUIA COMPLETO DESTE SUPLEMENTO", key="personal38"):
                 with st.spinner("Preparando guia..."):
                     prompt = (
-                        f"Crie um guia completo e científicamente embasado sobre: {supl_escolhido}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"📚 {supl_escolhido.upper()}\n\n"
-                        f"🔬 O QUE É E COMO FUNCIONA:\n[mecanismo real no corpo]\n\n"
-                        f"✅ PARA QUEM FAZ SENTIDO:\n[perfis que mais se beneficiam]\n\n"
-                        f"📊 DOSAGEM BASEADA EM EVIDÊNCIA:\n[dose, timing, forma de uso]\n\n"
-                        f"⚡ O QUE A CIÊNCIA DIZ:\n[nível de evidência — forte, moderada ou fraca]\n\n"
-                        f"💰 CUSTO-BENEFÍCIO:\n[vale o investimento para a maioria das pessoas?]\n\n"
-                        f"⚠️ CUIDADOS E CONTRAINDICAÇÕES:\n[quem deve evitar ou consultar médico antes]"
+                        f"Crie um guia completo e científicamente embasado sobre: {supl_escolhido}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📚 {supl_escolhido.upper()}\\n\\n"
+                        f"🔬 O QUE É E COMO FUNCIONA:\\n[mecanismo real no corpo]\\n\\n"
+                        f"✅ PARA QUEM FAZ SENTIDO:\\n[perfis que mais se beneficiam]\\n\\n"
+                        f"📊 DOSAGEM BASEADA EM EVIDÊNCIA:\\n[dose, timing, forma de uso]\\n\\n"
+                        f"⚡ O QUE A CIÊNCIA DIZ:\\n[nível de evidência — forte, moderada ou fraca]\\n\\n"
+                        f"💰 CUSTO-BENEFÍCIO:\\n[vale o investimento para a maioria das pessoas?]\\n\\n"
+                        f"⚠️ CUIDADOS E CONTRAINDICAÇÕES:\\n[quem deve evitar ou consultar médico antes]"
                     )
                     res = personal_ia(prompt)
                     if res: st.session_state['res_suplementaca_person8'] = str(res)
@@ -4459,12 +4453,12 @@ elif st.session_state.etapa == "App":
             if st.button("⚠️ O QUE EVITAR E POR QUÊ", key="personal39"):
                 with st.spinner("Preparando lista crítica..."):
                     prompt = (
-                        f"Liste suplementos e produtos que devem ser evitados ou têm evidência fraca.\n\n"
-                        f"FORMATO:\n\n"
-                        f"⚠️ SUPLEMENTOS QUE NÃO VALEM O DINHEIRO\n\n"
-                        f"[Para cada: nome, por que é vendido, o que a ciência realmente diz, veredicto]\n\n"
-                        f"🚨 PRODUTOS PERIGOSOS OU SUSPEITOS:\n[substâncias que oferecem risco real]\n\n"
-                        f"💡 REGRA DE OURO:\n[como avaliar qualquer novo suplemento antes de comprar]"
+                        f"Liste suplementos e produtos que devem ser evitados ou têm evidência fraca.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"⚠️ SUPLEMENTOS QUE NÃO VALEM O DINHEIRO\\n\\n"
+                        f"[Para cada: nome, por que é vendido, o que a ciência realmente diz, veredicto]\\n\\n"
+                        f"🚨 PRODUTOS PERIGOSOS OU SUSPEITOS:\\n[substâncias que oferecem risco real]\\n\\n"
+                        f"💡 REGRA DE OURO:\\n[como avaliar qualquer novo suplemento antes de comprar]"
                     )
                     res = personal_ia(prompt)
                     if res: st.session_state['res_suplementaca_person9'] = str(res)
@@ -4499,20 +4493,20 @@ elif st.session_state.etapa == "App":
                          f"local: {st.session_state.get('an_local','academia')}, "
                          f"lesões: {st.session_state.get('an_lesoes','nenhuma')}." if st.session_state.get('an_objetivo') else "")
                 prompt = (
-                    f"Crie um treino adaptado ao nível de energia atual.\n"
-                    f"{perfil}\n"
+                    f"Crie um treino adaptado ao nível de energia atual.\\n"
+                    f"{perfil}\\n"
                     f"Energia: {energia_pct}% (nível {nivel_txt}). Sono: {sono_noite}. "
                     f"Dores: {', '.join(dores_hoje) or 'nenhuma'}. Último treino: {ultimo_treino}. "
-                    f"Foco desejado: {foco_fadiga or 'livre'}.\n\n"
-                    f"FORMATO:\n\n"
-                    f"🔥 TREINO DE HOJE — NÍVEL {nivel_txt} ({energia_pct}%)\n\n"
-                    f"🎯 ESTRATÉGIA DO DIA:\n[por que esse tipo de treino faz sentido hoje com essa energia]\n\n"
-                    f"⚡ AQUECIMENTO ({5 if energia_pct < 50 else 10} min):\n[adaptado ao nível de energia]\n\n"
-                    f"💪 TREINO PRINCIPAL:\n[exercícios com séries, repetições e descanso — "
-                    f"mais leve e menos volume se energia baixa, normal/intenso se alta]\n\n"
-                    f"🔄 ADAPTAÇÕES PARA AS DORES REPORTADAS:\n[como modificar exercícios]\n\n"
-                    f"🧘 FINALIZAÇÃO:\n[volta à calma adequada ao estado de hoje]\n\n"
-                    f"💡 CONSELHO DO DIA:\n[1 orientação sobre treinar com esse nível de energia]"
+                    f"Foco desejado: {foco_fadiga or 'livre'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🔥 TREINO DE HOJE — NÍVEL {nivel_txt} ({energia_pct}%)\\n\\n"
+                    f"🎯 ESTRATÉGIA DO DIA:\\n[por que esse tipo de treino faz sentido hoje com essa energia]\\n\\n"
+                    f"⚡ AQUECIMENTO ({5 if energia_pct < 50 else 10} min):\\n[adaptado ao nível de energia]\\n\\n"
+                    f"💪 TREINO PRINCIPAL:\\n[exercícios com séries, repetições e descanso — "
+                    f"mais leve e menos volume se energia baixa, normal/intenso se alta]\\n\\n"
+                    f"🔄 ADAPTAÇÕES PARA AS DORES REPORTADAS:\\n[como modificar exercícios]\\n\\n"
+                    f"🧘 FINALIZAÇÃO:\\n[volta à calma adequada ao estado de hoje]\\n\\n"
+                    f"💡 CONSELHO DO DIA:\\n[1 orientação sobre treinar com esse nível de energia]"
                 )
                 res = personal_ia(prompt)
                 if res: st.session_state['res_fadiga_person10'] = str(res)
@@ -4570,20 +4564,20 @@ elif st.session_state.etapa == "App":
                 cal_alvo = tdee - 400 if objetivo_mac == "Perder gordura" else (tdee + 300 if objetivo_mac == "Ganhar massa" else tdee)
 
                 prompt = (
-                    f"Crie um plano completo de macros para esta pessoa.\n"
-                    f"TMB calculada: {tmb:.0f} kcal. TDEE: {tdee:.0f} kcal. Calorias alvo: {cal_alvo:.0f} kcal.\n"
+                    f"Crie um plano completo de macros para esta pessoa.\\n"
+                    f"TMB calculada: {tmb:.0f} kcal. TDEE: {tdee:.0f} kcal. Calorias alvo: {cal_alvo:.0f} kcal.\\n"
                     f"Perfil: {sexo_mac}, {idade_mac} anos, {peso_mac}kg, {altura_mac}cm, "
-                    f"objetivo: {objetivo_mac}, dieta: {dieta_mac}.\n\n"
-                    f"FORMATO:\n\n"
-                    f"🍽️ SEU PLANO DE MACROS\n\n"
-                    f"📊 CALORIAS DIÁRIAS: {cal_alvo:.0f} kcal\n"
-                    f"(TMB: {tmb:.0f} | TDEE: {tdee:.0f})\n\n"
-                    f"🥩 PROTEÍNA: [X]g/dia ([X] kcal)\n[justificativa e fontes recomendadas para {dieta_mac}]\n\n"
-                    f"🍞 CARBOIDRATO: [X]g/dia ([X] kcal)\n[timing e melhores fontes]\n\n"
-                    f"🥑 GORDURA: [X]g/dia ([X] kcal)\n[melhores fontes]\n\n"
-                    f"📅 DISTRIBUIÇÃO NAS REFEIÇÕES:\n[como dividir os macros ao longo do dia — 4-6 refeições]\n\n"
-                    f"🍱 EXEMPLOS DE REFEIÇÕES:\n[3 exemplos práticos que batem os macros do dia, respeitando {dieta_mac}]\n\n"
-                    f"💡 DICA PRINCIPAL:\n[1 ajuste que mais impacta o resultado para esse objetivo]"
+                    f"objetivo: {objetivo_mac}, dieta: {dieta_mac}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🍽️ SEU PLANO DE MACROS\\n\\n"
+                    f"📊 CALORIAS DIÁRIAS: {cal_alvo:.0f} kcal\\n"
+                    f"(TMB: {tmb:.0f} | TDEE: {tdee:.0f})\\n\\n"
+                    f"🥩 PROTEÍNA: [X]g/dia ([X] kcal)\\n[justificativa e fontes recomendadas para {dieta_mac}]\\n\\n"
+                    f"🍞 CARBOIDRATO: [X]g/dia ([X] kcal)\\n[timing e melhores fontes]\\n\\n"
+                    f"🥑 GORDURA: [X]g/dia ([X] kcal)\\n[melhores fontes]\\n\\n"
+                    f"📅 DISTRIBUIÇÃO NAS REFEIÇÕES:\\n[como dividir os macros ao longo do dia — 4-6 refeições]\\n\\n"
+                    f"🍱 EXEMPLOS DE REFEIÇÕES:\\n[3 exemplos práticos que batem os macros do dia, respeitando {dieta_mac}]\\n\\n"
+                    f"💡 DICA PRINCIPAL:\\n[1 ajuste que mais impacta o resultado para esse objetivo]"
                 )
                 res = personal_ia(prompt)
                 if res: st.session_state['res_macros_person11'] = str(res)
@@ -4616,19 +4610,19 @@ elif st.session_state.etapa == "App":
             if st.button("😴 ANALISAR MEU SONO E RECUPERAÇÃO", key="personal51"):
                 with st.spinner("Analisando..."):
                     prompt = (
-                        f"Analise o padrão de sono e crie um guia de recuperação personalizado.\n"
-                        f"Sono: {horas_sono} por noite. Qualidade: {qualidade_sono}.\n"
+                        f"Analise o padrão de sono e crie um guia de recuperação personalizado.\\n"
+                        f"Sono: {horas_sono} por noite. Qualidade: {qualidade_sono}.\\n"
                         f"Objetivo: {st.session_state.get('an_objetivo','melhora geral')}. "
                         f"Nível: {st.session_state.get('an_nivel','intermediário')}. "
-                        f"Estresse: {st.session_state.get('an_estresse','moderado')}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"😴 ANÁLISE DO SEU SONO\n\n"
-                        f"📊 O IMPACTO NO SEU TREINO:\n[como esse padrão de sono afeta seus resultados especificamente]\n\n"
-                        f"🧠 POR QUE O SONO É O SUPLEMENTO MAIS PODEROSO:\n[mecanismos fisiológicos — GH, testosterona, recuperação muscular]\n\n"
-                        f"✅ PROTOCOLO DE HIGIENE DO SONO:\n[ações específicas para melhorar, em ordem de impacto]\n\n"
-                        f"⏰ ROTINA IDEAL PRÉ-SONO:\n[o que fazer nas 2 horas antes de dormir]\n\n"
-                        f"💊 SUPLEMENTOS QUE PODEM AJUDAR:\n[com base em evidência — melatonina, magnésio, etc]\n\n"
-                        f"🎯 META DESTA SEMANA:\n[1 mudança concreta para começar hoje]"
+                        f"Estresse: {st.session_state.get('an_estresse','moderado')}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"😴 ANÁLISE DO SEU SONO\\n\\n"
+                        f"📊 O IMPACTO NO SEU TREINO:\\n[como esse padrão de sono afeta seus resultados especificamente]\\n\\n"
+                        f"🧠 POR QUE O SONO É O SUPLEMENTO MAIS PODEROSO:\\n[mecanismos fisiológicos — GH, testosterona, recuperação muscular]\\n\\n"
+                        f"✅ PROTOCOLO DE HIGIENE DO SONO:\\n[ações específicas para melhorar, em ordem de impacto]\\n\\n"
+                        f"⏰ ROTINA IDEAL PRÉ-SONO:\\n[o que fazer nas 2 horas antes de dormir]\\n\\n"
+                        f"💊 SUPLEMENTOS QUE PODEM AJUDAR:\\n[com base em evidência — melatonina, magnésio, etc]\\n\\n"
+                        f"🎯 META DESTA SEMANA:\\n[1 mudança concreta para começar hoje]"
                     )
                     res = personal_ia(prompt)
                     if res: st.session_state['res_recuperacao_person12'] = str(res)
@@ -4644,15 +4638,15 @@ elif st.session_state.etapa == "App":
             if st.button("🧊 PROTOCOLO DE RECUPERAÇÃO ATIVA", key="personal53"):
                 with st.spinner("Preparando protocolo..."):
                     prompt = (
-                        f"Crie um protocolo de recuperação ativa.\n"
-                        f"Dias consecutivos treinando: {dias_sem_treino}. Dores: {', '.join(tipo_dor) or 'nenhuma'}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"🧊 PROTOCOLO DE RECUPERAÇÃO ATIVA\n\n"
-                        f"🎯 DIAGNÓSTICO:\n[avaliação do estado de recuperação]\n\n"
-                        f"✅ ATIVIDADES DE RECUPERAÇÃO RECOMENDADAS HOJE:\n[o que fazer — caminhada leve, mobilidade, natação leve, etc]\n\n"
-                        f"🧊 TÉCNICAS DE RECUPERAÇÃO FÍSICA:\n[banho frio, contraste, foam roller, compressão — o que ajuda e como]\n\n"
-                        f"🍽️ NUTRIÇÃO PARA RECUPERAÇÃO:\n[o que comer para acelerar a recuperação muscular]\n\n"
-                        f"⏳ QUANDO VOLTAR AO TREINO INTENSO:\n[guia de timing baseado no estado atual]"
+                        f"Crie um protocolo de recuperação ativa.\\n"
+                        f"Dias consecutivos treinando: {dias_sem_treino}. Dores: {', '.join(tipo_dor) or 'nenhuma'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧊 PROTOCOLO DE RECUPERAÇÃO ATIVA\\n\\n"
+                        f"🎯 DIAGNÓSTICO:\\n[avaliação do estado de recuperação]\\n\\n"
+                        f"✅ ATIVIDADES DE RECUPERAÇÃO RECOMENDADAS HOJE:\\n[o que fazer — caminhada leve, mobilidade, natação leve, etc]\\n\\n"
+                        f"🧊 TÉCNICAS DE RECUPERAÇÃO FÍSICA:\\n[banho frio, contraste, foam roller, compressão — o que ajuda e como]\\n\\n"
+                        f"🍽️ NUTRIÇÃO PARA RECUPERAÇÃO:\\n[o que comer para acelerar a recuperação muscular]\\n\\n"
+                        f"⏳ QUANDO VOLTAR AO TREINO INTENSO:\\n[guia de timing baseado no estado atual]"
                     )
                     res = personal_ia(prompt)
                     if res: st.session_state['res_recuperacao_person13'] = str(res)
@@ -4672,17 +4666,17 @@ elif st.session_state.etapa == "App":
                 if sintomas_over:
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Avalie o risco de overtraining com base nos sintomas.\n"
-                            f"Sintomas: {', '.join(sintomas_over)}.\n"
+                            f"Avalie o risco de overtraining com base nos sintomas.\\n"
+                            f"Sintomas: {', '.join(sintomas_over)}.\\n"
                             f"Frequência de treino: {st.session_state.get('an_dias',3)} dias/semana. "
-                            f"Nível: {st.session_state.get('an_nivel','intermediário')}.\n\n"
-                            f"FORMATO:\n\n"
-                            f"🚨 AVALIAÇÃO DE OVERTRAINING\n\n"
-                            f"📊 NÍVEL DE RISCO: [Baixo/Moderado/Alto/Crítico]\n[justificativa]\n\n"
-                            f"🔬 O QUE ESTÁ ACONTECENDO NO SEU CORPO:\n[fisiologia do overtraining]\n\n"
-                            f"🛑 O QUE FAZER AGORA:\n[protocolo de ação baseado no nível de risco]\n\n"
-                            f"📅 PLANO DE DELOAD:\n[como estruturar a semana de recuperação]\n\n"
-                            f"✅ COMO PREVENIR NO FUTURO:\n[periodização e sinais de alerta precoces]"
+                            f"Nível: {st.session_state.get('an_nivel','intermediário')}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🚨 AVALIAÇÃO DE OVERTRAINING\\n\\n"
+                            f"📊 NÍVEL DE RISCO: [Baixo/Moderado/Alto/Crítico]\\n[justificativa]\\n\\n"
+                            f"🔬 O QUE ESTÁ ACONTECENDO NO SEU CORPO:\\n[fisiologia do overtraining]\\n\\n"
+                            f"🛑 O QUE FAZER AGORA:\\n[protocolo de ação baseado no nível de risco]\\n\\n"
+                            f"📅 PLANO DE DELOAD:\\n[como estruturar a semana de recuperação]\\n\\n"
+                            f"✅ COMO PREVENIR NO FUTURO:\\n[periodização e sinais de alerta precoces]"
                         )
                         res = personal_ia(prompt, "Seja conservador nas recomendações de saúde. Se os sintomas forem graves, recomende avaliação médica.")
                         if res: st.session_state['res_recuperacao_person14'] = str(res)
@@ -4712,17 +4706,17 @@ elif st.session_state.etapa == "App":
         if st.button("🧠 ORIENTAÇÃO MENTAL", key="personal55"):
             with st.spinner("Preparando orientação..."):
                 prompt = (
-                    f"Ofereça orientação sobre mentalidade e consistência no treino.\n"
-                    f"Tema: {tema_mental}. Contexto: {contexto_mental or 'não detalhado'}.\n"
+                    f"Ofereça orientação sobre mentalidade e consistência no treino.\\n"
+                    f"Tema: {tema_mental}. Contexto: {contexto_mental or 'não detalhado'}.\\n"
                     f"Perfil: objetivo {st.session_state.get('an_objetivo','melhora geral')}, "
-                    f"nível {st.session_state.get('an_nivel','iniciante')}.\n\n"
-                    f"FORMATO:\n\n"
-                    f"🧠 {tema_mental.upper()}\n\n"
-                    f"🎯 O QUE REALMENTE ESTÁ ACONTECENDO:\n[a raiz psicológica do problema, sem julgamento]\n\n"
-                    f"🔬 A CIÊNCIA POR TRÁS:\n[o que a psicologia do comportamento e neurociência diz sobre isso]\n\n"
-                    f"⚙️ ESTRATÉGIAS PRÁTICAS:\n[3-5 ações concretas e replicáveis]\n\n"
-                    f"📅 O QUE FAZER HOJE:\n[1 ação imediata para quebrar o padrão]\n\n"
-                    f"💪 REFRAME:\n[uma perspectiva diferente que muda como você vê a situação]"
+                    f"nível {st.session_state.get('an_nivel','iniciante')}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🧠 {tema_mental.upper()}\\n\\n"
+                    f"🎯 O QUE REALMENTE ESTÁ ACONTECENDO:\\n[a raiz psicológica do problema, sem julgamento]\\n\\n"
+                    f"🔬 A CIÊNCIA POR TRÁS:\\n[o que a psicologia do comportamento e neurociência diz sobre isso]\\n\\n"
+                    f"⚙️ ESTRATÉGIAS PRÁTICAS:\\n[3-5 ações concretas e replicáveis]\\n\\n"
+                    f"📅 O QUE FAZER HOJE:\\n[1 ação imediata para quebrar o padrão]\\n\\n"
+                    f"💪 REFRAME:\\n[uma perspectiva diferente que muda como você vê a situação]"
                 )
                 res = personal_ia(prompt, "Seja direto, empático e prático. Evite clichês motivacionais vazios. Fale de igual para igual.")
                 if res: st.session_state['res_mental_person15'] = str(res)
@@ -4759,17 +4753,17 @@ elif st.session_state.etapa == "App":
                 if exercicio_orig.strip():
                     with st.spinner("Buscando alternativas..."):
                         prompt = (
-                            f"Sugira substituições para o exercício: {exercicio_orig}.\n"
-                            f"Motivo: {motivo_subst}.\n"
+                            f"Sugira substituições para o exercício: {exercicio_orig}.\\n"
+                            f"Motivo: {motivo_subst}.\\n"
                             f"Equipamentos disponíveis: {st.session_state.get('an_equipamentos','não informado')}. "
                             f"Local: {st.session_state.get('an_local','academia')}. "
-                            f"Lesões: {st.session_state.get('an_lesoes','nenhuma')}.\n\n"
-                            f"FORMATO:\n\n"
-                            f"🔄 SUBSTITUIÇÕES PARA: {exercicio_orig.upper()}\n\n"
-                            f"✅ SUBSTITUTO PRINCIPAL (mais similar em recrutamento muscular):\n[nome, como fazer, por que é equivalente]\n\n"
-                            f"✅ SUBSTITUTO ALTERNATIVO 1:\n[nome, como fazer]\n\n"
-                            f"✅ SUBSTITUTO ALTERNATIVO 2:\n[nome, como fazer]\n\n"
-                            f"💡 DICA DE TRANSIÇÃO:\n[como adaptar a carga/série ao mudar de exercício]"
+                            f"Lesões: {st.session_state.get('an_lesoes','nenhuma')}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🔄 SUBSTITUIÇÕES PARA: {exercicio_orig.upper()}\\n\\n"
+                            f"✅ SUBSTITUTO PRINCIPAL (mais similar em recrutamento muscular):\\n[nome, como fazer, por que é equivalente]\\n\\n"
+                            f"✅ SUBSTITUTO ALTERNATIVO 1:\\n[nome, como fazer]\\n\\n"
+                            f"✅ SUBSTITUTO ALTERNATIVO 2:\\n[nome, como fazer]\\n\\n"
+                            f"💡 DICA DE TRANSIÇÃO:\\n[como adaptar a carga/série ao mudar de exercício]"
                         )
                         res = personal_ia(prompt)
                         if res: st.session_state['res_biblioteca_person16'] = str(res)
@@ -4785,15 +4779,15 @@ elif st.session_state.etapa == "App":
                 if exercicio_guia.strip():
                     with st.spinner("Preparando guia..."):
                         prompt = (
-                            f"Crie um guia completo e técnico sobre o exercício: {exercicio_guia}.\n\n"
-                            f"FORMATO:\n\n"
-                            f"📖 {exercicio_guia.upper()}\n\n"
-                            f"🏋️ MÚSCULOS TRABALHADOS:\n[principal e secundários]\n\n"
-                            f"⚙️ EXECUÇÃO CORRETA (passo a passo):\n[técnica detalhada]\n\n"
-                            f"❌ ERROS MAIS COMUNS:\n[e como corrigir cada um]\n\n"
-                            f"📊 VARIAÇÕES:\n[versões mais fáceis, mais difíceis e alternativas]\n\n"
-                            f"💡 DICAS DE PERFORMANCE:\n[o que muda para iniciantes vs avançados]\n\n"
-                            f"⚠️ CUIDADOS E CONTRAINDICAÇÕES:\n[quando evitar ou ter cuidado especial]"
+                            f"Crie um guia completo e técnico sobre o exercício: {exercicio_guia}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📖 {exercicio_guia.upper()}\\n\\n"
+                            f"🏋️ MÚSCULOS TRABALHADOS:\\n[principal e secundários]\\n\\n"
+                            f"⚙️ EXECUÇÃO CORRETA (passo a passo):\\n[técnica detalhada]\\n\\n"
+                            f"❌ ERROS MAIS COMUNS:\\n[e como corrigir cada um]\\n\\n"
+                            f"📊 VARIAÇÕES:\\n[versões mais fáceis, mais difíceis e alternativas]\\n\\n"
+                            f"💡 DICAS DE PERFORMANCE:\\n[o que muda para iniciantes vs avançados]\\n\\n"
+                            f"⚠️ CUIDADOS E CONTRAINDICAÇÕES:\\n[quando evitar ou ter cuidado especial]"
                         )
                         res = personal_ia(prompt)
                         if res: st.session_state['res_biblioteca_person17'] = str(res)
@@ -4810,13 +4804,13 @@ elif st.session_state.etapa == "App":
                 if lesao_adapt.strip():
                     with st.spinner("Adaptando treino..."):
                         prompt = (
-                            f"Crie um protocolo de treino adaptado para treinar {grupo_adapt} com a limitação: {lesao_adapt}.\n\n"
-                            f"FORMATO:\n\n"
-                            f"💢 TREINO DE {grupo_adapt.upper()} COM {lesao_adapt.upper()}\n\n"
-                            f"⚠️ EXERCÍCIOS A EVITAR COMPLETAMENTE:\n[e por que causam risco]\n\n"
-                            f"✅ EXERCÍCIOS SEGUROS:\n[lista com séries, repetições e cuidados específicos]\n\n"
-                            f"🔧 ADAPTAÇÕES TÉCNICAS:\n[modificações na execução para proteger a lesão]\n\n"
-                            f"🩺 QUANDO CONSULTAR UM PROFISSIONAL:\n[sinais de alerta que indicam necessidade de avaliação médica]"
+                            f"Crie um protocolo de treino adaptado para treinar {grupo_adapt} com a limitação: {lesao_adapt}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"💢 TREINO DE {grupo_adapt.upper()} COM {lesao_adapt.upper()}\\n\\n"
+                            f"⚠️ EXERCÍCIOS A EVITAR COMPLETAMENTE:\\n[e por que causam risco]\\n\\n"
+                            f"✅ EXERCÍCIOS SEGUROS:\\n[lista com séries, repetições e cuidados específicos]\\n\\n"
+                            f"🔧 ADAPTAÇÕES TÉCNICAS:\\n[modificações na execução para proteger a lesão]\\n\\n"
+                            f"🩺 QUANDO CONSULTAR UM PROFISSIONAL:\\n[sinais de alerta que indicam necessidade de avaliação médica]"
                         )
                         res = personal_ia(prompt, "IMPORTANTE: sempre recomende avaliação médica ou fisioterapêutica antes de treinar com lesões. Não faça diagnóstico — apenas oriente sobre adaptações gerais.")
                         if res: st.session_state['res_biblioteca_person18'] = str(res)
@@ -4855,19 +4849,19 @@ elif st.session_state.etapa == "App":
             if st.button("🏆 CRIAR MEU DESAFIO", key="personal67"):
                 with st.spinner("Montando seu desafio..."):
                     prompt = (
-                        f"Crie um programa de desafio completo.\n"
+                        f"Crie um programa de desafio completo.\\n"
                         f"Duração: {duracao_des}. Objetivo: {objetivo_des}. "
-                        f"Treinos/semana: {dias_semana_des}. Intensidade: {nivel_des}.\n"
+                        f"Treinos/semana: {dias_semana_des}. Intensidade: {nivel_des}.\\n"
                         f"Perfil: {st.session_state.get('an_nivel','iniciante')}, "
-                        f"local: {st.session_state.get('an_local','academia')}.\n\n"
-                        f"FORMATO:\n\n"
-                        f"🏆 DESAFIO {duracao_des.upper()} — {objetivo_des.upper()}\n\n"
-                        f"🎯 O QUE VOCÊ VAI CONQUISTAR:\n[resultados esperados realistas]\n\n"
-                        f"📅 ESTRUTURA DO PROGRAMA:\n[como as semanas se organizam — progressão]\n\n"
-                        f"💪 TREINOS DA SEMANA 1:\n[treinos completos para começar]\n\n"
-                        f"📊 COMO MEDIR SEU PROGRESSO:\n[métricas semanais para acompanhar]\n\n"
-                        f"🔥 REGRAS DO DESAFIO:\n[compromissos claros e não-negociáveis]\n\n"
-                        f"💡 MISSÃO DO DIA 1:\n[o que fazer hoje para começar com força]"
+                        f"local: {st.session_state.get('an_local','academia')}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏆 DESAFIO {duracao_des.upper()} — {objetivo_des.upper()}\\n\\n"
+                        f"🎯 O QUE VOCÊ VAI CONQUISTAR:\\n[resultados esperados realistas]\\n\\n"
+                        f"📅 ESTRUTURA DO PROGRAMA:\\n[como as semanas se organizam — progressão]\\n\\n"
+                        f"💪 TREINOS DA SEMANA 1:\\n[treinos completos para começar]\\n\\n"
+                        f"📊 COMO MEDIR SEU PROGRESSO:\\n[métricas semanais para acompanhar]\\n\\n"
+                        f"🔥 REGRAS DO DESAFIO:\\n[compromissos claros e não-negociáveis]\\n\\n"
+                        f"💡 MISSÃO DO DIA 1:\\n[o que fazer hoje para começar com força]"
                     )
                     res = personal_ia(prompt)
                     if res: st.session_state['res_desafio_person19'] = str(res)
@@ -4946,6 +4940,7 @@ st.markdown(
     "© 2026 Personal Trainer IA — Treinos Personalizados com IA · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
+
 
 """,
     "tutor_concursos": """
@@ -5365,7 +5360,7 @@ if 'red_ativo' not in st.session_state: st.session_state['red_ativo'] = False
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 TUTOR DE CONCURSOS IA")
-    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\\\'card\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -5496,13 +5491,13 @@ elif st.session_state.etapa == "App":
                     with st.spinner("Gerando missão personalizada..."):
                         materia_critica = st.session_state.maior_dificuldade or st.session_state.materias_foco or "a matéria mais importante do seu concurso"
                         missao_prompt = (
-                            f"Crie uma missão de estudo para hoje para o aluno preparando {st.session_state.concurso_foco or 'concurso público'}.\\n"
-                            f"Horas disponíveis: {st.session_state.horas_disponiveis}h. Maior dificuldade: {materia_critica}.\\n"
-                            f"Formato:\\n\\n"
-                            f"⚡ MISSÃO DO DIA\\n\\n"
-                            f"[3-4 tarefas específicas com tempo estimado cada]\\n\\n"
-                            f"⏱️ Tempo total previsto: [X]h[Y]min\\n"
-                            f"🏆 Recompensa: +[XP] XP\\n\\n"
+                            f"Crie uma missão de estudo para hoje para o aluno preparando {st.session_state.concurso_foco or 'concurso público'}.\\\\n"
+                            f"Horas disponíveis: {st.session_state.horas_disponiveis}h. Maior dificuldade: {materia_critica}.\\\\n"
+                            f"Formato:\\\\n\\\\n"
+                            f"⚡ MISSÃO DO DIA\\\\n\\\\n"
+                            f"[3-4 tarefas específicas com tempo estimado cada]\\\\n\\\\n"
+                            f"⏱️ Tempo total previsto: [X]h[Y]min\\\\n"
+                            f"🏆 Recompensa: +[XP] XP\\\\n\\\\n"
                             f"💡 Por que essa missão hoje: [1 linha explicando a estratégia]"
                         )
                         missao = tutor_ia(missao_prompt)
@@ -5557,12 +5552,6 @@ elif st.session_state.etapa == "App":
         # PAINEL EXECUTIVO
         # ──────────────────────────────────────────
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
     with _tab_Questoes:
         st.header("❓ Simulado de Questões")
         st.markdown("Questões no estilo da banca — com gabarito comentado e explicação detalhada.")
@@ -5583,20 +5572,20 @@ elif st.session_state.etapa == "App":
                 with st.spinner("Gerando suas questões..."):
                     estilo = "no estilo CERTO ou ERRADO" if "Certo" in tipo_q else "de múltipla escolha com 5 alternativas (A, B, C, D, E)"
                     prompt = (
-                        f"Crie {qtd_q} questões {estilo} sobre '{tema_q or materia_q}' da matéria {materia_q}.\\n"
-                        f"Banca/estilo: {concurso_q}. Nível: {nivel_q}.\\n\\n"
-                        f"Para CADA questão use EXATAMENTE este formato:\\n\\n"
-                        f"QUESTÃO [N]\\n"
-                        f"[Enunciado da questão]\\n"
-                        + ("[A) opção\\nB) opção\\nC) opção\\nD) opção\\nE) opção\\n" if "múltipla" in tipo_q else "[  ] CERTO  [  ] ERRADO\\n")
-                        + f"GABARITO: [letra ou CERTO/ERRADO]\\n"
-                        f"EXPLICAÇÃO: [resolução detalhada — por que o gabarito está certo e por que as outras estão erradas]\\n"
-                        f"DICA: [macete para não errar esse tipo de questão]\\n\\n"
-                        f"---\\n\\n"
-                        f"REGRAS:\\n"
-                        f"- Questões realistas, no estilo de provas reais\\n"
-                        f"- Varie os assuntos dentro do tema\\n"
-                        f"- Inclua pelo menos 1 pegadinha típica de banca\\n"
+                        f"Crie {qtd_q} questões {estilo} sobre '{tema_q or materia_q}' da matéria {materia_q}.\\\\n"
+                        f"Banca/estilo: {concurso_q}. Nível: {nivel_q}.\\\\n\\\\n"
+                        f"Para CADA questão use EXATAMENTE este formato:\\\\n\\\\n"
+                        f"QUESTÃO [N]\\\\n"
+                        f"[Enunciado da questão]\\\\n"
+                        + ("[A) opção\\\\nB) opção\\\\nC) opção\\\\nD) opção\\\\nE) opção\\\\n" if "múltipla" in tipo_q else "[  ] CERTO  [  ] ERRADO\\\\n")
+                        + f"GABARITO: [letra ou CERTO/ERRADO]\\\\n"
+                        f"EXPLICAÇÃO: [resolução detalhada — por que o gabarito está certo e por que as outras estão erradas]\\\\n"
+                        f"DICA: [macete para não errar esse tipo de questão]\\\\n\\\\n"
+                        f"---\\\\n\\\\n"
+                        f"REGRAS:\\\\n"
+                        f"- Questões realistas, no estilo de provas reais\\\\n"
+                        f"- Varie os assuntos dentro do tema\\\\n"
+                        f"- Inclua pelo menos 1 pegadinha típica de banca\\\\n"
                         f"- Explicações claras e educativas"
                     )
                     res = tutor_ia(prompt)
@@ -5723,7 +5712,7 @@ elif st.session_state.etapa == "App":
                 <script>(function(){function cnt(){var a=window.parent.document.querySelectorAll('textarea'),t=null;
                 for(var i=0;i<a.length;i++){if(a[i].value.length>5){t=a[i];break;}}
                 if(!t)t=a[a.length-1];if(t){var v=t.value.trim();
-                var n=v===''?0:v.split(/[ \\t\\n\\r]+/).filter(function(w){return w.length>0;}).length;
+                var n=v===''?0:v.split(/[ \\\\t\\\\n\\\\r]+/).filter(function(w){return w.length>0;}).length;
                 var el=document.getElementById('wc-n');if(el)el.textContent=n;}}
                 setInterval(cnt,300);window.parent.document.addEventListener('input',cnt);})();
                 </script>''', unsafe_allow_html=True)
@@ -6050,8 +6039,8 @@ Responda APENAS em JSON válido, sem texto extra:
             with col_f:
                 filtro = st.selectbox("Filtrar:", ["Todos"] + list(tipos.keys()), key="tutorcon49")
             with col_ex:
-                historico_txt = "\\n\\n".join(
-                    f"[{e['data']}] {e['tipo']} — {e['materia']}\\n{e['conteudo']}\\n{'─'*40}"
+                historico_txt = "\\\\n\\\\n".join(
+                    f"[{e['data']}] {e['tipo']} — {e['materia']}\\\\n{e['conteudo']}\\\\n{'─'*40}"
                     for e in st.session_state.historico_estudos
                 )
                 st.download_button("⬇️ Exportar TXT", data=historico_txt,
@@ -6409,6 +6398,7 @@ st.markdown(
     "© 2026 Tutor de Concursos IA — Mentor Estratégico · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
+
 
 
 """,
@@ -7499,7 +7489,7 @@ Usuário: {st.session_state.usuario}. Caso atual: {st.session_state.caso_padrao 
         return f"⚠️ Erro na API: {e}"
 
 def renderizar_indice(texto: str, titulo_indice: str = "CONSISTÊNCIA"):
-    percentuais = re.findall(r'(\d+)\s*/\s*100|(\d+)%', texto)
+    percentuais = re.findall(r'(\\d+)\\s*/\\s*100|(\\d+)%', texto)
     valores = [int(a or b) for a, b in percentuais if a or b]
     indice = valores[0] if valores else 50
 
@@ -7535,7 +7525,7 @@ if 'historico_casos' not in st.session_state: st.session_state['historico_casos'
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 SHERLOCK IA")
-    st.markdown("<div class=\'card\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -7631,12 +7621,6 @@ elif st.session_state.etapa == "App":
         # INVESTIGAÇÃO GERAL
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
     with _tab_Investigacao:
         st.header("🔎 Investigação Geral")
         st.markdown("Descreva a situação. A IA organiza fatos, hipóteses e próximos passos.")
@@ -7648,18 +7632,18 @@ elif st.session_state.etapa == "App":
             if situacao_inv.strip():
                 with st.spinner("Organizando a investigação..."):
                     prompt = (
-                        f"Organize uma investigação completa para esta situação.\n"
-                        f"Situação: {situacao_inv}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🔎 INVESTIGAÇÃO — {situacao_inv[:50].upper()}\n\n"
-                        f"✅ FATOS CONHECIDOS:\n[liste o que é certo, com base no que foi descrito]\n\n"
-                        f"❓ FATOS DESCONHECIDOS:\n[o que ainda não se sabe]\n\n"
-                        f"👥 PESSOAS ENVOLVIDAS:\n[liste com o papel de cada uma na situação, se mencionadas]\n\n"
-                        f"📅 LINHA DO TEMPO PRELIMINAR:\n[ordene os eventos descritos]\n\n"
-                        f"🔍 EVIDÊNCIAS DISPONÍVEIS:\n[o que já se tem para analisar]\n\n"
-                        f"🧩 HIPÓTESES INICIAIS:\n[2-4 possibilidades, todas como hipóteses, não conclusões]\n\n"
-                        f"❓ PERGUNTAS IMPORTANTES:\n[o que precisa ser perguntado/descoberto a seguir]\n\n"
-                        f"✅ PRÓXIMOS PASSOS DA INVESTIGAÇÃO:\n[ações concretas para avançar]"
+                        f"Organize uma investigação completa para esta situação.\\n"
+                        f"Situação: {situacao_inv}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔎 INVESTIGAÇÃO — {situacao_inv[:50].upper()}\\n\\n"
+                        f"✅ FATOS CONHECIDOS:\\n[liste o que é certo, com base no que foi descrito]\\n\\n"
+                        f"❓ FATOS DESCONHECIDOS:\\n[o que ainda não se sabe]\\n\\n"
+                        f"👥 PESSOAS ENVOLVIDAS:\\n[liste com o papel de cada uma na situação, se mencionadas]\\n\\n"
+                        f"📅 LINHA DO TEMPO PRELIMINAR:\\n[ordene os eventos descritos]\\n\\n"
+                        f"🔍 EVIDÊNCIAS DISPONÍVEIS:\\n[o que já se tem para analisar]\\n\\n"
+                        f"🧩 HIPÓTESES INICIAIS:\\n[2-4 possibilidades, todas como hipóteses, não conclusões]\\n\\n"
+                        f"❓ PERGUNTAS IMPORTANTES:\\n[o que precisa ser perguntado/descoberto a seguir]\\n\\n"
+                        f"✅ PRÓXIMOS PASSOS DA INVESTIGAÇÃO:\\n[ações concretas para avançar]"
                     )
                     res = sherlock_ia(prompt)
                     if res: st.session_state['res_investigacao_sherlo1'] = str(res)
@@ -7694,18 +7678,18 @@ elif st.session_state.etapa == "App":
             if situacao_hip.strip():
                 with st.spinner("Construindo hipóteses..."):
                     prompt = (
-                        f"Crie {qtd_hip} hipóteses distintas para explicar esta situação.\n"
-                        f"Situação: {situacao_hip}\n\n"
-                        f"Para CADA hipótese:\n\n"
-                        f"🧩 HIPÓTESE [N]: [nome curto]\n"
-                        f"[Descrição da hipótese]\n"
-                        f"📊 Probabilidade estimada: [Baixa/Média/Alta]\n"
-                        f"✔ Pontos favoráveis: [o que sustenta essa hipótese]\n"
-                        f"✘ Pontos contrários: [o que a contradiz ou fragiliza]\n"
-                        f"🔍 Evidências necessárias para confirmar: [o que ajudaria a provar isso]\n"
-                        f"❓ O que ainda precisa ser descoberto:\n\n"
-                        f"[Repita para as {qtd_hip} hipóteses]\n\n"
-                        f"🎯 HIPÓTESE MAIS CONSISTENTE ATÉ AGORA:\n[qual parece mais provável com base no que foi descrito, e por quê — sem afirmar certeza]"
+                        f"Crie {qtd_hip} hipóteses distintas para explicar esta situação.\\n"
+                        f"Situação: {situacao_hip}\\n\\n"
+                        f"Para CADA hipótese:\\n\\n"
+                        f"🧩 HIPÓTESE [N]: [nome curto]\\n"
+                        f"[Descrição da hipótese]\\n"
+                        f"📊 Probabilidade estimada: [Baixa/Média/Alta]\\n"
+                        f"✔ Pontos favoráveis: [o que sustenta essa hipótese]\\n"
+                        f"✘ Pontos contrários: [o que a contradiz ou fragiliza]\\n"
+                        f"🔍 Evidências necessárias para confirmar: [o que ajudaria a provar isso]\\n"
+                        f"❓ O que ainda precisa ser descoberto:\\n\\n"
+                        f"[Repita para as {qtd_hip} hipóteses]\\n\\n"
+                        f"🎯 HIPÓTESE MAIS CONSISTENTE ATÉ AGORA:\\n[qual parece mais provável com base no que foi descrito, e por quê — sem afirmar certeza]"
                     )
                     res = sherlock_ia(prompt)
                     if res: st.session_state['res_hipoteses_sherlo2'] = str(res)
@@ -7773,16 +7757,16 @@ elif st.session_state.etapa == "App":
 
             if st.button("🤖 ANALISAR TODAS AS EVIDÊNCIAS JUNTAS", key="sherlock13"):
                 with st.spinner("Analisando o conjunto..."):
-                    evid_txt = "\n".join([f"- [{e['tipo']}] {e['descricao']} (relevância: {e['relevancia']})" for e in st.session_state.evidencias_lista])
+                    evid_txt = "\\n".join([f"- [{e['tipo']}] {e['descricao']} (relevância: {e['relevancia']})" for e in st.session_state.evidencias_lista])
                     prompt = (
-                        f"Analise este conjunto de evidências de forma integrada.\n"
-                        f"Evidências:\n{evid_txt}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📋 ANÁLISE DO CONJUNTO DE EVIDÊNCIAS\n\n"
-                        f"🔗 CONEXÕES ENTRE AS EVIDÊNCIAS:\n[como elas se relacionam]\n\n"
-                        f"🧩 O QUE O CONJUNTO SUGERE:\n[hipóteses que emergem ao olhar tudo junto]\n\n"
-                        f"⚠️ LACUNAS:\n[que tipo de evidência ainda falta]\n\n"
-                        f"🎯 EVIDÊNCIA MAIS DECISIVA:\n[qual delas mais pesa, e por quê]"
+                        f"Analise este conjunto de evidências de forma integrada.\\n"
+                        f"Evidências:\\n{evid_txt}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📋 ANÁLISE DO CONJUNTO DE EVIDÊNCIAS\\n\\n"
+                        f"🔗 CONEXÕES ENTRE AS EVIDÊNCIAS:\\n[como elas se relacionam]\\n\\n"
+                        f"🧩 O QUE O CONJUNTO SUGERE:\\n[hipóteses que emergem ao olhar tudo junto]\\n\\n"
+                        f"⚠️ LACUNAS:\\n[que tipo de evidência ainda falta]\\n\\n"
+                        f"🎯 EVIDÊNCIA MAIS DECISIVA:\\n[qual delas mais pesa, e por quê]"
                     )
                     res = sherlock_ia(prompt)
                     if res: st.session_state['res_evidencias_sherlo3'] = str(res)
@@ -7799,21 +7783,21 @@ elif st.session_state.etapa == "App":
         st.header("⏳ Linha do Tempo Inteligente")
 
         eventos_time = st.text_area("📝 Liste os eventos que você conhece (com horários/datas se possível):", height=180,
-            placeholder="ex: 14h - mensagem enviada\n15h30 - chegou em casa\n16h - notou o problema\n...", key="sherlock13_d2")
+            placeholder="ex: 14h - mensagem enviada\\n15h30 - chegou em casa\\n16h - notou o problema\\n...", key="sherlock13_d2")
 
         if st.button("⏳ RECONSTRUIR LINHA DO TEMPO", key="sherlock14_d2"):
             if eventos_time.strip():
                 with st.spinner("Reconstruindo..."):
                     prompt = (
-                        f"Reconstrua e analise esta linha do tempo.\n"
-                        f"Eventos: {eventos_time}\n\n"
-                        f"FORMATO:\n\n"
-                        f"⏳ LINHA DO TEMPO RECONSTRUÍDA\n\n"
-                        f"📅 SEQUÊNCIA ORDENADA:\n[eventos em ordem cronológica clara]\n\n"
-                        f"⏱️ INTERVALOS DE TEMPO:\n[tempo entre eventos relevantes]\n\n"
-                        f"⚠️ POSSÍVEIS LACUNAS:\n[períodos sem informação que merecem atenção]\n\n"
-                        f"🎭 CONTRADIÇÕES CRONOLÓGICAS:\n[se houver algo que não bate na sequência temporal]\n\n"
-                        f"🎯 PONTO MAIS CRÍTICO DA LINHA DO TEMPO:\n[o momento que merece mais investigação]"
+                        f"Reconstrua e analise esta linha do tempo.\\n"
+                        f"Eventos: {eventos_time}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"⏳ LINHA DO TEMPO RECONSTRUÍDA\\n\\n"
+                        f"📅 SEQUÊNCIA ORDENADA:\\n[eventos em ordem cronológica clara]\\n\\n"
+                        f"⏱️ INTERVALOS DE TEMPO:\\n[tempo entre eventos relevantes]\\n\\n"
+                        f"⚠️ POSSÍVEIS LACUNAS:\\n[períodos sem informação que merecem atenção]\\n\\n"
+                        f"🎭 CONTRADIÇÕES CRONOLÓGICAS:\\n[se houver algo que não bate na sequência temporal]\\n\\n"
+                        f"🎯 PONTO MAIS CRÍTICO DA LINHA DO TEMPO:\\n[o momento que merece mais investigação]"
                     )
                     res = sherlock_ia(prompt)
                     if res: st.session_state['res_timeline_sherlo4'] = str(res)
@@ -7843,15 +7827,15 @@ elif st.session_state.etapa == "App":
         if st.button("🎯 GERAR CASO", key="sherlock51"):
             with st.spinner("Criando o caso..."):
                 prompt = (
-                    f"Crie um caso investigativo FICTÍCIO para o usuário resolver.\n"
-                    f"Categoria: {categoria_sim}. Dificuldade: {dificuldade_sim}\n\n"
-                    f"FORMATO:\n\n"
-                    f"🎯 CASO: [NOME DRAMÁTICO DO CASO]\n"
-                    f"Categoria: {categoria_sim} | Dificuldade: {dificuldade_sim}\n\n"
-                    f"📖 SITUAÇÃO:\n[contexto do mistério, envolvente e bem narrado]\n\n"
-                    f"🔍 PISTAS DISPONÍVEIS:\n[3-6 pistas, com nível de detalhe proporcional à dificuldade]\n\n"
-                    f"👥 PERSONAGENS ENVOLVIDOS:\n[breve descrição de cada um]\n\n"
-                    f"❓ A PERGUNTA QUE VOCÊ PRECISA RESPONDER:\n[o que o jogador precisa descobrir]\n\n"
+                    f"Crie um caso investigativo FICTÍCIO para o usuário resolver.\\n"
+                    f"Categoria: {categoria_sim}. Dificuldade: {dificuldade_sim}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🎯 CASO: [NOME DRAMÁTICO DO CASO]\\n"
+                    f"Categoria: {categoria_sim} | Dificuldade: {dificuldade_sim}\\n\\n"
+                    f"📖 SITUAÇÃO:\\n[contexto do mistério, envolvente e bem narrado]\\n\\n"
+                    f"🔍 PISTAS DISPONÍVEIS:\\n[3-6 pistas, com nível de detalhe proporcional à dificuldade]\\n\\n"
+                    f"👥 PERSONAGENS ENVOLVIDOS:\\n[breve descrição de cada um]\\n\\n"
+                    f"❓ A PERGUNTA QUE VOCÊ PRECISA RESPONDER:\\n[o que o jogador precisa descobrir]\\n\\n"
                     f"🔒 [NÃO REVELE A SOLUÇÃO AINDA — isso vem só se o usuário pedir a resposta depois]"
                 )
                 res = sherlock_ia(prompt)
@@ -7868,15 +7852,15 @@ elif st.session_state.etapa == "App":
                 if st.button("🔓 VER A SOLUÇÃO E COMPARAR", key="sherlock52"):
                     with st.spinner("Revelando a solução..."):
                         prompt_solucao = (
-                            f"Aqui está o caso que você criou antes:\n{st.session_state['sim_caso_temp']}\n\n"
-                            f"O usuário propôs esta solução: {sua_solucao or 'não informou uma solução'}\n\n"
-                            f"Revele a solução completa do caso e compare com a tentativa do usuário.\n\n"
-                            f"FORMATO:\n\n"
-                            f"🔓 SOLUÇÃO DO CASO\n\n"
-                            f"✅ O QUE REALMENTE ACONTECEU:\n[solução completa e lógica]\n\n"
-                            f"🧩 RACIOCÍNIO CORRETO:\n[como as pistas levavam à solução]\n\n"
-                            f"📊 SUA TENTATIVA:\n[comentário sobre a proposta do usuário, reconhecendo acertos]\n\n"
-                            f"🎯 NOTA: [X]/10\n[avaliação do raciocínio do usuário]"
+                            f"Aqui está o caso que você criou antes:\\n{st.session_state['sim_caso_temp']}\\n\\n"
+                            f"O usuário propôs esta solução: {sua_solucao or 'não informou uma solução'}\\n\\n"
+                            f"Revele a solução completa do caso e compare com a tentativa do usuário.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🔓 SOLUÇÃO DO CASO\\n\\n"
+                            f"✅ O QUE REALMENTE ACONTECEU:\\n[solução completa e lógica]\\n\\n"
+                            f"🧩 RACIOCÍNIO CORRETO:\\n[como as pistas levavam à solução]\\n\\n"
+                            f"📊 SUA TENTATIVA:\\n[comentário sobre a proposta do usuário, reconhecendo acertos]\\n\\n"
+                            f"🎯 NOTA: [X]/10\\n[avaliação do raciocínio do usuário]"
                         )
                         res_sol = sherlock_ia(prompt_solucao)
                         if res_sol: st.session_state['res_simulador_sherlo6'] = str(res_sol)
@@ -8010,48 +7994,48 @@ elif st.session_state.etapa == "App":
                 prompt = (
                     f"Você está escrevendo uma aula para a Academia Sherlock — um curso de altíssimo nível sobre raciocínio "
                     f"investigativo, no espírito do método de observação e dedução de Sherlock Holmes, mas aplicado a contextos "
-                    f"reais e modernos. {nivel_instrucao}\n\n"
-                    f"Tema da aula: {aula_escolhida}\n\n"
-                    f"EXIGÊNCIAS DE QUALIDADE — leia com atenção antes de escrever:\n"
+                    f"reais e modernos. {nivel_instrucao}\\n\\n"
+                    f"Tema da aula: {aula_escolhida}\\n\\n"
+                    f"EXIGÊNCIAS DE QUALIDADE — leia com atenção antes de escrever:\\n"
                     f"- PROIBIDO ser superficial, genérico ou usar frases de efeito vazias. Cada afirmação deve ser sustentada "
-                    f"por um exemplo concreto, um mecanismo explicado, ou um caso ilustrativo.\n"
+                    f"por um exemplo concreto, um mecanismo explicado, ou um caso ilustrativo.\\n"
                     f"- Use pelo menos 2 exemplos NARRADOS EM DETALHE (não apenas citados de passagem) — podem ser cenários "
                     f"fictícios elaborados, casos históricos genéricos (sem inventar fatos verificáveis específicos que você não "
-                    f"tenha certeza), ou situações do cotidiano levadas a um nível de análise que a maioria das pessoas não faz.\n"
-                    f"- Demonstre o RACIOCÍNIO PASSO A PASSO, não apenas a conclusão. Mostre o 'como se pensa', não só o 'o que pensar'.\n"
-                    f"- Inclua nuances, contra-exemplos e limites do método ensinado — uma aula de elite reconhece onde a técnica falha.\n"
+                    f"tenha certeza), ou situações do cotidiano levadas a um nível de análise que a maioria das pessoas não faz.\\n"
+                    f"- Demonstre o RACIOCÍNIO PASSO A PASSO, não apenas a conclusão. Mostre o 'como se pensa', não só o 'o que pensar'.\\n"
+                    f"- Inclua nuances, contra-exemplos e limites do método ensinado — uma aula de elite reconhece onde a técnica falha.\\n"
                     f"- O exercício final deve ser desafiador, específico e ter um gabarito comentado explicando o raciocínio "
-                    f"correto, não apenas a resposta.\n\n"
-                    f"FORMATO OBRIGATÓRIO:\n\n"
-                    f"🎓 {aula_escolhida.upper()}\n\n"
-                    f"📖 ABERTURA — POR QUE ISSO IMPORTA:\n"
+                    f"correto, não apenas a resposta.\\n\\n"
+                    f"FORMATO OBRIGATÓRIO:\\n\\n"
+                    f"🎓 {aula_escolhida.upper()}\\n\\n"
+                    f"📖 ABERTURA — POR QUE ISSO IMPORTA:\\n"
                     f"[3-5 linhas que conectem o tema a uma situação real e mostrem por que dominar isso muda a qualidade do "
-                    f"raciocínio de quem está aprendendo. Evite frases motivacionais genéricas — seja específico sobre a vantagem prática.]\n\n"
-                    f"💡 OS CONCEITOS FUNDAMENTAIS:\n"
+                    f"raciocínio de quem está aprendendo. Evite frases motivacionais genéricas — seja específico sobre a vantagem prática.]\\n\\n"
+                    f"💡 OS CONCEITOS FUNDAMENTAIS:\\n"
                     f"[3-5 conceitos centrais, cada um com: definição precisa, por que costuma ser mal compreendido ou ignorado, "
-                    f"e um exemplo curto que fixe a ideia]\n\n"
-                    f"🔍 ESTUDO DE CASO 1 — NARRATIVA COMPLETA:\n"
+                    f"e um exemplo curto que fixe a ideia]\\n\\n"
+                    f"🔍 ESTUDO DE CASO 1 — NARRATIVA COMPLETA:\\n"
                     f"[Narre uma situação (fictícia ou genérica, bem construída) onde o conceito da aula é aplicado do início ao fim. "
                     f"Mostre as observações feitas, o raciocínio encadeado, e a conclusão. Pelo menos 8-10 linhas de narrativa real, "
-                    f"não um resumo de 2 linhas.]\n\n"
-                    f"🔍 ESTUDO DE CASO 2 — UM ÂNGULO DIFERENTE:\n"
+                    f"não um resumo de 2 linhas.]\\n\\n"
+                    f"🔍 ESTUDO DE CASO 2 — UM ÂNGULO DIFERENTE:\\n"
                     f"[Um segundo exemplo que mostre uma faceta diferente do mesmo conceito — outro contexto, outra complexidade, "
-                    f"ou um caso em que a aplicação ingênua do método levaria a erro, e como corrigir isso]\n\n"
-                    f"⚙️ O MÉTODO PASSO A PASSO:\n"
+                    f"ou um caso em que a aplicação ingênua do método levaria a erro, e como corrigir isso]\\n\\n"
+                    f"⚙️ O MÉTODO PASSO A PASSO:\\n"
                     f"[Decomponha a técnica em etapas concretas e replicáveis — numeradas, específicas, sem vagueza. "
-                    f"Esta é a parte 'manual de instruções' da aula]\n\n"
-                    f"⚠️ ARMADILHAS E LIMITES DO MÉTODO:\n"
+                    f"Esta é a parte 'manual de instruções' da aula]\\n\\n"
+                    f"⚠️ ARMADILHAS E LIMITES DO MÉTODO:\\n"
                     f"[Onde essa técnica costuma ser usada mal, que erros ela não resolve, e quando confiar demais nela é perigoso. "
-                    f"Uma aula de elite é honesta sobre os limites do que está ensinando]\n\n"
-                    f"🧠 CONEXÃO COM OUTRAS AULAS/CONCEITOS:\n"
-                    f"[Como esse tema se conecta com outros princípios investigativos — mostre que o conhecimento é uma rede, não peças isoladas]\n\n"
-                    f"🏋️ EXERCÍCIO PRÁTICO DESAFIADOR:\n"
+                    f"Uma aula de elite é honesta sobre os limites do que está ensinando]\\n\\n"
+                    f"🧠 CONEXÃO COM OUTRAS AULAS/CONCEITOS:\\n"
+                    f"[Como esse tema se conecta com outros princípios investigativos — mostre que o conhecimento é uma rede, não peças isoladas]\\n\\n"
+                    f"🏋️ EXERCÍCIO PRÁTICO DESAFIADOR:\\n"
                     f"[Um exercício elaborado e específico — um mini-caso, um cenário com dados reais para analisar, ou um "
-                    f"desafio de observação. Deve exigir aplicação real do conceito, não só recordação]\n\n"
-                    f"✅ GABARITO COMENTADO:\n"
+                    f"desafio de observação. Deve exigir aplicação real do conceito, não só recordação]\\n\\n"
+                    f"✅ GABARITO COMENTADO:\\n"
                     f"[A resposta esperada do exercício, COM o raciocínio explicado passo a passo — não apenas 'a resposta é X', "
-                    f"mas 'a resposta é X porque, ao observar Y, deduzimos Z, e isso elimina a hipótese W']\n\n"
-                    f"📚 SÍNTESE MAGISTRAL:\n"
+                    f"mas 'a resposta é X porque, ao observar Y, deduzimos Z, e isso elimina a hipótese W']\\n\\n"
+                    f"📚 SÍNTESE MAGISTRAL:\\n"
                     f"[2-4 linhas que cristalizem a essência da aula em uma ideia memorável e aplicável — a frase que o aluno "
                     f"deveria lembrar meses depois]"
                 )
@@ -8081,12 +8065,12 @@ elif st.session_state.etapa == "App":
         if st.button("🏆 GERAR DESAFIO", key="sherlock61"):
             with st.spinner("Criando o desafio..."):
                 prompt = (
-                    f"Crie um mini-desafio de lógica/investigação no nível: {nivel_desafio}\n\n"
-                    f"FORMATO:\n\n"
-                    f"🏆 DESAFIO {nivel_desafio.upper()}\n\n"
-                    f"📖 SITUAÇÃO:\n[um mini-mistério ou quebra-cabeça lógico, complexidade adequada ao nível]\n\n"
-                    f"❓ O QUE VOCÊ PRECISA DESCOBRIR:\n[a pergunta do desafio]\n\n"
-                    f"💡 DICA (opcional, oculta até pedir):\n[uma dica que ajuda sem entregar a resposta]\n\n"
+                    f"Crie um mini-desafio de lógica/investigação no nível: {nivel_desafio}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🏆 DESAFIO {nivel_desafio.upper()}\\n\\n"
+                    f"📖 SITUAÇÃO:\\n[um mini-mistério ou quebra-cabeça lógico, complexidade adequada ao nível]\\n\\n"
+                    f"❓ O QUE VOCÊ PRECISA DESCOBRIR:\\n[a pergunta do desafio]\\n\\n"
+                    f"💡 DICA (opcional, oculta até pedir):\\n[uma dica que ajuda sem entregar a resposta]\\n\\n"
                     f"✅ RESPOSTA: [a solução, mas marque claramente como RESPOSTA para o app esconder até o usuário clicar]"
                 )
                 res = sherlock_ia(prompt)
@@ -8181,13 +8165,13 @@ elif st.session_state.etapa == "App":
                 with st.spinner("Montando o dossiê..."):
                     prompt = (
                         f"Crie um caso investigativo complexo e envolvente, nível {dificuldade_dossie}, "
-                        f"para ser revelado em etapas (dossiê).\n\n"
-                        f"FORMATO:\n\n"
-                        f"💎 DOSSIÊ: [NOME DRAMÁTICO DO CASO]\n"
-                        f"Nível: {dificuldade_dossie}\n\n"
-                        f"📖 CONTEXTO INICIAL:\n[a situação inicial, intrigante]\n\n"
-                        f"📸 ELEMENTOS DISPONÍVEIS NESTA ETAPA:\n[2-3 evidências/depoimentos iniciais]\n\n"
-                        f"❓ SUA MISSÃO:\n[o que o investigador precisa descobrir]\n\n"
+                        f"para ser revelado em etapas (dossiê).\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💎 DOSSIÊ: [NOME DRAMÁTICO DO CASO]\\n"
+                        f"Nível: {dificuldade_dossie}\\n\\n"
+                        f"📖 CONTEXTO INICIAL:\\n[a situação inicial, intrigante]\\n\\n"
+                        f"📸 ELEMENTOS DISPONÍVEIS NESTA ETAPA:\\n[2-3 evidências/depoimentos iniciais]\\n\\n"
+                        f"❓ SUA MISSÃO:\\n[o que o investigador precisa descobrir]\\n\\n"
                         f"[NÃO REVELE MAIS NADA AINDA — isso é só a primeira etapa do dossiê]"
                     )
                     res = sherlock_ia(prompt)
@@ -8208,17 +8192,17 @@ elif st.session_state.etapa == "App":
                 if st.button("➡️ DESBLOQUEAR PRÓXIMO ELEMENTO", key="sherlock69"):
                     if analise_dossie.strip():
                         with st.spinner("A mentora está analisando..."):
-                            historico_dossie = "\n\n".join(st.session_state['dossie_conteudo'])
+                            historico_dossie = "\\n\\n".join(st.session_state['dossie_conteudo'])
                             prompt = (
-                                f"Você é a mentora de um caso investigativo em andamento (dossiê nível {st.session_state.get('dossie_dificuldade','Inspetor')}).\n"
-                                f"Conteúdo já revelado:\n{historico_dossie}\n\n"
-                                f"O investigador (usuário) disse: {analise_dossie}\n\n"
+                                f"Você é a mentora de um caso investigativo em andamento (dossiê nível {st.session_state.get('dossie_dificuldade','Inspetor')}).\\n"
+                                f"Conteúdo já revelado:\\n{historico_dossie}\\n\\n"
+                                f"O investigador (usuário) disse: {analise_dossie}\\n\\n"
                                 f"Responda como mentora: faça uma pergunta estratégica sobre o raciocínio dele, aponte SUTILMENTE "
                                 f"se algo parece incompleto (sem entregar a resposta), e então revele UM novo elemento do dossiê "
-                                f"(uma nova evidência, depoimento ou pista) que avança a investigação.\n\n"
-                                f"FORMATO:\n\n"
-                                f"🕵️ COMENTÁRIO DA MENTORA:\n[reação ao raciocínio do investigador — perguntas estratégicas, sem entregar a resposta]\n\n"
-                                f"📂 NOVO ELEMENTO DESBLOQUEADO:\n[uma nova peça do dossiê — evidência, depoimento, documento]"
+                                f"(uma nova evidência, depoimento ou pista) que avança a investigação.\\n\\n"
+                                f"FORMATO:\\n\\n"
+                                f"🕵️ COMENTÁRIO DA MENTORA:\\n[reação ao raciocínio do investigador — perguntas estratégicas, sem entregar a resposta]\\n\\n"
+                                f"📂 NOVO ELEMENTO DESBLOQUEADO:\\n[uma nova peça do dossiê — evidência, depoimento, documento]"
                             )
                             res = sherlock_ia(prompt)
                             if res: st.session_state['res_casosimpossi_sherlo11'] = str(res)
@@ -8229,15 +8213,15 @@ elif st.session_state.etapa == "App":
             with col_revelar:
                 if st.button("🔓 REVELAR SOLUÇÃO COMPLETA", key="sherlock70"):
                     with st.spinner("Revelando a lógica completa..."):
-                        historico_dossie = "\n\n".join(st.session_state['dossie_conteudo'])
+                        historico_dossie = "\\n\\n".join(st.session_state['dossie_conteudo'])
                         prompt = (
-                            f"Revele a solução completa deste caso investigativo, explicando toda a lógica.\n"
-                            f"Conteúdo do dossiê até agora:\n{historico_dossie}\n\n"
-                            f"FORMATO:\n\n"
-                            f"🔓 SOLUÇÃO COMPLETA DO CASO\n\n"
-                            f"✅ O QUE REALMENTE ACONTECEU:\n[a solução completa]\n\n"
-                            f"🧩 LÓGICA UTILIZADA:\n[como cada pista levava à solução, passo a passo]\n\n"
-                            f"🎯 A PISTA MAIS DECISIVA:\n[qual elemento foi crucial]\n\n"
+                            f"Revele a solução completa deste caso investigativo, explicando toda a lógica.\\n"
+                            f"Conteúdo do dossiê até agora:\\n{historico_dossie}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🔓 SOLUÇÃO COMPLETA DO CASO\\n\\n"
+                            f"✅ O QUE REALMENTE ACONTECEU:\\n[a solução completa]\\n\\n"
+                            f"🧩 LÓGICA UTILIZADA:\\n[como cada pista levava à solução, passo a passo]\\n\\n"
+                            f"🎯 A PISTA MAIS DECISIVA:\\n[qual elemento foi crucial]\\n\\n"
                             f"🏆 PARABÉNS POR INVESTIGAR ATÉ O FIM!"
                         )
                         res_final = sherlock_ia(prompt)
@@ -8282,7 +8266,7 @@ elif st.session_state.etapa == "App":
 
         if st.session_state.historico_casos:
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            historico_txt = "\n\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\n{c['conteudo']}\n{'─'*40}" for c in st.session_state.historico_casos)
+            historico_txt = "\\n\\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\\n{c['conteudo']}\\n{'─'*40}" for c in st.session_state.historico_casos)
             st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt, file_name="historico_sherlock.txt", mime="text/plain", key="sherlock72")
             if st.button("🗑️ Limpar Todo o Histórico", key="sherlock73"):
                 st.session_state.historico_casos = []
@@ -8314,13 +8298,13 @@ elif st.session_state.etapa == "App":
         if st.button("🧪 APRENDER", key="sherlock44"):
             with st.spinner("Preparando conteúdo..."):
                 prompt = (
-                    f"Explique de forma educativa: {tema_forense}\n\n"
-                    f"FORMATO:\n\n"
-                    f"🧪 {tema_forense.upper()}\n\n"
-                    f"📖 O QUE É E COMO FUNCIONA:\n[explicação científica acessível]\n\n"
-                    f"🔬 PRINCÍPIOS CIENTÍFICOS ENVOLVIDOS:\n[a base científica/lógica do método]\n\n"
-                    f"📋 COMO É USADO EM INVESTIGAÇÕES REAIS:\n[contexto de uso pela perícia oficial]\n\n"
-                    f"💡 CURIOSIDADE HISTÓRICA:\n[1 fato interessante sobre a evolução dessa técnica]"
+                    f"Explique de forma educativa: {tema_forense}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🧪 {tema_forense.upper()}\\n\\n"
+                    f"📖 O QUE É E COMO FUNCIONA:\\n[explicação científica acessível]\\n\\n"
+                    f"🔬 PRINCÍPIOS CIENTÍFICOS ENVOLVIDOS:\\n[a base científica/lógica do método]\\n\\n"
+                    f"📋 COMO É USADO EM INVESTIGAÇÕES REAIS:\\n[contexto de uso pela perícia oficial]\\n\\n"
+                    f"💡 CURIOSIDADE HISTÓRICA:\\n[1 fato interessante sobre a evolução dessa técnica]"
                 )
                 res = sherlock_ia(prompt, "Mantenha o conteúdo estritamente educativo e conceitual — nunca forneça instruções de como evitar ou burlar essa técnica forense.")
                 if res: st.session_state['res_forense_sherlo13'] = str(res)
@@ -8344,14 +8328,14 @@ elif st.session_state.etapa == "App":
             with st.spinner("Buscando o caso..."):
                 topico_caso = caso_hist if caso_hist.strip() else "um caso histórico famoso de investigação bem documentado"
                 prompt = (
-                    f"Apresente um caso investigativo histórico relevante relacionado a: {topico_caso}\n\n"
-                    f"FORMATO:\n\n"
-                    f"📚 CASO: [NOME DO CASO]\n\n"
-                    f"📖 CONTEXTO:\n[o que aconteceu]\n\n"
-                    f"🔍 COMO FOI INVESTIGADO:\n[método usado pelos investigadores]\n\n"
-                    f"🎯 EVIDÊNCIAS DECISIVAS:\n[o que resolveu o caso]\n\n"
-                    f"⚠️ ERROS COMETIDOS NA INVESTIGAÇÃO:\n[se houver, o que poderia ter sido feito melhor]\n\n"
-                    f"💡 LIÇÃO PARA INVESTIGADORES:\n[o que esse caso ensina]\n\n"
+                    f"Apresente um caso investigativo histórico relevante relacionado a: {topico_caso}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"📚 CASO: [NOME DO CASO]\\n\\n"
+                    f"📖 CONTEXTO:\\n[o que aconteceu]\\n\\n"
+                    f"🔍 COMO FOI INVESTIGADO:\\n[método usado pelos investigadores]\\n\\n"
+                    f"🎯 EVIDÊNCIAS DECISIVAS:\\n[o que resolveu o caso]\\n\\n"
+                    f"⚠️ ERROS COMETIDOS NA INVESTIGAÇÃO:\\n[se houver, o que poderia ter sido feito melhor]\\n\\n"
+                    f"💡 LIÇÃO PARA INVESTIGADORES:\\n[o que esse caso ensina]\\n\\n"
                     f"⚠️ NOTA: se não tiver certeza de detalhes específicos e verificáveis sobre um caso real, "
                     f"diga isso claramente em vez de inventar fatos."
                 )
@@ -8384,15 +8368,15 @@ elif st.session_state.etapa == "App":
                 if relatos_contra.strip():
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Analise estes relatos identificando contradições e inconsistências.\n"
-                            f"Relatos: {relatos_contra}\n\n"
-                            f"FORMATO:\n\n"
-                            f"🎭 ANÁLISE DE CONTRADIÇÕES\n\n"
-                            f"🔄 MUDANÇAS DE VERSÃO:\n[onde a mesma pessoa disse coisas diferentes]\n\n"
-                            f"⚠️ CONTRADIÇÕES ENTRE RELATOS:\n[onde diferentes pessoas se contradizem]\n\n"
-                            f"❓ INFORMAÇÕES CONFLITANTES:\n[dados que não se encaixam]\n\n"
-                            f"❓ PERGUNTAS AINDA NÃO RESPONDIDAS:\n[o que precisa ser esclarecido]\n\n"
-                            f"🎯 CONTRADIÇÃO MAIS SIGNIFICATIVA:\n[qual merece mais atenção, e por quê]"
+                            f"Analise estes relatos identificando contradições e inconsistências.\\n"
+                            f"Relatos: {relatos_contra}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🎭 ANÁLISE DE CONTRADIÇÕES\\n\\n"
+                            f"🔄 MUDANÇAS DE VERSÃO:\\n[onde a mesma pessoa disse coisas diferentes]\\n\\n"
+                            f"⚠️ CONTRADIÇÕES ENTRE RELATOS:\\n[onde diferentes pessoas se contradizem]\\n\\n"
+                            f"❓ INFORMAÇÕES CONFLITANTES:\\n[dados que não se encaixam]\\n\\n"
+                            f"❓ PERGUNTAS AINDA NÃO RESPONDIDAS:\\n[o que precisa ser esclarecido]\\n\\n"
+                            f"🎯 CONTRADIÇÃO MAIS SIGNIFICATIVA:\\n[qual merece mais atenção, e por quê]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_scontradicoe_sherlo15'] = str(res)
@@ -8421,16 +8405,16 @@ elif st.session_state.etapa == "App":
                 if comportamento_perfil.strip():
                     with st.spinner("Analisando padrões..."):
                         prompt = (
-                            f"Analise estes comportamentos descritos, gerando hipóteses (nunca diagnósticos).\n"
-                            f"Comportamentos: {comportamento_perfil}\n\n"
-                            f"FORMATO:\n\n"
-                            f"👤 ANÁLISE DE PADRÕES COMPORTAMENTAIS\n\n"
-                            f"🔄 MUDANÇAS IDENTIFICADAS:\n[o que mudou, com base no relato]\n\n"
-                            f"💭 POSSÍVEIS MOTIVAÇÕES (hipóteses, não certezas):\n[3-4 explicações possíveis, incluindo motivos benignos e neutros]\n\n"
-                            f"📊 PADRÕES E HÁBITOS:\n[o que parece ser recorrente]\n\n"
-                            f"❤️ FATORES EMOCIONAIS POSSÍVEIS:\n[hipóteses sobre estado emocional, com cautela]\n\n"
-                            f"❓ O QUE AINDA NÃO SE SABE:\n[informação que falta para entender melhor]\n\n"
-                            f"💬 SUGESTÃO:\n[1 frase recomendando, quando aplicável, conversar diretamente com a pessoa em vez de apenas inferir]"
+                            f"Analise estes comportamentos descritos, gerando hipóteses (nunca diagnósticos).\\n"
+                            f"Comportamentos: {comportamento_perfil}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"👤 ANÁLISE DE PADRÕES COMPORTAMENTAIS\\n\\n"
+                            f"🔄 MUDANÇAS IDENTIFICADAS:\\n[o que mudou, com base no relato]\\n\\n"
+                            f"💭 POSSÍVEIS MOTIVAÇÕES (hipóteses, não certezas):\\n[3-4 explicações possíveis, incluindo motivos benignos e neutros]\\n\\n"
+                            f"📊 PADRÕES E HÁBITOS:\\n[o que parece ser recorrente]\\n\\n"
+                            f"❤️ FATORES EMOCIONAIS POSSÍVEIS:\\n[hipóteses sobre estado emocional, com cautela]\\n\\n"
+                            f"❓ O QUE AINDA NÃO SE SABE:\\n[informação que falta para entender melhor]\\n\\n"
+                            f"💬 SUGESTÃO:\\n[1 frase recomendando, quando aplicável, conversar diretamente com a pessoa em vez de apenas inferir]"
                         )
                         res = sherlock_ia(prompt, "Gere hipóteses variadas, incluindo explicações neutras e benignas — não foque só em explicações negativas ou suspeitas.")
                         if res: st.session_state['res_sperfil_sherlo16'] = str(res)
@@ -8458,16 +8442,16 @@ elif st.session_state.etapa == "App":
                 if conversa_analise.strip():
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Analise esta conversa.\n"
-                            f"Conversa: {conversa_analise}\n\n"
-                            f"FORMATO:\n\n"
-                            f"💬 ANÁLISE DA CONVERSA\n\n"
-                            f"🎭 MUDANÇAS DE TOM:\n[onde o tom muda e o que isso pode sugerir]\n\n"
-                            f"⚠️ POSSÍVEIS CONTRADIÇÕES:\n[inconsistências no que foi dito]\n\n"
-                            f"🙈 ASSUNTOS EVITADOS:\n[temas que parecem ser desviados ou evitados]\n\n"
-                            f"🔄 COMUNICAÇÃO INDIRETA:\n[onde algo parece estar sendo dito sem ser dito diretamente]\n\n"
-                            f"❓ PERGUNTAS SEM RESPOSTA:\n[o que foi perguntado mas não respondido claramente]\n\n"
-                            f"✅ COERÊNCIA GERAL: [Alta/Média/Baixa]\n[avaliação geral de quão consistente é a conversa]"
+                            f"Analise esta conversa.\\n"
+                            f"Conversa: {conversa_analise}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"💬 ANÁLISE DA CONVERSA\\n\\n"
+                            f"🎭 MUDANÇAS DE TOM:\\n[onde o tom muda e o que isso pode sugerir]\\n\\n"
+                            f"⚠️ POSSÍVEIS CONTRADIÇÕES:\\n[inconsistências no que foi dito]\\n\\n"
+                            f"🙈 ASSUNTOS EVITADOS:\\n[temas que parecem ser desviados ou evitados]\\n\\n"
+                            f"🔄 COMUNICAÇÃO INDIRETA:\\n[onde algo parece estar sendo dito sem ser dito diretamente]\\n\\n"
+                            f"❓ PERGUNTAS SEM RESPOSTA:\\n[o que foi perguntado mas não respondido claramente]\\n\\n"
+                            f"✅ COERÊNCIA GERAL: [Alta/Média/Baixa]\\n[avaliação geral de quão consistente é a conversa]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_sconversas_sherlo17'] = str(res)
@@ -8495,16 +8479,16 @@ elif st.session_state.etapa == "App":
                 if descricao_imagem.strip():
                     with st.spinner("Analisando os detalhes..."):
                         prompt = (
-                            f"Analise esta descrição de cena/imagem com olhar investigativo.\n"
-                            f"Descrição: {descricao_imagem}\n\n"
-                            f"FORMATO:\n\n"
-                            f"📸 ANÁLISE DA CENA DESCRITA\n\n"
-                            f"🔍 OBJETOS RELEVANTES:\n[itens mencionados que podem ter importância]\n\n"
-                            f"🏠 AMBIENTE E ORGANIZAÇÃO:\n[o que o estado do ambiente sugere]\n\n"
-                            f"👣 POSSÍVEIS VESTÍGIOS:\n[sinais que indicam o que pode ter acontecido]\n\n"
-                            f"⚠️ ELEMENTOS QUE CHAMAM ATENÇÃO:\n[o que parece fora do normal ou inconsistente]\n\n"
-                            f"👀 DETALHES QUE PODEM TER SIDO IGNORADOS:\n[perguntas sobre o que mais observar]\n\n"
-                            f"🧩 O QUE ESSA CENA PODE SUGERIR:\n[hipóteses, sempre como possibilidades]"
+                            f"Analise esta descrição de cena/imagem com olhar investigativo.\\n"
+                            f"Descrição: {descricao_imagem}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📸 ANÁLISE DA CENA DESCRITA\\n\\n"
+                            f"🔍 OBJETOS RELEVANTES:\\n[itens mencionados que podem ter importância]\\n\\n"
+                            f"🏠 AMBIENTE E ORGANIZAÇÃO:\\n[o que o estado do ambiente sugere]\\n\\n"
+                            f"👣 POSSÍVEIS VESTÍGIOS:\\n[sinais que indicam o que pode ter acontecido]\\n\\n"
+                            f"⚠️ ELEMENTOS QUE CHAMAM ATENÇÃO:\\n[o que parece fora do normal ou inconsistente]\\n\\n"
+                            f"👀 DETALHES QUE PODEM TER SIDO IGNORADOS:\\n[perguntas sobre o que mais observar]\\n\\n"
+                            f"🧩 O QUE ESSA CENA PODE SUGERIR:\\n[hipóteses, sempre como possibilidades]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_simagens_sherlo18'] = str(res)
@@ -8533,14 +8517,14 @@ elif st.session_state.etapa == "App":
                 if descricao_dom.strip():
                     with st.spinner("Investigando..."):
                         prompt = (
-                            f"Investigue este problema doméstico.\n"
-                            f"Tipo: {tipo_dom}. Descrição: {descricao_dom}\n\n"
-                            f"FORMATO:\n\n"
-                            f"🏠 INVESTIGAÇÃO — {tipo_dom.upper()}\n\n"
-                            f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\n[liste com lógica]\n\n"
-                            f"🧪 TESTES QUE VOCÊ PODE FAZER:\n[ações simples para isolar a causa]\n\n"
-                            f"⚠️ SINAIS DE URGÊNCIA:\n[quando isso indica um problema que precisa de atenção rápida]\n\n"
-                            f"🔧 QUANDO CHAMAR UM PROFISSIONAL:\n[a partir de que ponto vale a pena]"
+                            f"Investigue este problema doméstico.\\n"
+                            f"Tipo: {tipo_dom}. Descrição: {descricao_dom}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🏠 INVESTIGAÇÃO — {tipo_dom.upper()}\\n\\n"
+                            f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\n[liste com lógica]\\n\\n"
+                            f"🧪 TESTES QUE VOCÊ PODE FAZER:\\n[ações simples para isolar a causa]\\n\\n"
+                            f"⚠️ SINAIS DE URGÊNCIA:\\n[quando isso indica um problema que precisa de atenção rápida]\\n\\n"
+                            f"🔧 QUANDO CHAMAR UM PROFISSIONAL:\\n[a partir de que ponto vale a pena]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_sdomestica_sherlo19'] = str(res)
@@ -8568,15 +8552,15 @@ elif st.session_state.etapa == "App":
                 if descricao_dig.strip():
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Analise esta situação digital suspeita.\n"
-                            f"Tipo: {tipo_dig}. Descrição: {descricao_dig}\n\n"
-                            f"FORMATO:\n\n"
-                            f"💻 ANÁLISE DIGITAL — {tipo_dig.upper()}\n\n"
-                            f"🚩 SINAIS DE ALERTA IDENTIFICADOS:\n[com base na descrição]\n\n"
-                            f"🎭 TÉCNICA PROVÁVEL UTILIZADA:\n[se for um golpe, qual técnica é essa]\n\n"
-                            f"📊 NÍVEL DE SUSPEITA: [Baixo/Médio/Alto]\n[justificativa]\n\n"
-                            f"🛡️ O QUE FAZER:\n[ações recomendadas — não clicar, verificar, bloquear, etc]\n\n"
-                            f"📚 COMO RECONHECER ISSO NO FUTURO:\n[padrão geral para identificar esse tipo de ameaça]"
+                            f"Analise esta situação digital suspeita.\\n"
+                            f"Tipo: {tipo_dig}. Descrição: {descricao_dig}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"💻 ANÁLISE DIGITAL — {tipo_dig.upper()}\\n\\n"
+                            f"🚩 SINAIS DE ALERTA IDENTIFICADOS:\\n[com base na descrição]\\n\\n"
+                            f"🎭 TÉCNICA PROVÁVEL UTILIZADA:\\n[se for um golpe, qual técnica é essa]\\n\\n"
+                            f"📊 NÍVEL DE SUSPEITA: [Baixo/Médio/Alto]\\n[justificativa]\\n\\n"
+                            f"🛡️ O QUE FAZER:\\n[ações recomendadas — não clicar, verificar, bloquear, etc]\\n\\n"
+                            f"📚 COMO RECONHECER ISSO NO FUTURO:\\n[padrão geral para identificar esse tipo de ameaça]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_sdigital_sherlo20'] = str(res)
@@ -8610,14 +8594,14 @@ elif st.session_state.etapa == "App":
                 if topico.strip():
                     with st.spinner("Preparando explicação..."):
                         prompt = (
-                            f"Explique detalhadamente: {topico}\n\n"
-                            f"FORMATO:\n\n"
-                            f"💰 {topico.upper()}\n\n"
-                            f"🎭 COMO FUNCIONA:\n[passo a passo de como os criminosos aplicam isso]\n\n"
-                            f"🚩 SINAIS DE ALERTA:\n[como reconhecer]\n\n"
-                            f"🛡️ COMO SE PROTEGER:\n[ações preventivas]\n\n"
-                            f"⚡ COMO AGIR SE JÁ CAIU NESSE GOLPE:\n[passos imediatos]\n\n"
-                            f"📂 INFORMAÇÕES IMPORTANTES A REUNIR:\n[o que documentar para denúncia/recuperação]"
+                            f"Explique detalhadamente: {topico}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"💰 {topico.upper()}\\n\\n"
+                            f"🎭 COMO FUNCIONA:\\n[passo a passo de como os criminosos aplicam isso]\\n\\n"
+                            f"🚩 SINAIS DE ALERTA:\\n[como reconhecer]\\n\\n"
+                            f"🛡️ COMO SE PROTEGER:\\n[ações preventivas]\\n\\n"
+                            f"⚡ COMO AGIR SE JÁ CAIU NESSE GOLPE:\\n[passos imediatos]\\n\\n"
+                            f"📂 INFORMAÇÕES IMPORTANTES A REUNIR:\\n[o que documentar para denúncia/recuperação]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_sfraudes_sherlo21'] = str(res)
@@ -8638,21 +8622,21 @@ elif st.session_state.etapa == "App":
             st.header("🔍 Detector de Padrões")
 
             dados_padroes = st.text_area("📝 Liste os dados (datas, pessoas, lugares, eventos):", height=180,
-                placeholder="ex: Segunda - encontro com João no café X\nQuarta - mensagem de Maria sobre o mesmo assunto\n...", key="sherlock5_d2")
+                placeholder="ex: Segunda - encontro com João no café X\\nQuarta - mensagem de Maria sobre o mesmo assunto\\n...", key="sherlock5_d2")
 
             if st.button("🔍 ENCONTRAR PADRÕES", key="sherlock33"):
                 if dados_padroes.strip():
                     with st.spinner("Procurando padrões..."):
                         prompt = (
-                            f"Analise estes dados procurando padrões e relações escondidas.\n"
-                            f"Dados: {dados_padroes}\n\n"
-                            f"FORMATO:\n\n"
-                            f"🔍 PADRÕES IDENTIFICADOS\n\n"
-                            f"🔗 RELAÇÕES ENTRE OS ELEMENTOS:\n[conexões encontradas entre datas, pessoas, lugares]\n\n"
-                            f"📊 PADRÕES DE FREQUÊNCIA:\n[o que se repete e com que regularidade]\n\n"
-                            f"⏰ PADRÕES TEMPORAIS:\n[horários ou dias que se destacam]\n\n"
-                            f"🎯 PADRÃO MAIS SIGNIFICATIVO:\n[o que mais chama atenção, e por quê]\n\n"
-                            f"❓ O QUE ISSO PODE SUGERIR:\n[hipóteses derivadas do padrão]"
+                            f"Analise estes dados procurando padrões e relações escondidas.\\n"
+                            f"Dados: {dados_padroes}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🔍 PADRÕES IDENTIFICADOS\\n\\n"
+                            f"🔗 RELAÇÕES ENTRE OS ELEMENTOS:\\n[conexões encontradas entre datas, pessoas, lugares]\\n\\n"
+                            f"📊 PADRÕES DE FREQUÊNCIA:\\n[o que se repete e com que regularidade]\\n\\n"
+                            f"⏰ PADRÕES TEMPORAIS:\\n[horários ou dias que se destacam]\\n\\n"
+                            f"🎯 PADRÃO MAIS SIGNIFICATIVO:\\n[o que mais chama atenção, e por quê]\\n\\n"
+                            f"❓ O QUE ISSO PODE SUGERIR:\\n[hipóteses derivadas do padrão]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_spadroes_sherlo22'] = str(res)
@@ -8673,7 +8657,7 @@ elif st.session_state.etapa == "App":
             st.header("📊 Análise de Probabilidades")
 
             hipoteses_prob = st.text_area("📝 Liste as hipóteses que você já tem (uma por linha):", height=150,
-                placeholder="ex: A pessoa esqueceu o compromisso\nA pessoa teve um imprevisto\nA pessoa evitou de propósito...", key="sherlock4_d2")
+                placeholder="ex: A pessoa esqueceu o compromisso\\nA pessoa teve um imprevisto\\nA pessoa evitou de propósito...", key="sherlock4_d2")
             evidencias_prob = st.text_area("📝 Evidências disponíveis:", height=100,
                 placeholder="ex: Ela respondeu mensagens normalmente outras vezes...", key="sherlock3_d2")
 
@@ -8681,17 +8665,17 @@ elif st.session_state.etapa == "App":
                 if hipoteses_prob.strip():
                     with st.spinner("Calculando consistência..."):
                         prompt = (
-                            f"Analise a consistência destas hipóteses com as evidências.\n"
-                            f"Hipóteses: {hipoteses_prob}\n"
-                            f"Evidências: {evidencias_prob or 'não informadas'}\n\n"
-                            f"FORMATO:\n\n"
-                            f"📊 ANÁLISE DE PROBABILIDADES\n\n"
-                            f"[Para cada hipótese listada:]\n"
-                            f"🧩 [HIPÓTESE]\n"
-                            f"Consistência com as evidências: [X]/100\n"
-                            f"Justificativa: [por quê]\n\n"
-                            f"🎯 HIPÓTESE MAIS CONSISTENTE:\n[qual tem maior consistência com as evidências, e por quê — sem afirmar certeza absoluta]\n\n"
-                            f"⚠️ LIMITAÇÃO DESTA ANÁLISE:\n[o que ainda impede uma conclusão definitiva]"
+                            f"Analise a consistência destas hipóteses com as evidências.\\n"
+                            f"Hipóteses: {hipoteses_prob}\\n"
+                            f"Evidências: {evidencias_prob or 'não informadas'}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📊 ANÁLISE DE PROBABILIDADES\\n\\n"
+                            f"[Para cada hipótese listada:]\\n"
+                            f"🧩 [HIPÓTESE]\\n"
+                            f"Consistência com as evidências: [X]/100\\n"
+                            f"Justificativa: [por quê]\\n\\n"
+                            f"🎯 HIPÓTESE MAIS CONSISTENTE:\\n[qual tem maior consistência com as evidências, e por quê — sem afirmar certeza absoluta]\\n\\n"
+                            f"⚠️ LIMITAÇÃO DESTA ANÁLISE:\\n[o que ainda impede uma conclusão definitiva]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_sprobabilida_sherlo23'] = str(res)
@@ -8719,13 +8703,13 @@ elif st.session_state.etapa == "App":
                 if situacao_perg.strip():
                     with st.spinner("Pensando nas perguntas certas..."):
                         prompt = (
-                            f"Gere as perguntas que um investigador experiente faria sobre esta situação.\n"
-                            f"Situação: {situacao_perg}\n\n"
-                            f"FORMATO:\n\n"
-                            f"❓ PERGUNTAS QUE UM INVESTIGADOR FARIA\n\n"
-                            f"🎯 PERGUNTAS FUNDAMENTAIS:\n[5-7 perguntas essenciais que ainda não foram respondidas]\n\n"
-                            f"🔍 PERGUNTAS QUE NINGUÉM PENSOU EM FAZER:\n[2-3 perguntas não óbvias mas potencialmente decisivas]\n\n"
-                            f"💡 POR QUE ESSAS PERGUNTAS IMPORTAM:\n[explicação de como cada uma pode destravar a investigação]"
+                            f"Gere as perguntas que um investigador experiente faria sobre esta situação.\\n"
+                            f"Situação: {situacao_perg}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"❓ PERGUNTAS QUE UM INVESTIGADOR FARIA\\n\\n"
+                            f"🎯 PERGUNTAS FUNDAMENTAIS:\\n[5-7 perguntas essenciais que ainda não foram respondidas]\\n\\n"
+                            f"🔍 PERGUNTAS QUE NINGUÉM PENSOU EM FAZER:\\n[2-3 perguntas não óbvias mas potencialmente decisivas]\\n\\n"
+                            f"💡 POR QUE ESSAS PERGUNTAS IMPORTAM:\\n[explicação de como cada uma pode destravar a investigação]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_sperguntas_sherlo24'] = str(res)
@@ -8752,15 +8736,15 @@ elif st.session_state.etapa == "App":
                 if raciocinio_critico.strip():
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Analise este raciocínio identificando possíveis vieses e erros de interpretação.\n"
-                            f"Raciocínio: {raciocinio_critico}\n\n"
-                            f"FORMATO:\n\n"
-                            f"⚖️ ANÁLISE DO RACIOCÍNIO\n\n"
-                            f"🧠 VIESES POSSÍVEIS IDENTIFICADOS:\n[viés de confirmação, ancoragem, etc — se aplicável]\n\n"
-                            f"⚠️ POSSÍVEIS ERROS DE INTERPRETAÇÃO:\n[onde a conclusão pode estar pulando etapas]\n\n"
-                            f"📊 GENERALIZAÇÕES:\n[se há generalização apressada]\n\n"
-                            f"❓ FALTA DE EVIDÊNCIAS:\n[onde a conclusão se apoia em suposição, não fato]\n\n"
-                            f"✅ COMO FORTALECER ESSE RACIOCÍNIO:\n[o que ajudaria a confirmar ou refutar com mais solidez]"
+                            f"Analise este raciocínio identificando possíveis vieses e erros de interpretação.\\n"
+                            f"Raciocínio: {raciocinio_critico}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"⚖️ ANÁLISE DO RACIOCÍNIO\\n\\n"
+                            f"🧠 VIESES POSSÍVEIS IDENTIFICADOS:\\n[viés de confirmação, ancoragem, etc — se aplicável]\\n\\n"
+                            f"⚠️ POSSÍVEIS ERROS DE INTERPRETAÇÃO:\\n[onde a conclusão pode estar pulando etapas]\\n\\n"
+                            f"📊 GENERALIZAÇÕES:\\n[se há generalização apressada]\\n\\n"
+                            f"❓ FALTA DE EVIDÊNCIAS:\\n[onde a conclusão se apoia em suposição, não fato]\\n\\n"
+                            f"✅ COMO FORTALECER ESSE RACIOCÍNIO:\\n[o que ajudaria a confirmar ou refutar com mais solidez]"
                         )
                         res = sherlock_ia(prompt)
                         if res: st.session_state['res_scritico_sherlo25'] = str(res)
@@ -8785,14 +8769,14 @@ elif st.session_state.etapa == "App":
             if st.button("🧠 APRENDER", key="sherlock42"):
                 with st.spinner("Preparando explicação..."):
                     prompt = (
-                        f"Explique de forma didática a técnica: {tecnica_metodo}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🧠 {tecnica_metodo.upper()}\n\n"
-                        f"📖 O QUE É:\n[definição clara]\n\n"
-                        f"🔍 COMO FUNCIONA:\n[mecanismo passo a passo]\n\n"
-                        f"💡 EXEMPLO PRÁTICO:\n[exemplo ilustrativo, fictício]\n\n"
-                        f"🎯 QUANDO USAR:\n[situações onde essa técnica é mais útil]\n\n"
-                        f"🏋️ EXERCÍCIO PARA TREINAR:\n[1 exercício prático]"
+                        f"Explique de forma didática a técnica: {tecnica_metodo}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧠 {tecnica_metodo.upper()}\\n\\n"
+                        f"📖 O QUE É:\\n[definição clara]\\n\\n"
+                        f"🔍 COMO FUNCIONA:\\n[mecanismo passo a passo]\\n\\n"
+                        f"💡 EXEMPLO PRÁTICO:\\n[exemplo ilustrativo, fictício]\\n\\n"
+                        f"🎯 QUANDO USAR:\\n[situações onde essa técnica é mais útil]\\n\\n"
+                        f"🏋️ EXERCÍCIO PARA TREINAR:\\n[1 exercício prático]"
                     )
                     res = sherlock_ia(prompt)
                     if res: st.session_state['res_smetodo_sherlo26'] = str(res)
@@ -8812,6 +8796,7 @@ st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
     "</div>", unsafe_allow_html=True
 )
+
 
 """,
     "oraculo_financeiro": """
@@ -10305,7 +10290,7 @@ if 'treinos_completos' not in st.session_state: st.session_state['treinos_comple
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 PRESENÇA IA")
-    st.markdown("<div class=\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -10385,25 +10370,6 @@ elif st.session_state.etapa == "App":
         # CONFIANÇA E PRESENÇA
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
-            st.download_button("💾 Salvar dados (.json)",
-                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
-                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
-                mime="application/json", key="dl_sv_seducaoi")
-        with _csl2:
-            if _arq_sv:
-                try:
-                    import json as _json_ld
-                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
-                        st.session_state[_k] = _v
-                    st.success("✅ Dados carregados!")
-                    st.rerun()
-                except: st.error("Arquivo inválido.")
 
     with _tab_Confianca:
         st.header("💪 Confiança e Presença")
@@ -10418,15 +10384,15 @@ elif st.session_state.etapa == "App":
         if st.button("💪 TREINAR CONFIANÇA", key="seducaoi4"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Crie um guia prático e profundo sobre: {area_conf}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💪 {area_conf.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 A CENA:\\\\\\\\\\\\\\\\n[descreva como um homem sem esse skill age vs como um homem com esse skill age — seja específico e visual]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧠 O MECANISMO:\\\\\\\\\\\\\\\\n[por que isso acontece — psicologia e comportamento por trás]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ COMO DESENVOLVER — PASSO A PASSO:\\\\\\\\\\\\\\\\n[instruções concretas, não conselhos vagos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💬 O QUE DIZER/FAZER NA PRÁTICA:\\\\\\\\\\\\\\\\n[exemplos de falas, postura, reações específicas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏋️ TREINO DESTA SEMANA:\\\\\\\\\\\\\\\\n[1 exercício real para praticar essa habilidade em situações do dia a dia]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚡ A MENTALIDADE POR TRÁS:\\\\\\\\\\\\\\\\n[o frame mental que um homem confiante carrega sobre essa situação]"
+                    f"Crie um guia prático e profundo sobre: {area_conf}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💪 {area_conf.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 A CENA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[descreva como um homem sem esse skill age vs como um homem com esse skill age — seja específico e visual]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧠 O MECANISMO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[por que isso acontece — psicologia e comportamento por trás]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ COMO DESENVOLVER — PASSO A PASSO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[instruções concretas, não conselhos vagos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💬 O QUE DIZER/FAZER NA PRÁTICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[exemplos de falas, postura, reações específicas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏋️ TREINO DESTA SEMANA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 exercício real para praticar essa habilidade em situações do dia a dia]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚡ A MENTALIDADE POR TRÁS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o frame mental que um homem confiante carrega sobre essa situação]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_confianca_seduca1'] = str(res)
@@ -10462,14 +10428,14 @@ elif st.session_state.etapa == "App":
         if st.button("✨ APRENDER CHARME", key="seducaoi6"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Ensine de forma prática e com exemplos reais: {area_charme}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"✨ {area_charme.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 EXEMPLO REAL — A DIFERENÇA:\\\\\\\\\\\\\\\\n[mini-cena mostrando quem tenta forçar vs quem tem charme genuíno — específico e visual]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧠 O PRINCÍPIO:\\\\\\\\\\\\\\\\n[por que isso funciona psicologicamente]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💬 EXEMPLOS DE FALAS E REAÇÕES:\\\\\\\\\\\\\\\\n[pelo menos 4 exemplos concretos de como isso soa na prática]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ O QUE ESTRAGA O CHARME:\\\\\\\\\\\\\\\\n[os erros que tiram o efeito]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏋️ PRÁTICA:\\\\\\\\\\\\\\\\n[exercício para treinar essa habilidade essa semana]"
+                    f"Ensine de forma prática e com exemplos reais: {area_charme}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"✨ {area_charme.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 EXEMPLO REAL — A DIFERENÇA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[mini-cena mostrando quem tenta forçar vs quem tem charme genuíno — específico e visual]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧠 O PRINCÍPIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[por que isso funciona psicologicamente]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💬 EXEMPLOS DE FALAS E REAÇÕES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pelo menos 4 exemplos concretos de como isso soa na prática]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ O QUE ESTRAGA O CHARME:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[os erros que tiram o efeito]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏋️ PRÁTICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[exercício para treinar essa habilidade essa semana]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_charme_seduca2'] = str(res)
@@ -10505,13 +10471,13 @@ elif st.session_state.etapa == "App":
         if st.button("🎤 TREINAR ORATÓRIA", key="seducaoi8"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Ensine de forma prática e detalhada: {area_orat}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎤 {area_orat.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 A DIFERENÇA NA PRÁTICA:\\\\\\\\\\\\\\\\n[como soa quem não tem essa habilidade vs quem tem — use exemplos de frases]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ TÉCNICA — PASSO A PASSO:\\\\\\\\\\\\\\\\n[instruções concretas: respiração, ritmo, pausa, tom — o que fazer fisicamente]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💬 EXEMPLOS DE FALAS:\\\\\\\\\\\\\\\\n[mesma ideia, dita de duas formas — a fraca e a poderosa — para cada técnica ensinada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏋️ EXERCÍCIO DE VOZ:\\\\\\\\\\\\\\\\n[exercício físico/prático para treinar essa habilidade, que pode ser feito sozinho]"
+                    f"Ensine de forma prática e detalhada: {area_orat}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎤 {area_orat.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 A DIFERENÇA NA PRÁTICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como soa quem não tem essa habilidade vs quem tem — use exemplos de frases]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ TÉCNICA — PASSO A PASSO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[instruções concretas: respiração, ritmo, pausa, tom — o que fazer fisicamente]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💬 EXEMPLOS DE FALAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[mesma ideia, dita de duas formas — a fraca e a poderosa — para cada técnica ensinada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏋️ EXERCÍCIO DE VOZ:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[exercício físico/prático para treinar essa habilidade, que pode ser feito sozinho]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_oratoria_seduca3'] = str(res)
@@ -10547,14 +10513,14 @@ elif st.session_state.etapa == "App":
         if st.button("💘 APRENDER", key="seducaoi10"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Ensine de forma prática, direta e com exemplos: {area_atr}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💘 {area_atr.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 COMO PARECE NA REALIDADE:\\\\\\\\\\\\\\\\n[cena específica com diálogo mostrando como isso se manifesta — inclua um exemplo que funciona e um que não funciona]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ O MECANISMO:\\\\\\\\\\\\\\\\n[por que essa dinâmica funciona — psicologia da atração por trás]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💬 O QUE DIZER:\\\\\\\\\\\\\\\\n[3-4 exemplos de falas/abordagens que aplicam isso — adaptáveis, não scripts robóticos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ ONDE A MAIORIA ERRA:\\\\\\\\\\\\\\\\n[o erro mais comum que destrói esse efeito]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"✅ A LINHA QUE NÃO SE CRUZA:\\\\\\\\\\\\\\\\n[como garantir que a abordagem respeita a outra pessoa — incluindo como reconhecer e aceitar desinteresse com elegância]"
+                    f"Ensine de forma prática, direta e com exemplos: {area_atr}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💘 {area_atr.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 COMO PARECE NA REALIDADE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cena específica com diálogo mostrando como isso se manifesta — inclua um exemplo que funciona e um que não funciona]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ O MECANISMO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[por que essa dinâmica funciona — psicologia da atração por trás]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💬 O QUE DIZER:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[3-4 exemplos de falas/abordagens que aplicam isso — adaptáveis, não scripts robóticos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ ONDE A MAIORIA ERRA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o erro mais comum que destrói esse efeito]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"✅ A LINHA QUE NÃO SE CRUZA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como garantir que a abordagem respeita a outra pessoa — incluindo como reconhecer e aceitar desinteresse com elegância]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_atracao_seduca4'] = str(res)
@@ -10594,13 +10560,13 @@ elif st.session_state.etapa == "App":
             if st.button("🎯 APRENDER", key="seducaoi12"):
                 with st.spinner("Preparando..."):
                     prompt = (
-                        f"Ensine: {tecnica_conv}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 {tecnica_conv.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎬 EXEMPLO COMPLETO — COMO FICA NA PRÁTICA:\\\\\\\\\\\\\\\\n[diálogo real mostrando a técnica aplicada do início ao fim]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ OS PRINCÍPIOS:\\\\\\\\\\\\\\\\n[o que está por trás dessa técnica]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💬 VARIAÇÕES E ADAPTAÇÕES:\\\\\\\\\\\\\\\\n[como adaptar para diferentes contextos: presencial, mensagem, grupo...]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ ERRO MAIS COMUM:\\\\\\\\\\\\\\\\n[o que a maioria faz de errado nessa situação]"
+                        f"Ensine: {tecnica_conv}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 {tecnica_conv.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎬 EXEMPLO COMPLETO — COMO FICA NA PRÁTICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[diálogo real mostrando a técnica aplicada do início ao fim]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ OS PRINCÍPIOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que está por trás dessa técnica]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💬 VARIAÇÕES E ADAPTAÇÕES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como adaptar para diferentes contextos: presencial, mensagem, grupo...]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ ERRO MAIS COMUM:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que a maioria faz de errado nessa situação]"
                     )
                     res = presenca_ia(prompt)
                     if res: st.session_state['res_conversa_seduca5'] = str(res)
@@ -10621,15 +10587,15 @@ elif st.session_state.etapa == "App":
                 if minha_conversa.strip():
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Analise esta conversa e ajude com a próxima jogada.\\\\\\\\\\\\\\\\n"
-                            f"Conversa: {minha_conversa}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"📊 DIAGNÓSTICO:\\\\\\\\\\\\\\\\n[como está a dinâmica desta conversa — curto e direto]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"💬 3 OPÇÕES DE RESPOSTA:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"🔥 DIRETA E INTENCIONAL:\\\\\\\\\\\\\\\\n[demonstra interesse claro com confiança]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"😄 LEVE E DIVERTIDA:\\\\\\\\\\\\\\\\n[cria leveza e humor]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"🎯 QUE AVANÇA:\\\\\\\\\\\\\\\\n[leva a conversa para algum lugar — encontro, plano, tema novo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"💡 QUAL USAR E POR QUÊ:\\\\\\\\\\\\\\\\n[recomendação baseada no tom da conversa]"
+                            f"Analise esta conversa e ajude com a próxima jogada.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"Conversa: {minha_conversa}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"📊 DIAGNÓSTICO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como está a dinâmica desta conversa — curto e direto]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"💬 3 OPÇÕES DE RESPOSTA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"🔥 DIRETA E INTENCIONAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[demonstra interesse claro com confiança]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"😄 LEVE E DIVERTIDA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cria leveza e humor]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"🎯 QUE AVANÇA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[leva a conversa para algum lugar — encontro, plano, tema novo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"💡 QUAL USAR E POR QUÊ:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[recomendação baseada no tom da conversa]"
                         )
                         res = presenca_ia(prompt)
                         if res: st.session_state['res_conversa_seduca6'] = str(res)
@@ -10698,16 +10664,16 @@ elif st.session_state.etapa == "App":
             with col_feed:
                 if st.button("📊 ANÁLISE DO TREINO", key="seducaoi19"):
                     with st.spinner("Analisando..."):
-                        historico = "\\\\\\\\\\\\\\\\n".join([f"{'Você' if m['role']=='user' else 'Pessoa'}: {m['content']}" for m in st.session_state.chat_simulador])
+                        historico = "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n".join([f"{'Você' if m['role']=='user' else 'Pessoa'}: {m['content']}" for m in st.session_state.chat_simulador])
                         prompt = (
-                            f"Analise esta abordagem simulada.\\\\\\\\\\\\\\\\nSimulação: {historico}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"📊 ANÁLISE DO TREINO\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"⭐ NOTA GERAL: [X]/10\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"✅ O QUE FUNCIONOU BEM:\\\\\\\\\\\\\\\\n[pontos fortes específicos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"⚠️ O QUE PODERIA SER MELHOR:\\\\\\\\\\\\\\\\n[erros ou oportunidades perdidas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"💬 COMO PODERIA TER DITO MELHOR:\\\\\\\\\\\\\\\\n[reescreva 1-2 falas que poderiam ter mais impacto]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"🎯 PARA A PRÓXIMA VEZ:\\\\\\\\\\\\\\\\n[1 coisa principal para melhorar]"
+                            f"Analise esta abordagem simulada.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nSimulação: {historico}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"📊 ANÁLISE DO TREINO\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"⭐ NOTA GERAL: [X]/10\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"✅ O QUE FUNCIONOU BEM:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pontos fortes específicos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"⚠️ O QUE PODERIA SER MELHOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[erros ou oportunidades perdidas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"💬 COMO PODERIA TER DITO MELHOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[reescreva 1-2 falas que poderiam ter mais impacto]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"🎯 PARA A PRÓXIMA VEZ:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 coisa principal para melhorar]"
                         )
                         res = presenca_ia(prompt)
                         if res: st.session_state['res_simulador_seduca7'] = str(res)
@@ -10742,13 +10708,13 @@ elif st.session_state.etapa == "App":
         if st.button("👁️ APRENDER", key="seducaoi21"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Ensine de forma visual e prática: {area_ling}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"👁️ {area_ling.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 COMO PARECE NA PRÁTICA:\\\\\\\\\\\\\\\\n[descreva visualmente — como o corpo, o olhar, a posição mudam entre quem tem e quem não tem essa habilidade]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ AS TÉCNICAS ESPECÍFICAS:\\\\\\\\\\\\\\\\n[instruções físicas concretas — onde colocar as mãos, como posicionar os ombros, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔄 OS ERROS MAIS COMUNS:\\\\\\\\\\\\\\\\n[o que a maioria faz que passa a mensagem errada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏋️ EXERCÍCIO:\\\\\\\\\\\\\\\\n[como treinar isso — um exercício físico real, não só teoria]"
+                    f"Ensine de forma visual e prática: {area_ling}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"👁️ {area_ling.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 COMO PARECE NA PRÁTICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[descreva visualmente — como o corpo, o olhar, a posição mudam entre quem tem e quem não tem essa habilidade]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ AS TÉCNICAS ESPECÍFICAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[instruções físicas concretas — onde colocar as mãos, como posicionar os ombros, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔄 OS ERROS MAIS COMUNS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que a maioria faz que passa a mensagem errada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏋️ EXERCÍCIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como treinar isso — um exercício físico real, não só teoria]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_linguagem_seduca8'] = str(res)
@@ -10779,14 +10745,14 @@ elif st.session_state.etapa == "App":
         if st.button("🔥 COMO AGIR", key="seducaoi23"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Dê um guia completo e direto para esta situação: {situacao_real}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔥 {situacao_real.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📌 O CONTEXTO:\\\\\\\\\\\\\\\\n[o que torna essa situação específica — seus desafios e oportunidades únicos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 COMO UM HOMEM MAGNÉTICO AGE NESSA SITUAÇÃO:\\\\\\\\\\\\\\\\n[cena detalhada — o que ele diz, como ele age, qual é o frame mental]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💬 EXEMPLOS DE FALAS REAIS:\\\\\\\\\\\\\\\\n[3-4 exemplos adaptáveis para essa situação específica]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ O MAIOR ERRO:\\\\\\\\\\\\\\\\n[o que destrói as chances nessa situação]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"✅ COMO SABER SE ESTÁ INDO BEM:\\\\\\\\\\\\\\\\n[sinais de que a situação está evoluindo na direção certa]"
+                    f"Dê um guia completo e direto para esta situação: {situacao_real}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔥 {situacao_real.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📌 O CONTEXTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que torna essa situação específica — seus desafios e oportunidades únicos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 COMO UM HOMEM MAGNÉTICO AGE NESSA SITUAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cena detalhada — o que ele diz, como ele age, qual é o frame mental]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💬 EXEMPLOS DE FALAS REAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[3-4 exemplos adaptáveis para essa situação específica]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ O MAIOR ERRO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que destrói as chances nessa situação]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"✅ COMO SABER SE ESTÁ INDO BEM:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[sinais de que a situação está evoluindo na direção certa]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_situacoes_seduca9'] = str(res)
@@ -10822,14 +10788,14 @@ elif st.session_state.etapa == "App":
         if st.button("🧠 TRANSFORMAR A MENTALIDADE", key="seducaoi25"):
             with st.spinner("Preparando..."):
                 prompt = (
-                    f"Fale sobre a mentalidade de um homem realmente confiante em relação a: {tema_ment}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧠 {tema_ment.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔴 A MENTALIDADE LIMITANTE (como a maioria pensa):\\\\\\\\\\\\\\\\n[o frame mental que sabota — seja específico, não genérico]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🟢 A MENTALIDADE DO PROTAGONISTA (como um homem de presença pensa):\\\\\\\\\\\\\\\\n[o frame mental correto — com exemplos de como esse pensamento muda o comportamento na prática]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔄 COMO FAZER A TRANSIÇÃO:\\\\\\\\\\\\\\\\n[o que fazer quando pegar o pensamento limitante acontecendo — específico e prático]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💬 O QUE UM HOMEM COM ESSA MENTALIDADE DIRIA/FARIA:\\\\\\\\\\\\\\\\n[exemplos concretos de comportamento e fala que demonstram essa mentalidade]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚡ A FRASE QUE RESUME:\\\\\\\\\\\\\\\\n[1 frase curta e poderosa para fixar essa mentalidade]"
+                    f"Fale sobre a mentalidade de um homem realmente confiante em relação a: {tema_ment}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧠 {tema_ment.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔴 A MENTALIDADE LIMITANTE (como a maioria pensa):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o frame mental que sabota — seja específico, não genérico]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🟢 A MENTALIDADE DO PROTAGONISTA (como um homem de presença pensa):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o frame mental correto — com exemplos de como esse pensamento muda o comportamento na prática]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔄 COMO FAZER A TRANSIÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que fazer quando pegar o pensamento limitante acontecendo — específico e prático]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💬 O QUE UM HOMEM COM ESSA MENTALIDADE DIRIA/FARIA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[exemplos concretos de comportamento e fala que demonstram essa mentalidade]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚡ A FRASE QUE RESUME:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 frase curta e poderosa para fixar essa mentalidade]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_mentalidade_seduca10'] = str(res)
@@ -10867,13 +10833,13 @@ elif st.session_state.etapa == "App":
             if st.button("📖 APRENDER", key="seducaoi27"):
                 with st.spinner("Preparando..."):
                     prompt = (
-                        f"Ensine: {tecnica_hist}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📖 {tecnica_hist.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎬 A DIFERENÇA:\\\\\\\\\\\\\\\\n[mesma história contada de forma fraca vs contada com essa técnica — mostre ambas em detalhes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ A ESTRUTURA:\\\\\\\\\\\\\\\\n[os elementos técnicos que criam o efeito]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💬 EXEMPLO COMPLETO:\\\\\\\\\\\\\\\\n[uma história curta usando exatamente essa técnica]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏋️ PRATIQUE:\\\\\\\\\\\\\\\\n[exercício para aplicar isso com histórias da sua própria vida]"
+                        f"Ensine: {tecnica_hist}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📖 {tecnica_hist.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎬 A DIFERENÇA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[mesma história contada de forma fraca vs contada com essa técnica — mostre ambas em detalhes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ A ESTRUTURA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[os elementos técnicos que criam o efeito]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💬 EXEMPLO COMPLETO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[uma história curta usando exatamente essa técnica]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏋️ PRATIQUE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[exercício para aplicar isso com histórias da sua própria vida]"
                     )
                     res = presenca_ia(prompt)
                     if res: st.session_state['res_historias_seduca11'] = str(res)
@@ -10895,12 +10861,12 @@ elif st.session_state.etapa == "App":
                 if minha_historia.strip():
                     with st.spinner("Reescrevendo..."):
                         prompt = (
-                            f"Reescreva esta história com muito mais impacto, emoção e magnetismo narrativo.\\\\\\\\\\\\\\\\n"
-                            f"História original: {minha_historia}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"📝 VERSÃO ORIGINAL (diagnóstico):\\\\\\\\\\\\\\\\n[o que está fraco ou pode ser melhorado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"⚡ VERSÃO COM IMPACTO:\\\\\\\\\\\\\\\\n[a história reescrita com tensão, ritmo e emoção — mantenha os fatos reais, só melhore a narrativa]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                            f"📚 O QUE MUDOU:\\\\\\\\\\\\\\\\n[explique as escolhas narrativas feitas]"
+                            f"Reescreva esta história com muito mais impacto, emoção e magnetismo narrativo.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"História original: {minha_historia}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"📝 VERSÃO ORIGINAL (diagnóstico):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que está fraco ou pode ser melhorado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"⚡ VERSÃO COM IMPACTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[a história reescrita com tensão, ritmo e emoção — mantenha os fatos reais, só melhore a narrativa]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                            f"📚 O QUE MUDOU:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explique as escolhas narrativas feitas]"
                         )
                         res = presenca_ia(prompt)
                         if res: st.session_state['res_historias_seduca12'] = str(res)
@@ -10949,26 +10915,26 @@ elif st.session_state.etapa == "App":
                 nivel_instrucao = ("Esta deve ser uma aula extensa e densa, no nível de um seminário avançado."
                     if prof_aula == "Aprofundada" else "Esta deve ser uma aula completa e prática.")
                 prompt = (
-                    f"Você está escrevendo a melhor aula possível sobre: {aula_presenca}\\\\\\\\\\\\\\\\n"
+                    f"Você está escrevendo a melhor aula possível sobre: {aula_presenca}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                     f"{nivel_instrucao} Proibido ser superficial, genérico ou usar clichês vazios. "
-                    f"Cada ponto deve ter exemplo concreto, mecanismo explicado e aplicação real.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎓 {aula_presenca.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📖 POR QUE ISSO IMPORTA — A REALIDADE CRUA:\\\\\\\\\\\\\\\\n"
-                    f"[abra com uma verdade sobre como a maioria dos homens age e por que eles não têm os resultados que querem — sem julgamento, com clareza]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💡 OS PRINCÍPIOS FUNDAMENTAIS:\\\\\\\\\\\\\\\\n"
-                    f"[3-4 princípios centrais, cada um com exemplo específico e mecanismo explicado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 ESTUDO DE CASO 1 — CENA DETALHADA:\\\\\\\\\\\\\\\\n"
-                    f"[uma situação narrada em detalhe mostrando o princípio funcionando — com diálogo real, linguagem corporal, contexto]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎬 ESTUDO DE CASO 2 — O CONTRASTE:\\\\\\\\\\\\\\\\n"
-                    f"[a mesma situação, mas sem o princípio — mostrando a diferença de resultado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ COMO DESENVOLVER — PASSO A PASSO:\\\\\\\\\\\\\\\\n"
-                    f"[instruções concretas e replicáveis, sem vagueza]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ OS ERROS QUE SABOTAM:\\\\\\\\\\\\\\\\n"
-                    f"[o que a maioria faz que destrói o efeito]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏋️ MISSÃO DESTA SEMANA:\\\\\\\\\\\\\\\\n"
-                    f"[1 exercício real e específico para aplicar essa semana]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚡ A FRASE QUE RESUME:\\\\\\\\\\\\\\\\n"
+                    f"Cada ponto deve ter exemplo concreto, mecanismo explicado e aplicação real.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎓 {aula_presenca.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📖 POR QUE ISSO IMPORTA — A REALIDADE CRUA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[abra com uma verdade sobre como a maioria dos homens age e por que eles não têm os resultados que querem — sem julgamento, com clareza]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💡 OS PRINCÍPIOS FUNDAMENTAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[3-4 princípios centrais, cada um com exemplo específico e mecanismo explicado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 ESTUDO DE CASO 1 — CENA DETALHADA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[uma situação narrada em detalhe mostrando o princípio funcionando — com diálogo real, linguagem corporal, contexto]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎬 ESTUDO DE CASO 2 — O CONTRASTE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[a mesma situação, mas sem o princípio — mostrando a diferença de resultado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ COMO DESENVOLVER — PASSO A PASSO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[instruções concretas e replicáveis, sem vagueza]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ OS ERROS QUE SABOTAM:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[o que a maioria faz que destrói o efeito]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏋️ MISSÃO DESTA SEMANA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[1 exercício real e específico para aplicar essa semana]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚡ A FRASE QUE RESUME:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                     f"[1 frase poderosa e memorável que cristaliza a essência da aula]"
                 )
                 res = presenca_ia(prompt, "Escreva para um homem inteligente que já tentou muita coisa e não quer mais teoria vaga — ele quer o mecanismo real e como aplicar.")
@@ -11005,15 +10971,15 @@ elif st.session_state.etapa == "App":
         if st.button("🏆 GERAR DESAFIO DA SEMANA", key="seducaoi31"):
             with st.spinner("Criando desafio..."):
                 prompt = (
-                    f"Crie um desafio prático semanal.\\\\\\\\\\\\\\\\nÁrea: {area_desafio}. Nível: {nivel_desafio}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏆 DESAFIO DA SEMANA — {area_desafio.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎯 O DESAFIO:\\\\\\\\\\\\\\\\n[descrição clara e específica do que fazer — não vago]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📅 QUANDO E COMO FAZER:\\\\\\\\\\\\\\\\n[instrução de execução — dia, contexto, duração]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧠 POR QUE ISSO FUNCIONA:\\\\\\\\\\\\\\\\n[o que esse desafio vai desenvolver em você]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ A REGRA PRINCIPAL:\\\\\\\\\\\\\\\\n[o que não pode acontecer — o que tornaria o desafio inválido]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"✅ COMO SABER SE COMPLETOU:\\\\\\\\\\\\\\\\n[critério de sucesso claro]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚡ BÔNUS:\\\\\\\\\\\\\\\\n[variação mais difícil para quem quiser ir além]"
+                    f"Crie um desafio prático semanal.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nÁrea: {area_desafio}. Nível: {nivel_desafio}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏆 DESAFIO DA SEMANA — {area_desafio.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎯 O DESAFIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[descrição clara e específica do que fazer — não vago]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📅 QUANDO E COMO FAZER:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[instrução de execução — dia, contexto, duração]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧠 POR QUE ISSO FUNCIONA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que esse desafio vai desenvolver em você]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ A REGRA PRINCIPAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que não pode acontecer — o que tornaria o desafio inválido]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"✅ COMO SABER SE COMPLETOU:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[critério de sucesso claro]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚡ BÔNUS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[variação mais difícil para quem quiser ir além]"
                 )
                 res = presenca_ia(prompt)
                 if res: st.session_state['res_desafio_seduca14'] = str(res)
@@ -11091,6 +11057,8 @@ st.markdown(
     "© 2026 Presença IA — Confiança, Charme e Oratória · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
+
+
 
 
 
@@ -11299,7 +11267,7 @@ Usuário: {st.session_state.usuario}. Ideia/projeto principal: {st.session_state
         return f"⚠️ Erro na API: {e}"
 
 def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
-    percentuais = re.findall(r'(\d+)\s*/\s*100|(\d+)%', texto)
+    percentuais = re.findall(r'(\\d+)\\s*/\\s*100|(\\d+)%', texto)
     valores = [int(a or b) for a, b in percentuais if a or b]
     indice = valores[0] if valores else 50
 
@@ -11332,7 +11300,7 @@ if 'projetos_salvos' not in st.session_state: st.session_state['projetos_salvos'
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 INVENÇÕES IA")
-    st.markdown("<div class=\'card\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -11428,12 +11396,6 @@ elif st.session_state.etapa == "App":
         # TRANSFORMADOR DE IDEIAS
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
     with _tab_Transformador:
         st.header("💡 Transformador de Ideias")
         st.markdown("Descreva sua ideia em poucas palavras — a IA estrutura tudo.")
@@ -11445,16 +11407,16 @@ elif st.session_state.etapa == "App":
             if ideia_transf.strip():
                 with st.spinner("Estruturando sua ideia..."):
                     prompt = (
-                        f"Transforme esta ideia em um projeto estruturado.\n"
-                        f"Ideia: {ideia_transf}\n\n"
-                        f"FORMATO:\n\n"
-                        f"💡 PROJETO: [nome sugestivo para o projeto]\n\n"
-                        f"🎯 OBJETIVO:\n[o que o projeto busca alcançar]\n\n"
-                        f"❓ PROBLEMA QUE RESOLVE:\n[a dor real que essa ideia ataca]\n\n"
-                        f"👥 PÚBLICO BENEFICIADO:\n[quem ganha com isso]\n\n"
-                        f"⭐ DIFERENCIAIS:\n[o que torna essa ideia única ou interessante]\n\n"
-                        f"🔄 POSSÍVEIS APLICAÇÕES:\n[outros usos ou mercados onde isso poderia funcionar]\n\n"
-                        f"✅ PRÓXIMOS PASSOS:\n[3-5 ações concretas para sair do papel]"
+                        f"Transforme esta ideia em um projeto estruturado.\\n"
+                        f"Ideia: {ideia_transf}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💡 PROJETO: [nome sugestivo para o projeto]\\n\\n"
+                        f"🎯 OBJETIVO:\\n[o que o projeto busca alcançar]\\n\\n"
+                        f"❓ PROBLEMA QUE RESOLVE:\\n[a dor real que essa ideia ataca]\\n\\n"
+                        f"👥 PÚBLICO BENEFICIADO:\\n[quem ganha com isso]\\n\\n"
+                        f"⭐ DIFERENCIAIS:\\n[o que torna essa ideia única ou interessante]\\n\\n"
+                        f"🔄 POSSÍVEIS APLICAÇÕES:\\n[outros usos ou mercados onde isso poderia funcionar]\\n\\n"
+                        f"✅ PRÓXIMOS PASSOS:\\n[3-5 ações concretas para sair do papel]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_transformado_invenc1'] = str(res)
@@ -11492,17 +11454,17 @@ elif st.session_state.etapa == "App":
             if ideia_pesq.strip():
                 with st.spinner("Analisando o mercado..."):
                     prompt = (
-                        f"Faça uma análise de mercado para esta ideia.\n"
-                        f"Ideia: {ideia_pesq}. Mercado: {regiao_pesq or 'geral'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🔍 PESQUISA DE MERCADO — {ideia_pesq[:50].upper()}\n\n"
-                        f"📊 EXISTE DEMANDA?\n[análise baseada em padrões conhecidos — dores similares já resolvidas no mercado, sinais de interesse]\n\n"
-                        f"👥 QUEM COMPRARIA:\n[perfil geral do comprador potencial]\n\n"
-                        f"📈 O MERCADO ESTÁ CRESCENDO?\n[tendência geral do setor relacionado, com base em conhecimento estabelecido]\n\n"
-                        f"🌍 TENDÊNCIAS NACIONAIS E INTERNACIONAIS:\n[movimentos relevantes do setor]\n\n"
-                        f"💎 NICHOS POUCO EXPLORADOS:\n[oportunidades dentro dessa área]\n\n"
-                        f"🎯 OPORTUNIDADES ESCONDIDAS:\n[ângulos que poucos competidores costumam explorar]\n\n"
-                        f"✅ COMO VALIDAR ISSO NA PRÁTICA:\n[passos reais para confirmar essas hipóteses com o mercado de verdade]"
+                        f"Faça uma análise de mercado para esta ideia.\\n"
+                        f"Ideia: {ideia_pesq}. Mercado: {regiao_pesq or 'geral'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔍 PESQUISA DE MERCADO — {ideia_pesq[:50].upper()}\\n\\n"
+                        f"📊 EXISTE DEMANDA?\\n[análise baseada em padrões conhecidos — dores similares já resolvidas no mercado, sinais de interesse]\\n\\n"
+                        f"👥 QUEM COMPRARIA:\\n[perfil geral do comprador potencial]\\n\\n"
+                        f"📈 O MERCADO ESTÁ CRESCENDO?\\n[tendência geral do setor relacionado, com base em conhecimento estabelecido]\\n\\n"
+                        f"🌍 TENDÊNCIAS NACIONAIS E INTERNACIONAIS:\\n[movimentos relevantes do setor]\\n\\n"
+                        f"💎 NICHOS POUCO EXPLORADOS:\\n[oportunidades dentro dessa área]\\n\\n"
+                        f"🎯 OPORTUNIDADES ESCONDIDAS:\\n[ângulos que poucos competidores costumam explorar]\\n\\n"
+                        f"✅ COMO VALIDAR ISSO NA PRÁTICA:\\n[passos reais para confirmar essas hipóteses com o mercado de verdade]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_pesquisa_invenc2'] = str(res)
@@ -11536,17 +11498,17 @@ elif st.session_state.etapa == "App":
             if ideia_conc.strip():
                 with st.spinner("Mapeando concorrência..."):
                     prompt = (
-                        f"Analise a concorrência para esta ideia.\n"
-                        f"Ideia: {ideia_conc}. Concorrentes conhecidos: {concorrentes_conhecidos or 'nenhum informado'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"⚔️ ANÁLISE DE CONCORRÊNCIA — {ideia_conc[:50].upper()}\n\n"
-                        f"🏢 TIPOS DE CONCORRENTES NESSE MERCADO:\n[categorias de concorrentes — direto, indireto, substitutos]\n\n"
-                        f"✅ PONTOS FORTES TÍPICOS DA CONCORRÊNCIA:\n[o que esse tipo de negócio geralmente faz bem]\n\n"
-                        f"⚠️ PONTOS FRACOS TÍPICOS:\n[onde esse tipo de negócio geralmente falha ou frustra clientes]\n\n"
-                        f"💰 FAIXA DE PREÇO TÍPICA DO MERCADO:\n[estimativa geral]\n\n"
-                        f"🎯 OPORTUNIDADES PARA SUPERAR A CONCORRÊNCIA:\n[onde sua ideia pode se diferenciar]\n\n"
-                        f"💎 ESPAÇOS AINDA NÃO EXPLORADOS:\n[lacunas que a concorrência típica não cobre]\n\n"
-                        f"✅ COMO PESQUISAR CONCORRENTES REAIS:\n[método prático para mapear concorrentes reais nesse mercado]"
+                        f"Analise a concorrência para esta ideia.\\n"
+                        f"Ideia: {ideia_conc}. Concorrentes conhecidos: {concorrentes_conhecidos or 'nenhum informado'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"⚔️ ANÁLISE DE CONCORRÊNCIA — {ideia_conc[:50].upper()}\\n\\n"
+                        f"🏢 TIPOS DE CONCORRENTES NESSE MERCADO:\\n[categorias de concorrentes — direto, indireto, substitutos]\\n\\n"
+                        f"✅ PONTOS FORTES TÍPICOS DA CONCORRÊNCIA:\\n[o que esse tipo de negócio geralmente faz bem]\\n\\n"
+                        f"⚠️ PONTOS FRACOS TÍPICOS:\\n[onde esse tipo de negócio geralmente falha ou frustra clientes]\\n\\n"
+                        f"💰 FAIXA DE PREÇO TÍPICA DO MERCADO:\\n[estimativa geral]\\n\\n"
+                        f"🎯 OPORTUNIDADES PARA SUPERAR A CONCORRÊNCIA:\\n[onde sua ideia pode se diferenciar]\\n\\n"
+                        f"💎 ESPAÇOS AINDA NÃO EXPLORADOS:\\n[lacunas que a concorrência típica não cobre]\\n\\n"
+                        f"✅ COMO PESQUISAR CONCORRENTES REAIS:\\n[método prático para mapear concorrentes reais nesse mercado]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_concorrencia_invenc3'] = str(res)
@@ -11580,20 +11542,20 @@ elif st.session_state.etapa == "App":
             if ideia_val.strip():
                 with st.spinner("Analisando..."):
                     prompt = (
-                        f"Faça um diagnóstico completo de validação para esta ideia.\n"
-                        f"Ideia: {ideia_val}. Contexto: {contexto_val or 'não informado'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🧠 ÍNDICE DE VALIDAÇÃO: [X]/100\n"
-                        f"[1-2 linhas explicando a estimativa geral]\n\n"
-                        f"✨ ORIGINALIDADE: [X]/10 — [comentário]\n"
-                        f"💰 POTENCIAL COMERCIAL: [X]/10 — [comentário]\n"
-                        f"📈 ESCALABILIDADE: [X]/10 — [comentário]\n"
-                        f"🔧 COMPLEXIDADE: [Baixa/Média/Alta] — [comentário sobre dificuldade de execução]\n"
-                        f"🚧 BARREIRAS DE ENTRADA: [Baixas/Médias/Altas] — [o que dificultaria competidores entrarem, ou você entrar]\n"
-                        f"🎯 GRAU DE INOVAÇÃO: [Incremental/Disruptivo/Já existe similar] — [comentário honesto]\n"
-                        f"✅ CHANCES DE ACEITAÇÃO: [X]/10 — [comentário]\n\n"
-                        f"⚠️ MAIOR RISCO DESSA IDEIA:\n[seja honesto sobre o ponto mais fraco]\n\n"
-                        f"💡 O QUE FORTALECERIA MAIS A IDEIA AGORA:\n[1-2 ações prioritárias]"
+                        f"Faça um diagnóstico completo de validação para esta ideia.\\n"
+                        f"Ideia: {ideia_val}. Contexto: {contexto_val or 'não informado'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧠 ÍNDICE DE VALIDAÇÃO: [X]/100\\n"
+                        f"[1-2 linhas explicando a estimativa geral]\\n\\n"
+                        f"✨ ORIGINALIDADE: [X]/10 — [comentário]\\n"
+                        f"💰 POTENCIAL COMERCIAL: [X]/10 — [comentário]\\n"
+                        f"📈 ESCALABILIDADE: [X]/10 — [comentário]\\n"
+                        f"🔧 COMPLEXIDADE: [Baixa/Média/Alta] — [comentário sobre dificuldade de execução]\\n"
+                        f"🚧 BARREIRAS DE ENTRADA: [Baixas/Médias/Altas] — [o que dificultaria competidores entrarem, ou você entrar]\\n"
+                        f"🎯 GRAU DE INOVAÇÃO: [Incremental/Disruptivo/Já existe similar] — [comentário honesto]\\n"
+                        f"✅ CHANCES DE ACEITAÇÃO: [X]/10 — [comentário]\\n\\n"
+                        f"⚠️ MAIOR RISCO DESSA IDEIA:\\n[seja honesto sobre o ponto mais fraco]\\n\\n"
+                        f"💡 O QUE FORTALECERIA MAIS A IDEIA AGORA:\\n[1-2 ações prioritárias]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_validacao_invenc4'] = str(res)
@@ -11627,16 +11589,16 @@ elif st.session_state.etapa == "App":
             if ideia_mel.strip():
                 with st.spinner("Pensando em melhorias..."):
                     prompt = (
-                        f"Sugira melhorias criativas e estratégicas para esta ideia.\n"
-                        f"Ideia: {ideia_mel}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🚀 MELHORIAS PARA: {ideia_mel[:50].upper()}\n\n"
-                        f"⚙️ NOVAS FUNCIONALIDADES:\n[3-5 funcionalidades que agregariam valor]\n\n"
-                        f"👥 MUDANÇAS NO PÚBLICO:\n[outros públicos que poderiam se beneficiar, ou ajustes no foco]\n\n"
-                        f"🔄 NOVAS APLICAÇÕES:\n[outros contextos onde essa ideia poderia ser usada]\n\n"
-                        f"✂️ SIMPLIFICAÇÕES:\n[o que poderia ser removido/simplificado para tornar mais fácil de usar/vender]\n\n"
-                        f"💎 RECURSOS PREMIUM:\n[funcionalidades que poderiam ser parte de uma versão paga]\n\n"
-                        f"🔮 VERSÕES FUTURAS:\n[para onde essa ideia poderia evoluir no longo prazo]"
+                        f"Sugira melhorias criativas e estratégicas para esta ideia.\\n"
+                        f"Ideia: {ideia_mel}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🚀 MELHORIAS PARA: {ideia_mel[:50].upper()}\\n\\n"
+                        f"⚙️ NOVAS FUNCIONALIDADES:\\n[3-5 funcionalidades que agregariam valor]\\n\\n"
+                        f"👥 MUDANÇAS NO PÚBLICO:\\n[outros públicos que poderiam se beneficiar, ou ajustes no foco]\\n\\n"
+                        f"🔄 NOVAS APLICAÇÕES:\\n[outros contextos onde essa ideia poderia ser usada]\\n\\n"
+                        f"✂️ SIMPLIFICAÇÕES:\\n[o que poderia ser removido/simplificado para tornar mais fácil de usar/vender]\\n\\n"
+                        f"💎 RECURSOS PREMIUM:\\n[funcionalidades que poderiam ser parte de uma versão paga]\\n\\n"
+                        f"🔮 VERSÕES FUTURAS:\\n[para onde essa ideia poderia evoluir no longo prazo]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_melhorias_invenc5'] = str(res)
@@ -11668,18 +11630,18 @@ elif st.session_state.etapa == "App":
             if ideia_pub.strip():
                 with st.spinner("Traçando o perfil..."):
                     prompt = (
-                        f"Crie um perfil detalhado do cliente ideal para esta ideia.\n"
-                        f"Ideia: {ideia_pub}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🎯 PÚBLICO-ALVO — {ideia_pub[:50].upper()}\n\n"
-                        f"👤 PERFIL DO CLIENTE:\n[nome fictício, descrição geral]\n\n"
-                        f"🎂 FAIXA ETÁRIA:\n[idade típica]\n\n"
-                        f"💰 PODER AQUISITIVO:\n[faixa de renda]\n\n"
-                        f"❤️ INTERESSES:\n[o que esse perfil gosta/consome]\n\n"
-                        f"🧠 COMPORTAMENTOS:\n[hábitos relevantes — como pesquisa, como compra]\n\n"
-                        f"😰 PRINCIPAIS DORES:\n[problemas reais que essa ideia resolve para esse perfil]\n\n"
-                        f"💥 GATILHOS EMOCIONAIS:\n[o que realmente convenceria essa pessoa a comprar/usar]\n\n"
-                        f"📱 ONDE ENCONTRAR ESSE PÚBLICO:\n[canais e locais onde esse perfil está presente]"
+                        f"Crie um perfil detalhado do cliente ideal para esta ideia.\\n"
+                        f"Ideia: {ideia_pub}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🎯 PÚBLICO-ALVO — {ideia_pub[:50].upper()}\\n\\n"
+                        f"👤 PERFIL DO CLIENTE:\\n[nome fictício, descrição geral]\\n\\n"
+                        f"🎂 FAIXA ETÁRIA:\\n[idade típica]\\n\\n"
+                        f"💰 PODER AQUISITIVO:\\n[faixa de renda]\\n\\n"
+                        f"❤️ INTERESSES:\\n[o que esse perfil gosta/consome]\\n\\n"
+                        f"🧠 COMPORTAMENTOS:\\n[hábitos relevantes — como pesquisa, como compra]\\n\\n"
+                        f"😰 PRINCIPAIS DORES:\\n[problemas reais que essa ideia resolve para esse perfil]\\n\\n"
+                        f"💥 GATILHOS EMOCIONAIS:\\n[o que realmente convenceria essa pessoa a comprar/usar]\\n\\n"
+                        f"📱 ONDE ENCONTRAR ESSE PÚBLICO:\\n[canais e locais onde esse perfil está presente]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_publico_invenc6'] = str(res)
@@ -11718,18 +11680,18 @@ elif st.session_state.etapa == "App":
             if ideia_via.strip():
                 with st.spinner("Calculando viabilidade..."):
                     prompt = (
-                        f"Analise a viabilidade financeira desta ideia.\n"
-                        f"Ideia: {ideia_via}. Tipo: {tipo_via}. Capital disponível: R${capital_via}. Meta: {meta_via or 'não definida'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"💰 VIABILIDADE FINANCEIRA — {ideia_via[:50].upper()}\n\n"
-                        f"💸 CUSTOS INICIAIS ESTIMADOS:\n[lista com faixas de valores]\n\n"
-                        f"📅 CUSTOS MENSAIS ESTIMADOS:\n[lista com faixas de valores]\n\n"
-                        f"💰 INVESTIMENTO MÍNIMO PARA COMEÇAR:\n[valor estimado]\n\n"
-                        f"📊 ANÁLISE DO SEU CAPITAL (R${capital_via}):\n[é suficiente? o que fazer se não for?]\n\n"
-                        f"📈 MARGEM POSSÍVEL:\n[estimativa de margem para esse tipo de negócio]\n\n"
-                        f"⚖️ PONTO DE EQUILÍBRIO ESTIMADO:\n[quantas vendas/clientes para cobrir custos]\n\n"
-                        f"⏱️ TEMPO ESTIMADO PARA RETORNO:\n[estimativa realista]\n\n"
-                        f"⚠️ MAIOR RISCO FINANCEIRO:\n[seja honesto sobre o que pode dar errado financeiramente]"
+                        f"Analise a viabilidade financeira desta ideia.\\n"
+                        f"Ideia: {ideia_via}. Tipo: {tipo_via}. Capital disponível: R${capital_via}. Meta: {meta_via or 'não definida'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💰 VIABILIDADE FINANCEIRA — {ideia_via[:50].upper()}\\n\\n"
+                        f"💸 CUSTOS INICIAIS ESTIMADOS:\\n[lista com faixas de valores]\\n\\n"
+                        f"📅 CUSTOS MENSAIS ESTIMADOS:\\n[lista com faixas de valores]\\n\\n"
+                        f"💰 INVESTIMENTO MÍNIMO PARA COMEÇAR:\\n[valor estimado]\\n\\n"
+                        f"📊 ANÁLISE DO SEU CAPITAL (R${capital_via}):\\n[é suficiente? o que fazer se não for?]\\n\\n"
+                        f"📈 MARGEM POSSÍVEL:\\n[estimativa de margem para esse tipo de negócio]\\n\\n"
+                        f"⚖️ PONTO DE EQUILÍBRIO ESTIMADO:\\n[quantas vendas/clientes para cobrir custos]\\n\\n"
+                        f"⏱️ TEMPO ESTIMADO PARA RETORNO:\\n[estimativa realista]\\n\\n"
+                        f"⚠️ MAIOR RISCO FINANCEIRO:\\n[seja honesto sobre o que pode dar errado financeiramente]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_viabilidade_invenc7'] = str(res)
@@ -11767,19 +11729,19 @@ elif st.session_state.etapa == "App":
             if ideia_prec.strip():
                 with st.spinner("Calculando..."):
                     prompt = (
-                        f"Crie uma estratégia de precificação completa.\n"
-                        f"Produto/serviço: {ideia_prec}. Custo: R${custo_prec}. Público: {publico_prec}.\n"
-                        f"Referência de concorrência: {concorrencia_preco or 'não informada'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"💲 ESTRATÉGIA DE PREÇO — {ideia_prec[:50].upper()}\n\n"
-                        f"🎯 MELHOR PREÇO SUGERIDO: R$[X]\n"
-                        f"[justificativa]\n\n"
-                        f"📊 FAIXA COMPETITIVA: R$[X] a R$[X]\n\n"
-                        f"📈 MARGEM IDEAL: [X]%\n"
-                        f"[com base no custo de R${custo_prec}]\n\n"
-                        f"💡 ESTRATÉGIAS DE PREÇO:\n[psicológico, ancoragem, etc — específico para esse produto]\n\n"
-                        f"💰 VERSÃO ECONÔMICA: R$[X]\n[o que ela incluiria]\n\n"
-                        f"💎 VERSÃO PREMIUM: R$[X]\n[o que ela incluiria a mais]"
+                        f"Crie uma estratégia de precificação completa.\\n"
+                        f"Produto/serviço: {ideia_prec}. Custo: R${custo_prec}. Público: {publico_prec}.\\n"
+                        f"Referência de concorrência: {concorrencia_preco or 'não informada'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💲 ESTRATÉGIA DE PREÇO — {ideia_prec[:50].upper()}\\n\\n"
+                        f"🎯 MELHOR PREÇO SUGERIDO: R$[X]\\n"
+                        f"[justificativa]\\n\\n"
+                        f"📊 FAIXA COMPETITIVA: R$[X] a R$[X]\\n\\n"
+                        f"📈 MARGEM IDEAL: [X]%\\n"
+                        f"[com base no custo de R${custo_prec}]\\n\\n"
+                        f"💡 ESTRATÉGIAS DE PREÇO:\\n[psicológico, ancoragem, etc — específico para esse produto]\\n\\n"
+                        f"💰 VERSÃO ECONÔMICA: R$[X]\\n[o que ela incluiria]\\n\\n"
+                        f"💎 VERSÃO PREMIUM: R$[X]\\n[o que ela incluiria a mais]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_precificacao_invenc8'] = str(res)
@@ -11811,18 +11773,18 @@ elif st.session_state.etapa == "App":
             if ideia_esc.strip():
                 with st.spinner("Analisando escala..."):
                     prompt = (
-                        f"Analise até onde esta ideia pode crescer.\n"
-                        f"Ideia: {ideia_esc}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📈 POTENCIAL DE ESCALA — {ideia_esc[:50].upper()}\n\n"
-                        f"🏘️ MERCADO LOCAL:\n[viabilidade e tamanho aproximado]\n\n"
-                        f"🇧🇷 MERCADO NACIONAL:\n[o que seria necessário para expandir]\n\n"
-                        f"🌍 MERCADO INTERNACIONAL:\n[viabilidade e desafios — idioma, regulação, logística]\n\n"
-                        f"🏪 POSSIBILIDADE DE FRANQUIAS:\n[faz sentido para esse tipo de negócio?]\n\n"
-                        f"📜 LICENCIAMENTO:\n[a ideia poderia ser licenciada para terceiros?]\n\n"
-                        f"🔄 MODELO DE ASSINATURA:\n[seria viável transformar em recorrência?]\n\n"
-                        f"💻 EXPANSÃO DIGITAL:\n[como a digitalização poderia acelerar o crescimento]\n\n"
-                        f"🎯 TETO REALISTA DE CRESCIMENTO:\n[seja honesto sobre limitações reais dessa ideia]"
+                        f"Analise até onde esta ideia pode crescer.\\n"
+                        f"Ideia: {ideia_esc}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📈 POTENCIAL DE ESCALA — {ideia_esc[:50].upper()}\\n\\n"
+                        f"🏘️ MERCADO LOCAL:\\n[viabilidade e tamanho aproximado]\\n\\n"
+                        f"🇧🇷 MERCADO NACIONAL:\\n[o que seria necessário para expandir]\\n\\n"
+                        f"🌍 MERCADO INTERNACIONAL:\\n[viabilidade e desafios — idioma, regulação, logística]\\n\\n"
+                        f"🏪 POSSIBILIDADE DE FRANQUIAS:\\n[faz sentido para esse tipo de negócio?]\\n\\n"
+                        f"📜 LICENCIAMENTO:\\n[a ideia poderia ser licenciada para terceiros?]\\n\\n"
+                        f"🔄 MODELO DE ASSINATURA:\\n[seria viável transformar em recorrência?]\\n\\n"
+                        f"💻 EXPANSÃO DIGITAL:\\n[como a digitalização poderia acelerar o crescimento]\\n\\n"
+                        f"🎯 TETO REALISTA DE CRESCIMENTO:\\n[seja honesto sobre limitações reais dessa ideia]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_escala_invenc9'] = str(res)
@@ -11859,17 +11821,17 @@ elif st.session_state.etapa == "App":
             if ideia_lanc.strip():
                 with st.spinner("Montando o roteiro..."):
                     prompt = (
-                        f"Crie um plano completo de lançamento.\n"
-                        f"Ideia: {ideia_lanc}. Prazo: {prazo_lanc or 'flexível'}. Orçamento: R${orcamento_lanc}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📢 PLANO DE LANÇAMENTO — {ideia_lanc[:50].upper()}\n\n"
-                        f"📋 FASE 1 — PRÉ-LANÇAMENTO:\n[ações antes de lançar — construir audiência, validar, preparar]\n\n"
-                        f"🧪 FASE 2 — VALIDAÇÃO:\n[como testar com público real antes de escalar]\n\n"
-                        f"🚀 FASE 3 — PRIMEIRAS VENDAS:\n[estratégia para as primeiras conversões]\n\n"
-                        f"📣 FASE 4 — DIVULGAÇÃO:\n[canais e táticas considerando o orçamento de R${orcamento_lanc}]\n\n"
-                        f"📈 FASE 5 — CRESCIMENTO:\n[como ganhar tração após a validação inicial]\n\n"
-                        f"🏆 FASE 6 — ESCALA:\n[próximos passos quando o modelo estiver funcionando]\n\n"
-                        f"📅 CRONOGRAMA RESUMIDO:\n[timeline considerando o prazo de {prazo_lanc or 'médio prazo'}]"
+                        f"Crie um plano completo de lançamento.\\n"
+                        f"Ideia: {ideia_lanc}. Prazo: {prazo_lanc or 'flexível'}. Orçamento: R${orcamento_lanc}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📢 PLANO DE LANÇAMENTO — {ideia_lanc[:50].upper()}\\n\\n"
+                        f"📋 FASE 1 — PRÉ-LANÇAMENTO:\\n[ações antes de lançar — construir audiência, validar, preparar]\\n\\n"
+                        f"🧪 FASE 2 — VALIDAÇÃO:\\n[como testar com público real antes de escalar]\\n\\n"
+                        f"🚀 FASE 3 — PRIMEIRAS VENDAS:\\n[estratégia para as primeiras conversões]\\n\\n"
+                        f"📣 FASE 4 — DIVULGAÇÃO:\\n[canais e táticas considerando o orçamento de R${orcamento_lanc}]\\n\\n"
+                        f"📈 FASE 5 — CRESCIMENTO:\\n[como ganhar tração após a validação inicial]\\n\\n"
+                        f"🏆 FASE 6 — ESCALA:\\n[próximos passos quando o modelo estiver funcionando]\\n\\n"
+                        f"📅 CRONOGRAMA RESUMIDO:\\n[timeline considerando o prazo de {prazo_lanc or 'médio prazo'}]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_lancamento_invenc10'] = str(res)
@@ -11902,16 +11864,16 @@ elif st.session_state.etapa == "App":
             if ideia_brand.strip():
                 with st.spinner("Criando a marca..."):
                     prompt = (
-                        f"Crie um branding completo para esta ideia.\n"
-                        f"Ideia: {ideia_brand}. Valores desejados: {valores_brand or 'a definir'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🎨 BRANDING — {ideia_brand[:50].upper()}\n\n"
-                        f"🏷️ OPÇÕES DE NOME (5):\n[nome — significado/por que funciona]\n\n"
-                        f"🎯 SLOGAN (3 opções):\n[slogan 1]\n[slogan 2]\n[slogan 3]\n\n"
-                        f"📍 POSICIONAMENTO:\n[frase: Para [público], a [marca] é a [categoria] que [benefício único]]\n\n"
-                        f"🗣️ PERSONALIDADE DA MARCA:\n[como a marca se comporta — adjetivos]\n\n"
-                        f"💬 IDENTIDADE VERBAL:\n[como a marca fala — tom de voz, vocabulário]\n\n"
-                        f"💎 VALORES DA MARCA:\n[3-5 valores centrais]"
+                        f"Crie um branding completo para esta ideia.\\n"
+                        f"Ideia: {ideia_brand}. Valores desejados: {valores_brand or 'a definir'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🎨 BRANDING — {ideia_brand[:50].upper()}\\n\\n"
+                        f"🏷️ OPÇÕES DE NOME (5):\\n[nome — significado/por que funciona]\\n\\n"
+                        f"🎯 SLOGAN (3 opções):\\n[slogan 1]\\n[slogan 2]\\n[slogan 3]\\n\\n"
+                        f"📍 POSICIONAMENTO:\\n[frase: Para [público], a [marca] é a [categoria] que [benefício único]]\\n\\n"
+                        f"🗣️ PERSONALIDADE DA MARCA:\\n[como a marca se comporta — adjetivos]\\n\\n"
+                        f"💬 IDENTIDADE VERBAL:\\n[como a marca fala — tom de voz, vocabulário]\\n\\n"
+                        f"💎 VALORES DA MARCA:\\n[3-5 valores centrais]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_branding_invenc11'] = str(res)
@@ -11944,15 +11906,15 @@ elif st.session_state.etapa == "App":
             if ideia_vis.strip():
                 with st.spinner("Criando conceito visual..."):
                     prompt = (
-                        f"Sugira uma identidade visual completa.\n"
-                        f"Ideia: {ideia_vis}. Estilo desejado: {estilo_vis}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🖌️ IDENTIDADE VISUAL — {ideia_vis[:50].upper()}\n\n"
-                        f"🎨 PALETA DE CORES:\n[2-3 cores principais com código hex sugerido + o que cada uma transmite]\n\n"
-                        f"🔤 TIPOGRAFIA:\n[estilo de fonte recomendado — serifada/sem serifa, e por quê]\n\n"
-                        f"💡 CONCEITO DO LOGOTIPO:\n[ideia de símbolo/conceito visual que represente a marca]\n\n"
-                        f"📦 EMBALAGEM/APRESENTAÇÃO:\n[se aplicável, como deveria parecer fisicamente ou digitalmente]\n\n"
-                        f"🎭 REFERÊNCIAS DE ESTILO:\n[tipo de marcas/design que servem de inspiração visual, sem citar marcas registradas específicas]"
+                        f"Sugira uma identidade visual completa.\\n"
+                        f"Ideia: {ideia_vis}. Estilo desejado: {estilo_vis}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🖌️ IDENTIDADE VISUAL — {ideia_vis[:50].upper()}\\n\\n"
+                        f"🎨 PALETA DE CORES:\\n[2-3 cores principais com código hex sugerido + o que cada uma transmite]\\n\\n"
+                        f"🔤 TIPOGRAFIA:\\n[estilo de fonte recomendado — serifada/sem serifa, e por quê]\\n\\n"
+                        f"💡 CONCEITO DO LOGOTIPO:\\n[ideia de símbolo/conceito visual que represente a marca]\\n\\n"
+                        f"📦 EMBALAGEM/APRESENTAÇÃO:\\n[se aplicável, como deveria parecer fisicamente ou digitalmente]\\n\\n"
+                        f"🎭 REFERÊNCIAS DE ESTILO:\\n[tipo de marcas/design que servem de inspiração visual, sem citar marcas registradas específicas]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_visual_invenc12'] = str(res)
@@ -11984,15 +11946,15 @@ elif st.session_state.etapa == "App":
             if ideia_prod.strip():
                 with st.spinner("Estruturando o produto final..."):
                     prompt = (
-                        f"Mostre como transformar esta ideia em um produto real e entregável.\n"
-                        f"Ideia: {ideia_prod}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📦 PRODUTO FINAL — {ideia_prod[:50].upper()}\n\n"
-                        f"🏭 COMO FABRICAR/CRIAR:\n[processo geral de produção/desenvolvimento]\n\n"
-                        f"🚚 COMO ENTREGAR:\n[logística — física ou digital]\n\n"
-                        f"💰 COMO VENDER:\n[canais de venda recomendados]\n\n"
-                        f"🎤 COMO APRESENTAR AO CLIENTE:\n[script ou estrutura de apresentação do produto]\n\n"
-                        f"✅ CHECKLIST PARA O PRODUTO ESTAR PRONTO:\n[itens essenciais antes de vender]"
+                        f"Mostre como transformar esta ideia em um produto real e entregável.\\n"
+                        f"Ideia: {ideia_prod}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📦 PRODUTO FINAL — {ideia_prod[:50].upper()}\\n\\n"
+                        f"🏭 COMO FABRICAR/CRIAR:\\n[processo geral de produção/desenvolvimento]\\n\\n"
+                        f"🚚 COMO ENTREGAR:\\n[logística — física ou digital]\\n\\n"
+                        f"💰 COMO VENDER:\\n[canais de venda recomendados]\\n\\n"
+                        f"🎤 COMO APRESENTAR AO CLIENTE:\\n[script ou estrutura de apresentação do produto]\\n\\n"
+                        f"✅ CHECKLIST PARA O PRODUTO ESTAR PRONTO:\\n[itens essenciais antes de vender]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_produto_invenc13'] = str(res)
@@ -12032,14 +11994,14 @@ elif st.session_state.etapa == "App":
             if area_final.strip():
                 with st.spinner("Explorando tendências..."):
                     prompt = (
-                        f"Explore as tendências da área: {area_final}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🌎 TENDÊNCIAS — {area_final.upper()}\n\n"
-                        f"💻 TECNOLOGIAS RELACIONADAS:\n[tecnologias relevantes para essa área]\n\n"
-                        f"✨ INOVAÇÕES RECENTES:\n[movimentos recentes conhecidos nessa área]\n\n"
-                        f"📈 MERCADOS EM CRESCIMENTO:\n[sub-segmentos em expansão]\n\n"
-                        f"🔄 MUDANÇAS DE COMPORTAMENTO:\n[como o consumidor está mudando nessa área]\n\n"
-                        f"🚀 OPORTUNIDADES FUTURAS:\n[onde os próximos movimentos provavelmente estarão]"
+                        f"Explore as tendências da área: {area_final}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🌎 TENDÊNCIAS — {area_final.upper()}\\n\\n"
+                        f"💻 TECNOLOGIAS RELACIONADAS:\\n[tecnologias relevantes para essa área]\\n\\n"
+                        f"✨ INOVAÇÕES RECENTES:\\n[movimentos recentes conhecidos nessa área]\\n\\n"
+                        f"📈 MERCADOS EM CRESCIMENTO:\\n[sub-segmentos em expansão]\\n\\n"
+                        f"🔄 MUDANÇAS DE COMPORTAMENTO:\\n[como o consumidor está mudando nessa área]\\n\\n"
+                        f"🚀 OPORTUNIDADES FUTURAS:\\n[onde os próximos movimentos provavelmente estarão]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_tendencias_invenc14'] = str(res)
@@ -12073,14 +12035,14 @@ elif st.session_state.etapa == "App":
         if st.button("⚖️ EXPLICAR", key="invencoe47"):
             with st.spinner("Preparando explicação..."):
                 prompt = (
-                    f"Explique de forma clara e prática: {tema_pat}, no contexto de proteção de ideias e inovação no Brasil.\n\n"
-                    f"FORMATO:\n\n"
-                    f"⚖️ {tema_pat.upper()}\n\n"
-                    f"📖 EXPLICAÇÃO:\n[explicação didática]\n\n"
-                    f"✅ QUANDO ISSO SE APLICA:\n[situações práticas]\n\n"
-                    f"📋 PASSO A PASSO GERAL:\n[processo típico, sempre indicando que detalhes devem ser confirmados com especialista/INPI]\n\n"
-                    f"⚠️ CUIDADOS COMUNS:\n[erros frequentes que pessoas cometem nessa área]\n\n"
-                    f"💡 DICA PRÁTICA:\n[1 dica de proteção imediata e de baixo custo]"
+                    f"Explique de forma clara e prática: {tema_pat}, no contexto de proteção de ideias e inovação no Brasil.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"⚖️ {tema_pat.upper()}\\n\\n"
+                    f"📖 EXPLICAÇÃO:\\n[explicação didática]\\n\\n"
+                    f"✅ QUANDO ISSO SE APLICA:\\n[situações práticas]\\n\\n"
+                    f"📋 PASSO A PASSO GERAL:\\n[processo típico, sempre indicando que detalhes devem ser confirmados com especialista/INPI]\\n\\n"
+                    f"⚠️ CUIDADOS COMUNS:\\n[erros frequentes que pessoas cometem nessa área]\\n\\n"
+                    f"💡 DICA PRÁTICA:\\n[1 dica de proteção imediata e de baixo custo]"
                 )
                 res = invencoes_ia(prompt)
                 if res: st.session_state['res_patentes_invenc15'] = str(res)
@@ -12106,17 +12068,17 @@ elif st.session_state.etapa == "App":
             if ideia_plano.strip():
                 with st.spinner("Montando o plano de negócios..."):
                     prompt = (
-                        f"Crie um plano de negócios completo.\n"
-                        f"Ideia: {ideia_plano}. Contexto: {contexto_plano or 'não informado'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📄 PLANO DE NEGÓCIOS — {ideia_plano[:50].upper()}\n\n"
-                        f"📋 RESUMO EXECUTIVO:\n[visão geral em 3-4 linhas]\n\n"
-                        f"💼 MODELO DE NEGÓCIO:\n[como o negócio gera valor e receita]\n\n"
-                        f"📊 MERCADO:\n[tamanho e características gerais do mercado-alvo]\n\n"
-                        f"📣 MARKETING:\n[estratégia geral de aquisição de clientes]\n\n"
-                        f"⚙️ OPERAÇÃO:\n[como o negócio funciona no dia a dia]\n\n"
-                        f"💰 FINANCEIRO:\n[estrutura de custos e receita esperada]\n\n"
-                        f"📈 CRESCIMENTO:\n[plano para os próximos passos de expansão]"
+                        f"Crie um plano de negócios completo.\\n"
+                        f"Ideia: {ideia_plano}. Contexto: {contexto_plano or 'não informado'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📄 PLANO DE NEGÓCIOS — {ideia_plano[:50].upper()}\\n\\n"
+                        f"📋 RESUMO EXECUTIVO:\\n[visão geral em 3-4 linhas]\\n\\n"
+                        f"💼 MODELO DE NEGÓCIO:\\n[como o negócio gera valor e receita]\\n\\n"
+                        f"📊 MERCADO:\\n[tamanho e características gerais do mercado-alvo]\\n\\n"
+                        f"📣 MARKETING:\\n[estratégia geral de aquisição de clientes]\\n\\n"
+                        f"⚙️ OPERAÇÃO:\\n[como o negócio funciona no dia a dia]\\n\\n"
+                        f"💰 FINANCEIRO:\\n[estrutura de custos e receita esperada]\\n\\n"
+                        f"📈 CRESCIMENTO:\\n[plano para os próximos passos de expansão]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_planonegocio_invenc16'] = str(res)
@@ -12151,16 +12113,16 @@ elif st.session_state.etapa == "App":
                 with st.spinner("Criando materiais..."):
                     canais_txt = ", ".join(canal_mkt) if canal_mkt else "redes sociais em geral"
                     prompt = (
-                        f"Crie materiais de marketing para esta ideia.\n"
-                        f"Ideia: {ideia_mkt}. Canais: {canais_txt}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📣 MARKETING — {ideia_mkt[:50].upper()}\n\n"
-                        f"🎯 CAMPANHA PRINCIPAL (conceito):\n[ideia central da campanha de lançamento]\n\n"
-                        f"📰 3 HEADLINES PARA TESTAR:\n[headline 1]\n[headline 2]\n[headline 3]\n\n"
-                        f"📢 IDEIA DE ANÚNCIO PAGO:\n[estrutura de anúncio — gancho, corpo, CTA]\n\n"
-                        f"📱 3 IDEIAS DE POSTS:\n[post 1]\n[post 2]\n[post 3]\n\n"
-                        f"🎥 IDEIA DE VÍDEO CURTO:\n[roteiro resumido para Reels/TikTok]\n\n"
-                        f"🚀 ESTRATÉGIA DE LANÇAMENTO NOS CANAIS ({canais_txt}):\n[como sequenciar o conteúdo nos primeiros 30 dias]"
+                        f"Crie materiais de marketing para esta ideia.\\n"
+                        f"Ideia: {ideia_mkt}. Canais: {canais_txt}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📣 MARKETING — {ideia_mkt[:50].upper()}\\n\\n"
+                        f"🎯 CAMPANHA PRINCIPAL (conceito):\\n[ideia central da campanha de lançamento]\\n\\n"
+                        f"📰 3 HEADLINES PARA TESTAR:\\n[headline 1]\\n[headline 2]\\n[headline 3]\\n\\n"
+                        f"📢 IDEIA DE ANÚNCIO PAGO:\\n[estrutura de anúncio — gancho, corpo, CTA]\\n\\n"
+                        f"📱 3 IDEIAS DE POSTS:\\n[post 1]\\n[post 2]\\n[post 3]\\n\\n"
+                        f"🎥 IDEIA DE VÍDEO CURTO:\\n[roteiro resumido para Reels/TikTok]\\n\\n"
+                        f"🚀 ESTRATÉGIA DE LANÇAMENTO NOS CANAIS ({canais_txt}):\\n[como sequenciar o conteúdo nos primeiros 30 dias]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_marketing_invenc17'] = str(res)
@@ -12208,15 +12170,15 @@ elif st.session_state.etapa == "App":
                     cenario_final = cenario_custom if cenario_sim == "Cenário customizado (descrever)" and cenario_custom.strip() else cenario_sim
                     margem_unit = preco_sim - custo_sim
                     prompt = (
-                        f"Simule este cenário de mercado.\n"
-                        f"Ideia: {ideia_sim}. Preço: R${preco_sim}. Custo: R${custo_sim}. Margem unitária: R${margem_unit:.2f}\n"
-                        f"Cenário a simular: {cenario_final}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🧪 SIMULAÇÃO: {cenario_final.upper()}\n\n"
-                        f"📊 PROJEÇÃO NUMÉRICA:\n[calcule receita, custo total e lucro estimado para esse cenário]\n\n"
-                        f"📈 IMPACTO NO NEGÓCIO:\n[o que isso significa na prática]\n\n"
-                        f"⚠️ RISCOS DESSE CENÁRIO:\n[o que pode dar errado]\n\n"
-                        f"✅ COMO SE PREPARAR:\n[ações para aproveitar ou se proteger desse cenário]"
+                        f"Simule este cenário de mercado.\\n"
+                        f"Ideia: {ideia_sim}. Preço: R${preco_sim}. Custo: R${custo_sim}. Margem unitária: R${margem_unit:.2f}\\n"
+                        f"Cenário a simular: {cenario_final}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧪 SIMULAÇÃO: {cenario_final.upper()}\\n\\n"
+                        f"📊 PROJEÇÃO NUMÉRICA:\\n[calcule receita, custo total e lucro estimado para esse cenário]\\n\\n"
+                        f"📈 IMPACTO NO NEGÓCIO:\\n[o que isso significa na prática]\\n\\n"
+                        f"⚠️ RISCOS DESSE CENÁRIO:\\n[o que pode dar errado]\\n\\n"
+                        f"✅ COMO SE PREPARAR:\\n[ações para aproveitar ou se proteger desse cenário]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_simulador_invenc18'] = str(res)
@@ -12242,14 +12204,14 @@ elif st.session_state.etapa == "App":
             if ideia_risco.strip():
                 with st.spinner("Mapeando riscos..."):
                     prompt = (
-                        f"Mapeie os riscos completos desta ideia, com honestidade.\n"
-                        f"Ideia: {ideia_risco}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📊 PAINEL DE RISCOS — {ideia_risco[:50].upper()}\n\n"
-                        f"⚠️ PRINCIPAIS RISCOS:\n[liste 4-6 riscos reais, do mais para o menos crítico]\n\n"
-                        f"🚧 OBSTÁCULOS:\n[barreiras práticas para executar essa ideia]\n\n"
-                        f"🎯 PONTOS CRÍTICOS:\n[os momentos/decisões que mais podem fazer a ideia falhar]\n\n"
-                        f"🛡️ COMO REDUZIR CADA RISCO:\n[para cada risco listado, uma ação de mitigação]"
+                        f"Mapeie os riscos completos desta ideia, com honestidade.\\n"
+                        f"Ideia: {ideia_risco}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📊 PAINEL DE RISCOS — {ideia_risco[:50].upper()}\\n\\n"
+                        f"⚠️ PRINCIPAIS RISCOS:\\n[liste 4-6 riscos reais, do mais para o menos crítico]\\n\\n"
+                        f"🚧 OBSTÁCULOS:\\n[barreiras práticas para executar essa ideia]\\n\\n"
+                        f"🎯 PONTOS CRÍTICOS:\\n[os momentos/decisões que mais podem fazer a ideia falhar]\\n\\n"
+                        f"🛡️ COMO REDUZIR CADA RISCO:\\n[para cada risco listado, uma ação de mitigação]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_riscos_invenc19'] = str(res)
@@ -12285,11 +12247,11 @@ elif st.session_state.etapa == "App":
         if st.button("💎 GERAR IDEIAS", key="invencoe60"):
             with st.spinner("Gerando ideias..."):
                 prompt = (
-                    f"Gere {qtd_ideias} ideias de produtos/negócios/invenções na área: {area_banco}\n\n"
-                    f"FORMATO — para cada ideia:\n\n"
-                    f"💡 [NOME DA IDEIA]\n"
-                    f"[Descrição em 2-3 linhas: o que é e que problema resolve]\n"
-                    f"Potencial: [Baixo/Médio/Alto]\n\n"
+                    f"Gere {qtd_ideias} ideias de produtos/negócios/invenções na área: {area_banco}\\n\\n"
+                    f"FORMATO — para cada ideia:\\n\\n"
+                    f"💡 [NOME DA IDEIA]\\n"
+                    f"[Descrição em 2-3 linhas: o que é e que problema resolve]\\n"
+                    f"Potencial: [Baixo/Médio/Alto]\\n\\n"
                     f"[Repita para as {qtd_ideias} ideias, todas diferentes entre si]"
                 )
                 res = invencoes_ia(prompt)
@@ -12317,16 +12279,16 @@ elif st.session_state.etapa == "App":
             if ideia_inv.strip():
                 with st.spinner("Analisando como investidor..."):
                     prompt = (
-                        f"Analise esta ideia do ponto de vista de um investidor.\n"
-                        f"Ideia: {ideia_inv}. Estágio: {estagio_inv}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🤝 ANÁLISE DO INVESTIDOR — {ideia_inv[:50].upper()}\n\n"
-                        f"📈 POTENCIAL DE CRESCIMENTO: [Baixo/Médio/Alto] — [justificativa honesta]\n\n"
-                        f"📊 ESCALABILIDADE: [Baixa/Média/Alta] — [justificativa]\n\n"
-                        f"⭐ DIFERENCIAL COMPETITIVO: [comentário honesto sobre o quão defensável é a ideia]\n\n"
-                        f"🎯 ATRATIVIDADE PARA INVESTIMENTO: [Baixa/Média/Alta] — [no estágio atual: {estagio_inv}]\n\n"
-                        f"❓ PRINCIPAIS OBJEÇÕES QUE UM INVESTIDOR FARIA:\n[3-4 perguntas difíceis reais]\n\n"
-                        f"✅ O QUE FORTALECERIA A IDEIA PARA INVESTIDORES:\n[1-2 ações prioritárias antes de buscar investimento]"
+                        f"Analise esta ideia do ponto de vista de um investidor.\\n"
+                        f"Ideia: {ideia_inv}. Estágio: {estagio_inv}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🤝 ANÁLISE DO INVESTIDOR — {ideia_inv[:50].upper()}\\n\\n"
+                        f"📈 POTENCIAL DE CRESCIMENTO: [Baixo/Médio/Alto] — [justificativa honesta]\\n\\n"
+                        f"📊 ESCALABILIDADE: [Baixa/Média/Alta] — [justificativa]\\n\\n"
+                        f"⭐ DIFERENCIAL COMPETITIVO: [comentário honesto sobre o quão defensável é a ideia]\\n\\n"
+                        f"🎯 ATRATIVIDADE PARA INVESTIMENTO: [Baixa/Média/Alta] — [no estágio atual: {estagio_inv}]\\n\\n"
+                        f"❓ PRINCIPAIS OBJEÇÕES QUE UM INVESTIDOR FARIA:\\n[3-4 perguntas difíceis reais]\\n\\n"
+                        f"✅ O QUE FORTALECERIA A IDEIA PARA INVESTIDORES:\\n[1-2 ações prioritárias antes de buscar investimento]"
                     )
                     res = invencoes_ia(prompt, "Seja honesto como um investidor real seria — investidores fazem perguntas difíceis e não se impressionam facilmente. Não infle a avaliação para agradar.")
                     if res: st.session_state['res_investidor_invenc21'] = str(res)
@@ -12363,15 +12325,15 @@ elif st.session_state.etapa == "App":
             if ideia_pitch.strip():
                 with st.spinner("Criando o pitch..."):
                     prompt = (
-                        f"Crie um pitch de {duracao_pitch} para {audiencia_pitch}.\n"
-                        f"Ideia: {ideia_pitch}\n\n"
-                        f"FORMATO:\n\n"
-                        f"🎤 PITCH DE {duracao_pitch.upper()} — PARA {audiencia_pitch.upper()}\n\n"
+                        f"Crie um pitch de {duracao_pitch} para {audiencia_pitch}.\\n"
+                        f"Ideia: {ideia_pitch}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🎤 PITCH DE {duracao_pitch.upper()} — PARA {audiencia_pitch.upper()}\\n\\n"
                         f"[Script completo, palavra por palavra, adequado à duração e à audiência — "
                         f"para investidores foque em números/escala, para clientes foque no benefício, "
-                        f"para parceiros foque na visão compartilhada, para banco foque em solidez/garantias]\n\n"
-                        f"🎯 GANCHO DE ABERTURA:\n[a frase que precisa capturar atenção nos primeiros segundos]\n\n"
-                        f"💡 DICA DE ENTREGA:\n[como falar — tom, postura, ritmo para essa duração e audiência]"
+                        f"para parceiros foque na visão compartilhada, para banco foque em solidez/garantias]\\n\\n"
+                        f"🎯 GANCHO DE ABERTURA:\\n[a frase que precisa capturar atenção nos primeiros segundos]\\n\\n"
+                        f"💡 DICA DE ENTREGA:\\n[como falar — tom, postura, ritmo para essa duração e audiência]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_pitch_invenc22'] = str(res)
@@ -12404,15 +12366,15 @@ elif st.session_state.etapa == "App":
             if ideia_cron.strip():
                 with st.spinner("Montando cronograma..."):
                     prompt = (
-                        f"Crie um cronograma detalhado para este projeto.\n"
-                        f"Ideia: {ideia_cron}. Prazo total: {prazo_cron or 'a definir'}\n\n"
-                        f"FORMATO:\n\n"
-                        f"📅 CRONOGRAMA — {ideia_cron[:50].upper()}\n\n"
-                        f"☀️ HOJE (próximas 24h):\n[ação imediata e concreta]\n\n"
-                        f"📆 ESTA SEMANA:\n[3-5 ações]\n\n"
-                        f"📅 PRÓXIMO MÊS:\n[principais marcos]\n\n"
-                        f"🗓️ PRÓXIMOS {prazo_cron or '3 meses'}:\n[etapas principais até o prazo final]\n\n"
-                        f"🏁 MARCO FINAL:\n[o que define que o projeto atingiu esse objetivo de prazo]"
+                        f"Crie um cronograma detalhado para este projeto.\\n"
+                        f"Ideia: {ideia_cron}. Prazo total: {prazo_cron or 'a definir'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📅 CRONOGRAMA — {ideia_cron[:50].upper()}\\n\\n"
+                        f"☀️ HOJE (próximas 24h):\\n[ação imediata e concreta]\\n\\n"
+                        f"📆 ESTA SEMANA:\\n[3-5 ações]\\n\\n"
+                        f"📅 PRÓXIMO MÊS:\\n[principais marcos]\\n\\n"
+                        f"🗓️ PRÓXIMOS {prazo_cron or '3 meses'}:\\n[etapas principais até o prazo final]\\n\\n"
+                        f"🏁 MARCO FINAL:\\n[o que define que o projeto atingiu esse objetivo de prazo]"
                     )
                     res = invencoes_ia(prompt)
                     if res: st.session_state['res_cronograma_invenc23'] = str(res)
@@ -12500,23 +12462,23 @@ elif st.session_state.etapa == "App":
                 with st.spinner("Combinando conhecimentos de múltiplas áreas..."):
                     prompt = (
                         f"Combine conhecimentos de engenharia, tecnologia, design, psicologia, logística e negócios "
-                        f"para propor soluções inovadoras para este problema.\n"
-                        f"Problema: {problema_lab}\n\n"
-                        f"FORMATO:\n\n"
-                        f"⭐ SOLUÇÕES PARA: {problema_lab.upper()}\n\n"
-                        f"💡 SOLUÇÃO 1 — [nome]:\n"
-                        f"[Descrição da solução]\n"
-                        f"Áreas combinadas: [quais disciplinas essa solução usa]\n"
-                        f"Por que funciona: [lógica por trás]\n\n"
-                        f"💡 SOLUÇÃO 2 — [nome]:\n"
-                        f"[mesma estrutura]\n\n"
-                        f"💡 SOLUÇÃO 3 — [nome, mais não-convencional/criativa]:\n"
-                        f"[mesma estrutura]\n\n"
-                        f"🔧 SOLUÇÃO 4 — [adaptação de tecnologia existente]:\n"
-                        f"[uma tecnologia que já existe em outro contexto, adaptada para esse problema]\n\n"
-                        f"🚀 CONCEITO MAIS PROMISSOR:\n"
-                        f"[qual das soluções acima parece ter mais potencial e por quê]\n\n"
-                        f"⚠️ MAIOR DESAFIO PARA IMPLEMENTAR:\n"
+                        f"para propor soluções inovadoras para este problema.\\n"
+                        f"Problema: {problema_lab}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"⭐ SOLUÇÕES PARA: {problema_lab.upper()}\\n\\n"
+                        f"💡 SOLUÇÃO 1 — [nome]:\\n"
+                        f"[Descrição da solução]\\n"
+                        f"Áreas combinadas: [quais disciplinas essa solução usa]\\n"
+                        f"Por que funciona: [lógica por trás]\\n\\n"
+                        f"💡 SOLUÇÃO 2 — [nome]:\\n"
+                        f"[mesma estrutura]\\n\\n"
+                        f"💡 SOLUÇÃO 3 — [nome, mais não-convencional/criativa]:\\n"
+                        f"[mesma estrutura]\\n\\n"
+                        f"🔧 SOLUÇÃO 4 — [adaptação de tecnologia existente]:\\n"
+                        f"[uma tecnologia que já existe em outro contexto, adaptada para esse problema]\\n\\n"
+                        f"🚀 CONCEITO MAIS PROMISSOR:\\n"
+                        f"[qual das soluções acima parece ter mais potencial e por quê]\\n\\n"
+                        f"⚠️ MAIOR DESAFIO PARA IMPLEMENTAR:\\n"
                         f"[seja honesto sobre a dificuldade real de execução]"
                     )
                     res = invencoes_ia(prompt, "Seja genuinamente criativo e multidisciplinar. Combine perspectivas de diferentes áreas de forma real, não superficial. Inclua pelo menos uma ideia pouco convencional.")
@@ -12572,7 +12534,7 @@ elif st.session_state.etapa == "App":
 
         if st.session_state.historico_projetos:
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            historico_txt = "\n\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\n{c['conteudo']}\n{'─'*40}" for c in st.session_state.historico_projetos)
+            historico_txt = "\\n\\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\\n{c['conteudo']}\\n{'─'*40}" for c in st.session_state.historico_projetos)
             st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt, file_name="historico_invencoes.txt", mime="text/plain", key="invencoe76")
             if st.button("🗑️ Limpar Todo o Histórico", key="invencoe77"):
                 st.session_state.historico_projetos = []
@@ -12591,6 +12553,7 @@ st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
     "</div>", unsafe_allow_html=True
 )
+
 
 """,
     "nexus_launcher": """
@@ -15635,7 +15598,7 @@ if 'sessoes_meditacao' not in st.session_state: st.session_state['sessoes_medita
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 MENTE PODEROSA")
-    st.markdown("<div class=\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -15744,25 +15707,6 @@ elif st.session_state.etapa == "App":
         # MEDITAÇÃO GUIADA
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
-            st.download_button("💾 Salvar dados (.json)",
-                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
-                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
-                mime="application/json", key="dl_sv_mentepod")
-        with _csl2:
-            if _arq_sv:
-                try:
-                    import json as _json_ld
-                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
-                        st.session_state[_k] = _v
-                    st.success("✅ Dados carregados!")
-                    st.rerun()
-                except: st.error("Arquivo inválido.")
 
     with _tab_Ansiedade:
         st.header("😰 Gestão de Ansiedade")
@@ -15795,24 +15739,24 @@ elif st.session_state.etapa == "App":
             if st.button("🌬️ GERAR PROTOCOLO DE RESPIRAÇÃO", key="mentepod18_d2"):
                 with st.spinner("Criando seu protocolo de respiração..."):
                     prompt = (
-                        f"Crie um protocolo completo de respiração para ansiedade.\\\\\\\\\\\\\\\\n"
-                        f"Nível atual: {nivel_ans}. Técnica: {tipo_resp}.\\\\\\\\\\\\\\\\n"
-                        f"Contexto de ansiedade: {contexto_ans}. Tempo: {duracao_resp}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"ESTRUTURA:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌬️ PROTOCOLO DE RESPIRAÇÃO\\\\\\\\\\\\\\\\n"
-                        f"Técnica: {tipo_resp} | Para: {nivel_ans}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧠 COMO ESSA TÉCNICA FUNCIONA NO CÉREBRO:\\\\\\\\\\\\\\\\n"
-                        f"[Neurociência simples — como a respiração acalma o sistema nervoso]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PROTOCOLO PASSO A PASSO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"ANTES DE COMEÇAR:\\\\\\\\\\\\\\\\n[Posição, olhos, onde fazer]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"A TÉCNICA (com timer):\\\\\\\\\\\\\\\\n"
-                        f"[Instruções detalhadas — inspire por X, segure por X, expire por X]\\\\\\\\\\\\\\\\n"
-                        f"[Quantas rodadas fazer em {duracao_resp}]\\\\\\\\\\\\\\\\n"
-                        f"[O que visualizar ou focar durante]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"APÓS A TÉCNICA:\\\\\\\\\\\\\\\\n[O que fazer nos 2 minutos seguintes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚡ VERSÃO DE EMERGÊNCIA (30 segundos):\\\\\\\\\\\\\\\\n"
-                        f"[Para quando a ansiedade pega de surpresa no contexto '{contexto_ans}']\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 PRÁTICA PREVENTIVA:\\\\\\\\\\\\\\\\n"
+                        f"Crie um protocolo completo de respiração para ansiedade.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Nível atual: {nivel_ans}. Técnica: {tipo_resp}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Contexto de ansiedade: {contexto_ans}. Tempo: {duracao_resp}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"ESTRUTURA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌬️ PROTOCOLO DE RESPIRAÇÃO\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Técnica: {tipo_resp} | Para: {nivel_ans}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧠 COMO ESSA TÉCNICA FUNCIONA NO CÉREBRO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Neurociência simples — como a respiração acalma o sistema nervoso]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PROTOCOLO PASSO A PASSO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"ANTES DE COMEÇAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[Posição, olhos, onde fazer]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"A TÉCNICA (com timer):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Instruções detalhadas — inspire por X, segure por X, expire por X]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Quantas rodadas fazer em {duracao_resp}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[O que visualizar ou focar durante]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"APÓS A TÉCNICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[O que fazer nos 2 minutos seguintes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚡ VERSÃO DE EMERGÊNCIA (30 segundos):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para quando a ansiedade pega de surpresa no contexto '{contexto_ans}']\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 PRÁTICA PREVENTIVA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"[Como usar essa técnica antes que a ansiedade apareça]"
                     )
                     res = mente_ia(prompt)
@@ -15849,29 +15793,29 @@ elif st.session_state.etapa == "App":
             if st.button("🌍 GERAR PROTOCOLO DE CRISE", key="mentepod21_d2"):
                 with st.spinner("Criando seu protocolo de emergência..."):
                     prompt = (
-                        f"Crie um protocolo de grounding e gestão de crise.\\\\\\\\\\\\\\\\n"
-                        f"Tipo de crise: {tipo_crise}. Gatilho: {gatilho}.\\\\\\\\\\\\\\\\n"
-                        f"O que já ajudou: {suporte or 'não informado'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"ESTRUTURA:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌍 PROTOCOLO DE EMERGÊNCIA — {tipo_crise.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚡ TÉCNICA DOS 5-4-3-2-1 (GROUNDING IMEDIATO):\\\\\\\\\\\\\\\\n"
-                        f"[Adaptada especificamente para {tipo_crise}]\\\\\\\\\\\\\\\\n"
-                        f"5 coisas que você VÊ: [exemplos contextualizados]\\\\\\\\\\\\\\\\n"
-                        f"4 coisas que você pode TOCAR: [exemplos]\\\\\\\\\\\\\\\\n"
-                        f"3 coisas que você OUVE: [exemplos]\\\\\\\\\\\\\\\\n"
-                        f"2 coisas que você CHEIRA: [exemplos]\\\\\\\\\\\\\\\\n"
-                        f"1 coisa que você SENTE no paladar: [exemplos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚨 PROTOCOLO DOS PRIMEIROS 10 MINUTOS DE CRISE:\\\\\\\\\\\\\\\\n"
-                        f"Minuto 1-2: [ação imediata]\\\\\\\\\\\\\\\\n"
-                        f"Minuto 3-5: [técnica de respiração específica]\\\\\\\\\\\\\\\\n"
-                        f"Minuto 6-10: [grounding e ancoragem]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💬 O QUE DIZER PARA SI MESMO (diálogo interno de crise):\\\\\\\\\\\\\\\\n"
-                        f"[Frases específicas para {tipo_crise} — que realmente acalmam]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📲 PLANO DE AÇÃO PÓS-CRISE:\\\\\\\\\\\\\\\\n"
-                        f"[O que fazer nas horas seguintes para se recuperar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛡️ PREVENÇÃO — IDENTIFICAR O GATILHO '{gatilho}':\\\\\\\\\\\\\\\\n"
-                        f"[Como perceber que a crise está chegando antes de começar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📞 QUANDO BUSCAR AJUDA PROFISSIONAL:\\\\\\\\\\\\\\\\n"
+                        f"Crie um protocolo de grounding e gestão de crise.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Tipo de crise: {tipo_crise}. Gatilho: {gatilho}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"O que já ajudou: {suporte or 'não informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"ESTRUTURA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌍 PROTOCOLO DE EMERGÊNCIA — {tipo_crise.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚡ TÉCNICA DOS 5-4-3-2-1 (GROUNDING IMEDIATO):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Adaptada especificamente para {tipo_crise}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"5 coisas que você VÊ: [exemplos contextualizados]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"4 coisas que você pode TOCAR: [exemplos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"3 coisas que você OUVE: [exemplos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"2 coisas que você CHEIRA: [exemplos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"1 coisa que você SENTE no paladar: [exemplos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚨 PROTOCOLO DOS PRIMEIROS 10 MINUTOS DE CRISE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Minuto 1-2: [ação imediata]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Minuto 3-5: [técnica de respiração específica]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Minuto 6-10: [grounding e ancoragem]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💬 O QUE DIZER PARA SI MESMO (diálogo interno de crise):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Frases específicas para {tipo_crise} — que realmente acalmam]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📲 PLANO DE AÇÃO PÓS-CRISE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[O que fazer nas horas seguintes para se recuperar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛡️ PREVENÇÃO — IDENTIFICAR O GATILHO '{gatilho}':\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Como perceber que a crise está chegando antes de começar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📞 QUANDO BUSCAR AJUDA PROFISSIONAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"[Sinais claros de que precisa de apoio especializado]"
                     )
                     res = mente_ia(prompt)
@@ -16012,32 +15956,32 @@ elif st.session_state.etapa == "App":
         if st.button("🧘 GERAR MEDITAÇÃO GUIADA", key="mentepod5"):
             with st.spinner("Preparando sua meditação personalizada..."):
                 prompt = (
-                    f"Crie um script completo de meditação guiada.\\\\\\\\\\\\\\\\n"
-                    f"Objetivo: {objetivo_med}. Tempo: {tempo_med}.\\\\\\\\\\\\\\\\n"
-                    f"Estilo: {estilo_med}. Experiência: {experiencia}.\\\\\\\\\\\\\\\\n"
-                    f"Estado emocional atual: {st.session_state.estado_emocional}.\\\\\\\\\\\\\\\\n"
-                    f"Maior bloqueio: {st.session_state.maior_bloqueio or 'não informado'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧘 MEDITAÇÃO: {objetivo_med.upper()}\\\\\\\\\\\\\\\\n"
-                    f"Duração: {tempo_med} | Estilo: {estilo_med}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━\\\\\\\\\\\\\\\\n"
-                    f"PREPARAÇÃO (antes de começar):\\\\\\\\\\\\\\\\n"
-                    f"[Como se posicionar, ambiente ideal, o que desligar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━\\\\\\\\\\\\\\\\n"
-                    f"INÍCIO — ÂNCORA (2 min):\\\\\\\\\\\\\\\\n"
-                    f"[Script palavra por palavra — voz suave, pausas indicadas com '...']]\\\\\\\\\\\\\\\\n"
-                    f"[Use '(pausa de X segundos)' para indicar silêncios]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"DESENVOLVIMENTO — NÚCLEO ({tempo_med} principal):\\\\\\\\\\\\\\\\n"
-                    f"[Script completo da meditação — específico para {objetivo_med}]\\\\\\\\\\\\\\\\n"
-                    f"[Inclua respiração, visualizações ou mantras conforme o estilo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"ENCERRAMENTO — RETORNO (2 min):\\\\\\\\\\\\\\\\n"
-                    f"[Como sair gentilmente da meditação]\\\\\\\\\\\\\\\\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💡 DICA PÓS-MEDITAÇÃO:\\\\\\\\\\\\\\\\n"
-                    f"[O que fazer nos 5 minutos após a meditação para fixar o estado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📅 FREQUÊNCIA RECOMENDADA:\\\\\\\\\\\\\\\\n"
-                    f"[Quantas vezes por semana e quando é o melhor horário]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🌱 PRÓXIMO PASSO:\\\\\\\\\\\\\\\\n"
+                    f"Crie um script completo de meditação guiada.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Objetivo: {objetivo_med}. Tempo: {tempo_med}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Estilo: {estilo_med}. Experiência: {experiencia}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Estado emocional atual: {st.session_state.estado_emocional}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Maior bloqueio: {st.session_state.maior_bloqueio or 'não informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧘 MEDITAÇÃO: {objetivo_med.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Duração: {tempo_med} | Estilo: {estilo_med}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"PREPARAÇÃO (antes de começar):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Como se posicionar, ambiente ideal, o que desligar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"INÍCIO — ÂNCORA (2 min):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Script palavra por palavra — voz suave, pausas indicadas com '...']]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Use '(pausa de X segundos)' para indicar silêncios]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"DESENVOLVIMENTO — NÚCLEO ({tempo_med} principal):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Script completo da meditação — específico para {objetivo_med}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Inclua respiração, visualizações ou mantras conforme o estilo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"ENCERRAMENTO — RETORNO (2 min):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Como sair gentilmente da meditação]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💡 DICA PÓS-MEDITAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[O que fazer nos 5 minutos após a meditação para fixar o estado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📅 FREQUÊNCIA RECOMENDADA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Quantas vezes por semana e quando é o melhor horário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🌱 PRÓXIMO PASSO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                     f"[Como evoluir essa prática ao longo do tempo]"
                 )
                 res = mente_ia(prompt)
@@ -16092,22 +16036,22 @@ elif st.session_state.etapa == "App":
             if st.button("📖 GERAR PROMPTS DO DIÁRIO", key="mentepod26_d2"):
                 with st.spinner("Criando seus prompts personalizados..."):
                     prompt = (
-                        f"Crie prompts de diário mental personalizados.\\\\\\\\\\\\\\\\n"
-                        f"Tipo: {tipo_diario}. Estado: {estado_hoje}.\\\\\\\\\\\\\\\\n"
-                        f"Evento do dia: {evento_hoje or 'não informado'}.\\\\\\\\\\\\\\\\n"
-                        f"Maior bloqueio: {st.session_state.maior_bloqueio or 'não informado'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"ESTRUTURA:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📖 DIÁRIO MENTAL — {tipo_diario.upper()}\\\\\\\\\\\\\\\\n"
-                        f"Data: {datetime.now().strftime('%d/%m/%Y')} | Estado: {estado_hoje}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✍️ SEUS PROMPTS DE HOJE (responda com calma, sem julgamento):\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Crie 7-10 prompts profundos e específicos para {tipo_diario}]\\\\\\\\\\\\\\\\n"
-                        f"[Cada prompt deve ser uma pergunta aberta que leva à introspecção]\\\\\\\\\\\\\\\\n"
-                        f"[Adapte ao estado '{estado_hoje}' e ao evento '{evento_hoje}']\\\\\\\\\\\\\\\\n"
-                        f"[Progressão: do mais fácil ao mais profundo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA DE ESCRITA:\\\\\\\\\\\\\\\\n"
-                        f"[Como escrever sem censura — técnica do fluxo de consciência]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌱 INSIGHT PARA FECHAR:\\\\\\\\\\\\\\\\n"
-                        f"[Uma reflexão ou perspectiva para encerrar a sessão do diário]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
+                        f"Crie prompts de diário mental personalizados.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Tipo: {tipo_diario}. Estado: {estado_hoje}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Evento do dia: {evento_hoje or 'não informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Maior bloqueio: {st.session_state.maior_bloqueio or 'não informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"ESTRUTURA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📖 DIÁRIO MENTAL — {tipo_diario.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Data: {datetime.now().strftime('%d/%m/%Y')} | Estado: {estado_hoje}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✍️ SEUS PROMPTS DE HOJE (responda com calma, sem julgamento):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Crie 7-10 prompts profundos e específicos para {tipo_diario}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Cada prompt deve ser uma pergunta aberta que leva à introspecção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Adapte ao estado '{estado_hoje}' e ao evento '{evento_hoje}']\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Progressão: do mais fácil ao mais profundo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA DE ESCRITA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Como escrever sem censura — técnica do fluxo de consciência]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌱 INSIGHT PARA FECHAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Uma reflexão ou perspectiva para encerrar a sessão do diário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"⏰ TEMPO SUGERIDO: [quanto tempo dedicar a esse diário hoje]"
                     )
                     res = mente_ia(prompt)
@@ -16138,7 +16082,7 @@ elif st.session_state.etapa == "App":
                             st.warning("Escreva sua reflexão antes de salvar.")
                 with col_dl:
                     if reflexao.strip():
-                        entrada_txt = f"DIÁRIO MENTAL — {datetime.now().strftime('%d/%m/%Y')}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPROMPTS:\\\\\\\\\\\\\\\\n{st.session_state.get('diario_prompts','')}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nMINHA REFLEXÃO:\\\\\\\\\\\\\\\\n{reflexao}"
+                        entrada_txt = f"DIÁRIO MENTAL — {datetime.now().strftime('%d/%m/%Y')}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nPROMPTS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{st.session_state.get('diario_prompts','')}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nMINHA REFLEXÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{reflexao}"
                         st.download_button("📋 Baixar entrada (.txt)", data=entrada_txt,
                             file_name=f"diario_{datetime.now().strftime('%d%m%Y')}.txt",
                             mime="text/plain", use_container_width=True, key="mentepod2")
@@ -16172,6 +16116,7 @@ st.markdown(
     "© 2026 Mente Poderosa — Neurolinguística, Meditação e Reprogramação Mental com IA · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
+
 
 
 
@@ -17272,7 +17217,7 @@ Usuário: {st.session_state.usuario}. Moto de interesse: {st.session_state.moto_
         return f"⚠️ Erro na API: {e}"
 
 def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
-    percentuais = re.findall(r'(\\\\\\\\\\\\\\\\d+)\\\\\\\\\\\\\\\\s*/\\\\\\\\\\\\\\\\s*100|(\\\\\\\\\\\\\\\\d+)%', texto)
+    percentuais = re.findall(r'(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\d+)\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\s*/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\s*100|(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\d+)%', texto)
     valores = [int(a or b) for a, b in percentuais if a or b]
     indice = valores[0] if valores else 50
 
@@ -17319,7 +17264,7 @@ def chamar_ia(prompt, sistema="Você é um assistente inteligente. Responda em p
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 CLÁSSICAS MOTOS IA")
-    st.markdown("<div class=\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -17414,15 +17359,15 @@ elif st.session_state.etapa == "App":
             if modelo_id.strip():
                 with st.spinner("Buscando informações..."):
                     prompt = (
-                        f"Crie uma identificação completa da motocicleta: {modelo_id} {ano_id}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏍️ {modelo_id.upper()} {ano_id}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📖 HISTÓRIA RESUMIDA:\\\\\\\\\\\\\\\\n[origem e contexto do modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ ESPECIFICAÇÕES TÉCNICAS:\\\\\\\\\\\\\\\\n[motor, torque, potência, câmbio, peso, consumo — para esse ano específico]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔧 VERSÕES E OPCIONAIS:\\\\\\\\\\\\\\\\n[versões disponíveis nesse ano e principais opcionais]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 PRODUÇÃO:\\\\\\\\\\\\\\\\n[quantidade produzida aproximada, se conhecida, e países onde foi comercializada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📈 EVOLUÇÃO:\\\\\\\\\\\\\\\\n[principais diferenças desse ano em relação aos anteriores/seguintes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\n[2-3 curiosidades interessantes sobre esse modelo/ano]"
+                        f"Crie uma identificação completa da motocicleta: {modelo_id} {ano_id}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏍️ {modelo_id.upper()} {ano_id}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📖 HISTÓRIA RESUMIDA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[origem e contexto do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ ESPECIFICAÇÕES TÉCNICAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[motor, torque, potência, câmbio, peso, consumo — para esse ano específico]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 VERSÕES E OPCIONAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[versões disponíveis nesse ano e principais opcionais]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 PRODUÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[quantidade produzida aproximada, se conhecida, e países onde foi comercializada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📈 EVOLUÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[principais diferenças desse ano em relação aos anteriores/seguintes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 curiosidades interessantes sobre esse modelo/ano]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Identificacao", f"{modelo_id} {ano_id}", res)
@@ -17447,25 +17392,6 @@ elif st.session_state.etapa == "App":
         # SCANNER DE ORIGINALIDADE
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
-            st.download_button("💾 Salvar dados (.json)",
-                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
-                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
-                mime="application/json", key="dl_sv_classica")
-        with _csl2:
-            if _arq_sv:
-                try:
-                    import json as _json_ld
-                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
-                        st.session_state[_k] = _v
-                    st.success("✅ Dados carregados!")
-                    st.rerun()
-                except: st.error("Arquivo inválido.")
 
     with _tab_Identificacao:
         st.header("Identificacao")
@@ -17504,16 +17430,16 @@ elif st.session_state.etapa == "App":
             if descricao_orig.strip():
                 with st.spinner("Analisando originalidade..."):
                     prompt = (
-                        f"Analise a originalidade desta motocicleta com base na descrição.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_orig}. Cor: {cor_orig}.\\\\\\\\\\\\\\\\n"
-                        f"Descrição: {descricao_orig}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📸 ÍNDICE DE ORIGINALIDADE: [X]/100\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas explicando a estimativa com base no que foi descrito]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✅ ITENS QUE PARECEM ORIGINAIS:\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ ITENS QUE MERECEM VERIFICAÇÃO:\\\\\\\\\\\\\\\\n[itens com descrição ambígua ou suspeita de não-originalidade]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 O QUE VERIFICAR PRESENCIALMENTE:\\\\\\\\\\\\\\\\n[pontos que só um especialista presencial pode confirmar — números de chassi/motor, código de tinta, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA PARA PRÓXIMA ANÁLISE:\\\\\\\\\\\\\\\\n[que outras informações ajudariam a refinar essa análise]"
+                        f"Analise a originalidade desta motocicleta com base na descrição.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_orig}. Cor: {cor_orig}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Descrição: {descricao_orig}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📸 ÍNDICE DE ORIGINALIDADE: [X]/100\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas explicando a estimativa com base no que foi descrito]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✅ ITENS QUE PARECEM ORIGINAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ ITENS QUE MERECEM VERIFICAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[itens com descrição ambígua ou suspeita de não-originalidade]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 O QUE VERIFICAR PRESENCIALMENTE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pontos que só um especialista presencial pode confirmar — números de chassi/motor, código de tinta, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA PARA PRÓXIMA ANÁLISE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[que outras informações ajudariam a refinar essa análise]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Originalidade", moto_orig, res)
@@ -17551,16 +17477,16 @@ elif st.session_state.etapa == "App":
             if pecas_det.strip() and moto_det.strip():
                 with st.spinner("Verificando..."):
                     prompt = (
-                        f"Analise se estas peças são compatíveis com a originalidade da motocicleta.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_det}.\\\\\\\\\\\\\\\\nPeças descritas: {pecas_det}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔎 ANÁLISE DE COMPATIBILIDADE — {moto_det.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Para cada peça descrita:]\\\\\\\\\\\\\\\\n"
-                        f"🔧 [NOME DA PEÇA]\\\\\\\\\\\\\\\\n"
-                        f"Status provável: [Original / Possivelmente não original / Não foi possível avaliar]\\\\\\\\\\\\\\\\n"
-                        f"Justificativa: [por que, com base no conhecimento sobre esse modelo/ano]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 RESUMO GERAL:\\\\\\\\\\\\\\\\n[conclusão geral sobre o conjunto de peças]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\n[o que fazer para confirmar com certeza — pesquisa de catálogo original, comparação com outros exemplares, etc]"
+                        f"Analise se estas peças são compatíveis com a originalidade da motocicleta.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_det}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nPeças descritas: {pecas_det}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔎 ANÁLISE DE COMPATIBILIDADE — {moto_det.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para cada peça descrita:]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 [NOME DA PEÇA]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Status provável: [Original / Possivelmente não original / Não foi possível avaliar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Justificativa: [por que, com base no conhecimento sobre esse modelo/ano]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 RESUMO GERAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[conclusão geral sobre o conjunto de peças]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que fazer para confirmar com certeza — pesquisa de catálogo original, comparação com outros exemplares, etc]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Detector", moto_det, res)
@@ -17595,16 +17521,16 @@ elif st.session_state.etapa == "App":
             if moto_cor.strip():
                 with st.spinner("Buscando cores..."):
                     prompt = (
-                        f"Liste as cores originais de fábrica para: {moto_cor}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎨 CORES ORIGINAIS — {moto_cor.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Para cada cor:]\\\\\\\\\\\\\\\\n"
-                        f"🎨 [Nome da cor]\\\\\\\\\\\\\\\\n"
-                        f"Código de tinta: [se conhecido]\\\\\\\\\\\\\\\\n"
-                        f"Anos de utilização: [período]\\\\\\\\\\\\\\\\n"
-                        f"Onde aparecia: [tanque, carenagem, guarda-lamas, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⭐ SÉRIES ESPECIAIS:\\\\\\\\\\\\\\\\n[cores exclusivas de versões especiais/edições limitadas, se houver]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA:\\\\\\\\\\\\\\\\n[como verificar a cor original em uma moto restaurada — local da etiqueta/código]"
+                        f"Liste as cores originais de fábrica para: {moto_cor}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎨 CORES ORIGINAIS — {moto_cor.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para cada cor:]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎨 [Nome da cor]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Código de tinta: [se conhecido]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Anos de utilização: [período]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Onde aparecia: [tanque, carenagem, guarda-lamas, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ SÉRIES ESPECIAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cores exclusivas de versões especiais/edições limitadas, se houver]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como verificar a cor original em uma moto restaurada — local da etiqueta/código]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Cores", moto_cor, res)
@@ -17644,22 +17570,22 @@ elif st.session_state.etapa == "App":
             if moto_idx.strip():
                 with st.spinner("Calculando..."):
                     prompt = (
-                        f"Crie uma avaliação completa de colecionador para esta motocicleta.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_idx}.\\\\\\\\\\\\\\\\n"
+                        f"Crie uma avaliação completa de colecionador para esta motocicleta.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_idx}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"Autoavaliação do proprietário: Originalidade {originalidade_idx}/10, Conservação {conservacao_idx}/10, "
-                        f"Raridade {raridade_idx}/10, Mecânica {mecanica_idx}/10, Estética {estetica_idx}/10, Documentação {documentacao_idx}/10.\\\\\\\\\\\\\\\\n"
-                        f"Observações: {notas_idx or 'nenhuma'}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 ÍNDICE DO COLECIONADOR: [X]/100\\\\\\\\\\\\\\\\n"
-                        f"[Calcule uma nota geral ponderada com base nos 6 critérios + conhecimento sobre raridade real desse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⭐ ORIGINALIDADE: {originalidade_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ CONSERVAÇÃO: {conservacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ RARIDADE: [sua avaliação real baseada no modelo]/10 — [comentário, considerando se a autoavaliação do dono está alinhada com a raridade real do modelo]\\\\\\\\\\\\\\\\n"
-                        f"⭐ ESTADO MECÂNICO: {mecanica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ ESTADO ESTÉTICO: {estetica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ DOCUMENTAÇÃO: {documentacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ POTENCIAL DE VALORIZAÇÃO: [X]/10 — [comentário baseado em tendências gerais do modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 O QUE MAIS AUMENTARIA O VALOR DESTA MOTOCICLETA:\\\\\\\\\\\\\\\\n[1-2 ações prioritárias]"
+                        f"Raridade {raridade_idx}/10, Mecânica {mecanica_idx}/10, Estética {estetica_idx}/10, Documentação {documentacao_idx}/10.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Observações: {notas_idx or 'nenhuma'}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 ÍNDICE DO COLECIONADOR: [X]/100\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Calcule uma nota geral ponderada com base nos 6 critérios + conhecimento sobre raridade real desse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ ORIGINALIDADE: {originalidade_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ CONSERVAÇÃO: {conservacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ RARIDADE: [sua avaliação real baseada no modelo]/10 — [comentário, considerando se a autoavaliação do dono está alinhada com a raridade real do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ ESTADO MECÂNICO: {mecanica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ ESTADO ESTÉTICO: {estetica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ DOCUMENTAÇÃO: {documentacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ POTENCIAL DE VALORIZAÇÃO: [X]/10 — [comentário baseado em tendências gerais do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 O QUE MAIS AUMENTARIA O VALOR DESTA MOTOCICLETA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1-2 ações prioritárias]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Indice", moto_idx, res)
@@ -17704,18 +17630,18 @@ elif st.session_state.etapa == "App":
             if moto_aval.strip():
                 with st.spinner("Calculando estimativa..."):
                     prompt = (
-                        f"Crie uma estimativa de valor para esta motocicleta clássica.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_aval}. Estado: {estado_aval}. Documentação: {documentacao_aval}.\\\\\\\\\\\\\\\\n"
-                        f"Região: {regiao_aval or 'não informada'}. Detalhes: {detalhes_aval or 'não informado'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 ESTIMATIVA DE VALOR — {moto_aval.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 FAIXA DE VALOR ESTIMADA: R$[X] a R$[X]\\\\\\\\\\\\\\\\n"
-                        f"[Baseado em padrões históricos do mercado de clássicas para esse modelo/estado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📈 FATORES QUE AUMENTAM O VALOR:\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📉 FATORES QUE REDUZEM O VALOR:\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 ONDE ESSA MOTO SE POSICIONA NO MERCADO:\\\\\\\\\\\\\\\\n[comparação geral com a faixa de exemplares desse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 COMO AUMENTAR O VALOR:\\\\\\\\\\\\\\\\n[2-3 ações com melhor custo-benefício]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 ONDE CONFIRMAR ESSE VALOR:\\\\\\\\\\\\\\\\n[tabelas especializadas, anúncios reais, avaliadores especializados, clubes de marca]"
+                        f"Crie uma estimativa de valor para esta motocicleta clássica.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_aval}. Estado: {estado_aval}. Documentação: {documentacao_aval}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Região: {regiao_aval or 'não informada'}. Detalhes: {detalhes_aval or 'não informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 ESTIMATIVA DE VALOR — {moto_aval.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 FAIXA DE VALOR ESTIMADA: R$[X] a R$[X]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Baseado em padrões históricos do mercado de clássicas para esse modelo/estado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📈 FATORES QUE AUMENTAM O VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📉 FATORES QUE REDUZEM O VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 ONDE ESSA MOTO SE POSICIONA NO MERCADO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[comparação geral com a faixa de exemplares desse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 COMO AUMENTAR O VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 ações com melhor custo-benefício]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 ONDE CONFIRMAR ESSE VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[tabelas especializadas, anúncios reais, avaliadores especializados, clubes de marca]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Avaliacao", moto_aval, res)
@@ -17757,19 +17683,19 @@ elif st.session_state.etapa == "App":
             if moto_rest.strip():
                 with st.spinner("Montando plano..."):
                     prompt = (
-                        f"Crie um plano completo de restauração.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_rest}. Orçamento: R${orcamento_rest}. Estado atual: {estado_atual_rest}.\\\\\\\\\\\\\\\\n"
-                        f"Prazo: {prazo_rest or 'flexível'}. Descrição: {descricao_rest or 'não detalhada'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛠️ PLANO DE RESTAURAÇÃO — {moto_rest.upper()}\\\\\\\\\\\\\\\\n"
-                        f"Orçamento: R${orcamento_rest} | Prazo: {prazo_rest or 'flexível'}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 ORDEM IDEAL DOS SERVIÇOS:\\\\\\\\\\\\\\\\n"
-                        f"1. [serviço] — Dificuldade: [X] — Tempo estimado: [X] — Custo aproximado: R$[X]\\\\\\\\\\\\\\\\n"
-                        f"[continue numerando todos os serviços necessários, na ordem lógica de execução]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 PRIORIDADES (o que fazer primeiro mesmo com orçamento limitado):\\\\\\\\\\\\\\\\n[itens críticos de segurança/mecânica antes de estética]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 CRONOGRAMA SUGERIDO:\\\\\\\\\\\\\\\\n[divisão por fases/meses considerando o prazo informado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 DISTRIBUIÇÃO DO ORÇAMENTO:\\\\\\\\\\\\\\\\n[como dividir os R${orcamento_rest} entre as categorias de serviço]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ RISCOS DESSE TIPO DE RESTAURAÇÃO:\\\\\\\\\\\\\\\\n[o que costuma sair do orçamento/prazo nesse tipo de projeto]"
+                        f"Crie um plano completo de restauração.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_rest}. Orçamento: R${orcamento_rest}. Estado atual: {estado_atual_rest}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Prazo: {prazo_rest or 'flexível'}. Descrição: {descricao_rest or 'não detalhada'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛠️ PLANO DE RESTAURAÇÃO — {moto_rest.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Orçamento: R${orcamento_rest} | Prazo: {prazo_rest or 'flexível'}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 ORDEM IDEAL DOS SERVIÇOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"1. [serviço] — Dificuldade: [X] — Tempo estimado: [X] — Custo aproximado: R$[X]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[continue numerando todos os serviços necessários, na ordem lógica de execução]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 PRIORIDADES (o que fazer primeiro mesmo com orçamento limitado):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[itens críticos de segurança/mecânica antes de estética]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 CRONOGRAMA SUGERIDO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[divisão por fases/meses considerando o prazo informado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 DISTRIBUIÇÃO DO ORÇAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como dividir os R${orcamento_rest} entre as categorias de serviço]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ RISCOS DESSE TIPO DE RESTAURAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que costuma sair do orçamento/prazo nesse tipo de projeto]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Restauracao", moto_rest, res)
@@ -17805,15 +17731,15 @@ elif st.session_state.etapa == "App":
             if problema_diag.strip():
                 with st.spinner("Analisando..."):
                     prompt = (
-                        f"Faça um diagnóstico mecânico preliminar.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_diag}. Problema: {problema_diag}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔧 DIAGNÓSTICO — {moto_diag.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\\\\\\\\\\\\\\\n[liste com base no sintoma descrito e no conhecimento sobre esse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ COMPONENTES ENVOLVIDOS:\\\\\\\\\\\\\\\\n[peças que tipicamente causam esse sintoma]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧪 TESTES RECOMENDADOS:\\\\\\\\\\\\\\\\n[testes simples que ajudam a confirmar a causa]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚨 NÍVEL DE URGÊNCIA: [Baixo/Médio/Alto/Crítico]\\\\\\\\\\\\\\\\n[justificativa — é seguro continuar rodando?]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔧 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\n[orientação final, sempre recomendando confirmação com mecânico especializado em motos clássicas]"
+                        f"Faça um diagnóstico mecânico preliminar.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_diag}. Problema: {problema_diag}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 DIAGNÓSTICO — {moto_diag.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[liste com base no sintoma descrito e no conhecimento sobre esse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ COMPONENTES ENVOLVIDOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[peças que tipicamente causam esse sintoma]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧪 TESTES RECOMENDADOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[testes simples que ajudam a confirmar a causa]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚨 NÍVEL DE URGÊNCIA: [Baixo/Médio/Alto/Crítico]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[justificativa — é seguro continuar rodando?]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[orientação final, sempre recomendando confirmação com mecânico especializado em motos clássicas]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Diagnostico", problema_diag[:60], res)
@@ -17848,15 +17774,15 @@ elif st.session_state.etapa == "App":
             if peca_busca.strip() and moto_pecas.strip():
                 with st.spinner("Buscando informações..."):
                     prompt = (
-                        f"Forneça um guia completo sobre esta peça.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_pecas}. Peça: {peca_busca}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📦 {peca_busca.upper()} — {moto_pecas.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 PEÇA ORIGINAL:\\\\\\\\\\\\\\\\n[características da peça original de fábrica]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔄 PEÇAS REPRODUZIDAS:\\\\\\\\\\\\\\\\n[se existem reproduções no mercado e qualidade geral]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✅ COMPATIBILIDADE:\\\\\\\\\\\\\\\\n[outros modelos/anos que usam peça igual ou similar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 DIFICULDADE PARA ENCONTRAR:\\\\\\\\\\\\\\\\n[Fácil/Moderada/Difícil/Raríssima — e onde normalmente são encontradas: clubes, feiras, importação]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ CUIDADOS NA COMPRA:\\\\\\\\\\\\\\\\n[como verificar se é original, problemas comuns em peças usadas desse tipo]"
+                        f"Forneça um guia completo sobre esta peça.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_pecas}. Peça: {peca_busca}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📦 {peca_busca.upper()} — {moto_pecas.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 PEÇA ORIGINAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[características da peça original de fábrica]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔄 PEÇAS REPRODUZIDAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se existem reproduções no mercado e qualidade geral]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✅ COMPATIBILIDADE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[outros modelos/anos que usam peça igual ou similar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 DIFICULDADE PARA ENCONTRAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[Fácil/Moderada/Difícil/Raríssima — e onde normalmente são encontradas: clubes, feiras, importação]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ CUIDADOS NA COMPRA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como verificar se é original, problemas comuns em peças usadas desse tipo]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Pecas", f"{moto_pecas} — {peca_busca}", res)
@@ -17892,14 +17818,14 @@ elif st.session_state.etapa == "App":
             if topico.strip():
                 with st.spinner("Preparando explicação..."):
                     prompt = (
-                        f"Explique de forma clara e prática: {topico}, no contexto de motos clássicas no Brasil.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧾 {topico.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📖 O QUE É / COMO FUNCIONA:\\\\\\\\\\\\\\\\n[explicação clara]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PASSO A PASSO GERAL:\\\\\\\\\\\\\\\\n[processo típico — sempre observando que procedimentos variam por estado/DETRAN]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📄 DOCUMENTOS GERALMENTE NECESSÁRIOS:\\\\\\\\\\\\\\\\n[lista]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ CUIDADOS E PEGADINHAS COMUNS:\\\\\\\\\\\\\\\\n[erros frequentes nesse processo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA:\\\\\\\\\\\\\\\\n[1 dica prática]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
+                        f"Explique de forma clara e prática: {topico}, no contexto de motos clássicas no Brasil.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧾 {topico.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📖 O QUE É / COMO FUNCIONA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explicação clara]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PASSO A PASSO GERAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[processo típico — sempre observando que procedimentos variam por estado/DETRAN]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📄 DOCUMENTOS GERALMENTE NECESSÁRIOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[lista]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ CUIDADOS E PEGADINHAS COMUNS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[erros frequentes nesse processo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 dica prática]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"📍 IMPORTANTE: procedimentos de DETRAN variam por estado — confirme sempre no órgão local."
                     )
                     res = motos_ia(prompt)
@@ -17936,17 +17862,17 @@ elif st.session_state.etapa == "App":
             if descricao_cert.strip() and moto_cert.strip():
                 with st.spinner("Avaliando critérios..."):
                     prompt = (
-                        f"Faça uma pré-avaliação educativa para certificação de motocicleta de coleção.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_cert}. Idade: {idade_cert or 'não informada'}.\\\\\\\\\\\\\\\\n"
-                        f"Descrição: {descricao_cert}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏅 PRÉ-AVALIAÇÃO — {moto_cert.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 CRITÉRIO DE IDADE:\\\\\\\\\\\\\\\\n[geralmente exige-se 30+ anos — avalie se atende com base na idade informada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✅ CRITÉRIOS QUE PARECEM ATENDIDOS:\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ CRITÉRIOS QUE MERECEM ATENÇÃO:\\\\\\\\\\\\\\\\n[pontos que costumam ser exigidos e podem não estar claros na descrição]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 ESTIMATIVA DE CHANCE DE APROVAÇÃO: [Baixa/Moderada/Alta]\\\\\\\\\\\\\\\\n"
-                        f"[IMPORTANTE: deixe claro que isso é uma estimativa educativa, não uma garantia]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PRÓXIMOS PASSOS REAIS:\\\\\\\\\\\\\\\\n[como buscar a certificação oficial — clube de marca ou federação de veículos antigos]"
+                        f"Faça uma pré-avaliação educativa para certificação de motocicleta de coleção.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_cert}. Idade: {idade_cert or 'não informada'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Descrição: {descricao_cert}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏅 PRÉ-AVALIAÇÃO — {moto_cert.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 CRITÉRIO DE IDADE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[geralmente exige-se 30+ anos — avalie se atende com base na idade informada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✅ CRITÉRIOS QUE PARECEM ATENDIDOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ CRITÉRIOS QUE MERECEM ATENÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pontos que costumam ser exigidos e podem não estar claros na descrição]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 ESTIMATIVA DE CHANCE DE APROVAÇÃO: [Baixa/Moderada/Alta]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[IMPORTANTE: deixe claro que isso é uma estimativa educativa, não uma garantia]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PRÓXIMOS PASSOS REAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como buscar a certificação oficial — clube de marca ou federação de veículos antigos]"
                     )
                     res = motos_ia(prompt, "Seja conservador nas estimativas de aprovação — sempre deixe claro que apenas a vistoria presencial oficial determina a certificação real.")
                     salvar_consulta("Certificacao", moto_cert, res)
@@ -17980,14 +17906,14 @@ elif st.session_state.etapa == "App":
         if st.button("💎 EXPLORAR TENDÊNCIAS", key="classica20"):
             with st.spinner("Analisando tendências..."):
                 prompt = (
-                    f"Explore o tema: {tema_radar}, no contexto do mercado de motocicletas clássicas.\\\\\\\\\\\\\\\\n"
-                    f"Categoria/modelo de interesse: {categoria_radar or 'geral, sem foco específico'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💎 {tema_radar.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📊 ANÁLISE:\\\\\\\\\\\\\\\\n[desenvolva o tema com base em padrões históricos conhecidos do mercado de motos clássicas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🏍️ MODELOS/EXEMPLOS RELEVANTES:\\\\\\\\\\\\\\\\n[liste exemplos concretos relacionados ao tema, com explicação breve de cada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💡 INSIGHT PARA O COLECIONADOR:\\\\\\\\\\\\\\\\n[1-2 conclusões práticas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ LEMBRETE:\\\\\\\\\\\\\\\\n[reforçar que são tendências históricas gerais, não previsões garantidas, e recomendar pesquisa em anúncios reais e tabelas especializadas]"
+                    f"Explore o tema: {tema_radar}, no contexto do mercado de motocicletas clássicas.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Categoria/modelo de interesse: {categoria_radar or 'geral, sem foco específico'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💎 {tema_radar.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📊 ANÁLISE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[desenvolva o tema com base em padrões históricos conhecidos do mercado de motos clássicas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🏍️ MODELOS/EXEMPLOS RELEVANTES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[liste exemplos concretos relacionados ao tema, com explicação breve de cada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💡 INSIGHT PARA O COLECIONADOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1-2 conclusões práticas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ LEMBRETE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[reforçar que são tendências históricas gerais, não previsões garantidas, e recomendar pesquisa em anúncios reais e tabelas especializadas]"
                 )
                 res = motos_ia(prompt)
                 salvar_consulta("Radar", tema_radar, res)
@@ -18012,15 +17938,15 @@ elif st.session_state.etapa == "App":
             if modelo_time.strip():
                 with st.spinner("Montando linha do tempo..."):
                     prompt = (
-                        f"Crie uma linha do tempo da evolução do modelo: {modelo_time}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏁 LINHA DO TEMPO — {modelo_time.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Para cada geração/período importante de mudança:]\\\\\\\\\\\\\\\\n"
-                        f"📅 [PERÍODO/ANOS]\\\\\\\\\\\\\\\\n"
+                        f"Crie uma linha do tempo da evolução do modelo: {modelo_time}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏁 LINHA DO TEMPO — {modelo_time.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para cada geração/período importante de mudança:]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 [PERÍODO/ANOS]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"Principais mudanças: [motor, chassi, suspensão, freios, painel, iluminação, banco, rodas, escapamento — "
-                        f"o que mudou especificamente nesse período]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Repita para todos os períodos relevantes da produção do modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 GERAÇÃO MAIS DESEJADA PELOS COLECIONADORES:\\\\\\\\\\\\\\\\n[qual período/ano é mais procurado e por quê]"
+                        f"o que mudou especificamente nesse período]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Repita para todos os períodos relevantes da produção do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 GERAÇÃO MAIS DESEJADA PELOS COLECIONADORES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[qual período/ano é mais procurado e por quê]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Timeline", modelo_time, res)
@@ -18047,15 +17973,15 @@ elif st.session_state.etapa == "App":
             if modelo_hist.strip():
                 with st.spinner("Reunindo a história..."):
                     prompt = (
-                        f"Conte a história completa do modelo: {modelo_hist}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌎 A HISTÓRIA DA {modelo_hist.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 ORIGEM DO PROJETO:\\\\\\\\\\\\\\\\n[por que e como a moto foi criada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 HISTÓRIA DA FABRICANTE:\\\\\\\\\\\\\\\\n[contexto da marca na época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👨‍🔧 DESIGNERS E ENGENHEIROS:\\\\\\\\\\\\\\\\n[pessoas-chave por trás do projeto, se conhecidas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 PARTICIPAÇÕES EM COMPETIÇÕES:\\\\\\\\\\\\\\\\n[se aplicável, conquistas em corridas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📺 COMERCIAIS DA ÉPOCA:\\\\\\\\\\\\\\\\n[como a moto era anunciada, slogans marcantes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\n[2-3 fatos pouco conhecidos]"
+                        f"Conte a história completa do modelo: {modelo_hist}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌎 A HISTÓRIA DA {modelo_hist.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 ORIGEM DO PROJETO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[por que e como a moto foi criada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 HISTÓRIA DA FABRICANTE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto da marca na época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👨‍🔧 DESIGNERS E ENGENHEIROS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pessoas-chave por trás do projeto, se conhecidas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 PARTICIPAÇÕES EM COMPETIÇÕES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se aplicável, conquistas em corridas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📺 COMERCIAIS DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como a moto era anunciada, slogans marcantes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 fatos pouco conhecidos]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Historia", modelo_hist, res)
@@ -18123,18 +18049,18 @@ elif st.session_state.etapa == "App":
 
             if st.button("🤖 GERAR RESUMO COMPLETO DO PROJETO", key="classica27"):
                 with st.spinner("Gerando resumo..."):
-                    etapas_txt = "\\\\\\\\\\\\\\\\n".join([f"- {e['etapa']} ({e['data']}): R${e['gasto']:,.0f}, {e['horas']}h" for e in st.session_state.diario_restauracao])
+                    etapas_txt = "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n".join([f"- {e['etapa']} ({e['data']}): R${e['gasto']:,.0f}, {e['horas']}h" for e in st.session_state.diario_restauracao])
                     prompt = (
-                        f"Crie um resumo completo do projeto de restauração com base no histórico.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {st.session_state.moto_padrao}.\\\\\\\\\\\\\\\\n"
-                        f"Etapas registradas:\\\\\\\\\\\\\\\\n{etapas_txt}\\\\\\\\\\\\\\\\n"
-                        f"Total gasto: R${total_gasto:,.2f}. Total horas: {total_horas}h.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏕️ RESUMO DO PROJETO DE RESTAURAÇÃO\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 VISÃO GERAL:\\\\\\\\\\\\\\\\n[resumo do progresso até agora]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 ANÁLISE DE CUSTOS:\\\\\\\\\\\\\\\\n[comentário sobre o investimento até agora]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PRÓXIMAS ETAPAS SUGERIDAS:\\\\\\\\\\\\\\\\n[com base no que já foi feito, o que tipicamente viria a seguir]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 VALOR AGREGADO ESTIMADO:\\\\\\\\\\\\\\\\n[como esse investimento tende a impactar o valor da moto — estimativa educativa]"
+                        f"Crie um resumo completo do projeto de restauração com base no histórico.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {st.session_state.moto_padrao}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Etapas registradas:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{etapas_txt}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Total gasto: R${total_gasto:,.2f}. Total horas: {total_horas}h.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏕️ RESUMO DO PROJETO DE RESTAURAÇÃO\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 VISÃO GERAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[resumo do progresso até agora]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 ANÁLISE DE CUSTOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[comentário sobre o investimento até agora]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PRÓXIMAS ETAPAS SUGERIDAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base no que já foi feito, o que tipicamente viria a seguir]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 VALOR AGREGADO ESTIMADO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como esse investimento tende a impactar o valor da moto — estimativa educativa]"
                     )
                     res = motos_ia(prompt)
                     st.session_state['resumo_diario_temp'] = res
@@ -18158,14 +18084,14 @@ elif st.session_state.etapa == "App":
             if moto_som.strip():
                 with st.spinner("Descrevendo..."):
                     prompt = (
-                        f"Descreva como era o som/ronco original desta motocicleta: {moto_som}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔊 SOM ORIGINAL — {moto_som.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎵 CARACTERÍSTICA DO RONCO:\\\\\\\\\\\\\\\\n[descrição sonora detalhada — grave, agudo, rítmico, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ CONFIGURAÇÃO DE FÁBRICA:\\\\\\\\\\\\\\\\n[motor, escapamento original que geravam esse som]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔄 DIFERENÇAS ENTRE GERAÇÕES:\\\\\\\\\\\\\\\\n[se houver múltiplas versões, como o som varia]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛠️ ESCAPAMENTOS ALTERNATIVOS DA ÉPOCA:\\\\\\\\\\\\\\\\n[opções de escape esportivo que existiam para esse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADE SONORA:\\\\\\\\\\\\\\\\n[algo interessante sobre o som desse modelo específico]"
+                        f"Descreva como era o som/ronco original desta motocicleta: {moto_som}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔊 SOM ORIGINAL — {moto_som.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎵 CARACTERÍSTICA DO RONCO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[descrição sonora detalhada — grave, agudo, rítmico, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ CONFIGURAÇÃO DE FÁBRICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[motor, escapamento original que geravam esse som]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔄 DIFERENÇAS ENTRE GERAÇÕES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se houver múltiplas versões, como o som varia]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛠️ ESCAPAMENTOS ALTERNATIVOS DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[opções de escape esportivo que existiam para esse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADE SONORA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[algo interessante sobre o som desse modelo específico]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("Som", moto_som, res)
@@ -18193,12 +18119,12 @@ elif st.session_state.etapa == "App":
         if st.button("🧠 GERAR PERGUNTA", key="classica29"):
             with st.spinner("Preparando pergunta..."):
                 prompt = (
-                    f"Crie 1 pergunta de quiz sobre motocicletas clássicas, nível {nivel_quiz}.\\\\\\\\\\\\\\\\n"
-                    f"Tema: {tema_quiz or 'geral'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧠 PERGUNTA ({nivel_quiz}):\\\\\\\\\\\\\\\\n[a pergunta]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"A) [opção]\\\\\\\\\\\\\\\\nB) [opção]\\\\\\\\\\\\\\\\nC) [opção]\\\\\\\\\\\\\\\\nD) [opção]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"✅ RESPOSTA CORRETA: [letra]\\\\\\\\\\\\\\\\n"
+                    f"Crie 1 pergunta de quiz sobre motocicletas clássicas, nível {nivel_quiz}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Tema: {tema_quiz or 'geral'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧠 PERGUNTA ({nivel_quiz}):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[a pergunta]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"A) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nB) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nC) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nD) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"✅ RESPOSTA CORRETA: [letra]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                     f"📖 EXPLICAÇÃO: [por que essa é a resposta, com contexto interessante]"
                 )
                 res = motos_ia(prompt)
@@ -18242,14 +18168,14 @@ elif st.session_state.etapa == "App":
         if st.button("🔬 EXPLICAR", key="classica33"):
             with st.spinner("Preparando explicação..."):
                 prompt = (
-                    f"Explique de forma simples e visual: {tema_eng}, no contexto de motocicletas clássicas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔬 {tema_eng.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📖 O QUE É E PARA QUE SERVE:\\\\\\\\\\\\\\\\n[explicação simples]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ COMO FUNCIONA:\\\\\\\\\\\\\\\\n[explicação do mecanismo, passo a passo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔧 PROBLEMAS COMUNS EM CLÁSSICAS:\\\\\\\\\\\\\\\\n[o que tipicamente dá problema nesse componente em motos antigas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🛠️ MANUTENÇÃO BÁSICA:\\\\\\\\\\\\\\\\n[cuidados que o proprietário pode ter]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💡 CURIOSIDADE TÉCNICA:\\\\\\\\\\\\\\\\n[1 fato interessante sobre a evolução desse componente]"
+                    f"Explique de forma simples e visual: {tema_eng}, no contexto de motocicletas clássicas.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔬 {tema_eng.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📖 O QUE É E PARA QUE SERVE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explicação simples]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ COMO FUNCIONA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explicação do mecanismo, passo a passo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔧 PROBLEMAS COMUNS EM CLÁSSICAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que tipicamente dá problema nesse componente em motos antigas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🛠️ MANUTENÇÃO BÁSICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cuidados que o proprietário pode ter]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💡 CURIOSIDADE TÉCNICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 fato interessante sobre a evolução desse componente]"
                 )
                 res = motos_ia(prompt)
                 salvar_consulta("Engenharia", tema_eng, res)
@@ -18275,19 +18201,19 @@ elif st.session_state.etapa == "App":
             if moto_dna.strip():
                 with st.spinner("Reconstruindo a época..."):
                     prompt = (
-                        f"Reconstrua a época em que esta motocicleta nasceu: {moto_dna}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧬 DNA — {moto_dna.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 COMO ERA O BRASIL E O MUNDO NAQUELE ANO:\\\\\\\\\\\\\\\\n[contexto histórico geral]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 QUANTO CUSTAVA A MOTO NO LANÇAMENTO:\\\\\\\\\\\\\\\\n[valor aproximado na época, em moeda da época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 COMO FUNCIONAVA A FÁBRICA:\\\\\\\\\\\\\\\\n[contexto da produção na época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📰 PRINCIPAIS ACONTECIMENTOS HISTÓRICOS DO ANO:\\\\\\\\\\\\\\\\n[2-3 eventos marcantes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⛽ PREÇO DOS COMBUSTÍVEIS NA ÉPOCA:\\\\\\\\\\\\\\\\n[contexto aproximado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎵 MÚSICAS MAIS POPULARES DA ÉPOCA:\\\\\\\\\\\\\\\\n[2-3 exemplos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛣️ COMO ERAM AS ESTRADAS:\\\\\\\\\\\\\\\\n[contexto da infraestrutura da época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏍️ PRINCIPAIS CONCORRENTES:\\\\\\\\\\\\\\\\n[outros modelos que disputavam o mesmo mercado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📈 SALÁRIO MÍNIMO DA ÉPOCA:\\\\\\\\\\\\\\\\n[contexto aproximado — quantos salários mínimos custava a moto]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👨 PERFIL TÍPICO DE QUEM COMPRAVA:\\\\\\\\\\\\\\\\n[quem comprava essa moto na época]"
+                        f"Reconstrua a época em que esta motocicleta nasceu: {moto_dna}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧬 DNA — {moto_dna.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 COMO ERA O BRASIL E O MUNDO NAQUELE ANO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto histórico geral]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 QUANTO CUSTAVA A MOTO NO LANÇAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[valor aproximado na época, em moeda da época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 COMO FUNCIONAVA A FÁBRICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto da produção na época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📰 PRINCIPAIS ACONTECIMENTOS HISTÓRICOS DO ANO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 eventos marcantes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⛽ PREÇO DOS COMBUSTÍVEIS NA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto aproximado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎵 MÚSICAS MAIS POPULARES DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 exemplos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛣️ COMO ERAM AS ESTRADAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto da infraestrutura da época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏍️ PRINCIPAIS CONCORRENTES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[outros modelos que disputavam o mesmo mercado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📈 SALÁRIO MÍNIMO DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto aproximado — quantos salários mínimos custava a moto]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👨 PERFIL TÍPICO DE QUEM COMPRAVA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[quem comprava essa moto na época]"
                     )
                     res = motos_ia(prompt)
                     salvar_consulta("DNA", moto_dna, res)
@@ -18323,15 +18249,15 @@ elif st.session_state.etapa == "App":
             if moto_comp.strip():
                 with st.spinner("Buscando histórico..."):
                     prompt = (
-                        f"Pesquise e apresente o histórico de competições desta motocicleta/modelo.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_comp}. Modalidade de interesse: {modalidade_comp}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏁 HISTÓRICO NAS COMPETIÇÕES — {moto_comp.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 MODALIDADES EM QUE PARTICIPOU/SE DESTACOU:\\\\\\\\\\\\\\\\n[se esse modelo (ou a marca/categoria) teve presença relevante em competições]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👨‍🏁 PILOTOS FAMOSOS ASSOCIADOS:\\\\\\\\\\\\\\\\n[pilotos conhecidos que usaram esse modelo ou modelos da mesma linhagem, se conhecidos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 CONQUISTAS E RESULTADOS:\\\\\\\\\\\\\\\\n[títulos, vitórias ou resultados notáveis, se houver]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADE COMPETITIVA:\\\\\\\\\\\\\\\\n[1 fato interessante sobre o histórico competitivo desse modelo/marca]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ NOTA:\\\\\\\\\\\\\\\\n[se o modelo não teve histórico relevante em competições, seja honesto sobre isso em vez de inventar]"
+                        f"Pesquise e apresente o histórico de competições desta motocicleta/modelo.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_comp}. Modalidade de interesse: {modalidade_comp}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏁 HISTÓRICO NAS COMPETIÇÕES — {moto_comp.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 MODALIDADES EM QUE PARTICIPOU/SE DESTACOU:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se esse modelo (ou a marca/categoria) teve presença relevante em competições]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👨‍🏁 PILOTOS FAMOSOS ASSOCIADOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pilotos conhecidos que usaram esse modelo ou modelos da mesma linhagem, se conhecidos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 CONQUISTAS E RESULTADOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[títulos, vitórias ou resultados notáveis, se houver]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADE COMPETITIVA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 fato interessante sobre o histórico competitivo desse modelo/marca]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ NOTA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se o modelo não teve histórico relevante em competições, seja honesto sobre isso em vez de inventar]"
                     )
                     res = motos_ia(prompt, "Seja honesto se o modelo não teve participação relevante em competições — não invente histórico competitivo que não existiu.")
                     salvar_consulta("Competicoes", moto_comp, res)
@@ -18366,18 +18292,18 @@ elif st.session_state.etapa == "App":
             if origem_viagem.strip() and destino_viagem.strip():
                 with st.spinner("Montando roteiro..."):
                     prompt = (
-                        f"Monte um roteiro de viagem para motociclista de moto clássica.\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_viagem}. Origem: {origem_viagem}. Destino: {destino_viagem}.\\\\\\\\\\\\\\\\n"
-                        f"Duração: {duracao_viagem}. Estilo: {estilo_viagem}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌍 ROTEIRO — {origem_viagem.upper()} → {destino_viagem.upper()}\\\\\\\\\\\\\\\\n"
-                        f"Moto: {moto_viagem} | Duração: {duracao_viagem}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛣️ TRAJETO SUGERIDO:\\\\\\\\\\\\\\\\n[descrição geral da rota, priorizando estradas históricas/cênicas quando possível]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⛽ PONTOS DE APOIO NO CAMINHO:\\\\\\\\\\\\\\\\n[tipos de parada recomendados — postos, oficinas — sem inventar nomes específicos não verificados]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏨 ONDE FICAR:\\\\\\\\\\\\\\\\n[tipo de hospedagem recomendada para motociclistas na região]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧰 KIT DE FERRAMENTAS PARA LEVAR:\\\\\\\\\\\\\\\\n[específico para esse tipo de moto em viagem]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚨 RISCOS DO TRAJETO PARA UMA CLÁSSICA:\\\\\\\\\\\\\\\\n[atenção especial — moto antiga pode ter limitações de autonomia, refrigeração, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA DE QUEM RODA CLÁSSICA:\\\\\\\\\\\\\\\\n[1 dica prática de quem viaja com moto antiga]"
+                        f"Monte um roteiro de viagem para motociclista de moto clássica.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_viagem}. Origem: {origem_viagem}. Destino: {destino_viagem}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Duração: {duracao_viagem}. Estilo: {estilo_viagem}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌍 ROTEIRO — {origem_viagem.upper()} → {destino_viagem.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moto: {moto_viagem} | Duração: {duracao_viagem}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛣️ TRAJETO SUGERIDO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[descrição geral da rota, priorizando estradas históricas/cênicas quando possível]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⛽ PONTOS DE APOIO NO CAMINHO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[tipos de parada recomendados — postos, oficinas — sem inventar nomes específicos não verificados]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏨 ONDE FICAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[tipo de hospedagem recomendada para motociclistas na região]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧰 KIT DE FERRAMENTAS PARA LEVAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[específico para esse tipo de moto em viagem]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚨 RISCOS DO TRAJETO PARA UMA CLÁSSICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[atenção especial — moto antiga pode ter limitações de autonomia, refrigeração, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA DE QUEM RODA CLÁSSICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 dica prática de quem viaja com moto antiga]"
                     )
                     res = motos_ia(prompt, "Você não tem dados em tempo real sobre condições reais de estradas, postos específicos ou hospedagens — fale em termos gerais e sempre recomende confirmar informações atualizadas antes da viagem.")
                     salvar_consulta("Viagens", f"{origem_viagem} → {destino_viagem}", res)
@@ -18410,15 +18336,15 @@ elif st.session_state.etapa == "App":
                 with st.spinner("Buscando..."):
                     interesses_txt = ", ".join(interesse_clube) if interesse_clube else "informações gerais"
                     prompt = (
-                        f"Forneça orientação sobre comunidade de colecionadores de motos clássicas.\\\\\\\\\\\\\\\\n"
-                        f"Região: {regiao_clube}. Interesse: {interesses_txt}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🤝 COMUNIDADE DO COLECIONADOR — {regiao_clube.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👥 COMO ENCONTRAR CLUBES NA SUA REGIÃO:\\\\\\\\\\\\\\\\n[orientação geral de como buscar — federações estaduais, redes sociais, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎪 TIPOS DE EVENTOS QUE COSTUMAM EXISTIR:\\\\\\\\\\\\\\\\n[encontros regionais, feiras de peças, exposições — padrões gerais do hobby]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏛️ MUSEUS RELACIONADOS A VEÍCULOS ANTIGOS NO BRASIL:\\\\\\\\\\\\\\\\n[museus conhecidos e estabelecidos, se você tiver certeza da existência]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 COMO COMEÇAR A SE CONECTAR COM A COMUNIDADE:\\\\\\\\\\\\\\\\n[dicas práticas para quem está começando no hobby]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ IMPORTANTE:\\\\\\\\\\\\\\\\n[informações sobre eventos específicos mudam com frequência — recomende buscar grupos/páginas atualizadas de colecionadores na região]"
+                        f"Forneça orientação sobre comunidade de colecionadores de motos clássicas.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Região: {regiao_clube}. Interesse: {interesses_txt}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🤝 COMUNIDADE DO COLECIONADOR — {regiao_clube.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👥 COMO ENCONTRAR CLUBES NA SUA REGIÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[orientação geral de como buscar — federações estaduais, redes sociais, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎪 TIPOS DE EVENTOS QUE COSTUMAM EXISTIR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[encontros regionais, feiras de peças, exposições — padrões gerais do hobby]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏛️ MUSEUS RELACIONADOS A VEÍCULOS ANTIGOS NO BRASIL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[museus conhecidos e estabelecidos, se você tiver certeza da existência]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 COMO COMEÇAR A SE CONECTAR COM A COMUNIDADE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[dicas práticas para quem está começando no hobby]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ IMPORTANTE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[informações sobre eventos específicos mudam com frequência — recomende buscar grupos/páginas atualizadas de colecionadores na região]"
                     )
                     res = motos_ia(prompt, "Não invente nomes específicos de clubes, eventos ou museus que você não tem certeza que existem — prefira orientação geral de como buscar, e só cite instituições muito conhecidas e estabelecidas.")
                     salvar_consulta("Clube", regiao_clube, res)
@@ -18507,7 +18433,7 @@ elif st.session_state.etapa == "App":
 
         if st.session_state.historico_consultas:
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            historico_txt = "\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\\\\\\\\\\\\\\\\n{c['conteudo']}\\\\\\\\\\\\\\\\n{'─'*40}" for c in st.session_state.historico_consultas)
+            historico_txt = "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{c['conteudo']}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{'─'*40}" for c in st.session_state.historico_consultas)
             st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt, file_name="historico_motos.txt", mime="text/plain",
         key="dl_classica_23"
     )
@@ -18528,6 +18454,7 @@ st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
     "</div>", unsafe_allow_html=True
 )
+
 
 
 
@@ -18739,7 +18666,7 @@ Usuário: {st.session_state.usuario}. Veículo de interesse: {st.session_state.v
         return f"⚠️ Erro na API: {e}"
 
 def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
-    percentuais = re.findall(r'(\\\\\\\\\\\\\\\\d+)\\\\\\\\\\\\\\\\s*/\\\\\\\\\\\\\\\\s*100|(\\\\\\\\\\\\\\\\d+)%', texto)
+    percentuais = re.findall(r'(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\d+)\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\s*/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\s*100|(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\d+)%', texto)
     valores = [int(a or b) for a, b in percentuais if a or b]
     indice = valores[0] if valores else 50
 
@@ -18786,7 +18713,7 @@ def chamar_ia(prompt, sistema="Você é um assistente inteligente. Responda em p
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 CLÁSSICOS IA")
-    st.markdown("<div class=\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -18878,15 +18805,15 @@ elif st.session_state.etapa == "App":
             if modelo_id.strip():
                 with st.spinner("Buscando informações..."):
                     prompt = (
-                        f"Crie uma identificação completa do veículo: {modelo_id} {ano_id}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚘 {modelo_id.upper()} {ano_id}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📖 HISTÓRIA RESUMIDA:\\\\\\\\\\\\\\\\n[origem e contexto do modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ ESPECIFICAÇÕES TÉCNICAS:\\\\\\\\\\\\\\\\n[motor, potência, transmissão, dimensões — para esse ano específico]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔧 VERSÕES E OPCIONAIS:\\\\\\\\\\\\\\\\n[versões disponíveis nesse ano e principais opcionais]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 PRODUÇÃO:\\\\\\\\\\\\\\\\n[quantidade produzida aproximada, se conhecida, e países onde foi vendido]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📈 EVOLUÇÃO:\\\\\\\\\\\\\\\\n[principais diferenças desse ano em relação aos anteriores/seguintes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\n[2-3 curiosidades interessantes sobre esse modelo/ano]"
+                        f"Crie uma identificação completa do veículo: {modelo_id} {ano_id}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚘 {modelo_id.upper()} {ano_id}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📖 HISTÓRIA RESUMIDA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[origem e contexto do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ ESPECIFICAÇÕES TÉCNICAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[motor, potência, transmissão, dimensões — para esse ano específico]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 VERSÕES E OPCIONAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[versões disponíveis nesse ano e principais opcionais]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 PRODUÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[quantidade produzida aproximada, se conhecida, e países onde foi vendido]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📈 EVOLUÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[principais diferenças desse ano em relação aos anteriores/seguintes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 curiosidades interessantes sobre esse modelo/ano]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Identificacao", f"{modelo_id} {ano_id}", res)
@@ -18911,25 +18838,6 @@ elif st.session_state.etapa == "App":
         # SCANNER DE ORIGINALIDADE
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
-            st.download_button("💾 Salvar dados (.json)",
-                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
-                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
-                mime="application/json", key="dl_sv_classico")
-        with _csl2:
-            if _arq_sv:
-                try:
-                    import json as _json_ld
-                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
-                        st.session_state[_k] = _v
-                    st.success("✅ Dados carregados!")
-                    st.rerun()
-                except: st.error("Arquivo inválido.")
 
     with _tab_Identificacao:
         st.header("Identificacao")
@@ -18968,16 +18876,16 @@ elif st.session_state.etapa == "App":
             if descricao_orig.strip():
                 with st.spinner("Analisando originalidade..."):
                     prompt = (
-                        f"Analise a originalidade deste veículo com base na descrição.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_orig}. Cor: {cor_orig}.\\\\\\\\\\\\\\\\n"
-                        f"Descrição: {descricao_orig}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📸 ÍNDICE DE ORIGINALIDADE: [X]/100\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas explicando a estimativa com base no que foi descrito]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✅ ITENS QUE PARECEM ORIGINAIS:\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ ITENS QUE MERECEM VERIFICAÇÃO:\\\\\\\\\\\\\\\\n[itens com descrição ambígua ou suspeita de não-originalidade]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 O QUE VERIFICAR PRESENCIALMENTE:\\\\\\\\\\\\\\\\n[pontos que só um especialista presencial pode confirmar — números de chassi/motor, código de tinta no local correto, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA PARA PRÓXIMA ANÁLISE:\\\\\\\\\\\\\\\\n[que outras informações ajudariam a refinar essa análise]"
+                        f"Analise a originalidade deste veículo com base na descrição.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_orig}. Cor: {cor_orig}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Descrição: {descricao_orig}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📸 ÍNDICE DE ORIGINALIDADE: [X]/100\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas explicando a estimativa com base no que foi descrito]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✅ ITENS QUE PARECEM ORIGINAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ ITENS QUE MERECEM VERIFICAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[itens com descrição ambígua ou suspeita de não-originalidade]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 O QUE VERIFICAR PRESENCIALMENTE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pontos que só um especialista presencial pode confirmar — números de chassi/motor, código de tinta no local correto, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA PARA PRÓXIMA ANÁLISE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[que outras informações ajudariam a refinar essa análise]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Originalidade", veiculo_orig, res)
@@ -19015,16 +18923,16 @@ elif st.session_state.etapa == "App":
             if pecas_det.strip() and veiculo_det.strip():
                 with st.spinner("Verificando..."):
                     prompt = (
-                        f"Analise se estas peças são compatíveis com a originalidade do veículo.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_det}.\\\\\\\\\\\\\\\\nPeças descritas: {pecas_det}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔎 ANÁLISE DE COMPATIBILIDADE — {veiculo_det.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Para cada peça descrita:]\\\\\\\\\\\\\\\\n"
-                        f"🔧 [NOME DA PEÇA]\\\\\\\\\\\\\\\\n"
-                        f"Status provável: [Original / Possivelmente não original / Não foi possível avaliar]\\\\\\\\\\\\\\\\n"
-                        f"Justificativa: [por que, com base no conhecimento sobre esse modelo/ano]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 RESUMO GERAL:\\\\\\\\\\\\\\\\n[conclusão geral sobre o conjunto de peças]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\n[o que fazer para confirmar com certeza — pesquisa de catálogo original, comparação com outros exemplares, etc]"
+                        f"Analise se estas peças são compatíveis com a originalidade do veículo.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_det}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nPeças descritas: {pecas_det}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔎 ANÁLISE DE COMPATIBILIDADE — {veiculo_det.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para cada peça descrita:]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 [NOME DA PEÇA]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Status provável: [Original / Possivelmente não original / Não foi possível avaliar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Justificativa: [por que, com base no conhecimento sobre esse modelo/ano]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 RESUMO GERAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[conclusão geral sobre o conjunto de peças]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que fazer para confirmar com certeza — pesquisa de catálogo original, comparação com outros exemplares, etc]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Detector", veiculo_det, res)
@@ -19059,16 +18967,16 @@ elif st.session_state.etapa == "App":
             if veiculo_cor.strip():
                 with st.spinner("Buscando cores..."):
                     prompt = (
-                        f"Liste as cores originais de fábrica para: {veiculo_cor}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎨 CORES ORIGINAIS — {veiculo_cor.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Para cada cor:]\\\\\\\\\\\\\\\\n"
-                        f"🎨 [Nome da cor]\\\\\\\\\\\\\\\\n"
-                        f"Código de tinta: [se conhecido]\\\\\\\\\\\\\\\\n"
-                        f"Anos de utilização: [período]\\\\\\\\\\\\\\\\n"
-                        f"Combinação interna usual: [cor do banco/painel que combinava]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⭐ SÉRIES ESPECIAIS:\\\\\\\\\\\\\\\\n[cores exclusivas de versões especiais, se houver]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA:\\\\\\\\\\\\\\\\n[como verificar a cor original em um veículo restaurado — local da etiqueta/código]"
+                        f"Liste as cores originais de fábrica para: {veiculo_cor}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎨 CORES ORIGINAIS — {veiculo_cor.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para cada cor:]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎨 [Nome da cor]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Código de tinta: [se conhecido]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Anos de utilização: [período]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Combinação interna usual: [cor do banco/painel que combinava]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ SÉRIES ESPECIAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cores exclusivas de versões especiais, se houver]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como verificar a cor original em um veículo restaurado — local da etiqueta/código]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Cores", veiculo_cor, res)
@@ -19108,22 +19016,22 @@ elif st.session_state.etapa == "App":
             if veiculo_idx.strip():
                 with st.spinner("Calculando..."):
                     prompt = (
-                        f"Crie uma avaliação completa de colecionador para este veículo.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_idx}.\\\\\\\\\\\\\\\\n"
+                        f"Crie uma avaliação completa de colecionador para este veículo.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_idx}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"Autoavaliação do proprietário: Originalidade {originalidade_idx}/10, Conservação {conservacao_idx}/10, "
-                        f"Raridade {raridade_idx}/10, Mecânica {mecanica_idx}/10, Estética {estetica_idx}/10, Documentação {documentacao_idx}/10.\\\\\\\\\\\\\\\\n"
-                        f"Observações: {notas_idx or 'nenhuma'}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 ÍNDICE DO COLECIONADOR: [X]/100\\\\\\\\\\\\\\\\n"
-                        f"[Calcule uma nota geral ponderada com base nos 6 critérios + conhecimento sobre raridade real desse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⭐ ORIGINALIDADE: {originalidade_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ CONSERVAÇÃO: {conservacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ RARIDADE: [sua avaliação real baseada no modelo]/10 — [comentário, considerando se a autoavaliação do dono está alinhada com a raridade real do modelo]\\\\\\\\\\\\\\\\n"
-                        f"⭐ ESTADO MECÂNICO: {mecanica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ ESTADO ESTÉTICO: {estetica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ DOCUMENTAÇÃO: {documentacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\n"
-                        f"⭐ POTENCIAL DE VALORIZAÇÃO: [X]/10 — [comentário baseado em tendências gerais do modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 O QUE MAIS AUMENTARIA O VALOR DESTE VEÍCULO:\\\\\\\\\\\\\\\\n[1-2 ações prioritárias]"
+                        f"Raridade {raridade_idx}/10, Mecânica {mecanica_idx}/10, Estética {estetica_idx}/10, Documentação {documentacao_idx}/10.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Observações: {notas_idx or 'nenhuma'}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 ÍNDICE DO COLECIONADOR: [X]/100\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Calcule uma nota geral ponderada com base nos 6 critérios + conhecimento sobre raridade real desse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ ORIGINALIDADE: {originalidade_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ CONSERVAÇÃO: {conservacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ RARIDADE: [sua avaliação real baseada no modelo]/10 — [comentário, considerando se a autoavaliação do dono está alinhada com a raridade real do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ ESTADO MECÂNICO: {mecanica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ ESTADO ESTÉTICO: {estetica_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ DOCUMENTAÇÃO: {documentacao_idx}/10 — [comentário]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⭐ POTENCIAL DE VALORIZAÇÃO: [X]/10 — [comentário baseado em tendências gerais do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 O QUE MAIS AUMENTARIA O VALOR DESTE VEÍCULO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1-2 ações prioritárias]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Indice", veiculo_idx, res)
@@ -19168,18 +19076,18 @@ elif st.session_state.etapa == "App":
             if veiculo_aval.strip():
                 with st.spinner("Calculando estimativa..."):
                     prompt = (
-                        f"Crie uma estimativa de valor para este veículo clássico.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_aval}. Estado: {estado_aval}. Documentação: {documentacao_aval}.\\\\\\\\\\\\\\\\n"
-                        f"Região: {regiao_aval or 'não informada'}. Detalhes: {detalhes_aval or 'não informado'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 ESTIMATIVA DE VALOR — {veiculo_aval.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 FAIXA DE VALOR ESTIMADA: R$[X] a R$[X]\\\\\\\\\\\\\\\\n"
-                        f"[Baseado em padrões históricos do mercado de clássicos para esse modelo/estado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📈 FATORES QUE AUMENTAM O VALOR:\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📉 FATORES QUE REDUZEM O VALOR:\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 ONDE ESSE VEÍCULO SE POSICIONA NO MERCADO:\\\\\\\\\\\\\\\\n[comparação geral com a faixa de exemplares desse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 COMO AUMENTAR O VALOR:\\\\\\\\\\\\\\\\n[2-3 ações com melhor custo-benefício]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 ONDE CONFIRMAR ESSE VALOR:\\\\\\\\\\\\\\\\n[Tabela FIPE Collection, anúncios reais, avaliadores especializados, clubes da marca]"
+                        f"Crie uma estimativa de valor para este veículo clássico.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_aval}. Estado: {estado_aval}. Documentação: {documentacao_aval}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Região: {regiao_aval or 'não informada'}. Detalhes: {detalhes_aval or 'não informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 ESTIMATIVA DE VALOR — {veiculo_aval.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 FAIXA DE VALOR ESTIMADA: R$[X] a R$[X]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Baseado em padrões históricos do mercado de clássicos para esse modelo/estado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📈 FATORES QUE AUMENTAM O VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📉 FATORES QUE REDUZEM O VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base no estado e detalhes informados]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 ONDE ESSE VEÍCULO SE POSICIONA NO MERCADO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[comparação geral com a faixa de exemplares desse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 COMO AUMENTAR O VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 ações com melhor custo-benefício]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 ONDE CONFIRMAR ESSE VALOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[Tabela FIPE Collection, anúncios reais, avaliadores especializados, clubes da marca]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Avaliacao", veiculo_aval, res)
@@ -19221,19 +19129,19 @@ elif st.session_state.etapa == "App":
             if veiculo_rest.strip():
                 with st.spinner("Montando plano..."):
                     prompt = (
-                        f"Crie um plano completo de restauração.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_rest}. Orçamento: R${orcamento_rest}. Estado atual: {estado_atual_rest}.\\\\\\\\\\\\\\\\n"
-                        f"Prazo: {prazo_rest or 'flexível'}. Descrição: {descricao_rest or 'não detalhada'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛠️ PLANO DE RESTAURAÇÃO — {veiculo_rest.upper()}\\\\\\\\\\\\\\\\n"
-                        f"Orçamento: R${orcamento_rest} | Prazo: {prazo_rest or 'flexível'}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 ORDEM IDEAL DOS SERVIÇOS:\\\\\\\\\\\\\\\\n"
-                        f"1. [serviço] — Complexidade: [X] — Tempo estimado: [X] — Custo aproximado: R$[X]\\\\\\\\\\\\\\\\n"
-                        f"[continue numerando todos os serviços necessários, na ordem lógica de execução]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 PRIORIDADES (o que fazer primeiro mesmo com orçamento limitado):\\\\\\\\\\\\\\\\n[itens críticos de segurança/mecânica antes de estética]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 CRONOGRAMA SUGERIDO:\\\\\\\\\\\\\\\\n[divisão por fases/meses considerando o prazo informado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 DISTRIBUIÇÃO DO ORÇAMENTO:\\\\\\\\\\\\\\\\n[como dividir os R${orcamento_rest} entre as categorias de serviço]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ RISCOS DESSE TIPO DE RESTAURAÇÃO:\\\\\\\\\\\\\\\\n[o que costuma sair do orçamento/prazo nesse tipo de projeto]"
+                        f"Crie um plano completo de restauração.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_rest}. Orçamento: R${orcamento_rest}. Estado atual: {estado_atual_rest}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Prazo: {prazo_rest or 'flexível'}. Descrição: {descricao_rest or 'não detalhada'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛠️ PLANO DE RESTAURAÇÃO — {veiculo_rest.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Orçamento: R${orcamento_rest} | Prazo: {prazo_rest or 'flexível'}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 ORDEM IDEAL DOS SERVIÇOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"1. [serviço] — Complexidade: [X] — Tempo estimado: [X] — Custo aproximado: R$[X]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[continue numerando todos os serviços necessários, na ordem lógica de execução]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 PRIORIDADES (o que fazer primeiro mesmo com orçamento limitado):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[itens críticos de segurança/mecânica antes de estética]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 CRONOGRAMA SUGERIDO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[divisão por fases/meses considerando o prazo informado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 DISTRIBUIÇÃO DO ORÇAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como dividir os R${orcamento_rest} entre as categorias de serviço]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ RISCOS DESSE TIPO DE RESTAURAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que costuma sair do orçamento/prazo nesse tipo de projeto]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Restauracao", veiculo_rest, res)
@@ -19269,15 +19177,15 @@ elif st.session_state.etapa == "App":
             if problema_diag.strip():
                 with st.spinner("Analisando..."):
                     prompt = (
-                        f"Faça um diagnóstico mecânico preliminar.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_diag}. Problema: {problema_diag}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔧 DIAGNÓSTICO — {veiculo_diag.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\\\\\\\\\\\\\\\n[liste com base no sintoma descrito e no conhecimento sobre esse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ COMPONENTES ENVOLVIDOS:\\\\\\\\\\\\\\\\n[peças que tipicamente causam esse sintoma]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧪 TESTES RECOMENDADOS:\\\\\\\\\\\\\\\\n[testes simples que ajudam a confirmar a causa]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚨 NÍVEL DE URGÊNCIA: [Baixo/Médio/Alto/Crítico]\\\\\\\\\\\\\\\\n[justificativa — é seguro continuar rodando?]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔧 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\n[orientação final, sempre recomendando confirmação com mecânico especializado em clássicos]"
+                        f"Faça um diagnóstico mecânico preliminar.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_diag}. Problema: {problema_diag}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 DIAGNÓSTICO — {veiculo_diag.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[liste com base no sintoma descrito e no conhecimento sobre esse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ COMPONENTES ENVOLVIDOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[peças que tipicamente causam esse sintoma]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧪 TESTES RECOMENDADOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[testes simples que ajudam a confirmar a causa]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚨 NÍVEL DE URGÊNCIA: [Baixo/Médio/Alto/Crítico]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[justificativa — é seguro continuar rodando?]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔧 RECOMENDAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[orientação final, sempre recomendando confirmação com mecânico especializado em clássicos]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Diagnostico", problema_diag[:60], res)
@@ -19312,15 +19220,15 @@ elif st.session_state.etapa == "App":
             if peca_busca.strip() and veiculo_pecas.strip():
                 with st.spinner("Buscando informações..."):
                     prompt = (
-                        f"Forneça um guia completo sobre esta peça.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_pecas}. Peça: {peca_busca}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📦 {peca_busca.upper()} — {veiculo_pecas.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 PEÇA ORIGINAL:\\\\\\\\\\\\\\\\n[características da peça original de fábrica]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔄 PEÇAS REPRODUZIDAS:\\\\\\\\\\\\\\\\n[se existem reproduções no mercado e qualidade geral]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✅ COMPATIBILIDADE:\\\\\\\\\\\\\\\\n[outros modelos/anos que usam peça igual ou similar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔍 DIFICULDADE PARA ENCONTRAR:\\\\\\\\\\\\\\\\n[Fácil/Moderada/Difícil/Raríssima — e onde costuma-se procurar: clubes, feiras, importação]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ CUIDADOS NA COMPRA:\\\\\\\\\\\\\\\\n[como verificar se é original, problemas comuns em peças usadas desse tipo]"
+                        f"Forneça um guia completo sobre esta peça.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_pecas}. Peça: {peca_busca}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📦 {peca_busca.upper()} — {veiculo_pecas.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 PEÇA ORIGINAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[características da peça original de fábrica]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔄 PEÇAS REPRODUZIDAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se existem reproduções no mercado e qualidade geral]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✅ COMPATIBILIDADE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[outros modelos/anos que usam peça igual ou similar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔍 DIFICULDADE PARA ENCONTRAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[Fácil/Moderada/Difícil/Raríssima — e onde costuma-se procurar: clubes, feiras, importação]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ CUIDADOS NA COMPRA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como verificar se é original, problemas comuns em peças usadas desse tipo]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Pecas", f"{veiculo_pecas} — {peca_busca}", res)
@@ -19356,14 +19264,14 @@ elif st.session_state.etapa == "App":
             if topico.strip():
                 with st.spinner("Preparando explicação..."):
                     prompt = (
-                        f"Explique de forma clara e prática: {topico}, no contexto de carros clássicos no Brasil.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧾 {topico.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📖 O QUE É / COMO FUNCIONA:\\\\\\\\\\\\\\\\n[explicação clara]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PASSO A PASSO GERAL:\\\\\\\\\\\\\\\\n[processo típico — sempre observando que procedimentos variam por estado/DETRAN]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📄 DOCUMENTOS GERALMENTE NECESSÁRIOS:\\\\\\\\\\\\\\\\n[lista]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ CUIDADOS E PEGADINHAS COMUNS:\\\\\\\\\\\\\\\\n[erros frequentes nesse processo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 DICA:\\\\\\\\\\\\\\\\n[1 dica prática]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
+                        f"Explique de forma clara e prática: {topico}, no contexto de carros clássicos no Brasil.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧾 {topico.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📖 O QUE É / COMO FUNCIONA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explicação clara]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PASSO A PASSO GERAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[processo típico — sempre observando que procedimentos variam por estado/DETRAN]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📄 DOCUMENTOS GERALMENTE NECESSÁRIOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[lista]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ CUIDADOS E PEGADINHAS COMUNS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[erros frequentes nesse processo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 DICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 dica prática]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"📍 IMPORTANTE: procedimentos de DETRAN variam por estado — confirme sempre no órgão local."
                     )
                     res = classicos_ia(prompt)
@@ -19400,17 +19308,17 @@ elif st.session_state.etapa == "App":
             if descricao_pp.strip() and veiculo_pp.strip():
                 with st.spinner("Avaliando critérios..."):
                     prompt = (
-                        f"Faça uma pré-avaliação educativa para certificação de Placa Preta.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {veiculo_pp}. Idade: {idade_pp or 'não informada'}.\\\\\\\\\\\\\\\\n"
-                        f"Descrição: {descricao_pp}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏅 PRÉ-AVALIAÇÃO — {veiculo_pp.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 CRITÉRIO DE IDADE:\\\\\\\\\\\\\\\\n[geralmente exige-se 30+ anos — avalie se atende com base na idade informada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"✅ CRITÉRIOS QUE PARECEM ATENDIDOS:\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ CRITÉRIOS QUE MERECEM ATENÇÃO:\\\\\\\\\\\\\\\\n[pontos que costumam ser exigidos e podem não estar claros na descrição]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 ESTIMATIVA DE CHANCE DE APROVAÇÃO: [Baixa/Moderada/Alta]\\\\\\\\\\\\\\\\n"
-                        f"[IMPORTANTE: deixe claro que isso é uma estimativa educativa, não uma garantia]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PRÓXIMOS PASSOS REAIS:\\\\\\\\\\\\\\\\n[como buscar a certificação oficial — clube de marca filiado à FBVA]"
+                        f"Faça uma pré-avaliação educativa para certificação de Placa Preta.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {veiculo_pp}. Idade: {idade_pp or 'não informada'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Descrição: {descricao_pp}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏅 PRÉ-AVALIAÇÃO — {veiculo_pp.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 CRITÉRIO DE IDADE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[geralmente exige-se 30+ anos — avalie se atende com base na idade informada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"✅ CRITÉRIOS QUE PARECEM ATENDIDOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base na descrição]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ CRITÉRIOS QUE MERECEM ATENÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pontos que costumam ser exigidos e podem não estar claros na descrição]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 ESTIMATIVA DE CHANCE DE APROVAÇÃO: [Baixa/Moderada/Alta]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[IMPORTANTE: deixe claro que isso é uma estimativa educativa, não uma garantia]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PRÓXIMOS PASSOS REAIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como buscar a certificação oficial — clube de marca filiado à FBVA]"
                     )
                     res = classicos_ia(prompt, "Seja conservador nas estimativas de aprovação — sempre deixe claro que apenas a vistoria presencial oficial determina a certificação real.")
                     salvar_consulta("PlacaPreta", veiculo_pp, res)
@@ -19444,14 +19352,14 @@ elif st.session_state.etapa == "App":
         if st.button("💎 EXPLORAR TENDÊNCIAS", key="classico20"):
             with st.spinner("Analisando tendências..."):
                 prompt = (
-                    f"Explore o tema: {tema_radar}, no contexto do mercado de carros clássicos.\\\\\\\\\\\\\\\\n"
-                    f"Categoria/modelo de interesse: {categoria_radar or 'geral, sem foco específico'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💎 {tema_radar.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📊 ANÁLISE:\\\\\\\\\\\\\\\\n[desenvolva o tema com base em padrões históricos conhecidos do mercado de clássicos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🚗 MODELOS/EXEMPLOS RELEVANTES:\\\\\\\\\\\\\\\\n[liste exemplos concretos relacionados ao tema, com explicação breve de cada]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💡 INSIGHT PARA O COLECIONADOR:\\\\\\\\\\\\\\\\n[1-2 conclusões práticas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚠️ LEMBRETE:\\\\\\\\\\\\\\\\n[reforçar que são tendências históricas gerais, não previsões garantidas, e recomendar pesquisa em anúncios reais e tabelas especializadas]"
+                    f"Explore o tema: {tema_radar}, no contexto do mercado de carros clássicos.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Categoria/modelo de interesse: {categoria_radar or 'geral, sem foco específico'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💎 {tema_radar.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📊 ANÁLISE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[desenvolva o tema com base em padrões históricos conhecidos do mercado de clássicos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🚗 MODELOS/EXEMPLOS RELEVANTES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[liste exemplos concretos relacionados ao tema, com explicação breve de cada]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💡 INSIGHT PARA O COLECIONADOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1-2 conclusões práticas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚠️ LEMBRETE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[reforçar que são tendências históricas gerais, não previsões garantidas, e recomendar pesquisa em anúncios reais e tabelas especializadas]"
                 )
                 res = classicos_ia(prompt)
                 salvar_consulta("Radar", tema_radar, res)
@@ -19476,15 +19384,15 @@ elif st.session_state.etapa == "App":
             if modelo_time.strip():
                 with st.spinner("Montando linha do tempo..."):
                     prompt = (
-                        f"Crie uma linha do tempo da evolução do modelo: {modelo_time}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏁 LINHA DO TEMPO — {modelo_time.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Para cada geração/período importante de mudança:]\\\\\\\\\\\\\\\\n"
-                        f"📅 [PERÍODO/ANOS]\\\\\\\\\\\\\\\\n"
+                        f"Crie uma linha do tempo da evolução do modelo: {modelo_time}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏁 LINHA DO TEMPO — {modelo_time.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Para cada geração/período importante de mudança:]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 [PERÍODO/ANOS]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"Principais mudanças: [motor, painel, lanternas, faróis, interior, suspensão, rodas, acabamentos — "
-                        f"o que mudou especificamente nesse período]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"[Repita para todos os períodos relevantes da produção do modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 GERAÇÃO MAIS DESEJADA PELOS COLECIONADORES:\\\\\\\\\\\\\\\\n[qual período/ano é mais procurado e por quê]"
+                        f"o que mudou especificamente nesse período]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Repita para todos os períodos relevantes da produção do modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 GERAÇÃO MAIS DESEJADA PELOS COLECIONADORES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[qual período/ano é mais procurado e por quê]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Timeline", modelo_time, res)
@@ -19511,15 +19419,15 @@ elif st.session_state.etapa == "App":
             if modelo_hist.strip():
                 with st.spinner("Reunindo a história..."):
                     prompt = (
-                        f"Conte a história completa do modelo: {modelo_hist}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌎 A HISTÓRIA DO {modelo_hist.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 ORIGEM DO PROJETO:\\\\\\\\\\\\\\\\n[por que e como o veículo foi criado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🌍 CONTEXTO HISTÓRICO:\\\\\\\\\\\\\\\\n[o que acontecia no mundo/país quando foi lançado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👨‍🔧 DESIGNERS E ENGENHEIROS:\\\\\\\\\\\\\\\\n[pessoas-chave por trás do projeto, se conhecidas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏁 SUCESSOS NAS PISTAS:\\\\\\\\\\\\\\\\n[se aplicável, conquistas em corridas/rally]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📺 PROPAGANDAS DA ÉPOCA:\\\\\\\\\\\\\\\\n[como o veículo era anunciado, slogans marcantes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\n[2-3 fatos pouco conhecidos]"
+                        f"Conte a história completa do modelo: {modelo_hist}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌎 A HISTÓRIA DO {modelo_hist.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 ORIGEM DO PROJETO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[por que e como o veículo foi criado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🌍 CONTEXTO HISTÓRICO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que acontecia no mundo/país quando foi lançado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👨‍🔧 DESIGNERS E ENGENHEIROS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[pessoas-chave por trás do projeto, se conhecidas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏁 SUCESSOS NAS PISTAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se aplicável, conquistas em corridas/rally]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📺 PROPAGANDAS DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como o veículo era anunciado, slogans marcantes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 fatos pouco conhecidos]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Historia", modelo_hist, res)
@@ -19587,18 +19495,18 @@ elif st.session_state.etapa == "App":
 
             if st.button("🤖 GERAR RESUMO COMPLETO DO PROJETO", key="classico27"):
                 with st.spinner("Gerando resumo..."):
-                    etapas_txt = "\\\\\\\\\\\\\\\\n".join([f"- {e['etapa']} ({e['data']}): R${e['gasto']:,.0f}, {e['horas']}h" for e in st.session_state.diario_restauracao])
+                    etapas_txt = "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n".join([f"- {e['etapa']} ({e['data']}): R${e['gasto']:,.0f}, {e['horas']}h" for e in st.session_state.diario_restauracao])
                     prompt = (
-                        f"Crie um resumo completo do projeto de restauração com base no histórico.\\\\\\\\\\\\\\\\n"
-                        f"Veículo: {st.session_state.veiculo_padrao}.\\\\\\\\\\\\\\\\n"
-                        f"Etapas registradas:\\\\\\\\\\\\\\\\n{etapas_txt}\\\\\\\\\\\\\\\\n"
-                        f"Total gasto: R${total_gasto:,.2f}. Total horas: {total_horas}h.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏕️ RESUMO DO PROJETO DE RESTAURAÇÃO\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 VISÃO GERAL:\\\\\\\\\\\\\\\\n[resumo do progresso até agora]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 ANÁLISE DE CUSTOS:\\\\\\\\\\\\\\\\n[comentário sobre o investimento até agora]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PRÓXIMAS ETAPAS SUGERIDAS:\\\\\\\\\\\\\\\\n[com base no que já foi feito, o que tipicamente viria a seguir]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏆 VALOR AGREGADO ESTIMADO:\\\\\\\\\\\\\\\\n[como esse investimento tende a impactar o valor do veículo — estimativa educativa]"
+                        f"Crie um resumo completo do projeto de restauração com base no histórico.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Veículo: {st.session_state.veiculo_padrao}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Etapas registradas:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{etapas_txt}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Total gasto: R${total_gasto:,.2f}. Total horas: {total_horas}h.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏕️ RESUMO DO PROJETO DE RESTAURAÇÃO\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 VISÃO GERAL:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[resumo do progresso até agora]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 ANÁLISE DE CUSTOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[comentário sobre o investimento até agora]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PRÓXIMAS ETAPAS SUGERIDAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[com base no que já foi feito, o que tipicamente viria a seguir]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏆 VALOR AGREGADO ESTIMADO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[como esse investimento tende a impactar o valor do veículo — estimativa educativa]"
                     )
                     res = classicos_ia(prompt)
                     st.session_state['resumo_diario_temp'] = res
@@ -19622,14 +19530,14 @@ elif st.session_state.etapa == "App":
             if veiculo_som.strip():
                 with st.spinner("Descrevendo..."):
                     prompt = (
-                        f"Descreva como era o som/ronco original deste veículo: {veiculo_som}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔊 SOM ORIGINAL — {veiculo_som.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎵 CARACTERÍSTICA DO RONCO:\\\\\\\\\\\\\\\\n[descrição sonora detalhada — grave, agudo, rítmico, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚙️ CONFIGURAÇÃO DE FÁBRICA:\\\\\\\\\\\\\\\\n[motor, escapamento original que geravam esse som]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔄 DIFERENÇAS ENTRE VERSÕES DE MOTOR:\\\\\\\\\\\\\\\\n[se houver múltiplas opções de motor, como o som varia]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛠️ ESCAPAMENTOS ALTERNATIVOS DA ÉPOCA:\\\\\\\\\\\\\\\\n[opções de escape esportivo que existiam para esse modelo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 CURIOSIDADE SONORA:\\\\\\\\\\\\\\\\n[algo interessante sobre o som desse modelo específico]"
+                        f"Descreva como era o som/ronco original deste veículo: {veiculo_som}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔊 SOM ORIGINAL — {veiculo_som.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎵 CARACTERÍSTICA DO RONCO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[descrição sonora detalhada — grave, agudo, rítmico, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚙️ CONFIGURAÇÃO DE FÁBRICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[motor, escapamento original que geravam esse som]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔄 DIFERENÇAS ENTRE VERSÕES DE MOTOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[se houver múltiplas opções de motor, como o som varia]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛠️ ESCAPAMENTOS ALTERNATIVOS DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[opções de escape esportivo que existiam para esse modelo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 CURIOSIDADE SONORA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[algo interessante sobre o som desse modelo específico]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("Som", veiculo_som, res)
@@ -19657,12 +19565,12 @@ elif st.session_state.etapa == "App":
         if st.button("🧠 GERAR PERGUNTA", key="classico29"):
             with st.spinner("Preparando pergunta..."):
                 prompt = (
-                    f"Crie 1 pergunta de quiz sobre carros clássicos, nível {nivel_quiz}.\\\\\\\\\\\\\\\\n"
-                    f"Tema: {tema_quiz or 'geral'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🧠 PERGUNTA ({nivel_quiz}):\\\\\\\\\\\\\\\\n[a pergunta]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"A) [opção]\\\\\\\\\\\\\\\\nB) [opção]\\\\\\\\\\\\\\\\nC) [opção]\\\\\\\\\\\\\\\\nD) [opção]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"✅ RESPOSTA CORRETA: [letra]\\\\\\\\\\\\\\\\n"
+                    f"Crie 1 pergunta de quiz sobre carros clássicos, nível {nivel_quiz}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"Tema: {tema_quiz or 'geral'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🧠 PERGUNTA ({nivel_quiz}):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[a pergunta]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"A) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nB) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nC) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nD) [opção]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"✅ RESPOSTA CORRETA: [letra]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                     f"📖 EXPLICAÇÃO: [por que essa é a resposta, com contexto interessante]"
                 )
                 res = classicos_ia(prompt)
@@ -19705,14 +19613,14 @@ elif st.session_state.etapa == "App":
         if st.button("🔬 EXPLICAR", key="classico33"):
             with st.spinner("Preparando explicação..."):
                 prompt = (
-                    f"Explique de forma simples e visual: {tema_eng}, no contexto de carros clássicos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔬 {tema_eng.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📖 O QUE É E PARA QUE SERVE:\\\\\\\\\\\\\\\\n[explicação simples]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚙️ COMO FUNCIONA:\\\\\\\\\\\\\\\\n[explicação do mecanismo, passo a passo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🔧 PROBLEMAS COMUNS EM CLÁSSICOS:\\\\\\\\\\\\\\\\n[o que tipicamente dá problema nesse componente em carros antigos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🛠️ MANUTENÇÃO BÁSICA:\\\\\\\\\\\\\\\\n[cuidados que o proprietário pode ter]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"💡 CURIOSIDADE TÉCNICA:\\\\\\\\\\\\\\\\n[1 fato interessante sobre a evolução desse componente]"
+                    f"Explique de forma simples e visual: {tema_eng}, no contexto de carros clássicos.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔬 {tema_eng.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📖 O QUE É E PARA QUE SERVE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explicação simples]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚙️ COMO FUNCIONA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[explicação do mecanismo, passo a passo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🔧 PROBLEMAS COMUNS EM CLÁSSICOS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[o que tipicamente dá problema nesse componente em carros antigos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🛠️ MANUTENÇÃO BÁSICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[cuidados que o proprietário pode ter]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"💡 CURIOSIDADE TÉCNICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[1 fato interessante sobre a evolução desse componente]"
                 )
                 res = classicos_ia(prompt)
                 salvar_consulta("Engenharia", tema_eng, res)
@@ -19738,19 +19646,19 @@ elif st.session_state.etapa == "App":
             if veiculo_dna.strip():
                 with st.spinner("Reconstruindo a época..."):
                     prompt = (
-                        f"Reconstrua a época em que este veículo nasceu: {veiculo_dna}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🧬 DNA — {veiculo_dna.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📅 COMO ERA O BRASIL E O MUNDO NAQUELE ANO:\\\\\\\\\\\\\\\\n[contexto histórico geral]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💰 QUANTO CUSTAVA O CARRO NO LANÇAMENTO:\\\\\\\\\\\\\\\\n[valor aproximado na época, em moeda da época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏭 COMO FUNCIONAVA A FÁBRICA:\\\\\\\\\\\\\\\\n[contexto da produção na época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📰 PRINCIPAIS ACONTECIMENTOS HISTÓRICOS DO ANO:\\\\\\\\\\\\\\\\n[2-3 eventos marcantes]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⛽ PREÇO DOS COMBUSTÍVEIS NA ÉPOCA:\\\\\\\\\\\\\\\\n[contexto aproximado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎵 MÚSICAS MAIS FAMOSAS DA ÉPOCA:\\\\\\\\\\\\\\\\n[2-3 exemplos]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🛣️ COMO ERAM AS ESTRADAS:\\\\\\\\\\\\\\\\n[contexto da infraestrutura da época]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏁 PRINCIPAIS CONCORRENTES:\\\\\\\\\\\\\\\\n[outros modelos que disputavam o mesmo mercado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📈 SALÁRIO MÍNIMO E PODER DE COMPRA:\\\\\\\\\\\\\\\\n[contexto aproximado — quantos salários mínimos custava o carro]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👨‍👩‍👧 PERFIL TÍPICO DO COMPRADOR:\\\\\\\\\\\\\\\\n[quem comprava esse carro na época]"
+                        f"Reconstrua a época em que este veículo nasceu: {veiculo_dna}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🧬 DNA — {veiculo_dna.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📅 COMO ERA O BRASIL E O MUNDO NAQUELE ANO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto histórico geral]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💰 QUANTO CUSTAVA O CARRO NO LANÇAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[valor aproximado na época, em moeda da época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏭 COMO FUNCIONAVA A FÁBRICA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto da produção na época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📰 PRINCIPAIS ACONTECIMENTOS HISTÓRICOS DO ANO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 eventos marcantes]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⛽ PREÇO DOS COMBUSTÍVEIS NA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto aproximado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎵 MÚSICAS MAIS FAMOSAS DA ÉPOCA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[2-3 exemplos]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🛣️ COMO ERAM AS ESTRADAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto da infraestrutura da época]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏁 PRINCIPAIS CONCORRENTES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[outros modelos que disputavam o mesmo mercado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📈 SALÁRIO MÍNIMO E PODER DE COMPRA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[contexto aproximado — quantos salários mínimos custava o carro]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👨‍👩‍👧 PERFIL TÍPICO DO COMPRADOR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n[quem comprava esse carro na época]"
                     )
                     res = classicos_ia(prompt)
                     salvar_consulta("DNA", veiculo_dna, res)
@@ -19827,6 +19735,7 @@ st.markdown(
     "© 2026 Clássicos IA — Especialista em Carros Antigos com IA · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
+
 
 
 
@@ -19982,7 +19891,7 @@ def salvar_relatorio(tipo: str, local: str, conteudo: str, indice_seguranca: int
 
 def extrair_indice_seguranca(texto: str) -> int:
     '''Extrai um índice 0-100 do texto, ou estima com base no nível de risco mencionado.'''
-    match = re.search(r'(\\\\\\\\\\\\\\\\d{1,3})\\\\\\\\\\\\\\\\s*/\\\\\\\\\\\\\\\\s*100', texto)
+    match = re.search(r'(\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\d{1,3})\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\s*/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\s*100', texto)
     if match:
         valor = int(match.group(1))
         return min(100, max(0, valor))
@@ -20128,7 +20037,7 @@ if 'tempo_total_planejamento_min' not in st.session_state: st.session_state['tem
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🤖 GUARDIÃO PESSOAL")
-    st.markdown("<div class=\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'card\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -20328,25 +20237,6 @@ elif st.session_state.etapa == "App":
         # ANÁLISE DE TRAJETO
         # ========================
 
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 💾 Salvar e Carregar Dados")
-        _csl1, _csl2 = st.columns(2)
-        with _csl1:
-            import json as _json_sv
-            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
-            st.download_button("💾 Salvar dados (.json)",
-                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
-                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
-                mime="application/json", key="dl_sv_guardiao")
-        with _csl2:
-            if _arq_sv:
-                try:
-                    import json as _json_ld
-                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
-                        st.session_state[_k] = _v
-                    st.success("✅ Dados carregados!")
-                    st.rerun()
-                except: st.error("Arquivo inválido.")
 
     with _tab_Trajeto:
         st.header("🚶 Análise de Trajeto")
@@ -20370,24 +20260,24 @@ elif st.session_state.etapa == "App":
             if origem.strip() and destino.strip():
                 with st.spinner("Analisando seu trajeto..."):
                     prompt = (
-                        f"Crie um relatório preventivo de segurança para este trajeto.\\\\\\\\\\\\\\\\n"
-                        f"Origem: {origem}. Destino: {destino}. Transporte: {transporte}.\\\\\\\\\\\\\\\\n"
-                        f"Horário: {horario}. Companhia: {companhia}.\\\\\\\\\\\\\\\\n"
-                        f"{'Veículo: ' + modelo_veiculo if modelo_veiculo else ''}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 NÍVEL DE RISCO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas explicando essa estimativa preventiva — baseada em horário, tipo de trajeto, companhia]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESTA ROTA:\\\\\\\\\\\\\\\\n"
+                        f"Crie um relatório preventivo de segurança para este trajeto.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Origem: {origem}. Destino: {destino}. Transporte: {transporte}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Horário: {horario}. Companhia: {companhia}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"{'Veículo: ' + modelo_veiculo if modelo_veiculo else ''}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 NÍVEL DE RISCO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas explicando essa estimativa preventiva — baseada em horário, tipo de trajeto, companhia]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESTA ROTA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                         f"[Liste 3-5 tipos de ocorrência mais comuns para esse tipo de trajeto/horário — furto de celular, abordagens, etc — "
-                        f"sempre com linguagem preventiva, nunca afirmativa]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        + (f"🚗 SEGURANÇA DO VEÍCULO:\\\\\\\\\\\\\\\\n"
-                           f"[Cuidados específicos para {modelo_veiculo or transporte} nesse horário e trajeto — onde estacionar, o que evitar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n" if transporte in ["Carro","Moto"] else "")
-                        + f"📱 GOLPES COMUNS NESSE TIPO DE DESLOCAMENTO:\\\\\\\\\\\\\\\\n"
-                        f"[1-2 golpes mais relevantes para esse contexto específico, com explicação rápida de como funcionam]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 RECOMENDAÇÕES PRÁTICAS PARA ESTE TRAJETO:\\\\\\\\\\\\\\\\n"
-                        f"[3-5 ações concretas — rota alternativa, app de localização, horário melhor, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎒 CHECKLIST RÁPIDO ANTES DE SAIR:\\\\\\\\\\\\\\\\n"
-                        f"☑ [item 1]\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\n☑ [item 4]\\\\\\\\\\\\\\\\n☑ [item 5]"
+                        f"sempre com linguagem preventiva, nunca afirmativa]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        + (f"🚗 SEGURANÇA DO VEÍCULO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                           f"[Cuidados específicos para {modelo_veiculo or transporte} nesse horário e trajeto — onde estacionar, o que evitar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n" if transporte in ["Carro","Moto"] else "")
+                        + f"📱 GOLPES COMUNS NESSE TIPO DE DESLOCAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 golpes mais relevantes para esse contexto específico, com explicação rápida de como funcionam]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 RECOMENDAÇÕES PRÁTICAS PARA ESTE TRAJETO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[3-5 ações concretas — rota alternativa, app de localização, horário melhor, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎒 CHECKLIST RÁPIDO ANTES DE SAIR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"☑ [item 1]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 4]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 5]"
                     )
                     res = guardiao_ia(prompt)
                     if res: st.session_state['res_trajeto_guardi1'] = str(res)
@@ -20437,26 +20327,26 @@ elif st.session_state.etapa == "App":
             if destino_viagem.strip():
                 with st.spinner("Analisando segurança do destino..."):
                     prompt = (
-                        f"Crie um relatório preventivo de segurança para viagem.\\\\\\\\\\\\\\\\n"
-                        f"Destino: {destino_viagem}. Bairro/região: {bairro_destino or 'não especificado'}.\\\\\\\\\\\\\\\\n"
-                        f"Tipo de viagem: {tipo_viagem}. Hospedagem: {hospedagem}. Perfil: {perfil_viajante}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 NÍVEL DE RISCO GERAL DO DESTINO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas com a estimativa preventiva]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏙️ SOBRE A REGIÃO:\\\\\\\\\\\\\\\\n"
-                        f"[Visão geral preventiva sobre {destino_viagem}{' / ' + bairro_destino if bairro_destino else ''} — pontos fortes e cuidados gerais]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📱 GOLPES COMUNS CONTRA TURISTAS NESSE TIPO DE DESTINO:\\\\\\\\\\\\\\\\n"
-                        f"[2-4 golpes típicos com explicação de como funcionam e como evitar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚫 CUIDADOS ESPECÍFICOS PARA {perfil_viajante.upper()}:\\\\\\\\\\\\\\\\n"
-                        f"[Orientações direcionadas a esse perfil de viajante]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🗺️ ORIENTAÇÕES GERAIS DE DESLOCAMENTO:\\\\\\\\\\\\\\\\n"
-                        f"[Como se locomover com mais segurança nessa região — apps recomendados, transporte a evitar de madrugada, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏨 SEGURANÇA NA HOSPEDAGEM ({hospedagem}):\\\\\\\\\\\\\\\\n"
-                        f"[Cuidados específicos para esse tipo de hospedagem]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📲 APPS RECOMENDADOS PARA ESSE DESTINO:\\\\\\\\\\\\\\\\n"
-                        f"[Apps de transporte, mapas, tradução, emergência — relevantes para esse lugar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎒 CHECKLIST DE VIAGEM SEGURA:\\\\\\\\\\\\\\\\n"
-                        f"☑ [item 1]\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\n☑ [item 4]\\\\\\\\\\\\\\\\n☑ [item 5]"
+                        f"Crie um relatório preventivo de segurança para viagem.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Destino: {destino_viagem}. Bairro/região: {bairro_destino or 'não especificado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Tipo de viagem: {tipo_viagem}. Hospedagem: {hospedagem}. Perfil: {perfil_viajante}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 NÍVEL DE RISCO GERAL DO DESTINO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas com a estimativa preventiva]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏙️ SOBRE A REGIÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Visão geral preventiva sobre {destino_viagem}{' / ' + bairro_destino if bairro_destino else ''} — pontos fortes e cuidados gerais]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📱 GOLPES COMUNS CONTRA TURISTAS NESSE TIPO DE DESTINO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[2-4 golpes típicos com explicação de como funcionam e como evitar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚫 CUIDADOS ESPECÍFICOS PARA {perfil_viajante.upper()}:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Orientações direcionadas a esse perfil de viajante]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🗺️ ORIENTAÇÕES GERAIS DE DESLOCAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Como se locomover com mais segurança nessa região — apps recomendados, transporte a evitar de madrugada, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏨 SEGURANÇA NA HOSPEDAGEM ({hospedagem}):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Cuidados específicos para esse tipo de hospedagem]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📲 APPS RECOMENDADOS PARA ESSE DESTINO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Apps de transporte, mapas, tradução, emergência — relevantes para esse lugar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎒 CHECKLIST DE VIAGEM SEGURA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"☑ [item 1]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 4]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 5]"
                     )
                     res = guardiao_ia(prompt)
                     if res: st.session_state['res_viagem_guardi2'] = str(res)
@@ -20510,27 +20400,27 @@ elif st.session_state.etapa == "App":
             if bairro_casa.strip():
                 with st.spinner("Analisando sua residência..."):
                     prompt = (
-                        f"Crie uma análise preventiva de segurança residencial.\\\\\\\\\\\\\\\\n"
-                        f"Tipo de moradia: {tipo_moradia}. Bairro: {bairro_casa}.\\\\\\\\\\\\\\\\n"
-                        f"Portão: {tem_portao}. Câmeras: {tem_cameras}. Alarme: {tem_alarme}.\\\\\\\\\\\\\\\\n"
-                        f"Moradores: {moradores}. Pontos já identificados: {pontos_fracos or 'nenhum informado'}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 NÍVEL DE VULNERABILIDADE ESTIMADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas explicando a estimativa com base no que foi informado]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💡 ILUMINAÇÃO:\\\\\\\\\\\\\\\\n"
-                        f"[Recomendações específicas para {tipo_moradia}]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📷 CÂMERAS E MONITORAMENTO:\\\\\\\\\\\\\\\\n"
-                        f"[Sugestões de pontos estratégicos — considerando que {tem_cameras.lower()} já tem]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔒 FECHADURAS E TRANCAS:\\\\\\\\\\\\\\\\n"
-                        f"[Recomendações de tipo de fechadura e pontos de reforço]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🔔 ALARME E SENSORES:\\\\\\\\\\\\\\\\n"
-                        f"[Sugestões considerando que {tem_alarme.lower()} já tem]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚪 ROTINA DE CHEGADA E SAÍDA:\\\\\\\\\\\\\\\\n"
-                        f"[Hábitos seguros específicos para {moradores}]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 PONTOS VULNERÁVEIS A REVISAR:\\\\\\\\\\\\\\\\n"
-                        f"[Baseado no tipo de moradia e no que foi informado, incluindo: {pontos_fracos or 'pontos genéricos comuns a esse tipo de moradia'}]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 PLANO DE AÇÃO — PRIORIDADES:\\\\\\\\\\\\\\\\n"
-                        f"1. [ação mais urgente]\\\\\\\\\\\\\\\\n2. [ação 2]\\\\\\\\\\\\\\\\n3. [ação 3]\\\\\\\\\\\\\\\\n4. [ação 4]"
+                        f"Crie uma análise preventiva de segurança residencial.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Tipo de moradia: {tipo_moradia}. Bairro: {bairro_casa}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Portão: {tem_portao}. Câmeras: {tem_cameras}. Alarme: {tem_alarme}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Moradores: {moradores}. Pontos já identificados: {pontos_fracos or 'nenhum informado'}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 NÍVEL DE VULNERABILIDADE ESTIMADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas explicando a estimativa com base no que foi informado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💡 ILUMINAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Recomendações específicas para {tipo_moradia}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📷 CÂMERAS E MONITORAMENTO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Sugestões de pontos estratégicos — considerando que {tem_cameras.lower()} já tem]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔒 FECHADURAS E TRANCAS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Recomendações de tipo de fechadura e pontos de reforço]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🔔 ALARME E SENSORES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Sugestões considerando que {tem_alarme.lower()} já tem]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚪 ROTINA DE CHEGADA E SAÍDA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Hábitos seguros específicos para {moradores}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 PONTOS VULNERÁVEIS A REVISAR:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Baseado no tipo de moradia e no que foi informado, incluindo: {pontos_fracos or 'pontos genéricos comuns a esse tipo de moradia'}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 PLANO DE AÇÃO — PRIORIDADES:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"1. [ação mais urgente]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n2. [ação 2]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n3. [ação 3]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n4. [ação 4]"
                     )
                     res = guardiao_ia(prompt)
                     if res: st.session_state['res_residencia_guardi3'] = str(res)
@@ -20585,24 +20475,24 @@ elif st.session_state.etapa == "App":
             if situacao_infantil.strip():
                 with st.spinner("Preparando orientações..."):
                     prompt = (
-                        f"Crie orientações preventivas de segurança infantil para esta situação.\\\\\\\\\\\\\\\\n"
-                        f"Situação: {situacao_infantil}\\\\\\\\\\\\\\\\n"
-                        f"Idade: {idade_crianca}. Tem celular: {tem_celular}. Frequência: {frequencia}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 NÍVEL DE ATENÇÃO RECOMENDADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas explicando — considerando idade e contexto, sem alarmismo]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESSA SITUAÇÃO:\\\\\\\\\\\\\\\\n"
-                        f"[3-4 pontos relevantes para essa idade e contexto específico]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💬 CONVERSA COM A CRIANÇA/ADOLESCENTE:\\\\\\\\\\\\\\\\n"
-                        f"[Como conversar sobre isso de forma apropriada para a idade, sem assustar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📱 USO DE TECNOLOGIA PARA SEGURANÇA:\\\\\\\\\\\\\\\\n"
-                        f"[Apps de localização, como configurar, o que é apropriado para essa idade — considerando que {tem_celular.lower()} tem celular]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🎯 ORIENTAÇÕES PRÁTICAS PARA A CRIANÇA:\\\\\\\\\\\\\\\\n"
-                        f"[O que ensinar — sinais de alerta, o que fazer em situações específicas, palavra-código com a família, etc]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"👨‍👩‍👧 ORIENTAÇÕES PARA OS PAIS/RESPONSÁVEIS:\\\\\\\\\\\\\\\\n"
-                        f"[Rotina de checagem, combinados, plano B em caso de imprevisto]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 CHECKLIST DE PREPARO:\\\\\\\\\\\\\\\\n"
-                        f"☑ [item 1]\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\n☑ [item 4]"
+                        f"Crie orientações preventivas de segurança infantil para esta situação.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Situação: {situacao_infantil}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Idade: {idade_crianca}. Tem celular: {tem_celular}. Frequência: {frequencia}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 NÍVEL DE ATENÇÃO RECOMENDADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas explicando — considerando idade e contexto, sem alarmismo]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESSA SITUAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[3-4 pontos relevantes para essa idade e contexto específico]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💬 CONVERSA COM A CRIANÇA/ADOLESCENTE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Como conversar sobre isso de forma apropriada para a idade, sem assustar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📱 USO DE TECNOLOGIA PARA SEGURANÇA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Apps de localização, como configurar, o que é apropriado para essa idade — considerando que {tem_celular.lower()} tem celular]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🎯 ORIENTAÇÕES PRÁTICAS PARA A CRIANÇA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[O que ensinar — sinais de alerta, o que fazer em situações específicas, palavra-código com a família, etc]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"👨‍👩‍👧 ORIENTAÇÕES PARA OS PAIS/RESPONSÁVEIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Rotina de checagem, combinados, plano B em caso de imprevisto]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 CHECKLIST DE PREPARO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"☑ [item 1]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 4]"
                     )
                     res = guardiao_ia(prompt, "Você está orientando pais/responsáveis sobre segurança infantil. Seja acolhedor, nunca alarmista, e sempre apropriado para a idade da criança mencionada.")
                     if res: st.session_state['res_infantil_guardi4'] = str(res)
@@ -20660,24 +20550,24 @@ elif st.session_state.etapa == "App":
             if situacao_idoso.strip():
                 with st.spinner("Preparando orientações..."):
                     prompt = (
-                        f"Crie orientações preventivas de segurança para idosos.\\\\\\\\\\\\\\\\n"
-                        f"Situação: {situacao_idoso}\\\\\\\\\\\\\\\\n"
-                        f"Contexto: {contexto_idoso}. Uso de celular: {usa_celular_idoso}.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📊 NÍVEL DE ATENÇÃO RECOMENDADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\n"
-                        f"[1-2 linhas explicando — respeitoso com a autonomia do idoso, sem infantilizar]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESSA SITUAÇÃO:\\\\\\\\\\\\\\\\n"
-                        f"[3-4 pontos relevantes — incluindo golpes comuns contra idosos, como falsa central bancária, falso parente, etc, se aplicável]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📱 TECNOLOGIA DE APOIO:\\\\\\\\\\\\\\\\n"
-                        f"[Apps de localização compartilhada, botão de emergência, como configurar considerando o nível de uso de celular: {usa_celular_idoso}]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"💬 COMO CONVERSAR SOBRE ISSO:\\\\\\\\\\\\\\\\n"
-                        f"[Como abordar o tema com o idoso de forma respeitosa, preservando autonomia e dignidade]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🏠 AJUSTES NO AMBIENTE/ROTINA:\\\\\\\\\\\\\\\\n"
-                        f"[Sugestões práticas adaptadas ao contexto: {contexto_idoso}]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"🚨 GOLPES ESPECÍFICOS CONTRA IDOSOS A EXPLICAR PARA ELE(A):\\\\\\\\\\\\\\\\n"
-                        f"[2-3 golpes mais comuns direcionados a idosos, explicados de forma clara]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                        f"📋 CHECKLIST DE PREPARO:\\\\\\\\\\\\\\\\n"
-                        f"☑ [item 1]\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\n☑ [item 4]"
+                        f"Crie orientações preventivas de segurança para idosos.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Situação: {situacao_idoso}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"Contexto: {contexto_idoso}. Uso de celular: {usa_celular_idoso}.\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"FORMATO OBRIGATÓRIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📊 NÍVEL DE ATENÇÃO RECOMENDADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[1-2 linhas explicando — respeitoso com a autonomia do idoso, sem infantilizar]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESSA SITUAÇÃO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[3-4 pontos relevantes — incluindo golpes comuns contra idosos, como falsa central bancária, falso parente, etc, se aplicável]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📱 TECNOLOGIA DE APOIO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Apps de localização compartilhada, botão de emergência, como configurar considerando o nível de uso de celular: {usa_celular_idoso}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"💬 COMO CONVERSAR SOBRE ISSO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Como abordar o tema com o idoso de forma respeitosa, preservando autonomia e dignidade]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🏠 AJUSTES NO AMBIENTE/ROTINA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[Sugestões práticas adaptadas ao contexto: {contexto_idoso}]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"🚨 GOLPES ESPECÍFICOS CONTRA IDOSOS A EXPLICAR PARA ELE(A):\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"[2-3 golpes mais comuns direcionados a idosos, explicados de forma clara]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"📋 CHECKLIST DE PREPARO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                        f"☑ [item 1]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 2]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 3]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n☑ [item 4]"
                     )
                     res = guardiao_ia(prompt, "Você está orientando sobre segurança de idosos. Seja respeitoso com a autonomia e dignidade da pessoa idosa — nunca infantilize ou trate como incapaz.")
                     if res: st.session_state['res_idosos_guardi5'] = str(res)
@@ -20731,18 +20621,18 @@ elif st.session_state.etapa == "App":
             with st.spinner("Preparando explicação..."):
                 topico = descricao_extra if golpe_selecionado == "Outro (descrever)" and descricao_extra.strip() else golpe_selecionado
                 prompt = (
-                    f"Explique detalhadamente como funciona: {topico}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"FORMATO:\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📱 {topico.upper()}\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🎭 COMO FUNCIONA:\\\\\\\\\\\\\\\\n"
-                    f"[Explicação passo a passo de como os criminosos aplicam esse golpe]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🚩 SINAIS DE ALERTA:\\\\\\\\\\\\\\\\n"
-                    f"[3-5 sinais que indicam que você pode estar sendo vítima desse golpe]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"🛡️ COMO SE PROTEGER:\\\\\\\\\\\\\\\\n"
-                    f"[Ações preventivas concretas]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"⚡ O QUE FAZER SE JÁ CAIU NESSE GOLPE:\\\\\\\\\\\\\\\\n"
-                    f"[Passos imediatos — bancos, boletim de ocorrência, bloqueios]\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n"
-                    f"📞 CONTATOS ÚTEIS:\\\\\\\\\\\\\\\\n"
+                    f"Explique detalhadamente como funciona: {topico}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"FORMATO:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📱 {topico.upper()}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🎭 COMO FUNCIONA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Explicação passo a passo de como os criminosos aplicam esse golpe]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🚩 SINAIS DE ALERTA:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[3-5 sinais que indicam que você pode estar sendo vítima desse golpe]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"🛡️ COMO SE PROTEGER:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Ações preventivas concretas]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"⚡ O QUE FAZER SE JÁ CAIU NESSE GOLPE:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"[Passos imediatos — bancos, boletim de ocorrência, bloqueios]\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
+                    f"📞 CONTATOS ÚTEIS:\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"
                     f"[Telefones/canais relevantes para esse tipo de golpe — banco, polícia, etc]"
                 )
                 res = guardiao_ia(prompt)
@@ -20893,8 +20783,8 @@ elif st.session_state.etapa == "App":
 
         if st.session_state.historico_relatorios:
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            historico_txt = "\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n".join(
-                f"[{r['data']}] {r['tipo']} — {r['local']}\\\\\\\\\\\\\\\\n{r['conteudo']}\\\\\\\\\\\\\\\\n{'─'*40}"
+            historico_txt = "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n".join(
+                f"[{r['data']}] {r['tipo']} — {r['local']}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{r['conteudo']}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n{'─'*40}"
                 for r in st.session_state.historico_relatorios
             )
             st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt,
@@ -20917,6 +20807,7 @@ st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
     "</div>", unsafe_allow_html=True
 )
+
 
 
 
@@ -21035,7 +20926,7 @@ CURSOS = {
     "aulas": {
       "1": {
         "titulo": "A Mão como Mapa da Alma",
-        "conteudo": "A quiromancia — do grego 'kheir' (mão) e 'manteia' (adivinhação) — é uma das práticas divinatórias mais antigas da humanidade. Registros de seu uso datam de mais de 5.000 anos, encontrados em textos hindus, chineses, sumérios e egípcios. A premissa central é poderosa em sua simplicidade: a mão não mente. Enquanto o rosto pode sorrir quando o coração chora, a mão carrega impressa a história real de uma pessoa — seus padrões, suas tendências, suas forças e suas vulnerabilidades.\\\\\\\\n\\\\\\\\nHá dois conceitos fundamentais que todo estudante de quiromância precisa compreender antes de olhar para qualquer linha. O primeiro é a distinção entre mão dominante e mão recessiva. A mão dominante — aquela com a qual você escreve — revela o que você fez com o potencial que recebeu. É a mão do presente e do futuro construído. A mão recessiva — a outra — revela o que você nasceu sendo, seu potencial original, o que o destino traçou antes que você começasse a agir sobre ele. Quando as linhas das duas mãos diferem muito, isso indica uma pessoa que trabalhou ativamente para transformar sua natureza original. Quando são muito similares, indica alguém que ainda está vivendo dentro dos padrões com que nasceu.\\\\\\\\n\\\\\\\\nO segundo conceito é que a mão é um sistema vivo. Ao contrário do que muitos pensam, as linhas da mão mudam ao longo do tempo. Novos ramos aparecem, linhas se aprofundam ou enfraquecem, marcas surgem e desaparecem. Isso é documentado em estudos médicos: pessoas que passam por mudanças psicológicas profundas — terapia intensa, traumas, conversões espirituais — frequentemente apresentam alterações visíveis nas linhas dentro de dois a três anos.\\\\\\\\n\\\\\\\\nExistem quatro tipos básicos de mão, e identificá-los é o primeiro passo de qualquer leitura séria. A mão de Terra tem palma quadrada e dedos curtos — seu portador é prático, estável, confia nos sentidos e na realidade tangível, tende ao conservadorismo e à desconfiança do abstrato. A mão de Ar tem palma quadrada e dedos longos — seu portador é analítico, comunicativo, curioso, mas pode ser frio emocionalmente e excessivamente intelectual. A mão de Água tem palma retangular e dedos longos — seu portador é sensível, criativo, empático, profundamente emocional, mas pode ser instável e facilmente influenciável. A mão de Fogo tem palma retangular e dedos curtos — seu portador é apaixonado, espontâneo, carismático, impulsivo, e frequentemente impaciente.\\\\\\\\n\\\\\\\\nAntes de qualquer leitura, observe a mão inteira como um todo: sua textura (mãos macias indicam sensibilidade; mãos ásperas indicam pragmatismo), sua flexibilidade (mãos muito flexíveis indicam adaptabilidade mas também falta de firmeza; mãos rígidas indicam determinação mas também teimosia), sua temperatura (mãos frias frequentemente acompanham pessoas que guardam emoções; mãos quentes acompanham pessoas expansivas) e sua cor geral (palidez pode indicar retraimento emocional; vermelhidão intensa pode indicar excesso de paixão ou raiva contida).",
+        "conteudo": "A quiromancia — do grego 'kheir' (mão) e 'manteia' (adivinhação) — é uma das práticas divinatórias mais antigas da humanidade. Registros de seu uso datam de mais de 5.000 anos, encontrados em textos hindus, chineses, sumérios e egípcios. A premissa central é poderosa em sua simplicidade: a mão não mente. Enquanto o rosto pode sorrir quando o coração chora, a mão carrega impressa a história real de uma pessoa — seus padrões, suas tendências, suas forças e suas vulnerabilidades.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nHá dois conceitos fundamentais que todo estudante de quiromância precisa compreender antes de olhar para qualquer linha. O primeiro é a distinção entre mão dominante e mão recessiva. A mão dominante — aquela com a qual você escreve — revela o que você fez com o potencial que recebeu. É a mão do presente e do futuro construído. A mão recessiva — a outra — revela o que você nasceu sendo, seu potencial original, o que o destino traçou antes que você começasse a agir sobre ele. Quando as linhas das duas mãos diferem muito, isso indica uma pessoa que trabalhou ativamente para transformar sua natureza original. Quando são muito similares, indica alguém que ainda está vivendo dentro dos padrões com que nasceu.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO segundo conceito é que a mão é um sistema vivo. Ao contrário do que muitos pensam, as linhas da mão mudam ao longo do tempo. Novos ramos aparecem, linhas se aprofundam ou enfraquecem, marcas surgem e desaparecem. Isso é documentado em estudos médicos: pessoas que passam por mudanças psicológicas profundas — terapia intensa, traumas, conversões espirituais — frequentemente apresentam alterações visíveis nas linhas dentro de dois a três anos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nExistem quatro tipos básicos de mão, e identificá-los é o primeiro passo de qualquer leitura séria. A mão de Terra tem palma quadrada e dedos curtos — seu portador é prático, estável, confia nos sentidos e na realidade tangível, tende ao conservadorismo e à desconfiança do abstrato. A mão de Ar tem palma quadrada e dedos longos — seu portador é analítico, comunicativo, curioso, mas pode ser frio emocionalmente e excessivamente intelectual. A mão de Água tem palma retangular e dedos longos — seu portador é sensível, criativo, empático, profundamente emocional, mas pode ser instável e facilmente influenciável. A mão de Fogo tem palma retangular e dedos curtos — seu portador é apaixonado, espontâneo, carismático, impulsivo, e frequentemente impaciente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAntes de qualquer leitura, observe a mão inteira como um todo: sua textura (mãos macias indicam sensibilidade; mãos ásperas indicam pragmatismo), sua flexibilidade (mãos muito flexíveis indicam adaptabilidade mas também falta de firmeza; mãos rígidas indicam determinação mas também teimosia), sua temperatura (mãos frias frequentemente acompanham pessoas que guardam emoções; mãos quentes acompanham pessoas expansivas) e sua cor geral (palidez pode indicar retraimento emocional; vermelhidão intensa pode indicar excesso de paixão ou raiva contida).",
         "exemplo": "Imagine que você encontra duas pessoas com mãos completamente diferentes. A primeira tem palma quadrada, dedos curtos e mão rígida com textura áspera — você já sabe, antes de ver uma única linha, que está diante de alguém prático, desconfiado do abstrato, que precisa ver para crer. A segunda tem palma longa, dedos finos e flexíveis, mão suave e levemente fria — você já percebe uma pessoa sensível, criativa, mas que guarda muito dentro de si. A forma da mão já conta metade da história antes mesmo de você tocar nas linhas.",
         "aplicacao": "1. Peça para a pessoa estender ambas as mãos com a palma para cima, relaxadas. 2. Observe primeiro a forma geral — palma quadrada ou retangular? Dedos curtos ou longos? 3. Classifique o tipo de mão (Terra, Ar, Água ou Fogo). 4. Observe a textura, flexibilidade e temperatura. 5. Compare as duas mãos — são similares ou muito diferentes? 6. Apenas depois dessas observações comece a olhar para as linhas.",
         "exercicio": "Examine sua própria mão agora. Identifique: qual é o tipo da sua mão? A palma é quadrada ou retangular? Os dedos são curtos ou longos? A mão é flexível ou rígida? Fria ou quente? Depois faça o mesmo com a mão de alguém próximo e compare. O que as diferenças dizem sobre vocês dois?",
@@ -21043,7 +20934,7 @@ CURSOS = {
       },
       "2": {
         "titulo": "As Três Linhas Principais",
-        "conteudo": "Existem dezenas de linhas que podem aparecer na palma da mão, mas três delas são universais — presentes em praticamente todas as mãos humanas — e constituem a espinha dorsal de qualquer leitura quiromântica. São a Linha da Vida, a Linha da Cabeça e a Linha do Coração. Compreendê-las profundamente é mais valioso do que conhecer superficialmente todas as outras dezenas de linhas menores.\\\\\\\\n\\\\\\\\nA LINHA DA VIDA é a linha que curva ao redor do monte de Vênus (o monte carnoso na base do polegar). Contrariamente ao que o folclore popular diz, ela NÃO prevê quanto tempo você vai viver. Estudos feitos com centenas de pessoas que morreram precocemente mostraram linhas da vida longas; e pessoas que viveram mais de noventa anos foram encontradas com linhas curtas. O que ela realmente revela é a QUALIDADE e a INTENSIDADE da vida — sua vitalidade, energia, resistência física e emocional, e os grandes ciclos e mudanças da vida.\\\\\\\\n\\\\\\\\nUma linha da vida profunda, clara e bem marcada indica boa vitalidade, resistência e uma vida vivida com intensidade. Uma linha fraca, fragmentada ou com muitas interrupções indica períodos de baixa energia, problemas de saúde recorrentes ou fases de grande instabilidade. Quando a linha faz um arco amplo em direção ao centro da palma, indica uma pessoa expansiva, que ocupa espaço no mundo. Quando fica colada ao polegar com um arco pequeno, indica alguém mais contido, que tende a se retrair.\\\\\\\\n\\\\\\\\nBifurcações na linha da vida são muito significativas: uma bifurcação no início indica uma infância dividida entre dois mundos ou influências muito diferentes. Uma bifurcação no meio indica uma grande virada — mudança de país, carreira, ou identidade. Uma bifurcação no final indica uma fase de dispersão de energia na velhice ou, em algumas tradições, a possibilidade de dois caminhos igualmente fortes se abrindo.\\\\\\\\n\\\\\\\\nA LINHA DA CABEÇA começa na mesma região que a linha da vida (entre o polegar e o indicador) e atravessa a palma horizontalmente. Ela revela o estilo de pensamento, a forma como a mente processa a realidade, a capacidade intelectual e a relação entre razão e emoção.\\\\\\\\n\\\\\\\\nSe a linha da cabeça começa unida à linha da vida por um trecho antes de se separar, indica uma pessoa cautelosa que precisa de segurança antes de agir — quanto mais longo o trecho unido, maior a influência da família e do passado nas decisões. Se começa separada da linha da vida, indica independência, coragem para agir sem precisar de aprovação.\\\\\\\\n\\\\\\\\nUma linha da cabeça reta indica pensamento lógico, pragmático e linear. Uma linha que desce em direção ao monte da Lua (na parte inferior da palma) indica imaginação fértil, pensamento criativo e poético, mas também tendência ao devaneio. Quanto mais a linha desce, mais pronunciada essa característica.\\\\\\\\n\\\\\\\\nA LINHA DO CORAÇÃO corre horizontalmente na parte superior da palma, sob os dedos. Ela revela a vida emocional, a capacidade de amar, a forma como a pessoa se relaciona afetivamente e o que ela precisa para se sentir amada.\\\\\\\\n\\\\\\\\nUma linha do coração que termina sob o dedo indicador indica um amor idealista, que busca a perfeição no parceiro e às vezes ama mais o ideal do que a pessoa real. Que termina sob o dedo médio indica uma pessoa que ama com possessividade e intensidade. Que termina entre os dois indica equilíbrio entre idealismo e realismo.\\\\\\\\n\\\\\\\\nUma linha profunda e clara indica intensa vida emocional. Uma linha com muitas pequenas ramificações indica que a pessoa já amou muito e com muitas pessoas diferentes. Uma linha encadeada (que parece uma corrente) indica insegurança emocional profunda, dificuldade de confiar.",
+        "conteudo": "Existem dezenas de linhas que podem aparecer na palma da mão, mas três delas são universais — presentes em praticamente todas as mãos humanas — e constituem a espinha dorsal de qualquer leitura quiromântica. São a Linha da Vida, a Linha da Cabeça e a Linha do Coração. Compreendê-las profundamente é mais valioso do que conhecer superficialmente todas as outras dezenas de linhas menores.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LINHA DA VIDA é a linha que curva ao redor do monte de Vênus (o monte carnoso na base do polegar). Contrariamente ao que o folclore popular diz, ela NÃO prevê quanto tempo você vai viver. Estudos feitos com centenas de pessoas que morreram precocemente mostraram linhas da vida longas; e pessoas que viveram mais de noventa anos foram encontradas com linhas curtas. O que ela realmente revela é a QUALIDADE e a INTENSIDADE da vida — sua vitalidade, energia, resistência física e emocional, e os grandes ciclos e mudanças da vida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nUma linha da vida profunda, clara e bem marcada indica boa vitalidade, resistência e uma vida vivida com intensidade. Uma linha fraca, fragmentada ou com muitas interrupções indica períodos de baixa energia, problemas de saúde recorrentes ou fases de grande instabilidade. Quando a linha faz um arco amplo em direção ao centro da palma, indica uma pessoa expansiva, que ocupa espaço no mundo. Quando fica colada ao polegar com um arco pequeno, indica alguém mais contido, que tende a se retrair.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nBifurcações na linha da vida são muito significativas: uma bifurcação no início indica uma infância dividida entre dois mundos ou influências muito diferentes. Uma bifurcação no meio indica uma grande virada — mudança de país, carreira, ou identidade. Uma bifurcação no final indica uma fase de dispersão de energia na velhice ou, em algumas tradições, a possibilidade de dois caminhos igualmente fortes se abrindo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LINHA DA CABEÇA começa na mesma região que a linha da vida (entre o polegar e o indicador) e atravessa a palma horizontalmente. Ela revela o estilo de pensamento, a forma como a mente processa a realidade, a capacidade intelectual e a relação entre razão e emoção.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSe a linha da cabeça começa unida à linha da vida por um trecho antes de se separar, indica uma pessoa cautelosa que precisa de segurança antes de agir — quanto mais longo o trecho unido, maior a influência da família e do passado nas decisões. Se começa separada da linha da vida, indica independência, coragem para agir sem precisar de aprovação.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nUma linha da cabeça reta indica pensamento lógico, pragmático e linear. Uma linha que desce em direção ao monte da Lua (na parte inferior da palma) indica imaginação fértil, pensamento criativo e poético, mas também tendência ao devaneio. Quanto mais a linha desce, mais pronunciada essa característica.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LINHA DO CORAÇÃO corre horizontalmente na parte superior da palma, sob os dedos. Ela revela a vida emocional, a capacidade de amar, a forma como a pessoa se relaciona afetivamente e o que ela precisa para se sentir amada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nUma linha do coração que termina sob o dedo indicador indica um amor idealista, que busca a perfeição no parceiro e às vezes ama mais o ideal do que a pessoa real. Que termina sob o dedo médio indica uma pessoa que ama com possessividade e intensidade. Que termina entre os dois indica equilíbrio entre idealismo e realismo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nUma linha profunda e clara indica intensa vida emocional. Uma linha com muitas pequenas ramificações indica que a pessoa já amou muito e com muitas pessoas diferentes. Uma linha encadeada (que parece uma corrente) indica insegurança emocional profunda, dificuldade de confiar.",
         "exemplo": "Imagine uma pessoa cuja linha da cabeça desce acentuadamente em direção à parte inferior da palma, enquanto a linha do coração tem muitas ramificações finas. Você já consegue ler: é uma pessoa de imaginação muito fértil (linha da cabeça descendente), que amou muito e com intensidade em várias ocasiões (ramificações na linha do coração), mas que provavelmente mistura muito amor com fantasia — ama a pessoa que imagina que o outro é tanto quanto ama o que o outro realmente é.",
         "aplicacao": "1. Identifique as três linhas principais. 2. Para cada uma, observe: profundidade (clara ou fraca?), comprimento (longa ou curta?), direção (reta ou curva?), e marcas (bifurcações, interrupções, ilhas). 3. Leia cada linha individualmente. 4. Depois integre as três numa narrativa — como a mente (linha da cabeça) e o coração (linha do coração) se relacionam? A vitalidade (linha da vida) suporta o estilo de vida que a pessoa leva?",
         "exercicio": "Examine as três linhas principais da sua mão dominante. Desenhe-as num papel. Para cada uma, responda: ela é profunda ou fraca? Longa ou curta? Tem interrupções ou bifurcações? Onde termina? Compare com a mão recessiva — o que mudou desde que você nasceu?",
@@ -21051,7 +20942,7 @@ CURSOS = {
       },
       "3": {
         "titulo": "Os Montes da Mão",
-        "conteudo": "Os montes são as elevações carnosas encontradas na palma da mão. Cada monte corresponde a um planeta da astrologia clássica e revela aspectos específicos da personalidade. Um monte desenvolvido (elevado e firme) indica que as qualidades daquele planeta estão presentes e ativas. Um monte plano ou afundado indica ausência ou repressão dessas qualidades. Um monte excessivamente desenvolvido pode indicar excesso ou compulsão.\\\\\\\\n\\\\\\\\nO MONTE DE JÚPITER fica na base do dedo indicador. Revela ambição, liderança, espiritualidade e desejo de reconhecimento. Bem desenvolvido: pessoa ambiciosa, com senso de missão, carismática e com vocação para liderar. Plano: falta de ambição, dificuldade de assumir responsabilidades. Excessivo: arrogância, necessidade compulsiva de poder e reconhecimento.\\\\\\\\n\\\\\\\\nO MONTE DE SATURNO fica na base do dedo médio. Revela prudência, seriedade, responsabilidade e capacidade de suportar dificuldades. Bem desenvolvido: pessoa séria, confiável, disciplinada, com profunda consciência moral. Plano: irresponsabilidade, fuga das consequências. Excessivo: pessimismo crônico, tendência à depressão e ao isolamento.\\\\\\\\n\\\\\\\\nO MONTE DE APOLO (ou Sol) fica na base do dedo anelar. Revela criatividade, gosto estético, desejo de brilhar e amor pela beleza. Bem desenvolvido: pessoa criativa, com bom gosto, que tem facilidade de ser amada e admirada. Plano: falta de criatividade, dificuldade de expressar-se. Excessivo: vaidade, necessidade excessiva de atenção e admiração.\\\\\\\\n\\\\\\\\nO MONTE DE MERCÚRIO fica na base do dedo mínimo. Revela comunicação, inteligência, capacidade de negociação e habilidade com palavras e negócios. Bem desenvolvido: pessoa eloquente, inteligente, boa negociadora. Plano: dificuldade de comunicação, timidez. Excessivo: tendência à desonestidade, manipulação através das palavras.\\\\\\\\n\\\\\\\\nO MONTE DE VÊNUS fica na base do polegar, circundado pela linha da vida. Revela capacidade de amar, sensualidade, vitalidade física e amor pela vida. Bem desenvolvido: pessoa amorosa, sensual, cheia de vida e energia. Plano: frieza emocional, baixa libido, dificuldade de se conectar. Excessivo: sensualidade compulsiva, excesso de paixões.\\\\\\\\n\\\\\\\\nO MONTE DA LUA fica na parte inferior da palma, no lado oposto ao polegar. Revela imaginação, intuição, espiritualidade e conexão com o inconsciente. Bem desenvolvido: pessoa intuitiva, criativa, com rica vida interior e tendência ao misticismo. Plano: falta de imaginação, excesso de materialismo. Excessivo: tendência a fugir da realidade, fantasias excessivas.\\\\\\\\n\\\\\\\\nO MONTE DE MARTE se divide em dois: Marte Positivo (entre o polegar e o monte de Júpiter) e Marte Negativo (na parte lateral da palma, entre o monte da Lua e o monte de Mercúrio). Juntos revelam coragem, resistência, capacidade de luta e controle emocional sob pressão.",
+        "conteudo": "Os montes são as elevações carnosas encontradas na palma da mão. Cada monte corresponde a um planeta da astrologia clássica e revela aspectos específicos da personalidade. Um monte desenvolvido (elevado e firme) indica que as qualidades daquele planeta estão presentes e ativas. Um monte plano ou afundado indica ausência ou repressão dessas qualidades. Um monte excessivamente desenvolvido pode indicar excesso ou compulsão.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DE JÚPITER fica na base do dedo indicador. Revela ambição, liderança, espiritualidade e desejo de reconhecimento. Bem desenvolvido: pessoa ambiciosa, com senso de missão, carismática e com vocação para liderar. Plano: falta de ambição, dificuldade de assumir responsabilidades. Excessivo: arrogância, necessidade compulsiva de poder e reconhecimento.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DE SATURNO fica na base do dedo médio. Revela prudência, seriedade, responsabilidade e capacidade de suportar dificuldades. Bem desenvolvido: pessoa séria, confiável, disciplinada, com profunda consciência moral. Plano: irresponsabilidade, fuga das consequências. Excessivo: pessimismo crônico, tendência à depressão e ao isolamento.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DE APOLO (ou Sol) fica na base do dedo anelar. Revela criatividade, gosto estético, desejo de brilhar e amor pela beleza. Bem desenvolvido: pessoa criativa, com bom gosto, que tem facilidade de ser amada e admirada. Plano: falta de criatividade, dificuldade de expressar-se. Excessivo: vaidade, necessidade excessiva de atenção e admiração.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DE MERCÚRIO fica na base do dedo mínimo. Revela comunicação, inteligência, capacidade de negociação e habilidade com palavras e negócios. Bem desenvolvido: pessoa eloquente, inteligente, boa negociadora. Plano: dificuldade de comunicação, timidez. Excessivo: tendência à desonestidade, manipulação através das palavras.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DE VÊNUS fica na base do polegar, circundado pela linha da vida. Revela capacidade de amar, sensualidade, vitalidade física e amor pela vida. Bem desenvolvido: pessoa amorosa, sensual, cheia de vida e energia. Plano: frieza emocional, baixa libido, dificuldade de se conectar. Excessivo: sensualidade compulsiva, excesso de paixões.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DA LUA fica na parte inferior da palma, no lado oposto ao polegar. Revela imaginação, intuição, espiritualidade e conexão com o inconsciente. Bem desenvolvido: pessoa intuitiva, criativa, com rica vida interior e tendência ao misticismo. Plano: falta de imaginação, excesso de materialismo. Excessivo: tendência a fugir da realidade, fantasias excessivas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MONTE DE MARTE se divide em dois: Marte Positivo (entre o polegar e o monte de Júpiter) e Marte Negativo (na parte lateral da palma, entre o monte da Lua e o monte de Mercúrio). Juntos revelam coragem, resistência, capacidade de luta e controle emocional sob pressão.",
         "exemplo": "Uma mão com monte de Vênus muito desenvolvido, monte de Apolo proeminente e monte da Lua elevado descreve uma pessoa apaixonada e sensual (Vênus), criativa e que ama a beleza (Apolo), com forte vida interior e intuição aguçada (Lua). Se o monte de Saturno for plano nessa mesma mão, você tem alguém que vive intensamente mas com dificuldade de colocar limites e assumir responsabilidades práticas.",
         "aplicacao": "1. Observe cada monte individualmente, pressionando suavemente para sentir se é firme, mole ou plano. 2. Classifique cada um: desenvolvido, plano ou excessivo. 3. Identifique os dois ou três montes mais proeminentes — eles revelam as energias dominantes da pessoa. 4. Integre essa leitura com as linhas já estudadas.",
         "exercicio": "Observe os montes da sua mão. Quais são os dois mais desenvolvidos? Quais são os mais planos? Escreva uma frase sobre o que isso diz sobre você. Depois compare com alguém próximo.",
@@ -21059,7 +20950,7 @@ CURSOS = {
       },
       "4": {
         "titulo": "As Linhas Secundárias",
-        "conteudo": "Além das três linhas principais, existem linhas secundárias que aprofundam a leitura de forma significativa. As mais importantes são a Linha do Destino, a Linha do Sol, a Linha do Mercúrio e as Linhas de Afeto.\\\\\\\\n\\\\\\\\nA LINHA DO DESTINO (ou Linha de Saturno) sobe verticalmente pelo centro da palma em direção ao dedo médio. Ela não está presente em todas as mãos — e isso por si só já é uma informação. Quando ausente, indica uma pessoa que escreve seu próprio caminho sem um destino claramente definido, vivendo por impulso e escolhas momentâneas. Quando presente, indica que a pessoa tem um senso de missão ou direção, que sua vida segue um fio condutor reconhecível.\\\\\\\\n\\\\\\\\nO ponto de origem da linha do destino é crucial: quando começa na base da palma (perto do pulso), indica que o senso de propósito é precoce e vem de dentro. Quando começa na linha da vida, indica que a carreira ou missão foi fortemente moldada pela família. Quando começa no monte da Lua, indica uma carreira ou direção que depende do público, da aprovação alheia ou de colaborações — comum em artistas, políticos e professores.\\\\\\\\n\\\\\\\\nInterrupções na linha do destino indicam mudanças significativas de direção na vida. Uma linha que termina antes de chegar ao dedo médio indica que a pessoa para de seguir seu destino em algum momento — por escolha, medo ou circunstâncias.\\\\\\\\n\\\\\\\\nA LINHA DO SOL (ou Linha de Apolo) sobe em direção ao dedo anelar. Indica sucesso, reconhecimento, talento criativo e capacidade de brilhar publicamente. Quando presente e clara, indica que a pessoa tem potencial para ser reconhecida e admirada em sua área. Quando ausente, não significa fracasso — apenas que o sucesso virá de forma mais privada, sem reconhecimento público amplo.\\\\\\\\n\\\\\\\\nAs LINHAS DE AFETO (ou Linhas de União) são as linhas horizontais que aparecem na lateral da mão, abaixo do dedo mínimo. Cada linha marcada pode indicar um relacionamento significativo. O que importa não é a quantidade, mas a qualidade: uma linha profunda e clara indica um relacionamento duradouro e profundo; uma linha fraca ou fragmentada indica uma relação que começou mas não se consolidou; uma bifurcação no início pode indicar dificuldade para comprometer-se; uma bifurcação no final pode indicar separação.\\\\\\\\n\\\\\\\\nA LINHA DE MERCÚRIO (ou Linha de Saúde) desce diagonalmente do monte de Mercúrio em direção à base da palma. Paradoxalmente, quanto mais fraca ou ausente essa linha, melhor — indica saúde robusta e estável. Quando presente e marcada, pode indicar sensibilidade do sistema nervoso ou digestivo, ou uma mente que trabalha intensamente e precisa de mais cuidado com o corpo.",
+        "conteudo": "Além das três linhas principais, existem linhas secundárias que aprofundam a leitura de forma significativa. As mais importantes são a Linha do Destino, a Linha do Sol, a Linha do Mercúrio e as Linhas de Afeto.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LINHA DO DESTINO (ou Linha de Saturno) sobe verticalmente pelo centro da palma em direção ao dedo médio. Ela não está presente em todas as mãos — e isso por si só já é uma informação. Quando ausente, indica uma pessoa que escreve seu próprio caminho sem um destino claramente definido, vivendo por impulso e escolhas momentâneas. Quando presente, indica que a pessoa tem um senso de missão ou direção, que sua vida segue um fio condutor reconhecível.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ponto de origem da linha do destino é crucial: quando começa na base da palma (perto do pulso), indica que o senso de propósito é precoce e vem de dentro. Quando começa na linha da vida, indica que a carreira ou missão foi fortemente moldada pela família. Quando começa no monte da Lua, indica uma carreira ou direção que depende do público, da aprovação alheia ou de colaborações — comum em artistas, políticos e professores.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nInterrupções na linha do destino indicam mudanças significativas de direção na vida. Uma linha que termina antes de chegar ao dedo médio indica que a pessoa para de seguir seu destino em algum momento — por escolha, medo ou circunstâncias.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LINHA DO SOL (ou Linha de Apolo) sobe em direção ao dedo anelar. Indica sucesso, reconhecimento, talento criativo e capacidade de brilhar publicamente. Quando presente e clara, indica que a pessoa tem potencial para ser reconhecida e admirada em sua área. Quando ausente, não significa fracasso — apenas que o sucesso virá de forma mais privada, sem reconhecimento público amplo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs LINHAS DE AFETO (ou Linhas de União) são as linhas horizontais que aparecem na lateral da mão, abaixo do dedo mínimo. Cada linha marcada pode indicar um relacionamento significativo. O que importa não é a quantidade, mas a qualidade: uma linha profunda e clara indica um relacionamento duradouro e profundo; uma linha fraca ou fragmentada indica uma relação que começou mas não se consolidou; uma bifurcação no início pode indicar dificuldade para comprometer-se; uma bifurcação no final pode indicar separação.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LINHA DE MERCÚRIO (ou Linha de Saúde) desce diagonalmente do monte de Mercúrio em direção à base da palma. Paradoxalmente, quanto mais fraca ou ausente essa linha, melhor — indica saúde robusta e estável. Quando presente e marcada, pode indicar sensibilidade do sistema nervoso ou digestivo, ou uma mente que trabalha intensamente e precisa de mais cuidado com o corpo.",
         "exemplo": "Uma pessoa com linha do destino saindo do monte da Lua, linha do Sol presente e forte, e linhas de afeto com bifurcações no final tem uma história bastante legível: é alguém cuja carreira depende do público (monte da Lua), que tem talento reconhecido (linha do Sol), mas cujos relacionamentos tendem a chegar a crises ou separações (bifurcações nas linhas de afeto).",
         "aplicacao": "1. Procure a linha do destino — ela existe? De onde parte? Tem interrupções? 2. Procure a linha do Sol — está presente? É forte ou fraca? 3. Observe as linhas de afeto na lateral da mão — quantas são marcadas? Qual é a qualidade de cada uma? 4. Integre tudo numa leitura única.",
         "exercicio": "Examine se você tem linha do destino. Se sim, de onde ela parte? Isso ressoa com sua experiência de vida — você sente que tem um propósito claro? Se não tem a linha, isso também faz sentido para você?",
@@ -21067,7 +20958,7 @@ CURSOS = {
       },
       "5": {
         "titulo": "Os Dedos e suas Falanges",
-        "conteudo": "Os dedos são uma dimensão muitas vezes negligenciada da quiromância, mas revelam aspectos da personalidade tão importantes quanto as linhas. Cada dedo corresponde a um planeta e a uma área da vida, e cada falange (segmento do dedo) revela um nível diferente de expressão dessa energia.\\\\\\\\n\\\\\\\\nO POLEGAR revela força de vontade e lógica — a capacidade de transformar intenção em ação. Um polegar longo indica grande determinação e lógica forte. Um polegar curto indica impulsividade e dificuldade de sustentar esforços prolongados. Um polegar muito rígido indica teimosia e inflexibilidade. Um polegar muito flexível (que dobra muito para trás) indica adaptabilidade e generosidade, mas também facilidade para ceder demais.\\\\\\\\n\\\\\\\\nO INDICADOR (Júpiter) revela ambição, autoconfiança e relação com a autoridade. Quando é mais longo que o anelar, indica uma personalidade dominante, com forte necessidade de liderança e controle. Quando é mais curto que o anelar, indica introversão e tendência a deixar os outros liderarem.\\\\\\\\n\\\\\\\\nO DEDO MÉDIO (Saturno) revela equilíbrio, responsabilidade e senso de dever. É sempre o mais longo — quando é desproporcional mente longo em relação aos outros, indica uma personalidade séria e introspectiva em excesso. Quando é quase do mesmo tamanho que os vizinhos, indica alguém que não se leva demasiadamente a sério.\\\\\\\\n\\\\\\\\nO ANELAR (Apolo) revela criatividade, senso estético e necessidade de reconhecimento. Quando é mais longo que o indicador, indica uma personalidade criativa, voltada para as artes e para a expressão pessoal, que valoriza mais criar do que liderar. Homens com anelar mais longo que o indicador foram estudados em pesquisas que os associam a maior exposição a testosterona no útero e a personalidades mais assertivas e competitivas.\\\\\\\\n\\\\\\\\nO MÍNIMO (Mercúrio) revela comunicação, inteligência e habilidade social. Um dedo mínimo longo (que ultrapassa a primeira articulação do anelar) indica eloquência, habilidade com palavras e facilidade de convencer. Um mínimo curto pode indicar dificuldade de expressão verbal ou timidez social.\\\\\\\\n\\\\\\\\nAs FALANGES de cada dedo dividem-se em três: a superior (ponta do dedo) representa o aspecto mental ou espiritual daquela energia; a média representa o aspecto prático; e a inferior (próxima à palma) representa o aspecto material ou instintivo. Uma falange mais desenvolvida (mais carnuda ou longa) indica que aquele nível é dominante.",
+        "conteudo": "Os dedos são uma dimensão muitas vezes negligenciada da quiromância, mas revelam aspectos da personalidade tão importantes quanto as linhas. Cada dedo corresponde a um planeta e a uma área da vida, e cada falange (segmento do dedo) revela um nível diferente de expressão dessa energia.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO POLEGAR revela força de vontade e lógica — a capacidade de transformar intenção em ação. Um polegar longo indica grande determinação e lógica forte. Um polegar curto indica impulsividade e dificuldade de sustentar esforços prolongados. Um polegar muito rígido indica teimosia e inflexibilidade. Um polegar muito flexível (que dobra muito para trás) indica adaptabilidade e generosidade, mas também facilidade para ceder demais.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO INDICADOR (Júpiter) revela ambição, autoconfiança e relação com a autoridade. Quando é mais longo que o anelar, indica uma personalidade dominante, com forte necessidade de liderança e controle. Quando é mais curto que o anelar, indica introversão e tendência a deixar os outros liderarem.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO DEDO MÉDIO (Saturno) revela equilíbrio, responsabilidade e senso de dever. É sempre o mais longo — quando é desproporcional mente longo em relação aos outros, indica uma personalidade séria e introspectiva em excesso. Quando é quase do mesmo tamanho que os vizinhos, indica alguém que não se leva demasiadamente a sério.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ANELAR (Apolo) revela criatividade, senso estético e necessidade de reconhecimento. Quando é mais longo que o indicador, indica uma personalidade criativa, voltada para as artes e para a expressão pessoal, que valoriza mais criar do que liderar. Homens com anelar mais longo que o indicador foram estudados em pesquisas que os associam a maior exposição a testosterona no útero e a personalidades mais assertivas e competitivas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MÍNIMO (Mercúrio) revela comunicação, inteligência e habilidade social. Um dedo mínimo longo (que ultrapassa a primeira articulação do anelar) indica eloquência, habilidade com palavras e facilidade de convencer. Um mínimo curto pode indicar dificuldade de expressão verbal ou timidez social.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs FALANGES de cada dedo dividem-se em três: a superior (ponta do dedo) representa o aspecto mental ou espiritual daquela energia; a média representa o aspecto prático; e a inferior (próxima à palma) representa o aspecto material ou instintivo. Uma falange mais desenvolvida (mais carnuda ou longa) indica que aquele nível é dominante.",
         "exemplo": "Uma pessoa com polegar longo e rígido, indicador mais longo que o anelar e dedo mínimo comprido tem um perfil bastante definido: forte vontade e lógica (polegar longo), personalidade dominante que precisa liderar (indicador comprido), e grande facilidade de comunicação e persuasão (mínimo longo). É o perfil clássico de um líder nato com habilidade para convencer e executar.",
         "aplicacao": "1. Compare o comprimento dos dedos entre si. 2. Observe a flexibilidade do polegar. 3. Compare indicador e anelar — qual é maior? 4. Observe o comprimento do mínimo em relação ao anelar. 5. Para cada dedo, observe qual das três falanges é mais desenvolvida.",
         "exercicio": "Olhe para seus dedos agora. Indicador ou anelar — qual é maior? O que isso diz sobre você? Seu polegar é rígido ou flexível? Isso ressoa com sua forma de ser?",
@@ -21075,7 +20966,7 @@ CURSOS = {
       },
       "6": {
         "titulo": "Marcas Especiais na Mão",
-        "conteudo": "Além das linhas e montes, existem marcas especiais que aparecem na palma e nos dedos, cada uma com significado específico. Conhecê-las aprofunda enormemente a leitura.\\\\\\\\n\\\\\\\\nO ANEL DE SALOMÃO é um arco ou linha que aparece na base do dedo indicador, circundando o monte de Júpiter. É uma das marcas mais valorizadas na quiromância — indica sabedoria, capacidade de liderança espiritual, tendência natural para o ensino e uma profunda intuição sobre as pessoas. Pessoas com esse anel raramente conseguem ser enganadas por muito tempo.\\\\\\\\n\\\\\\\\nO ANEL DE SATURNO é uma linha que circunda a base do dedo médio. Ao contrário do Anel de Salomão, é considerado uma marca desafiadora — indica tendência ao isolamento, dificuldade de se conectar com os outros, e em casos extremos, uma tendência à melancolia profunda.\\\\\\\\n\\\\\\\\nA CRUZ MÍSTICA aparece no centro da palma, na área chamada quadrângulo (entre as linhas da cabeça e do coração), sem tocar em nenhuma das linhas principais. É uma das marcas mais raras e valorizadas — indica forte intuição, interesse genuíno pelo oculto e místico, e frequentemente aparece em pessoas com dons mediúnicos ou grande sensibilidade espiritual.\\\\\\\\n\\\\\\\\nO TRIÂNGULO formado pelo encontro de três linhas em qualquer parte da mão é considerado uma marca de talento e proteção naquela área específica. Um triângulo sobre o monte de Mercúrio indica talento para negócios e comunicação. Sobre o monte de Apolo, talento artístico protegido.\\\\\\\\n\\\\\\\\nA ESTRELA é um conjunto de pequenas linhas que se cruzam formando uma estrela em qualquer ponto da mão. Sobre os montes, geralmente indica um evento súbito e poderoso relacionado àquele planeta — pode ser positivo ou negativo dependendo do contexto. Uma estrela sobre a linha da vida pode indicar um evento físico intenso.\\\\\\\\n\\\\\\\\nAS ILHAS são pequenas formações ovais dentro de uma linha, onde a linha se divide e depois se une novamente. Em qualquer linha que apareçam, indicam um período de dispersão, confusão ou dupla influência. Na linha da cabeça, podem indicar períodos de confusão mental ou problemas nervosos. Na linha do coração, períodos de conflito emocional.\\\\\\\\n\\\\\\\\nAS GRADES são conjuntos de linhas que se cruzam formando uma grade sobre um monte. Geralmente indicam bloqueio ou excesso de energia naquele monte — a energia existe mas está travada ou sendo mal direcionada.",
+        "conteudo": "Além das linhas e montes, existem marcas especiais que aparecem na palma e nos dedos, cada uma com significado específico. Conhecê-las aprofunda enormemente a leitura.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ANEL DE SALOMÃO é um arco ou linha que aparece na base do dedo indicador, circundando o monte de Júpiter. É uma das marcas mais valorizadas na quiromância — indica sabedoria, capacidade de liderança espiritual, tendência natural para o ensino e uma profunda intuição sobre as pessoas. Pessoas com esse anel raramente conseguem ser enganadas por muito tempo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ANEL DE SATURNO é uma linha que circunda a base do dedo médio. Ao contrário do Anel de Salomão, é considerado uma marca desafiadora — indica tendência ao isolamento, dificuldade de se conectar com os outros, e em casos extremos, uma tendência à melancolia profunda.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA CRUZ MÍSTICA aparece no centro da palma, na área chamada quadrângulo (entre as linhas da cabeça e do coração), sem tocar em nenhuma das linhas principais. É uma das marcas mais raras e valorizadas — indica forte intuição, interesse genuíno pelo oculto e místico, e frequentemente aparece em pessoas com dons mediúnicos ou grande sensibilidade espiritual.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO TRIÂNGULO formado pelo encontro de três linhas em qualquer parte da mão é considerado uma marca de talento e proteção naquela área específica. Um triângulo sobre o monte de Mercúrio indica talento para negócios e comunicação. Sobre o monte de Apolo, talento artístico protegido.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA ESTRELA é um conjunto de pequenas linhas que se cruzam formando uma estrela em qualquer ponto da mão. Sobre os montes, geralmente indica um evento súbito e poderoso relacionado àquele planeta — pode ser positivo ou negativo dependendo do contexto. Uma estrela sobre a linha da vida pode indicar um evento físico intenso.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS ILHAS são pequenas formações ovais dentro de uma linha, onde a linha se divide e depois se une novamente. Em qualquer linha que apareçam, indicam um período de dispersão, confusão ou dupla influência. Na linha da cabeça, podem indicar períodos de confusão mental ou problemas nervosos. Na linha do coração, períodos de conflito emocional.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS GRADES são conjuntos de linhas que se cruzam formando uma grade sobre um monte. Geralmente indicam bloqueio ou excesso de energia naquele monte — a energia existe mas está travada ou sendo mal direcionada.",
         "exemplo": "Uma pessoa com Anel de Salomão no indicador e Cruz Mística no centro da palma é alguém com marcas raras que indicam forte intuição humana (Anel de Salomão) e genuína sensibilidade para o oculto e espiritual (Cruz Mística). Se essa pessoa também tiver o monte da Lua bem desenvolvido, você está diante de alguém com capacidades mediúnicas ou intuitivas fora do comum.",
         "aplicacao": "1. Examine o centro da palma com boa iluminação — existe uma Cruz Mística? 2. Observe a base de cada dedo — há linhas circulares? 3. Procure triângulos formados pela confluência de linhas. 4. Observe se existem ilhas nas linhas principais.",
         "exercicio": "Com boa iluminação e uma lupa se necessário, examine sua mão em busca de marcas especiais. Anote todas que encontrar. Alguma ressoa com o que você sabe sobre si mesmo?",
@@ -21083,7 +20974,7 @@ CURSOS = {
       },
       "7": {
         "titulo": "Leitura Integrada — Juntando Tudo",
-        "conteudo": "Uma leitura quiromântica completa não é uma soma de partes isoladas — é uma narrativa integrada onde cada elemento confirma, contradiz ou enriquece os outros. O leitor experiente não lê linha por linha como um checklist; ele olha para a mão como um todo e deixa uma história emergir.\\\\\\\\n\\\\\\\\nO processo de uma leitura integrada começa com a impressão geral: qual é o primeiro sentimento que a mão transmite? Há harmonia entre os elementos ou existe tensão visível — como uma linha do coração profunda e intensa combinada com uma linha da cabeça muito racional e reta, indicando uma guerra interna entre coração e razão?\\\\\\\\n\\\\\\\\nDepois vêm os elementos dominantes: quais são os dois ou três aspectos mais proeminentes? Um monte de Vênus exuberante com linhas de afeto fragmentadas conta uma história muito específica — alguém com enorme capacidade de amar, mas cuja história amorosa foi marcada por rupturas e recomeços.\\\\\\\\n\\\\\\\\nEm seguida, as contradições internas: onde a mão mostra tensão? Uma linha da cabeça que desce muito (imaginação fértil) combinada com linha do destino partindo do monte da Lua (carreira dependente do público) e monte de Mercúrio desenvolvido (comunicação) aponta para um escritor, roteirista ou poeta — alguém que usa a imaginação para se comunicar com muitas pessoas.\\\\\\\\n\\\\\\\\nFinalmente, a questão do crescimento: o que a mão recessiva mostra de diferente da dominante? Essas diferenças revelam o trabalho que a pessoa fez sobre si mesma — ou deixou de fazer.\\\\\\\\n\\\\\\\\nAlguns princípios importantes para a leitura integrada: nunca faça previsões absolutas — sempre use linguagem de tendência ('isso sugere', 'há uma inclinação para'). Nunca assuste — informações sobre saúde ou eventos negativos devem ser comunicados com cuidado e acompanhados de possibilidades de ação. Sempre confirme com a pessoa — a leitura é um diálogo, não um monólogo. E nunca esqueça: a mão mostra tendências, não fatalidades. O livre-arbítrio existe e as linhas mudam.",
+        "conteudo": "Uma leitura quiromântica completa não é uma soma de partes isoladas — é uma narrativa integrada onde cada elemento confirma, contradiz ou enriquece os outros. O leitor experiente não lê linha por linha como um checklist; ele olha para a mão como um todo e deixa uma história emergir.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO processo de uma leitura integrada começa com a impressão geral: qual é o primeiro sentimento que a mão transmite? Há harmonia entre os elementos ou existe tensão visível — como uma linha do coração profunda e intensa combinada com uma linha da cabeça muito racional e reta, indicando uma guerra interna entre coração e razão?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDepois vêm os elementos dominantes: quais são os dois ou três aspectos mais proeminentes? Um monte de Vênus exuberante com linhas de afeto fragmentadas conta uma história muito específica — alguém com enorme capacidade de amar, mas cuja história amorosa foi marcada por rupturas e recomeços.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nEm seguida, as contradições internas: onde a mão mostra tensão? Uma linha da cabeça que desce muito (imaginação fértil) combinada com linha do destino partindo do monte da Lua (carreira dependente do público) e monte de Mercúrio desenvolvido (comunicação) aponta para um escritor, roteirista ou poeta — alguém que usa a imaginação para se comunicar com muitas pessoas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nFinalmente, a questão do crescimento: o que a mão recessiva mostra de diferente da dominante? Essas diferenças revelam o trabalho que a pessoa fez sobre si mesma — ou deixou de fazer.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAlguns princípios importantes para a leitura integrada: nunca faça previsões absolutas — sempre use linguagem de tendência ('isso sugere', 'há uma inclinação para'). Nunca assuste — informações sobre saúde ou eventos negativos devem ser comunicados com cuidado e acompanhados de possibilidades de ação. Sempre confirme com a pessoa — a leitura é um diálogo, não um monólogo. E nunca esqueça: a mão mostra tendências, não fatalidades. O livre-arbítrio existe e as linhas mudam.",
         "exemplo": "Imagine uma mão com: tipo Água (palma longa, dedos finos), monte da Lua muito desenvolvido, linha da cabeça descendente, linha do coração com muitas ramificações, linha do destino partindo do monte da Lua, Anel de Salomão no indicador. A narrativa integrada: pessoa profundamente sensível e imaginativa (tipo Água + monte da Lua + linha da cabeça descendente), que amou muito e de formas variadas (linha do coração com ramificações), cuja missão de vida envolve conectar-se com o público através da sensibilidade e intuição (linha do destino do monte da Lua), com profunda sabedoria sobre as pessoas (Anel de Salomão). Provavelmente um artista, terapeuta ou professor.",
         "aplicacao": "1. Observe a mão inteira por 30 segundos sem analisar nada. Que impressão geral você tem? 2. Identifique os 3 elementos mais proeminentes. 3. Identifique as possíveis contradições internas. 4. Compare as duas mãos. 5. Monte uma narrativa coerente. 6. Valide com a pessoa.",
         "exercicio": "Faça uma leitura completa da sua própria mão, seguindo os passos acima. Escreva um parágrafo — não uma lista — descrevendo quem você é com base no que vê. Compare com o que você sabe sobre si mesmo.",
@@ -21091,7 +20982,7 @@ CURSOS = {
       },
       "8": {
         "titulo": "Ética e Prática na Quiromância",
-        "conteudo": "Aprender a ler mãos é adquirir uma responsabilidade. Quando você olha para a mão de alguém e começa a falar sobre sua vida, sua personalidade e seus padrões, você está entrando em território íntimo. A pessoa à sua frente pode estar vulnerável, em busca de respostas, ou simplesmente curiosa — mas em qualquer caso, suas palavras terão peso.\\\\\\\\n\\\\\\\\nO primeiro princípio ético é a não-maleficência: nunca provoque medo desnecessário. Se você vê marcas que poderiam ser interpretadas negativamente, sempre as enquadre em possibilidades e não em fatalidades, e sempre acompanhe com o que pode ser feito. 'Há uma tendência a períodos de baixa energia que merecem atenção ao cuidado do corpo' é muito diferente de 'você vai ter problemas de saúde graves'.\\\\\\\\n\\\\\\\\nO segundo princípio é a honestidade sobre seus limites: você é um estudante de quiromância, não um oráculo infalível. Dizer 'isso sugere uma tendência para...' ou 'o que vejo aqui pode indicar...' é mais honesto e mais eficaz do que afirmações absolutas.\\\\\\\\n\\\\\\\\nO terceiro princípio é o respeito à autonomia: a leitura deve empoderar, não criar dependência. O objetivo de uma boa leitura quiromântica é que a pessoa saia com mais clareza sobre si mesma, não com medo de seu destino ou com necessidade de voltar toda semana para saber o que fazer.\\\\\\\\n\\\\\\\\nO quarto princípio é a confidencialidade: o que você vê nas mãos de alguém é informação privada. Não compartilhe detalhes de uma leitura com terceiros sem permissão.\\\\\\\\n\\\\\\\\nFinalmente, o desenvolvimento do leitor: a quiromância é uma arte que se desenvolve com prática. Leia o máximo de mãos que puder — de pessoas que você conhece bem, para poder verificar se sua leitura ressoa. Mantenha um diário de leituras. Revisite suas interpretações. E nunca pare de estudar.",
+        "conteudo": "Aprender a ler mãos é adquirir uma responsabilidade. Quando você olha para a mão de alguém e começa a falar sobre sua vida, sua personalidade e seus padrões, você está entrando em território íntimo. A pessoa à sua frente pode estar vulnerável, em busca de respostas, ou simplesmente curiosa — mas em qualquer caso, suas palavras terão peso.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO primeiro princípio ético é a não-maleficência: nunca provoque medo desnecessário. Se você vê marcas que poderiam ser interpretadas negativamente, sempre as enquadre em possibilidades e não em fatalidades, e sempre acompanhe com o que pode ser feito. 'Há uma tendência a períodos de baixa energia que merecem atenção ao cuidado do corpo' é muito diferente de 'você vai ter problemas de saúde graves'.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO segundo princípio é a honestidade sobre seus limites: você é um estudante de quiromância, não um oráculo infalível. Dizer 'isso sugere uma tendência para...' ou 'o que vejo aqui pode indicar...' é mais honesto e mais eficaz do que afirmações absolutas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO terceiro princípio é o respeito à autonomia: a leitura deve empoderar, não criar dependência. O objetivo de uma boa leitura quiromântica é que a pessoa saia com mais clareza sobre si mesma, não com medo de seu destino ou com necessidade de voltar toda semana para saber o que fazer.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO quarto princípio é a confidencialidade: o que você vê nas mãos de alguém é informação privada. Não compartilhe detalhes de uma leitura com terceiros sem permissão.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nFinalmente, o desenvolvimento do leitor: a quiromância é uma arte que se desenvolve com prática. Leia o máximo de mãos que puder — de pessoas que você conhece bem, para poder verificar se sua leitura ressoa. Mantenha um diário de leituras. Revisite suas interpretações. E nunca pare de estudar.",
         "exemplo": "Uma pessoa chega até você preocupada com seu relacionamento. Você vê linhas de afeto fragmentadas e uma linha do coração com ilhas. Em vez de dizer 'seu relacionamento vai terminar', você pode dizer: 'Vejo que você passou por períodos de confusão emocional nos relacionamentos — há uma tendência a entrar em fases de indecisão. O que você está sentindo agora sobre essa relação?' Isso abre um diálogo útil sem criar profecia autocumprida.",
         "aplicacao": "1. Sempre peça permissão antes de fazer uma leitura. 2. Nunca faça leituras de pessoas em estado emocional muito fragilizado sem cuidado redobrado. 3. Use sempre linguagem de tendência, nunca de certeza. 4. Finalize toda leitura com algo que empodere a pessoa. 5. Mantenha um diário de leituras para seu desenvolvimento.",
         "exercicio": "Pratique fazer uma leitura completa de alguém que você conhece bem. Depois pergunte à pessoa se o que você disse ressoou. Anote o que acertou e o que não acertou. Esse feedback é o maior professor.",
@@ -21107,7 +20998,7 @@ CURSOS = {
     "aulas": {
       "1": {
         "titulo": "O que é Leitura Fria — e o que não é",
-        "conteudo": "Leitura fria é a capacidade de fazer afirmações precisas sobre uma pessoa desconhecida usando apenas observação, raciocínio dedutivo, conhecimento de psicologia humana e linguagem estrategicamente escolhida — sem qualquer informação prévia sobre ela. O nome vem do inglês 'cold reading': ler alguém 'a frio', sem aquecimento prévio de informações.\\\\\\\\n\\\\\\\\nAntes de tudo, é crucial entender o que a leitura fria NÃO é. Ela não é telepatia, clarividência ou dom sobrenatural. Ela é uma habilidade aprendível, baseada em princípios psicológicos documentados e em observação treinada. Isso não diminui seu poder — ao contrário, significa que qualquer pessoa suficientemente dedicada pode desenvolvê-la.\\\\\\\\n\\\\\\\\nA leitura fria é usada em contextos muito diversos: médiuns e videntes a usam (conscientemente ou não) para criar a impressão de acesso sobrenatural. Negociadores e advogados a usam para entender rapidamente com quem estão lidando. Médicos e psicólogos a usam para captar sinais que o paciente não verbaliza. Grandes vendedores a usam para adaptar sua abordagem em tempo real.\\\\\\\\n\\\\\\\\nOs pilares da leitura fria são quatro. O primeiro é a OBSERVAÇÃO: você coleta dados visuais antes de dizer qualquer palavra — aparência, postura, roupas, acessórios, mãos, rosto, forma de se mover. O segundo é o CONHECIMENTO ESTATÍSTICO: saber o que é verdade para a maioria das pessoas em determinado contexto permite fazer afirmações com alta probabilidade de acerto. O terceiro é a LINGUAGEM ESTRATÉGICA: a forma como você formula uma afirmação determina se ela será aceita ou rejeitada, independente de seu conteúdo. O quarto é a LEITURA DE REAÇÕES: você monitora continuamente como a pessoa responde ao que você diz, e ajusta sua leitura em tempo real.\\\\\\\\n\\\\\\\\nO efeito Barnum ou efeito Forer é o fenômeno psicológico central que explica parte do funcionamento da leitura fria. Em 1948, o psicólogo Bertram Forer deu a seus alunos um teste de personalidade e depois entregou a cada um um 'resultado personalizado'. Na verdade, todos receberam exatamente o mesmo texto — uma série de afirmações vagas e positivas. Quando pediu que avaliassem a precisão do resultado numa escala de 0 a 5, a média foi 4,26. O texto era composto por afirmações como 'Você tem necessidade de ser apreciado pelos outros' e 'Embora tenha algumas fraquezas, você geralmente é capaz de compensá-las'. Essas afirmações parecem pessoais mas se aplicam a praticamente todo ser humano.",
+        "conteudo": "Leitura fria é a capacidade de fazer afirmações precisas sobre uma pessoa desconhecida usando apenas observação, raciocínio dedutivo, conhecimento de psicologia humana e linguagem estrategicamente escolhida — sem qualquer informação prévia sobre ela. O nome vem do inglês 'cold reading': ler alguém 'a frio', sem aquecimento prévio de informações.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAntes de tudo, é crucial entender o que a leitura fria NÃO é. Ela não é telepatia, clarividência ou dom sobrenatural. Ela é uma habilidade aprendível, baseada em princípios psicológicos documentados e em observação treinada. Isso não diminui seu poder — ao contrário, significa que qualquer pessoa suficientemente dedicada pode desenvolvê-la.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA leitura fria é usada em contextos muito diversos: médiuns e videntes a usam (conscientemente ou não) para criar a impressão de acesso sobrenatural. Negociadores e advogados a usam para entender rapidamente com quem estão lidando. Médicos e psicólogos a usam para captar sinais que o paciente não verbaliza. Grandes vendedores a usam para adaptar sua abordagem em tempo real.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs pilares da leitura fria são quatro. O primeiro é a OBSERVAÇÃO: você coleta dados visuais antes de dizer qualquer palavra — aparência, postura, roupas, acessórios, mãos, rosto, forma de se mover. O segundo é o CONHECIMENTO ESTATÍSTICO: saber o que é verdade para a maioria das pessoas em determinado contexto permite fazer afirmações com alta probabilidade de acerto. O terceiro é a LINGUAGEM ESTRATÉGICA: a forma como você formula uma afirmação determina se ela será aceita ou rejeitada, independente de seu conteúdo. O quarto é a LEITURA DE REAÇÕES: você monitora continuamente como a pessoa responde ao que você diz, e ajusta sua leitura em tempo real.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO efeito Barnum ou efeito Forer é o fenômeno psicológico central que explica parte do funcionamento da leitura fria. Em 1948, o psicólogo Bertram Forer deu a seus alunos um teste de personalidade e depois entregou a cada um um 'resultado personalizado'. Na verdade, todos receberam exatamente o mesmo texto — uma série de afirmações vagas e positivas. Quando pediu que avaliassem a precisão do resultado numa escala de 0 a 5, a média foi 4,26. O texto era composto por afirmações como 'Você tem necessidade de ser apreciado pelos outros' e 'Embora tenha algumas fraquezas, você geralmente é capaz de compensá-las'. Essas afirmações parecem pessoais mas se aplicam a praticamente todo ser humano.",
         "exemplo": "Um praticante experiente de leitura fria observa uma mulher que chega para uma consulta. Em 30 segundos, ele nota: ela usa aliança mas toca nela nervosamente (casamento com tensão), tem olheiras mas está bem maquiada (cansada mas se esforça para parecer bem), carrega uma agenda de papel em vez de usar o celular para anotações (organizada, valoriza o tangível), e tem uma pequena cicatriz no pulso que ela não esconde (passou por algo difícil e não tem vergonha disso). Antes de ela dizer uma palavra, ele já tem um esboço de quem ela é.",
         "aplicacao": "1. Antes de qualquer interação, pause e observe por 30 segundos sem falar. 2. Liste mentalmente 5 observações concretas. 3. Para cada observação, pergunte: o que isso provavelmente indica? 4. Formule hipóteses, não certezas. 5. Prepare-se para testar e ajustar.",
         "exercicio": "Vá a um lugar público (café, shopping, parque) e escolha uma pessoa que não te conheça. Observe por 2 minutos sem interagir. Escreva 10 observações e para cada uma, uma hipótese sobre essa pessoa. O objetivo não é acertar tudo — é treinar o olhar.",
@@ -21115,7 +21006,7 @@ CURSOS = {
       },
       "2": {
         "titulo": "A Arte das Afirmações Estratégicas",
-        "conteudo": "Uma das ferramentas mais poderosas da leitura fria é a capacidade de formular afirmações que parecem específicas mas têm alta probabilidade de acerto. Existem várias técnicas para isso, e conhecê-las serve tanto para quem pratica leitura fria quanto para quem quer reconhecer quando alguém está usando essas técnicas nele.\\\\\\\\n\\\\\\\\nAs AFIRMAÇÕES BARNUM são declarações que parecem pessoais mas se aplicam à maioria das pessoas. 'Você às vezes se questiona se está no caminho certo' — isso é verdade para mais de 90% dos adultos. 'Há uma parte de você que as pessoas ao seu redor raramente conhecem' — também universal. 'Você tem uma capacidade maior do que a que costuma mostrar' — quase todo mundo concorda. O segredo é entregar essas afirmações com confiança e tom pessoal, como se você estivesse revelando algo específico sobre aquela pessoa.\\\\\\\\n\\\\\\\\nAs AFIRMAÇÕES DE ESPELHO são aquelas que cobrem os dois lados de uma característica ao mesmo tempo. 'Você pode ser muito generoso, mas também sabe quando precisa proteger o que é seu' — seja lá como a pessoa for, ela vai concordar com alguma parte disso. 'Você tem uma sensibilidade que nem sempre mostra, mas que as pessoas próximas a você percebem' — cobre tanto os extrovertidos (que escondem a sensibilidade) quanto os introvertidos (que a mostram apenas para poucos).\\\\\\\\n\\\\\\\\nAs AFIRMAÇÕES ESTATÍSTICAS são baseadas no conhecimento de probabilidades. Se a pessoa é mulher entre 30 e 50 anos, há alta probabilidade de que ela se preocupe com relacionamentos, com a saúde de familiares próximos, e com a questão de estar realizando seu potencial. Se é um homem de meia-idade, há alta probabilidade de que ele se preocupe com trabalho, com reconhecimento profissional e com questões financeiras. Essas são probabilidades — não certezas — mas funcionam como ponto de partida.\\\\\\\\n\\\\\\\\nA TÉCNICA DO JACKPOT é quando você faz uma série de afirmações em sequência, monitorando as reações, e quando percebe que uma acertou em cheio (a pessoa reage visivelmente), você aprofunda aquela linha e abandona as outras. É como uma pessoa procurando um sinal de rádio: quando encontra a frequência certa, para de girar o dial e aumenta o volume.\\\\\\\\n\\\\\\\\nA TÉCNICA DA AFIRMAÇÃO SUAVE é formular afirmações de forma que qualquer resposta — positiva ou negativa — se encaixe. 'Vejo uma figura masculina importante em sua vida, alguém que foi uma influência significativa...' Se a pessoa confirma, você continua nessa direção. Se ela diz 'não tenho pai', você diz 'às vezes essa figura pode ser um tio, um professor, ou mesmo uma ausência que deixou marca'. A afirmação era vaga o suficiente para se adaptar a qualquer cenário.",
+        "conteudo": "Uma das ferramentas mais poderosas da leitura fria é a capacidade de formular afirmações que parecem específicas mas têm alta probabilidade de acerto. Existem várias técnicas para isso, e conhecê-las serve tanto para quem pratica leitura fria quanto para quem quer reconhecer quando alguém está usando essas técnicas nele.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs AFIRMAÇÕES BARNUM são declarações que parecem pessoais mas se aplicam à maioria das pessoas. 'Você às vezes se questiona se está no caminho certo' — isso é verdade para mais de 90% dos adultos. 'Há uma parte de você que as pessoas ao seu redor raramente conhecem' — também universal. 'Você tem uma capacidade maior do que a que costuma mostrar' — quase todo mundo concorda. O segredo é entregar essas afirmações com confiança e tom pessoal, como se você estivesse revelando algo específico sobre aquela pessoa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs AFIRMAÇÕES DE ESPELHO são aquelas que cobrem os dois lados de uma característica ao mesmo tempo. 'Você pode ser muito generoso, mas também sabe quando precisa proteger o que é seu' — seja lá como a pessoa for, ela vai concordar com alguma parte disso. 'Você tem uma sensibilidade que nem sempre mostra, mas que as pessoas próximas a você percebem' — cobre tanto os extrovertidos (que escondem a sensibilidade) quanto os introvertidos (que a mostram apenas para poucos).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs AFIRMAÇÕES ESTATÍSTICAS são baseadas no conhecimento de probabilidades. Se a pessoa é mulher entre 30 e 50 anos, há alta probabilidade de que ela se preocupe com relacionamentos, com a saúde de familiares próximos, e com a questão de estar realizando seu potencial. Se é um homem de meia-idade, há alta probabilidade de que ele se preocupe com trabalho, com reconhecimento profissional e com questões financeiras. Essas são probabilidades — não certezas — mas funcionam como ponto de partida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TÉCNICA DO JACKPOT é quando você faz uma série de afirmações em sequência, monitorando as reações, e quando percebe que uma acertou em cheio (a pessoa reage visivelmente), você aprofunda aquela linha e abandona as outras. É como uma pessoa procurando um sinal de rádio: quando encontra a frequência certa, para de girar o dial e aumenta o volume.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TÉCNICA DA AFIRMAÇÃO SUAVE é formular afirmações de forma que qualquer resposta — positiva ou negativa — se encaixe. 'Vejo uma figura masculina importante em sua vida, alguém que foi uma influência significativa...' Se a pessoa confirma, você continua nessa direção. Se ela diz 'não tenho pai', você diz 'às vezes essa figura pode ser um tio, um professor, ou mesmo uma ausência que deixou marca'. A afirmação era vaga o suficiente para se adaptar a qualquer cenário.",
         "exemplo": "Um praticante diz para uma mulher: 'Vejo que você tem uma força que as pessoas ao seu redor às vezes não percebem — você cuida de todos mas raramente pede ajuda.' A mulher fica emocionada e concorda. Isso funcionou porque é estatisticamente muito comum em mulheres de meia-idade, especialmente as que procuram consultas místicas — elas tendem a ser cuidadoras. A afirmação pareceu específica mas era estatisticamente provável.",
         "aplicacao": "1. Comece com afirmações Barnum para criar rapport. 2. Observe as reações e identifique onde há ressonância. 3. Quando encontrar um ponto de ressonância (a pessoa reage com emoção ou entusiasmo), aprofunde. 4. Use afirmações de espelho em áreas onde você não tem certeza. 5. Sempre ancore suas afirmações em observações reais.",
         "exercicio": "Escreva 5 afirmações Barnum — afirmações que parecem pessoais mas se aplicam à maioria. Depois teste-as com alguém próximo. Observe a reação. Isso vai te mostrar como funciona o efeito Barnum na prática.",
@@ -21123,7 +21014,7 @@ CURSOS = {
       },
       "3": {
         "titulo": "Leitura de Linguagem Corporal para Leitura Fria",
-        "conteudo": "A linguagem corporal fornece à leitura fria uma camada de dados em tempo real que vai muito além das afirmações estatísticas. Quando você combina observação corporal com afirmações estratégicas, a precisão da leitura aumenta dramaticamente.\\\\\\\\n\\\\\\\\nA POSTURA revela o estado emocional de base da pessoa. Ombros para frente e cabeça levemente abaixada indicam defensividade ou baixa autoestima. Ombros para trás e queixo levemente erguido indicam confiança ou necessidade de projetar confiança. Uma pessoa que senta na ponta da cadeira está ansiosa ou muito engajada. Uma pessoa que senta bem encostada está relaxada ou indiferente.\\\\\\\\n\\\\\\\\nOs MICROGESTOS são movimentos involuntários que duram menos de um quinto de segundo e revelam emoções reais antes que a pessoa possa mascarar. O mais conhecido é a microexpressão facial — um flash de emoção genuína que aparece e desaparece antes do rosto assumir a expressão controlada. Outras microexpressões incluem: toque no nariz (pode indicar desconforto com o que está sendo dito), toque nos lábios (contenção de palavra), cruzar os braços (fechamento ou desconforto), piscar mais que o normal (estresse ou processamento de informação intensa).\\\\\\\\n\\\\\\\\nOS OLHOS são particularmente ricos em informação. O contato visual sustentado indica confiança ou domínio. Olhos que evitam contato indicam timidez, vergonha, ou em alguns contextos, mentira. Pupilas dilatadas indicam interesse genuíno ou excitação. Olhos que se movem para cima e para a esquerda (em pessoas destras) frequentemente acompanham a recuperação de uma memória visual real. Olhos que se movem para cima e para a direita frequentemente acompanham a construção de uma imagem — o que pode indicar imaginação ou construção de mentira.\\\\\\\\n\\\\\\\\nA VOZ fornece informação independente das palavras. Uma voz que sobe ao final de afirmações (como se fossem perguntas) indica insegurança. Uma voz que oscila em volume indica instabilidade emocional. Falar muito rápido indica ansiedade. Pausas longas antes de responder podem indicar cuidado ou, em alguns contextos, construção de resposta.\\\\\\\\n\\\\\\\\nAs ROUPAS e ACESSÓRIOS são dados ricos e frequentemente negligenciados. Roupas muito combinadas e impecáveis indicam necessidade de controle e boa impressão. Roupas confortáveis mas descuidadas indicam que a pessoa está em modo de autopreservação ou não se importa com opinião alheia neste momento. Acessórios muitos (anéis, pulseiras, colares) indicam expressividade e necessidade de adorno. Poucos acessórios indicam minimalismo ou praticidade.",
+        "conteudo": "A linguagem corporal fornece à leitura fria uma camada de dados em tempo real que vai muito além das afirmações estatísticas. Quando você combina observação corporal com afirmações estratégicas, a precisão da leitura aumenta dramaticamente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA POSTURA revela o estado emocional de base da pessoa. Ombros para frente e cabeça levemente abaixada indicam defensividade ou baixa autoestima. Ombros para trás e queixo levemente erguido indicam confiança ou necessidade de projetar confiança. Uma pessoa que senta na ponta da cadeira está ansiosa ou muito engajada. Uma pessoa que senta bem encostada está relaxada ou indiferente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs MICROGESTOS são movimentos involuntários que duram menos de um quinto de segundo e revelam emoções reais antes que a pessoa possa mascarar. O mais conhecido é a microexpressão facial — um flash de emoção genuína que aparece e desaparece antes do rosto assumir a expressão controlada. Outras microexpressões incluem: toque no nariz (pode indicar desconforto com o que está sendo dito), toque nos lábios (contenção de palavra), cruzar os braços (fechamento ou desconforto), piscar mais que o normal (estresse ou processamento de informação intensa).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOS OLHOS são particularmente ricos em informação. O contato visual sustentado indica confiança ou domínio. Olhos que evitam contato indicam timidez, vergonha, ou em alguns contextos, mentira. Pupilas dilatadas indicam interesse genuíno ou excitação. Olhos que se movem para cima e para a esquerda (em pessoas destras) frequentemente acompanham a recuperação de uma memória visual real. Olhos que se movem para cima e para a direita frequentemente acompanham a construção de uma imagem — o que pode indicar imaginação ou construção de mentira.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA VOZ fornece informação independente das palavras. Uma voz que sobe ao final de afirmações (como se fossem perguntas) indica insegurança. Uma voz que oscila em volume indica instabilidade emocional. Falar muito rápido indica ansiedade. Pausas longas antes de responder podem indicar cuidado ou, em alguns contextos, construção de resposta.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs ROUPAS e ACESSÓRIOS são dados ricos e frequentemente negligenciados. Roupas muito combinadas e impecáveis indicam necessidade de controle e boa impressão. Roupas confortáveis mas descuidadas indicam que a pessoa está em modo de autopreservação ou não se importa com opinião alheia neste momento. Acessórios muitos (anéis, pulseiras, colares) indicam expressividade e necessidade de adorno. Poucos acessórios indicam minimalismo ou praticidade.",
         "exemplo": "Uma pessoa entra numa sala com ombros levemente curvados, cruza os braços assim que senta, mas sorri amplamente ao ser cumprimentada. Leitura integrada: ela está defensiva ou vulnerável (postura), mas quer parecer aberta e receptiva (sorriso). Há uma tensão entre o que sente e o que quer projetar. Uma boa afirmação de abertura: 'Sinto que você carrega algo que não tem sido fácil de mostrar para os outros.'",
         "aplicacao": "1. Antes de começar qualquer leitura ou interação, observe postura e acessórios. 2. Durante a interação, monitore microgestos — especialmente toque no rosto e movimento dos olhos. 3. Ouça o tom de voz independente das palavras. 4. Quando perceber discrepância entre o que a pessoa diz e como o corpo reage, confie mais no corpo.",
         "exercicio": "Assista a 10 minutos de uma entrevista em vídeo sem som. Tente ler apenas a linguagem corporal do entrevistado. O que você percebe? Depois assista com som e compare.",
@@ -21131,7 +21022,7 @@ CURSOS = {
       },
       "4": {
         "titulo": "O Feedback Loop — Ajustando a Leitura em Tempo Real",
-        "conteudo": "A diferença entre um iniciante e um praticante experiente de leitura fria não está no que eles dizem — está em como eles ouvem e ajustam. A leitura fria não é um monólogo; é um diálogo altamente calibrado onde cada resposta da outra pessoa fornece informação para a próxima afirmação.\\\\\\\\n\\\\\\\\nO FEEDBACK POSITIVO é quando a pessoa confirma, concorda ou reage com emoção ao que você disse. Pode ser verbal ('sim, exatamente!') ou não-verbal (aceno de cabeça, olhos que se iluminam, postura que se abre). Quando isso acontece, você encontrou um ponto de ressonância — aprofunde imediatamente essa linha.\\\\\\\\n\\\\\\\\nO FEEDBACK NEGATIVO é quando a pessoa nega, questiona ou reage com frieza. Um praticante inexperiente para aqui. Um experiente nunca abandona uma afirmação de forma abrupta — ele a reformula: 'Talvez isso ainda não tenha se manifestado completamente, mas pode estar por vir' ou 'Talvez seja algo que você sente mas não reconhece conscientemente ainda'.\\\\\\\\n\\\\\\\\nO FEEDBACK NEUTRO é o mais desafiador — quando a pessoa não reage de forma clara. Nesse caso, use uma pergunta aberta para extrair informação: 'O que isso te faz pensar?' ou 'Isso ressoa com algo que você está vivendo agora?'\\\\\\\\n\\\\\\\\nA técnica do HOT READING — que não deve ser confundida com leitura fria — é quando o praticante obtém informações sobre a pessoa ANTES da sessão. Médiuns desonestos frequentemente usam assistentes que conversam com os visitantes na sala de espera. Na versão legítima, qualquer informação que você já tenha sobre a pessoa é apenas contexto — o que você faz com ela durante a sessão ainda é leitura fria.\\\\\\\\n\\\\\\\\nO EFEITO ÉLVIS é quando a pessoa começa a fornecer informações voluntariamente, empolgada com a leitura. Ela passa de receptor passivo para colaborador ativo — e frequentemente fornece exatamente as informações que confirmam e aprofundam a leitura. O praticante experiente sabe que, nesse momento, precisa escutar mais do que falar.\\\\\\\\n\\\\\\\\nA ARMADILHA DO EGO é o maior inimigo do praticante: quando você está tão focado em impressionar que para de ouvir. As melhores leituras acontecem quando o praticante está completamente presente e responsivo, não quando está ensaiando mentalmente a próxima afirmação impressionante.",
+        "conteudo": "A diferença entre um iniciante e um praticante experiente de leitura fria não está no que eles dizem — está em como eles ouvem e ajustam. A leitura fria não é um monólogo; é um diálogo altamente calibrado onde cada resposta da outra pessoa fornece informação para a próxima afirmação.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO FEEDBACK POSITIVO é quando a pessoa confirma, concorda ou reage com emoção ao que você disse. Pode ser verbal ('sim, exatamente!') ou não-verbal (aceno de cabeça, olhos que se iluminam, postura que se abre). Quando isso acontece, você encontrou um ponto de ressonância — aprofunde imediatamente essa linha.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO FEEDBACK NEGATIVO é quando a pessoa nega, questiona ou reage com frieza. Um praticante inexperiente para aqui. Um experiente nunca abandona uma afirmação de forma abrupta — ele a reformula: 'Talvez isso ainda não tenha se manifestado completamente, mas pode estar por vir' ou 'Talvez seja algo que você sente mas não reconhece conscientemente ainda'.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO FEEDBACK NEUTRO é o mais desafiador — quando a pessoa não reage de forma clara. Nesse caso, use uma pergunta aberta para extrair informação: 'O que isso te faz pensar?' ou 'Isso ressoa com algo que você está vivendo agora?'\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA técnica do HOT READING — que não deve ser confundida com leitura fria — é quando o praticante obtém informações sobre a pessoa ANTES da sessão. Médiuns desonestos frequentemente usam assistentes que conversam com os visitantes na sala de espera. Na versão legítima, qualquer informação que você já tenha sobre a pessoa é apenas contexto — o que você faz com ela durante a sessão ainda é leitura fria.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO EFEITO ÉLVIS é quando a pessoa começa a fornecer informações voluntariamente, empolgada com a leitura. Ela passa de receptor passivo para colaborador ativo — e frequentemente fornece exatamente as informações que confirmam e aprofundam a leitura. O praticante experiente sabe que, nesse momento, precisa escutar mais do que falar.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA ARMADILHA DO EGO é o maior inimigo do praticante: quando você está tão focado em impressionar que para de ouvir. As melhores leituras acontecem quando o praticante está completamente presente e responsivo, não quando está ensaiando mentalmente a próxima afirmação impressionante.",
         "exemplo": "Você diz: 'Vejo que há uma figura feminina importante em sua vida que partiu cedo demais.' A pessoa franze a testa e diz: 'Não perdi ninguém assim.' Um praticante experiente não recua — ele reformula: 'Às vezes essa partida não é física — pode ser uma distância, uma ruptura, uma separação que aconteceu antes que estivesse pronta.' Se a pessoa reflete e diz 'minha mãe se foi quando eu tinha 12 anos mas ainda está viva, simplesmente sumiu da minha vida', você encontrou o ponto.",
         "aplicacao": "1. Após cada afirmação, pause e observe a reação ANTES de continuar. 2. Classifique a reação: positiva, negativa ou neutra. 3. Positiva: aprofunde. Negativa: reformule. Neutra: faça uma pergunta aberta. 4. Nunca abandone uma afirmação de forma abrupta — sempre ofereça uma saída alternativa. 5. Quando a pessoa começar a falar muito, ouça.",
         "exercicio": "Numa conversa normal com alguém próximo, pratique o feedback loop: faça uma afirmação sobre essa pessoa, observe a reação, e ajuste. Veja quantas vezes você consegue aprofundar uma linha usando apenas as reações dela.",
@@ -21139,7 +21030,7 @@ CURSOS = {
       },
       "5": {
         "titulo": "Perfis Estatísticos e Probabilidades",
-        "conteudo": "Uma das bases mais sólidas da leitura fria é o conhecimento de perfis estatísticos — o que é verdadeiro para a maioria das pessoas em determinadas categorias. Esse conhecimento permite fazer afirmações com alta probabilidade de acerto mesmo antes de observar qualquer detalhe específico da pessoa.\\\\\\\\n\\\\\\\\nAs pessoas que buscam consultas místicas ou esotéricas têm um perfil muito específico segundo as pesquisas. A maioria está passando por uma transição de vida (fim de relacionamento, mudança de carreira, perda, nova fase). A maioria tem pelo menos uma área de vida onde sente que perdeu o controle. A maioria nutre esperança de que as coisas vão melhorar. E a maioria está em busca de validação e de ser ouvida tanto quanto está em busca de respostas.\\\\\\\\n\\\\\\\\nPerfis por FAIXA ETÁRIA: jovens adultos (18-30) geralmente se preocupam com identidade, carreira, relacionamentos e independência. Adultos de meia-idade (30-50) geralmente se preocupam com realizações, relacionamentos em curso, filhos e sentido de vida. Pessoas mais velhas (50+) geralmente se preocupam com saúde, legado, relacionamentos com filhos adultos e a questão de ter vivido bem.\\\\\\\\n\\\\\\\\nPerfis por APARÊNCIA E ESTILO: roupas muito formais em contexto informal indicam alguém que precisa de controle e boa impressão. Roupas alternativas ou artísticas indicam alguém que valoriza a expressão individual e provavelmente tem perspectivas não-convencionais. Roupas práticas e funcionais indicam alguém focado em resultados. Muito uso de marcas visíveis indica necessidade de status.\\\\\\\\n\\\\\\\\nPerfis por ESTADO CIVIL E SITUAÇÃO FAMILIAR: alianças, fotos visíveis, referências a filhos — tudo isso fornece contexto. Pessoas casadas com filhos pequenos geralmente carregam tensão entre realização pessoal e responsabilidade familiar. Pessoas solteiras após os 35 frequentemente carregam alguma ambiguidade sobre o assunto — seja paz com a escolha, seja mágoa de histórias não resolvidas.\\\\\\\\n\\\\\\\\nÉ CRUCIAL entender que perfis estatísticos são FERRAMENTAS, não verdades absolutas. Eles aumentam a probabilidade de acerto mas não garantem nada. O uso consciente deles é o que separa a leitura fria ética da manipulação.",
+        "conteudo": "Uma das bases mais sólidas da leitura fria é o conhecimento de perfis estatísticos — o que é verdadeiro para a maioria das pessoas em determinadas categorias. Esse conhecimento permite fazer afirmações com alta probabilidade de acerto mesmo antes de observar qualquer detalhe específico da pessoa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs pessoas que buscam consultas místicas ou esotéricas têm um perfil muito específico segundo as pesquisas. A maioria está passando por uma transição de vida (fim de relacionamento, mudança de carreira, perda, nova fase). A maioria tem pelo menos uma área de vida onde sente que perdeu o controle. A maioria nutre esperança de que as coisas vão melhorar. E a maioria está em busca de validação e de ser ouvida tanto quanto está em busca de respostas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPerfis por FAIXA ETÁRIA: jovens adultos (18-30) geralmente se preocupam com identidade, carreira, relacionamentos e independência. Adultos de meia-idade (30-50) geralmente se preocupam com realizações, relacionamentos em curso, filhos e sentido de vida. Pessoas mais velhas (50+) geralmente se preocupam com saúde, legado, relacionamentos com filhos adultos e a questão de ter vivido bem.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPerfis por APARÊNCIA E ESTILO: roupas muito formais em contexto informal indicam alguém que precisa de controle e boa impressão. Roupas alternativas ou artísticas indicam alguém que valoriza a expressão individual e provavelmente tem perspectivas não-convencionais. Roupas práticas e funcionais indicam alguém focado em resultados. Muito uso de marcas visíveis indica necessidade de status.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPerfis por ESTADO CIVIL E SITUAÇÃO FAMILIAR: alianças, fotos visíveis, referências a filhos — tudo isso fornece contexto. Pessoas casadas com filhos pequenos geralmente carregam tensão entre realização pessoal e responsabilidade familiar. Pessoas solteiras após os 35 frequentemente carregam alguma ambiguidade sobre o assunto — seja paz com a escolha, seja mágoa de histórias não resolvidas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nÉ CRUCIAL entender que perfis estatísticos são FERRAMENTAS, não verdades absolutas. Eles aumentam a probabilidade de acerto mas não garantem nada. O uso consciente deles é o que separa a leitura fria ética da manipulação.",
         "exemplo": "Uma mulher de aproximadamente 40 anos, bem vestida, com aliança mas sem fotos de filhos visíveis, que procura uma consulta num dia útil pela manhã. Perfil estatístico: casada, possivelmente sem filhos ou com filhos crescidos, tem tempo e recursos disponíveis, veio num horário que sugere que controla seu próprio tempo (empresária ou profissional liberal). A preocupação mais provável: algo no casamento ou na realização pessoal. Afirmação de abertura: 'Sinto que você chegou até aqui buscando clareza sobre uma decisão importante — algo que envolve tanto o que você construiu quanto o que ainda quer construir.'",
         "aplicacao": "1. Antes de qualquer interação, colete dados demográficos visíveis. 2. Use perfis estatísticos para formular hipóteses iniciais. 3. Teste essas hipóteses com afirmações abertas. 4. Ajuste conforme o feedback. 5. Nunca trate um perfil estatístico como certeza.",
         "exercicio": "Escolha três pessoas que você conhece superficialmente (não íntimas). Para cada uma, liste o que você sabe sobre elas estatisticamente (faixa etária, situação aparente, estilo). Formule 3 afirmações prováveis para cada uma. Depois, numa conversa natural, veja quantas ressoam.",
@@ -21147,7 +21038,7 @@ CURSOS = {
       },
       "6": {
         "titulo": "A Leitura Fria em Diferentes Contextos",
-        "conteudo": "A leitura fria não existe apenas no contexto místico — ela é uma habilidade que se aplica a praticamente qualquer interação humana. Conhecer suas aplicações amplia tanto o uso quanto a defesa contra usos manipuladores.\\\\\\\\n\\\\\\\\nNO CONTEXTO MÍSTICO E DIVINATÓRIO, a leitura fria é a espinha dorsal de muitas consultas de tarot, quiromância, astrologia e mediunidade. Isso não significa que essas práticas são todas fraude — significa que a intuição genuína e a leitura fria frequentemente coexistem, e que mesmo praticantes honestos usam elementos de leitura fria sem necessariamente perceber. O praticante ético sabe disso e é honesto sobre o que é observação e o que é algo mais.\\\\\\\\n\\\\\\\\nNAS VENDAS E NEGOCIAÇÃO, a leitura fria determina qual abordagem usar com qual pessoa. Um bom vendedor percebe em 30 segundos se está diante de alguém que decide pela lógica ou pela emoção, e adapta a apresentação. Um bom negociador percebe o que a outra parte mais teme perder, e usa isso como alavanca.\\\\\\\\n\\\\\\\\nNA MEDICINA E PSICOLOGIA CLÍNICA, a leitura fria bem aplicada ajuda o profissional a perceber o que o paciente não está dizendo verbalmente — dor que minimiza, angústia que esconde, ou ao contrário, ansiedade que amplifica. Os melhores clínicos são leitores frios altamente treinados, mesmo sem usar esse nome.\\\\\\\\n\\\\\\\\nNOS RELACIONAMENTOS PESSOAIS, a leitura fria é a base da empatia profunda. Perceber quando alguém está sofrendo mas dizendo que está bem, quando alguém está com raiva mas expressando indiferença, quando alguém precisa de espaço mas pede atenção — tudo isso é leitura fria aplicada ao amor.\\\\\\\\n\\\\\\\\nA DEFESA CONTRA LEITURA FRIA é tão importante quanto aprender a fazê-la. Você está vulnerável à leitura fria quando está emocionalmente carregado, quando quer muito acreditar em algo, ou quando é tomado de surpresa. Conhecer as técnicas é a melhor defesa: quando alguém faz uma afirmação Barnum, você reconhece. Quando alguém usa o jackpot, você percebe. Isso não destrói a experiência — apenas te coloca no controle dela.",
+        "conteudo": "A leitura fria não existe apenas no contexto místico — ela é uma habilidade que se aplica a praticamente qualquer interação humana. Conhecer suas aplicações amplia tanto o uso quanto a defesa contra usos manipuladores.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNO CONTEXTO MÍSTICO E DIVINATÓRIO, a leitura fria é a espinha dorsal de muitas consultas de tarot, quiromância, astrologia e mediunidade. Isso não significa que essas práticas são todas fraude — significa que a intuição genuína e a leitura fria frequentemente coexistem, e que mesmo praticantes honestos usam elementos de leitura fria sem necessariamente perceber. O praticante ético sabe disso e é honesto sobre o que é observação e o que é algo mais.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNAS VENDAS E NEGOCIAÇÃO, a leitura fria determina qual abordagem usar com qual pessoa. Um bom vendedor percebe em 30 segundos se está diante de alguém que decide pela lógica ou pela emoção, e adapta a apresentação. Um bom negociador percebe o que a outra parte mais teme perder, e usa isso como alavanca.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNA MEDICINA E PSICOLOGIA CLÍNICA, a leitura fria bem aplicada ajuda o profissional a perceber o que o paciente não está dizendo verbalmente — dor que minimiza, angústia que esconde, ou ao contrário, ansiedade que amplifica. Os melhores clínicos são leitores frios altamente treinados, mesmo sem usar esse nome.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNOS RELACIONAMENTOS PESSOAIS, a leitura fria é a base da empatia profunda. Perceber quando alguém está sofrendo mas dizendo que está bem, quando alguém está com raiva mas expressando indiferença, quando alguém precisa de espaço mas pede atenção — tudo isso é leitura fria aplicada ao amor.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA DEFESA CONTRA LEITURA FRIA é tão importante quanto aprender a fazê-la. Você está vulnerável à leitura fria quando está emocionalmente carregado, quando quer muito acreditar em algo, ou quando é tomado de surpresa. Conhecer as técnicas é a melhor defesa: quando alguém faz uma afirmação Barnum, você reconhece. Quando alguém usa o jackpot, você percebe. Isso não destrói a experiência — apenas te coloca no controle dela.",
         "exemplo": "Você está sendo entrevistado para um emprego. O entrevistador é um praticante intuitivo de leitura fria. Ele observa que você está levemente tenso (dedos entrelaçados), mas confiante no conteúdo (voz firme). Ele diz: 'Me fale sobre um momento em que você precisou trabalhar sob pressão.' Enquanto você responde, ele lê sua linguagem corporal para avaliar se você fala da experiência com orgulho, com ansiedade, ou com relutância — e isso diz mais sobre como você lida com pressão do que as palavras que você escolhe.",
         "aplicacao": "1. Identifique em qual contexto você mais quer desenvolver essa habilidade. 2. Estude os perfis estatísticos específicos desse contexto. 3. Pratique a observação nesse ambiente específico. 4. Desenvolva também sua capacidade de reconhecer quando outros estão usando leitura fria em você.",
         "exercicio": "Na próxima semana, em pelo menos 3 interações diferentes (trabalho, relacionamento, conversa casual), pratique conscientemente: observe antes de falar, formule hipóteses, teste com afirmações ou perguntas abertas, ajuste pelo feedback. Anote o que aprendeu em cada uma.",
@@ -21155,7 +21046,7 @@ CURSOS = {
       },
       "7": {
         "titulo": "A Psicologia do Acreditar — Por que Funciona",
-        "conteudo": "Para usar a leitura fria com consciência e responsabilidade, é essencial entender por que as pessoas acreditam — os mecanismos psicológicos que tornam essa técnica eficaz mesmo quando as afirmações são vagas ou incorretas.\\\\\\\\n\\\\\\\\nO VIÉS DE CONFIRMAÇÃO é talvez o mais poderoso: as pessoas tendem a lembrar e valorizar as informações que confirmam o que já acreditam ou querem acreditar, e a esquecer ou minimizar as que contradizem. Depois de uma sessão de tarot ou quiromância, a pessoa lembra das afirmações que acertaram com muito mais vivacidade do que das que erraram. Isso cria uma sensação subjetiva de alta precisão mesmo quando a taxa objetiva de acerto foi mediana.\\\\\\\\n\\\\\\\\nA VALIDAÇÃO EMOCIONAL é frequentemente mais importante do que a precisão factual. Quando um leitor diz 'você carrega uma força que os outros raramente percebem', a pessoa não está avaliando se isso é estatisticamente provável — ela está sentindo que alguém finalmente a viu. Essa sensação de ser visto e compreendido é extremamente poderosa e está frequentemente por trás da experiência de 'ele sabia tudo sobre mim'.\\\\\\\\n\\\\\\\\nO EFEITO DE COLABORAÇÃO ATIVA é quando a pessoa começa a preencher as lacunas com suas próprias informações, sem perceber que está fazendo isso. Um leitor diz: 'Vejo uma viagem importante em sua vida que mudou algo fundamental.' A pessoa pensa na viagem que fez dois anos atrás e concorda — mas foi ela quem forneceu a especificidade. O leitor apenas abriu a porta.\\\\\\\\n\\\\\\\\nA ILUSÃO DE ESPECIFICIDADE ocorre quando afirmações vagas são percebidas como específicas porque a pessoa as interpreta através de seu próprio contexto. 'Há alguém em sua vida que não é quem aparenta ser' — essa frase pode se aplicar a uma infinidade de situações, mas a pessoa imediatamente pensa em alguém específico e fica impressionada com a 'precisão'.\\\\\\\\n\\\\\\\\nO ESTADO DE ABERTURA EMOCIONAL em que as pessoas chegam a consultas místicas as torna mais receptivas a sugestões. Quando alguém está vulnerável, em transição, ou buscando respostas, o cérebro está mais aberto a aceitar afirmações sem o filtro crítico habitual — é um estado semelhante à hipnose leve.\\\\\\\\n\\\\\\\\nConhecer esses mecanismos serve a dois propósitos: permite ao praticante ser mais eficaz E mais ético, pois ele entende o poder que tem sobre a pessoa naquele momento. E permite ao consultante manter sua agência, aproveitando a experiência sem perder o senso crítico.",
+        "conteudo": "Para usar a leitura fria com consciência e responsabilidade, é essencial entender por que as pessoas acreditam — os mecanismos psicológicos que tornam essa técnica eficaz mesmo quando as afirmações são vagas ou incorretas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO VIÉS DE CONFIRMAÇÃO é talvez o mais poderoso: as pessoas tendem a lembrar e valorizar as informações que confirmam o que já acreditam ou querem acreditar, e a esquecer ou minimizar as que contradizem. Depois de uma sessão de tarot ou quiromância, a pessoa lembra das afirmações que acertaram com muito mais vivacidade do que das que erraram. Isso cria uma sensação subjetiva de alta precisão mesmo quando a taxa objetiva de acerto foi mediana.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA VALIDAÇÃO EMOCIONAL é frequentemente mais importante do que a precisão factual. Quando um leitor diz 'você carrega uma força que os outros raramente percebem', a pessoa não está avaliando se isso é estatisticamente provável — ela está sentindo que alguém finalmente a viu. Essa sensação de ser visto e compreendido é extremamente poderosa e está frequentemente por trás da experiência de 'ele sabia tudo sobre mim'.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO EFEITO DE COLABORAÇÃO ATIVA é quando a pessoa começa a preencher as lacunas com suas próprias informações, sem perceber que está fazendo isso. Um leitor diz: 'Vejo uma viagem importante em sua vida que mudou algo fundamental.' A pessoa pensa na viagem que fez dois anos atrás e concorda — mas foi ela quem forneceu a especificidade. O leitor apenas abriu a porta.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA ILUSÃO DE ESPECIFICIDADE ocorre quando afirmações vagas são percebidas como específicas porque a pessoa as interpreta através de seu próprio contexto. 'Há alguém em sua vida que não é quem aparenta ser' — essa frase pode se aplicar a uma infinidade de situações, mas a pessoa imediatamente pensa em alguém específico e fica impressionada com a 'precisão'.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ESTADO DE ABERTURA EMOCIONAL em que as pessoas chegam a consultas místicas as torna mais receptivas a sugestões. Quando alguém está vulnerável, em transição, ou buscando respostas, o cérebro está mais aberto a aceitar afirmações sem o filtro crítico habitual — é um estado semelhante à hipnose leve.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nConhecer esses mecanismos serve a dois propósitos: permite ao praticante ser mais eficaz E mais ético, pois ele entende o poder que tem sobre a pessoa naquele momento. E permite ao consultante manter sua agência, aproveitando a experiência sem perder o senso crítico.",
         "exemplo": "Após uma consulta, uma pessoa relata para amigos: 'Ela sabia exatamente que eu passei por uma decepção amorosa recente e que estou repensando minha carreira.' O que realmente aconteceu: o leitor fez afirmações Barnum sobre transições e decepções (universal), a pessoa preencheu com suas experiências específicas, e o viés de confirmação fez o resto. Isso não torna a experiência inválida — mas é importante entender o que realmente aconteceu.",
         "aplicacao": "1. Ao receber uma leitura de qualquer tipo, observe ativamente: quais afirmações eram realmente específicas? Quais eram Barnum? Você preencheu alguma lacuna? 2. Ao fazer uma leitura, seja honesto consigo mesmo sobre o que é observação, o que é probabilidade estatística e o que é genuína intuição.",
         "exercicio": "Releia as afirmações desta aula e identifique 3 afirmações Barnum que você poderia usar. Depois imagine como essas afirmações seriam recebidas por pessoas em diferentes estados emocionais (alguém estável vs alguém em crise). O que muda?",
@@ -21163,7 +21054,7 @@ CURSOS = {
       },
       "8": {
         "titulo": "Ética, Limites e Responsabilidade",
-        "conteudo": "A leitura fria é uma das habilidades mais poderosas que uma pessoa pode desenvolver — e exatamente por isso requer uma reflexão ética profunda. O poder de fazer alguém sentir que você 'sabe' coisas sobre ela cria uma responsabilidade real.\\\\\\\\n\\\\\\\\nO PRINCÍPIO DA NÃO-MANIPULAÇÃO é fundamental: existe uma diferença enorme entre usar a leitura fria para criar conexão genuína, entender melhor as pessoas e ajudá-las — e usá-la para criar dependência, extrair dinheiro, ou exercer controle. A linha pode parecer sutil mas é clara: a intenção e o resultado.\\\\\\\\n\\\\\\\\nA TRANSPARÊNCIA QUANDO RELEVANTE: em contextos onde alguém acredita que você tem poderes sobrenaturais quando na verdade está usando técnicas aprendíveis, há uma questão ética real. Cada praticante precisa decidir onde fica sua linha. Alguns optam por total transparência. Outros argumentam que a experiência criada tem valor real independente do mecanismo. O mínimo ético é nunca explorar financeiramente essa crença de forma abusiva.\\\\\\\\n\\\\\\\\nO CUIDADO COM PESSOAS VULNERÁVEIS: pessoas em crise, luto, doenças graves ou perturbação mental estão em estado de maior suscetibilidade. Usar leitura fria (ou qualquer técnica de influência) com essas pessoas exige redobrado cuidado. Nunca crie dependência em alguém que está em estado vulnerável. Nunca substitua ajuda profissional real por uma consulta mística.\\\\\\\\n\\\\\\\\nA QUESTÃO DO DIAGNÓSTICO: nunca faça afirmações sobre saúde que possam ser interpretadas como diagnóstico médico. 'Vejo uma sensibilidade no sistema nervoso' pode levar uma pessoa a ignorar sintomas reais ou, ao contrário, a entrar em pânico desnecessário.\\\\\\\\n\\\\\\\\nA HONESTIDADE SOBRE OS ERROS: em qualquer prática honesta de leitura fria ou leitura intuitiva, haverá erros. A forma como o praticante lida com os erros é reveladora de sua integridade. Admitir 'errei nessa' é sinal de praticante sério. Redirecionar ou tentar salvar toda afirmação errada é sinal de falta de integridade.\\\\\\\\n\\\\\\\\nFINALMENTE: a leitura fria, quando praticada com integridade, não é um engodo — é uma habilidade de percepção e conexão humana profunda. Os melhores praticantes — sejam eles médiuns, psicólogos, médicos ou negociadores — usam essas técnicas para genuinamente ajudar, entender e conectar. É o propósito que define o caráter da prática.",
+        "conteudo": "A leitura fria é uma das habilidades mais poderosas que uma pessoa pode desenvolver — e exatamente por isso requer uma reflexão ética profunda. O poder de fazer alguém sentir que você 'sabe' coisas sobre ela cria uma responsabilidade real.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO PRINCÍPIO DA NÃO-MANIPULAÇÃO é fundamental: existe uma diferença enorme entre usar a leitura fria para criar conexão genuína, entender melhor as pessoas e ajudá-las — e usá-la para criar dependência, extrair dinheiro, ou exercer controle. A linha pode parecer sutil mas é clara: a intenção e o resultado.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TRANSPARÊNCIA QUANDO RELEVANTE: em contextos onde alguém acredita que você tem poderes sobrenaturais quando na verdade está usando técnicas aprendíveis, há uma questão ética real. Cada praticante precisa decidir onde fica sua linha. Alguns optam por total transparência. Outros argumentam que a experiência criada tem valor real independente do mecanismo. O mínimo ético é nunca explorar financeiramente essa crença de forma abusiva.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO CUIDADO COM PESSOAS VULNERÁVEIS: pessoas em crise, luto, doenças graves ou perturbação mental estão em estado de maior suscetibilidade. Usar leitura fria (ou qualquer técnica de influência) com essas pessoas exige redobrado cuidado. Nunca crie dependência em alguém que está em estado vulnerável. Nunca substitua ajuda profissional real por uma consulta mística.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA QUESTÃO DO DIAGNÓSTICO: nunca faça afirmações sobre saúde que possam ser interpretadas como diagnóstico médico. 'Vejo uma sensibilidade no sistema nervoso' pode levar uma pessoa a ignorar sintomas reais ou, ao contrário, a entrar em pânico desnecessário.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA HONESTIDADE SOBRE OS ERROS: em qualquer prática honesta de leitura fria ou leitura intuitiva, haverá erros. A forma como o praticante lida com os erros é reveladora de sua integridade. Admitir 'errei nessa' é sinal de praticante sério. Redirecionar ou tentar salvar toda afirmação errada é sinal de falta de integridade.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nFINALMENTE: a leitura fria, quando praticada com integridade, não é um engodo — é uma habilidade de percepção e conexão humana profunda. Os melhores praticantes — sejam eles médiuns, psicólogos, médicos ou negociadores — usam essas técnicas para genuinamente ajudar, entender e conectar. É o propósito que define o caráter da prática.",
         "exemplo": "Um praticante recebe uma mulher que, claramente, está procurando uma razão para permanecer num relacionamento problemático. Usando leitura fria, ele percebe isso rapidamente. A decisão ética: não confirmar o que ela quer ouvir apenas para agradá-la, mas também não fazer afirmações absolutas sobre o relacionamento. Em vez disso, direcionar a conversa para o que ela quer e merece, não para o que o parceiro vai ou não vai fazer.",
         "aplicacao": "1. Defina sua própria linha ética antes de praticar leitura fria em qualquer contexto. 2. Nunca use a técnica para criar dependência ou para influenciar decisões importantes de forma unilateral. 3. Seja honesto sobre seus erros. 4. Em contextos profissionais (vendas, liderança), seja consciente de quando está usando e para quê.",
         "exercicio": "Reflita: em que contextos da sua vida você já foi 'lido' por alguém usando essas técnicas — conscientemente ou não? Como se sentiu? O que teria mudado se você tivesse reconhecido a técnica na hora?",
@@ -21179,7 +21070,7 @@ CURSOS = {
     "aulas": {
       "1": {
         "titulo": "Os Fundamentos — Como Calcular",
-        "conteudo": "A numerologia é o estudo da relação entre números e eventos, personalidades e destinos. Suas raízes estão em Pitágoras (570 a.C.), que acreditava que 'tudo é número' — que a realidade é fundamentalmente matemática e que os números carregam vibrações próprias que influenciam a vida humana. A numerologia pitagórica, base do sistema mais usado no ocidente, reduz todos os números a um dígito de 1 a 9, com exceção dos números mestres 11, 22 e 33.\\\\\\\\n\\\\\\\\nO SISTEMA DE REDUÇÃO: qualquer número maior que 9 é reduzido somando seus dígitos até chegar a um único algarismo. Exemplo: 29 = 2+9 = 11 (número mestre, não reduz mais) ou 37 = 3+7 = 10 = 1+0 = 1. Os NÚMEROS MESTRES 11, 22 e 33 não são reduzidos porque carregam uma vibração especial — são considerados números de missão elevada.\\\\\\\\n\\\\\\\\nO NÚMERO DO CAMINHO DE VIDA é calculado a partir da data de nascimento completa. Exemplo: nascido em 15/03/1990. Some: 1+5 = 6 (dia); 0+3 = 3 (mês); 1+9+9+0 = 19 = 1+9 = 10 = 1+0 = 1 (ano). Depois some os resultados: 6+3+1 = 10 = 1+0 = 1. Caminho de vida 1.\\\\\\\\n\\\\\\\\nO NÚMERO DA EXPRESSÃO (ou do Destino) é calculado a partir do nome completo. Cada letra recebe um valor numérico: A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=1, K=2, L=3, M=4, N=5, O=6, P=7, Q=8, R=9, S=1, T=2, U=3, V=4, W=5, X=6, Y=7, Z=8. Some todos os valores do nome completo e reduza.\\\\\\\\n\\\\\\\\nO NÚMERO DA ALMA é calculado usando apenas as VOGAIS do nome completo. Revela o que você deseja profundamente, sua motivação interior.\\\\\\\\n\\\\\\\\nO NÚMERO DA PERSONALIDADE é calculado usando apenas as CONSOANTES do nome completo. Revela como os outros te percebem, sua máscara social.",
+        "conteudo": "A numerologia é o estudo da relação entre números e eventos, personalidades e destinos. Suas raízes estão em Pitágoras (570 a.C.), que acreditava que 'tudo é número' — que a realidade é fundamentalmente matemática e que os números carregam vibrações próprias que influenciam a vida humana. A numerologia pitagórica, base do sistema mais usado no ocidente, reduz todos os números a um dígito de 1 a 9, com exceção dos números mestres 11, 22 e 33.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO SISTEMA DE REDUÇÃO: qualquer número maior que 9 é reduzido somando seus dígitos até chegar a um único algarismo. Exemplo: 29 = 2+9 = 11 (número mestre, não reduz mais) ou 37 = 3+7 = 10 = 1+0 = 1. Os NÚMEROS MESTRES 11, 22 e 33 não são reduzidos porque carregam uma vibração especial — são considerados números de missão elevada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO NÚMERO DO CAMINHO DE VIDA é calculado a partir da data de nascimento completa. Exemplo: nascido em 15/03/1990. Some: 1+5 = 6 (dia); 0+3 = 3 (mês); 1+9+9+0 = 19 = 1+9 = 10 = 1+0 = 1 (ano). Depois some os resultados: 6+3+1 = 10 = 1+0 = 1. Caminho de vida 1.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO NÚMERO DA EXPRESSÃO (ou do Destino) é calculado a partir do nome completo. Cada letra recebe um valor numérico: A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=1, K=2, L=3, M=4, N=5, O=6, P=7, Q=8, R=9, S=1, T=2, U=3, V=4, W=5, X=6, Y=7, Z=8. Some todos os valores do nome completo e reduza.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO NÚMERO DA ALMA é calculado usando apenas as VOGAIS do nome completo. Revela o que você deseja profundamente, sua motivação interior.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO NÚMERO DA PERSONALIDADE é calculado usando apenas as CONSOANTES do nome completo. Revela como os outros te percebem, sua máscara social.",
         "exemplo": "Maria Silva: M(4)+A(1)+R(9)+I(9)+A(1) = 24; S(1)+I(9)+L(3)+V(4)+A(1) = 18. Total: 24+18 = 42 = 4+2 = 6. Expressão 6 — alguém com forte vocação para cuidar, harmonizar e servir. As vogais: A+I+A+I+A = 1+9+1+9+1 = 21 = 3. Alma 3 — desejo profundo de criatividade e expressão.",
         "aplicacao": "1. Calcule seu Caminho de Vida. 2. Calcule sua Expressão usando o nome completo de registro. 3. Calcule sua Alma (só vogais). 4. Calcule sua Personalidade (só consoantes). 5. Anote os quatro números e veja quais se repetem — repetições indicam ênfase.",
         "exercicio": "Calcule seus quatro números fundamentais agora. Algum número se repete? O Caminho de Vida e a Expressão são harmônicos (próximos ou iguais) ou contrastantes (muito diferentes)? O que isso pode indicar sobre tensões internas?",
@@ -21187,7 +21078,7 @@ CURSOS = {
       },
       "2": {
         "titulo": "Os Números de 1 a 9 — Significados Completos",
-        "conteudo": "NÚMERO 1 — O Pioneiro: independência, liderança, originalidade, coragem para iniciar. Missão: tornar-se líder de si mesmo antes de liderar outros. Desafio: tendência ao egoísmo, dificuldade de colaborar e de aceitar ajuda. Vibração: solar, masculina, ativa.\\\\\\\\n\\\\\\\\nNÚMERO 2 — O Diplomata: cooperação, sensibilidade, parceria, intuição. Missão: criar harmonia e ser a ponte entre forças opostas. Desafio: excesso de dependência dos outros, dificuldade de tomar decisões sozinho, sensibilidade excessiva à crítica. Vibração: lunar, feminina, receptiva.\\\\\\\\n\\\\\\\\nNÚMERO 3 — O Criativo: expressão, alegria, criatividade, comunicação, sociabilidade. Missão: inspirar, criar e trazer leveza ao mundo. Desafio: dispersão, superficialidade, dificuldade de focar e completar projetos. Vibração: jovial, expansiva.\\\\\\\\n\\\\\\\\nNÚMERO 4 — O Construtor: trabalho, disciplina, estabilidade, organização, perseverança. Missão: construir bases sólidas e duradouras. Desafio: rigidez, excesso de controle, resistência à mudança, tendência ao workaholism. Vibração: terrosa, sólida.\\\\\\\\n\\\\\\\\nNÚMERO 5 — O Aventureiro: liberdade, mudança, versatilidade, experiência, sensualidade. Missão: viver plenamente a experiência humana em sua diversidade. Desafio: impulsividade, fuga do compromisso, excesso de mudanças, tendência às vícios. Vibração: mercurial, mutável.\\\\\\\\n\\\\\\\\nNÚMERO 6 — O Guardião: amor, responsabilidade, família, cura, serviço. Missão: cuidar, harmonizar e criar beleza no mundo. Desafio: excesso de sacrifício pessoal, tendência ao controle disfarçado de cuidado, dificuldade de receber. Vibração: venusina, nutritiva.\\\\\\\\n\\\\\\\\nNÚMERO 7 — O Buscador: análise, espiritualidade, introspecção, sabedoria, mistério. Missão: ir fundo na busca pela verdade, seja científica ou espiritual. Desafio: isolamento, desconfiança, frieza emocional, ceticismo que se torna cinismo. Vibração: solitária, profunda.\\\\\\\\n\\\\\\\\nNÚMERO 8 — O Realizador: poder, abundância, ambição, autoridade, sucesso material. Missão: aprender a usar o poder com sabedoria e criar abundância para si e para outros. Desafio: materialismo, abuso de poder, obsessão por controle e sucesso. Vibração: saturnal, intensa.\\\\\\\\n\\\\\\\\nNÚMERO 9 — O Humanista: compaixão, universalidade, finalização, idealismo. Missão: servir à humanidade e ao bem maior, deixar ir o que não serve mais. Desafio: dificuldade de focar no pessoal (ama a humanidade mas pode negligenciar as pessoas próximas), tendência ao martírio. Vibração: nobre, expansiva.",
+        "conteudo": "NÚMERO 1 — O Pioneiro: independência, liderança, originalidade, coragem para iniciar. Missão: tornar-se líder de si mesmo antes de liderar outros. Desafio: tendência ao egoísmo, dificuldade de colaborar e de aceitar ajuda. Vibração: solar, masculina, ativa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 2 — O Diplomata: cooperação, sensibilidade, parceria, intuição. Missão: criar harmonia e ser a ponte entre forças opostas. Desafio: excesso de dependência dos outros, dificuldade de tomar decisões sozinho, sensibilidade excessiva à crítica. Vibração: lunar, feminina, receptiva.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 3 — O Criativo: expressão, alegria, criatividade, comunicação, sociabilidade. Missão: inspirar, criar e trazer leveza ao mundo. Desafio: dispersão, superficialidade, dificuldade de focar e completar projetos. Vibração: jovial, expansiva.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 4 — O Construtor: trabalho, disciplina, estabilidade, organização, perseverança. Missão: construir bases sólidas e duradouras. Desafio: rigidez, excesso de controle, resistência à mudança, tendência ao workaholism. Vibração: terrosa, sólida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 5 — O Aventureiro: liberdade, mudança, versatilidade, experiência, sensualidade. Missão: viver plenamente a experiência humana em sua diversidade. Desafio: impulsividade, fuga do compromisso, excesso de mudanças, tendência às vícios. Vibração: mercurial, mutável.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 6 — O Guardião: amor, responsabilidade, família, cura, serviço. Missão: cuidar, harmonizar e criar beleza no mundo. Desafio: excesso de sacrifício pessoal, tendência ao controle disfarçado de cuidado, dificuldade de receber. Vibração: venusina, nutritiva.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 7 — O Buscador: análise, espiritualidade, introspecção, sabedoria, mistério. Missão: ir fundo na busca pela verdade, seja científica ou espiritual. Desafio: isolamento, desconfiança, frieza emocional, ceticismo que se torna cinismo. Vibração: solitária, profunda.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 8 — O Realizador: poder, abundância, ambição, autoridade, sucesso material. Missão: aprender a usar o poder com sabedoria e criar abundância para si e para outros. Desafio: materialismo, abuso de poder, obsessão por controle e sucesso. Vibração: saturnal, intensa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO 9 — O Humanista: compaixão, universalidade, finalização, idealismo. Missão: servir à humanidade e ao bem maior, deixar ir o que não serve mais. Desafio: dificuldade de focar no pessoal (ama a humanidade mas pode negligenciar as pessoas próximas), tendência ao martírio. Vibração: nobre, expansiva.",
         "exemplo": "Uma pessoa com Caminho de Vida 7 e Expressão 3 vive uma tensão fascinante: a missão de aprofundar, refletir e buscar a verdade interior (7) expressa através da comunicação, criatividade e sociabilidade (3). O resultado típico: um escritor, filósofo ou artista que usa a expressão criativa para compartilhar insights profundos. Pense em Carl Jung (Caminho 7, altamente analítico e espiritual) ou em um poeta místico.",
         "aplicacao": "1. Leia o significado do seu Caminho de Vida. Ressoa? 2. Leia o significado da sua Expressão. 3. Compare os dois — são harmônicos ou criam tensão? 4. Leia o desafio de cada número — reconhece esses padrões em você?",
         "exercicio": "Para cada um dos seus quatro números, identifique: uma forma como essa energia se manifesta positivamente na sua vida, e uma forma como o desafio desse número aparece. Seja honesto.",
@@ -21195,7 +21086,7 @@ CURSOS = {
       },
       "3": {
         "titulo": "Números Mestres — 11, 22 e 33",
-        "conteudo": "Os números mestres são considerados na numerologia como vibrações de missão elevada — carregam o potencial amplificado dos números base (2, 4 e 6) mas com uma intensidade e uma chamada espiritual mais alta. Quem tem número mestre no Caminho de Vida, Expressão ou outros cálculos importantes carrega tanto o potencial extraordinário quanto o desafio correspondente.\\\\\\\\n\\\\\\\\nNÚMERO MESTRE 11 — O Iluminado: é o 2 amplificado. Onde o 2 busca harmonia e parceria, o 11 busca iluminar, inspirar e elevar. É o número da intuição extrema, da sensibilidade espiritual aguçada, da capacidade de captar o que ainda não é visível para os outros. Missão: ser um canal de inspiração para outras pessoas, usando a sensibilidade e a intuição como ferramentas. Desafio: extrema sensibilidade que pode virar ansiedade crônica, tendência a carregar o peso do mundo, dificuldade de aterrar as visões elevadas na realidade prática.\\\\\\\\n\\\\\\\\nNÚMERO MESTRE 22 — O Construtor Mestre: é o 4 amplificado. Onde o 4 constrói estruturas pessoais com disciplina, o 22 constrói estruturas que impactam muitas pessoas — projetos de grande escala, sistemas, legados. É o número com maior potencial de realização concreta de todos. Missão: transformar sonhos visionários em realidades tangíveis que beneficiem muitos. Desafio: a grandiosidade da missão pode paralisar (o peso do potencial), ou pode levar ao outro extremo — a pessoa que, incapaz de suportar a responsabilidade, vive aquém de seu potencial por toda a vida.\\\\\\\\n\\\\\\\\nNÚMERO MESTRE 33 — O Mestre do Amor: é o 6 amplificado. Extremamente raro como número do Caminho de Vida (requer uma data de nascimento específica). Representa o amor incondicional, a cura e o ensinamento do mais alto nível. Missão: curar através do amor e do exemplo. Desafio: antes que a energia do 33 possa ser usada, o portador precisa dominar completamente as energias do 11 e do 22 — o que torna este um número de desenvolvimento extremamente lento e cheio de provas.\\\\\\\\n\\\\\\\\nPessoas com números mestres frequentemente relatam uma sensação de que a vida exige mais delas do que das outras pessoas — que o padrão para si mesmos é mais alto, que as provas são mais intensas e que as recompensas, quando vêm, são também mais profundas.",
+        "conteudo": "Os números mestres são considerados na numerologia como vibrações de missão elevada — carregam o potencial amplificado dos números base (2, 4 e 6) mas com uma intensidade e uma chamada espiritual mais alta. Quem tem número mestre no Caminho de Vida, Expressão ou outros cálculos importantes carrega tanto o potencial extraordinário quanto o desafio correspondente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO MESTRE 11 — O Iluminado: é o 2 amplificado. Onde o 2 busca harmonia e parceria, o 11 busca iluminar, inspirar e elevar. É o número da intuição extrema, da sensibilidade espiritual aguçada, da capacidade de captar o que ainda não é visível para os outros. Missão: ser um canal de inspiração para outras pessoas, usando a sensibilidade e a intuição como ferramentas. Desafio: extrema sensibilidade que pode virar ansiedade crônica, tendência a carregar o peso do mundo, dificuldade de aterrar as visões elevadas na realidade prática.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO MESTRE 22 — O Construtor Mestre: é o 4 amplificado. Onde o 4 constrói estruturas pessoais com disciplina, o 22 constrói estruturas que impactam muitas pessoas — projetos de grande escala, sistemas, legados. É o número com maior potencial de realização concreta de todos. Missão: transformar sonhos visionários em realidades tangíveis que beneficiem muitos. Desafio: a grandiosidade da missão pode paralisar (o peso do potencial), ou pode levar ao outro extremo — a pessoa que, incapaz de suportar a responsabilidade, vive aquém de seu potencial por toda a vida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMERO MESTRE 33 — O Mestre do Amor: é o 6 amplificado. Extremamente raro como número do Caminho de Vida (requer uma data de nascimento específica). Representa o amor incondicional, a cura e o ensinamento do mais alto nível. Missão: curar através do amor e do exemplo. Desafio: antes que a energia do 33 possa ser usada, o portador precisa dominar completamente as energias do 11 e do 22 — o que torna este um número de desenvolvimento extremamente lento e cheio de provas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPessoas com números mestres frequentemente relatam uma sensação de que a vida exige mais delas do que das outras pessoas — que o padrão para si mesmos é mais alto, que as provas são mais intensas e que as recompensas, quando vêm, são também mais profundas.",
         "exemplo": "Nikola Tesla, Albert Einstein e Barack Obama têm sido associados ao número mestre 11 em diferentes sistemas de cálculo. O que eles têm em comum: uma capacidade de perceber e articular o que a maioria ainda não via, uma sensibilidade intensa (Tesla tinha obsessões e fobias; Einstein era profundamente solitário), e uma missão que claramente transcendeu o pessoal para impactar a humanidade.",
         "aplicacao": "1. Verifique se algum dos seus números principais é 11, 22 ou 33. 2. Se sim, leia o significado do número amplificado E do número base (11 = também leia o 2). 3. Reflita: você sente o peso e o potencial dessa vibração na sua vida?",
         "exercicio": "Se você tem um número mestre: identifique 3 momentos da sua vida onde a intensidade desse número se manifestou claramente — positiva ou negativamente. Se não tem número mestre: identifique uma pessoa próxima que tenha e observe como esses temas aparecem na vida dela.",
@@ -21203,7 +21094,7 @@ CURSOS = {
       },
       "4": {
         "titulo": "Ciclos Numerológicos — O Ritmo da Vida",
-        "conteudo": "A numerologia não é estática — ela descreve ciclos temporais que explicam por que determinados temas surgem em determinadas fases da vida. Os principais ciclos são o Ano Pessoal, o Mês Pessoal e os Ciclos de Vida (Pínáculos e Desafios).\\\\\\\\n\\\\\\\\nO ANO PESSOAL é calculado somando o dia e mês de nascimento com o ano em curso. Exemplo: nascida em 15/03, no ano 2025: 1+5+0+3+2+0+2+5 = 18 = 1+8 = 9. Ano Pessoal 9. Cada Ano Pessoal tem um tema que influencia o que a vida traz naquele período.\\\\\\\\n\\\\\\\\nAno 1: começos, novos projetos, plantio, independência. Momento de iniciar, não de colher.\\\\\\\\nAno 2: parceria, paciência, cooperação, detalhes. Ano de espera e de cultivar.\\\\\\\\nAno 3: expressão, criatividade, socialização, alegria. Ano de florescer e comunicar.\\\\\\\\nAno 4: trabalho, fundação, disciplina, construção. Ano de trabalhar duro.\\\\\\\\nAno 5: mudança, liberdade, aventura, imprevisibilidade. Ano de transformação.\\\\\\\\nAno 6: família, responsabilidade, amor, compromisso. Ano de cuidar e harmonizar.\\\\\\\\nAno 7: reflexão, estudo, espiritualidade, introspecção. Ano interior.\\\\\\\\nAno 8: poder, dinheiro, autoridade, colheita. Ano de resultados materiais.\\\\\\\\nAno 9: conclusão, liberação, perdão, universalidade. Ano de finalizar e soltar.\\\\\\\\n\\\\\\\\nO CICLO DE 9 ANOS: a vida se organiza em ciclos de 9 anos. Após um Ano 9, vem um novo Ano 1 — um recomeço. Entender em qual ano do ciclo você está ajuda a não nadar contra a maré: quem tenta colher num Ano 4 (de trabalho e plantio) se frustra. Quem trabalha duro num Ano 8 (de colheita) maximiza os resultados.\\\\\\\\n\\\\\\\\nOS PÍNÁCULOS são quatro grandes fases da vida, cada uma com sua vibração. O primeiro Pináculo vai do nascimento até os 36 menos o Caminho de Vida (por exemplo, para Caminho de Vida 7, termina aos 29 anos). Cada Pináculo tem um número que revela o tema dominante daquela fase.",
+        "conteudo": "A numerologia não é estática — ela descreve ciclos temporais que explicam por que determinados temas surgem em determinadas fases da vida. Os principais ciclos são o Ano Pessoal, o Mês Pessoal e os Ciclos de Vida (Pínáculos e Desafios).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ANO PESSOAL é calculado somando o dia e mês de nascimento com o ano em curso. Exemplo: nascida em 15/03, no ano 2025: 1+5+0+3+2+0+2+5 = 18 = 1+8 = 9. Ano Pessoal 9. Cada Ano Pessoal tem um tema que influencia o que a vida traz naquele período.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAno 1: começos, novos projetos, plantio, independência. Momento de iniciar, não de colher.\\\\\\\\\\\\\\\\nAno 2: parceria, paciência, cooperação, detalhes. Ano de espera e de cultivar.\\\\\\\\\\\\\\\\nAno 3: expressão, criatividade, socialização, alegria. Ano de florescer e comunicar.\\\\\\\\\\\\\\\\nAno 4: trabalho, fundação, disciplina, construção. Ano de trabalhar duro.\\\\\\\\\\\\\\\\nAno 5: mudança, liberdade, aventura, imprevisibilidade. Ano de transformação.\\\\\\\\\\\\\\\\nAno 6: família, responsabilidade, amor, compromisso. Ano de cuidar e harmonizar.\\\\\\\\\\\\\\\\nAno 7: reflexão, estudo, espiritualidade, introspecção. Ano interior.\\\\\\\\\\\\\\\\nAno 8: poder, dinheiro, autoridade, colheita. Ano de resultados materiais.\\\\\\\\\\\\\\\\nAno 9: conclusão, liberação, perdão, universalidade. Ano de finalizar e soltar.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO CICLO DE 9 ANOS: a vida se organiza em ciclos de 9 anos. Após um Ano 9, vem um novo Ano 1 — um recomeço. Entender em qual ano do ciclo você está ajuda a não nadar contra a maré: quem tenta colher num Ano 4 (de trabalho e plantio) se frustra. Quem trabalha duro num Ano 8 (de colheita) maximiza os resultados.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOS PÍNÁCULOS são quatro grandes fases da vida, cada uma com sua vibração. O primeiro Pináculo vai do nascimento até os 36 menos o Caminho de Vida (por exemplo, para Caminho de Vida 7, termina aos 29 anos). Cada Pináculo tem um número que revela o tema dominante daquela fase.",
         "exemplo": "Uma pessoa descobre que está num Ano Pessoal 9 e fica surpresa — está exatamente num momento de grandes encerramentos: fim de relacionamento longo, mudança de cidade, saída de um emprego. O Ano 9 explica: é exatamente isso que deveria estar acontecendo. Resistir a esses encerramentos seria nadar contra a maré. O Ano 1 que vem a seguir trará novos começos — mas só se os encerramentos do 9 forem completados.",
         "aplicacao": "1. Calcule seu Ano Pessoal atual. 2. Leia o tema desse ano. 3. Olhe para o que está acontecendo na sua vida — isso ressoa? 4. Calcule o Ano Pessoal do ano passado e do próximo — veja a sequência.",
         "exercicio": "Calcule seus Anos Pessoais para os últimos 5 anos. Para cada ano, escreva o tema numerológico e um evento ou fase significativa daquele período. Quantos se encaixam?",
@@ -21211,7 +21102,7 @@ CURSOS = {
       },
       "5": {
         "titulo": "Numerologia do Nome — Análise Avançada",
-        "conteudo": "O nome é muito mais do que uma etiqueta — na numerologia, ele é um campo de vibração que influencia como nos expressamos e como somos percebidos. A análise avançada do nome vai além dos quatro números básicos.\\\\\\\\n\\\\\\\\nO NOME DE BATISMO vs NOME SOCIAL: o nome completo de registro revela o potencial total — é a 'partitura completa'. O nome pelo qual você é chamado no dia a dia revela a vibração que você projeta no presente. Mudanças de nome (casamento, adoção de nome artístico, apelido consolidado) trazem novas vibrações — e a numerologia diz que não são neutras.\\\\\\\\n\\\\\\\\nNÚMEROS OCULTOS: quando alguns números não aparecem em nenhuma letra do nome completo, isso indica 'karmas ocultos' — áreas de vida onde a pessoa precisa desenvolver conscientemente o que não veio naturalmente. Por exemplo, se não há nenhuma letra com valor 4 no nome, pode haver dificuldade com disciplina, estrutura e compromisso de longo prazo.\\\\\\\\n\\\\\\\\nNÚMEROS DOMINANTES: números que aparecem muitas vezes nas letras do nome indicam uma ênfase. Um nome com muitas letras de valor 1 (A, J, S) indica alguém com forte energia de liderança e independência expressa na identidade.\\\\\\\\n\\\\\\\\nA TABELA COMPLETA DE LETRAS E NÚMEROS:\\\\\\\\n1: A, J, S\\\\\\\\n2: B, K, T\\\\\\\\n3: C, L, U\\\\\\\\n4: D, M, V\\\\\\\\n5: E, N, W\\\\\\\\n6: F, O, X\\\\\\\\n7: G, P, Y\\\\\\\\n8: H, Q, Z\\\\\\\\n9: I, R\\\\\\\\n\\\\\\\\nCOMPATIBILIDADE NUMEROLÓGICA ENTRE NOMES: quando dois nomes têm vibrações que se completam (por exemplo, um 1 e um 2 — liderança e cooperação), há harmonia natural. Quando as vibrações colidem (dois 1s, por exemplo — duas lideranças que disputam espaço), há mais conflito natural mas também mais dinamismo.",
+        "conteudo": "O nome é muito mais do que uma etiqueta — na numerologia, ele é um campo de vibração que influencia como nos expressamos e como somos percebidos. A análise avançada do nome vai além dos quatro números básicos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO NOME DE BATISMO vs NOME SOCIAL: o nome completo de registro revela o potencial total — é a 'partitura completa'. O nome pelo qual você é chamado no dia a dia revela a vibração que você projeta no presente. Mudanças de nome (casamento, adoção de nome artístico, apelido consolidado) trazem novas vibrações — e a numerologia diz que não são neutras.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMEROS OCULTOS: quando alguns números não aparecem em nenhuma letra do nome completo, isso indica 'karmas ocultos' — áreas de vida onde a pessoa precisa desenvolver conscientemente o que não veio naturalmente. Por exemplo, se não há nenhuma letra com valor 4 no nome, pode haver dificuldade com disciplina, estrutura e compromisso de longo prazo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÚMEROS DOMINANTES: números que aparecem muitas vezes nas letras do nome indicam uma ênfase. Um nome com muitas letras de valor 1 (A, J, S) indica alguém com forte energia de liderança e independência expressa na identidade.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TABELA COMPLETA DE LETRAS E NÚMEROS:\\\\\\\\\\\\\\\\n1: A, J, S\\\\\\\\\\\\\\\\n2: B, K, T\\\\\\\\\\\\\\\\n3: C, L, U\\\\\\\\\\\\\\\\n4: D, M, V\\\\\\\\\\\\\\\\n5: E, N, W\\\\\\\\\\\\\\\\n6: F, O, X\\\\\\\\\\\\\\\\n7: G, P, Y\\\\\\\\\\\\\\\\n8: H, Q, Z\\\\\\\\\\\\\\\\n9: I, R\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCOMPATIBILIDADE NUMEROLÓGICA ENTRE NOMES: quando dois nomes têm vibrações que se completam (por exemplo, um 1 e um 2 — liderança e cooperação), há harmonia natural. Quando as vibrações colidem (dois 1s, por exemplo — duas lideranças que disputam espaço), há mais conflito natural mas também mais dinamismo.",
         "exemplo": "Uma artista que nasceu com nome de registro com Expressão 8 (vibração de poder e materialidade) adota um nome artístico que calcula para 3 (criatividade e expressão). A mudança de nome foi uma mudança de vibração — ela transitou de uma identidade de realizadora material para uma identidade de expressão criativa. Isso é numerologicamente coerente com a mudança de carreira.",
         "aplicacao": "1. Liste todas as letras do seu nome completo e calcule a tabela numérica. 2. Identifique quais números de 1 a 9 estão ausentes. 3. Identifique quais aparecem mais vezes. 4. Se você tem apelido ou nome social diferente do de registro, calcule os dois e compare.",
         "exercicio": "Calcule a Expressão do seu nome de registro e do nome pelo qual você é chamado cotidianamente (se diferente). O que muda? A vibração do nome cotidiano ressoa mais com quem você se sente sendo hoje?",
@@ -21219,7 +21110,7 @@ CURSOS = {
       },
       "6": {
         "titulo": "Numerologia na Prática — Integrando os Números",
-        "conteudo": "Uma análise numerológica completa não é uma soma de descrições isoladas — é uma síntese que revela quem a pessoa é, qual é sua missão, que desafios enfrenta e em que fase de vida está.\\\\\\\\n\\\\\\\\nO MAPA NUMEROLÓGICO COMPLETO inclui pelo menos: Caminho de Vida (missão fundamental), Expressão (talentos e forma de agir), Alma (desejos profundos), Personalidade (máscara social), Ano Pessoal (fase atual), e números ausentes (karmas).\\\\\\\\n\\\\\\\\nCOMO INTEGRAR: comece pelo Caminho de Vida — ele é a missão, o fio condutor. Depois veja a Expressão — como essa missão é expressa naturalmente. Se Caminho e Expressão são harmônicos, a pessoa tende a fluir. Se são contrastantes, há tensão interna que pode ser fonte de criatividade ou de conflito.\\\\\\\\n\\\\\\\\nDepois olhe a Alma — o que a pessoa deseja profundamente. Se a Alma está alinhada com o Caminho e a Expressão, há coerência interna. Se a Alma deseja algo diferente do que o Caminho pede, há uma sensação de sacrifício ou de algo não vivido.\\\\\\\\n\\\\\\\\nOs NÚMEROS AUSENTES revelam onde o trabalho é mais necessário. Uma pessoa sem nenhum 6 no nome pode ter dificuldade com cuidado, família e responsabilidade — ou pode ser exatamente aí que sua maior lição de vida está.\\\\\\\\n\\\\\\\\nO ANO PESSOAL posiciona tudo isso no tempo: que aspectos do mapa estão sendo ativados agora? Um Caminho de Vida 1 num Ano 1 sente o impulso de liderança amplificado. Um Caminho 7 num Ano 9 está num momento de profunda introspecção e finalização.\\\\\\\\n\\\\\\\\nA PRECISÃO DE UMA BOA LEITURA: como em qualquer sistema simbólico, o numerólogo experiente usa os números como mapa, não como território. As descrições são arquétipos — cada pessoa os vive de forma única. O objetivo não é encaixar a pessoa num número, mas usar o número para abrir conversa sobre quem ela é.",
+        "conteudo": "Uma análise numerológica completa não é uma soma de descrições isoladas — é uma síntese que revela quem a pessoa é, qual é sua missão, que desafios enfrenta e em que fase de vida está.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MAPA NUMEROLÓGICO COMPLETO inclui pelo menos: Caminho de Vida (missão fundamental), Expressão (talentos e forma de agir), Alma (desejos profundos), Personalidade (máscara social), Ano Pessoal (fase atual), e números ausentes (karmas).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCOMO INTEGRAR: comece pelo Caminho de Vida — ele é a missão, o fio condutor. Depois veja a Expressão — como essa missão é expressa naturalmente. Se Caminho e Expressão são harmônicos, a pessoa tende a fluir. Se são contrastantes, há tensão interna que pode ser fonte de criatividade ou de conflito.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDepois olhe a Alma — o que a pessoa deseja profundamente. Se a Alma está alinhada com o Caminho e a Expressão, há coerência interna. Se a Alma deseja algo diferente do que o Caminho pede, há uma sensação de sacrifício ou de algo não vivido.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs NÚMEROS AUSENTES revelam onde o trabalho é mais necessário. Uma pessoa sem nenhum 6 no nome pode ter dificuldade com cuidado, família e responsabilidade — ou pode ser exatamente aí que sua maior lição de vida está.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ANO PESSOAL posiciona tudo isso no tempo: que aspectos do mapa estão sendo ativados agora? Um Caminho de Vida 1 num Ano 1 sente o impulso de liderança amplificado. Um Caminho 7 num Ano 9 está num momento de profunda introspecção e finalização.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA PRECISÃO DE UMA BOA LEITURA: como em qualquer sistema simbólico, o numerólogo experiente usa os números como mapa, não como território. As descrições são arquétipos — cada pessoa os vive de forma única. O objetivo não é encaixar a pessoa num número, mas usar o número para abrir conversa sobre quem ela é.",
         "exemplo": "Ana, Caminho de Vida 7, Expressão 3, Alma 9, Personalidade 3, Ano Pessoal 4, ausência do número 1. Leitura integrada: Ana é uma buscadora espiritual (7) que se expressa de forma criativa e comunicativa (Expressão e Personalidade 3), com um desejo profundo de servir à humanidade (Alma 9). O Ano 4 atual é de trabalho duro e construção de bases — provavelmente um período menos glamouroso mas de grande importância estrutural. A ausência do 1 sugere que iniciativa e liderança pessoal são áreas de desenvolvimento consciente para ela.",
         "aplicacao": "1. Monte seu mapa completo com os cinco números. 2. Escreva um parágrafo integrando todos eles. 3. Identifique as harmonias e as tensões. 4. Veja o que o Ano Pessoal atual está ativando no mapa.",
         "exercicio": "Faça a análise numerológica completa de alguém que você conhece bem (com permissão). Escreva um parágrafo integrando os números. Mostre para a pessoa e pergunte se ressoa. Anote o feedback.",
@@ -21235,7 +21126,7 @@ CURSOS = {
     "aulas": {
       "1": {
         "titulo": "A Origem das Runas",
-        "conteudo": "As runas (do proto-germânico 'rūnō', que significa 'segredo' ou 'sussurro') são o mais antigo sistema de escrita dos povos germânicos e nórdicos. Os registros arqueológicos mais antigos de runas datam do século II d.C., mas a tradição oral sugere uso muito anterior. Elas foram usadas simultaneamente como alfabeto (para inscrições em pedras, armas, jóias e madeira) e como sistema divinatório e mágico.\\\\\\\\n\\\\\\\\nA mitologia nórdica conta que as runas não foram inventadas — foram descobertas. Odin, o deus supremo dos nórdicos, pendurou-se de cabeça para baixo na Yggdrasil (a Árvore do Mundo) por nove dias e nove noites sem comer ou beber, em sacrifício de si mesmo para si mesmo, até que as runas se revelaram a ele em visão. Essa narrativa não é apenas mito — ela revela a natureza das runas: não são criações humanas, mas forças que existem no tecido da realidade e que foram acessadas através de sacrifício e contemplação profunda.\\\\\\\\n\\\\\\\\nO ELDER FUTHARK é o mais antigo e completo alfabeto rúnico, composto por 24 runas divididas em três grupos de 8 chamados Aettir (plural de Aett, 'família'): o Aett de Freyr/Freyja (runas 1-8), o Aett de Heimdall (runas 9-16) e o Aett de Tyr (runas 17-24). O nome 'Futhark' vem das seis primeiras runas: Fehu, Uruz, Thurisaz, Ansuz, Raidho, Kenaz.\\\\\\\\n\\\\\\\\nNa adivinhação rúnica, cada runa pode aparecer em posição direta (upright) ou invertida (merkstave). A posição invertida não significa necessariamente algo negativo — indica a energia da runa em sua manifestação mais desafiadora, bloqueada ou interiorizada. Nem todas as runas têm merkstave (runas simétricas como Isa ou Gebo têm o mesmo significado em qualquer posição).\\\\\\\\n\\\\\\\\nAs runas não 'preveem' o futuro de forma determinista — elas revelam as energias em jogo no momento presente e os padrões que, se continuarem, produzirão determinados resultados. São uma ferramenta de consciência, não de fatalismo.",
+        "conteudo": "As runas (do proto-germânico 'rūnō', que significa 'segredo' ou 'sussurro') são o mais antigo sistema de escrita dos povos germânicos e nórdicos. Os registros arqueológicos mais antigos de runas datam do século II d.C., mas a tradição oral sugere uso muito anterior. Elas foram usadas simultaneamente como alfabeto (para inscrições em pedras, armas, jóias e madeira) e como sistema divinatório e mágico.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA mitologia nórdica conta que as runas não foram inventadas — foram descobertas. Odin, o deus supremo dos nórdicos, pendurou-se de cabeça para baixo na Yggdrasil (a Árvore do Mundo) por nove dias e nove noites sem comer ou beber, em sacrifício de si mesmo para si mesmo, até que as runas se revelaram a ele em visão. Essa narrativa não é apenas mito — ela revela a natureza das runas: não são criações humanas, mas forças que existem no tecido da realidade e que foram acessadas através de sacrifício e contemplação profunda.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ELDER FUTHARK é o mais antigo e completo alfabeto rúnico, composto por 24 runas divididas em três grupos de 8 chamados Aettir (plural de Aett, 'família'): o Aett de Freyr/Freyja (runas 1-8), o Aett de Heimdall (runas 9-16) e o Aett de Tyr (runas 17-24). O nome 'Futhark' vem das seis primeiras runas: Fehu, Uruz, Thurisaz, Ansuz, Raidho, Kenaz.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNa adivinhação rúnica, cada runa pode aparecer em posição direta (upright) ou invertida (merkstave). A posição invertida não significa necessariamente algo negativo — indica a energia da runa em sua manifestação mais desafiadora, bloqueada ou interiorizada. Nem todas as runas têm merkstave (runas simétricas como Isa ou Gebo têm o mesmo significado em qualquer posição).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs runas não 'preveem' o futuro de forma determinista — elas revelam as energias em jogo no momento presente e os padrões que, se continuarem, produzirão determinados resultados. São uma ferramenta de consciência, não de fatalismo.",
         "exemplo": "Uma escavação arqueológica na Noruega encontrou uma runa Tiwaz (ᛏ) gravada numa faca de guerra viking. Não era decoração — era um encantamento pedindo proteção divina de Tyr, o deus da guerra justa. As runas eram inseparáveis da vida cotidiana, espiritual e guerreira dos nórdicos.",
         "aplicacao": "1. Familiarize-se com os símbolos das 24 runas. 2. Aprenda o nome de cada uma. 3. Entenda a divisão em três Aettir. 4. Comece a perceber runas em contextos culturais — logotipos, tatuagens, símbolos modernos que derivam das runas.",
         "exercicio": "Desenhe as 24 runas do Elder Futhark de memória (ou copiando) e escreva o nome de cada uma ao lado. Esse ato de escrever manualmente é, em si, uma forma de conexão com a tradição rúnica.",
@@ -21243,7 +21134,7 @@ CURSOS = {
       },
       "2": {
         "titulo": "O Primeiro Aett — As Runas de Freyr",
-        "conteudo": "O Primeiro Aett está sob a regência de Freyr e Freyja, os deuses da fertilidade, abundância, amor e magia. As oito runas deste grupo lidam com forças fundamentais da vida material e instintiva.\\\\\\\\n\\\\\\\\nFEHU (ᚠ) — Gado/Riqueza: a primeira runa é sobre prosperidade, abundância e o fluxo de riqueza. Antigamente, o gado era a riqueza mais fundamental. Fehu não é sobre dinheiro parado — é sobre riqueza em movimento, circulando, crescendo. Direta: prosperidade merecida, energia vital forte, momento de colheita. Merkstave: perda material, energia estagnada, ganância.\\\\\\\\n\\\\\\\\nURUZ (ᚢ) — Auroque/Força Bruta: o auroque era um boi selvagem de força imensuravelmente superior à do boi domesticado. Uruz é a força primitiva, a saúde robusta, a vitalidade animal. Direta: força, saúde, potencial não domesticado, momento de agir com vigor. Merkstave: fraqueza, doença, força mal direcionada.\\\\\\\\n\\\\\\\\nTHURISAZ (ᚦ) — Gigante/Espinho: é a runa do caos controlado, da força destruidora que também limpa o caminho. Associada a Thor e seus inimigos, os Jötnar (gigantes). Direta: proteção, força destrutiva utilizada construtivamente, momento de confrontar. Merkstave: perigo, compulsão, energia destrutiva descontrolada.\\\\\\\\n\\\\\\\\nANSUZ (ᚨ) — Boca/Mensagem Divina: a runa da comunicação divina, das palavras, da sabedoria de Odin. Direta: mensagem importante chegando, comunicação clara, sabedoria, bênção divina. Merkstave: má comunicação, engano, manipulação através de palavras.\\\\\\\\n\\\\\\\\nRAIDHO (ᚱ) — Roda/Jornada: movimento, viagem, ritmo. A roda é o veículo, a jornada é tanto física quanto espiritual. Direta: jornada positiva, progresso, bom timing, as coisas fluindo no ritmo certo. Merkstave: jornada bloqueada, timing errado, planos que precisam ser revistos.\\\\\\\\n\\\\\\\\nKENAZ (ᚲ) — Tocha/Conhecimento: a luz que ilumina o que estava escuro. Conhecimento, criatividade, transformação pelo fogo. Direta: iluminação, revelação, novo conhecimento, criatividade em chamas. Merkstave: falsa clareza, fogo destruidor, conhecimento usado de forma errada.\\\\\\\\n\\\\\\\\nGEBO (ᚷ) — Presente/Troca: a runa da dádiva, da troca equilibrada, da parceria. Não tem merkstave (é simétrica). Sempre significa: presente, intercâmbio, parceria, generosidade que cria conexão.\\\\\\\\n\\\\\\\\nWUNJO (ᚹ) — Alegria/Clã: bem-estar, alegria, a sensação de pertencer. Direta: felicidade, harmonia, objetivos alcançados, sentido de comunidade. Merkstave: alegria vazia, felicidade superficial, conflito dentro do grupo.",
+        "conteudo": "O Primeiro Aett está sob a regência de Freyr e Freyja, os deuses da fertilidade, abundância, amor e magia. As oito runas deste grupo lidam com forças fundamentais da vida material e instintiva.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nFEHU (ᚠ) — Gado/Riqueza: a primeira runa é sobre prosperidade, abundância e o fluxo de riqueza. Antigamente, o gado era a riqueza mais fundamental. Fehu não é sobre dinheiro parado — é sobre riqueza em movimento, circulando, crescendo. Direta: prosperidade merecida, energia vital forte, momento de colheita. Merkstave: perda material, energia estagnada, ganância.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nURUZ (ᚢ) — Auroque/Força Bruta: o auroque era um boi selvagem de força imensuravelmente superior à do boi domesticado. Uruz é a força primitiva, a saúde robusta, a vitalidade animal. Direta: força, saúde, potencial não domesticado, momento de agir com vigor. Merkstave: fraqueza, doença, força mal direcionada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nTHURISAZ (ᚦ) — Gigante/Espinho: é a runa do caos controlado, da força destruidora que também limpa o caminho. Associada a Thor e seus inimigos, os Jötnar (gigantes). Direta: proteção, força destrutiva utilizada construtivamente, momento de confrontar. Merkstave: perigo, compulsão, energia destrutiva descontrolada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nANSUZ (ᚨ) — Boca/Mensagem Divina: a runa da comunicação divina, das palavras, da sabedoria de Odin. Direta: mensagem importante chegando, comunicação clara, sabedoria, bênção divina. Merkstave: má comunicação, engano, manipulação através de palavras.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nRAIDHO (ᚱ) — Roda/Jornada: movimento, viagem, ritmo. A roda é o veículo, a jornada é tanto física quanto espiritual. Direta: jornada positiva, progresso, bom timing, as coisas fluindo no ritmo certo. Merkstave: jornada bloqueada, timing errado, planos que precisam ser revistos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nKENAZ (ᚲ) — Tocha/Conhecimento: a luz que ilumina o que estava escuro. Conhecimento, criatividade, transformação pelo fogo. Direta: iluminação, revelação, novo conhecimento, criatividade em chamas. Merkstave: falsa clareza, fogo destruidor, conhecimento usado de forma errada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nGEBO (ᚷ) — Presente/Troca: a runa da dádiva, da troca equilibrada, da parceria. Não tem merkstave (é simétrica). Sempre significa: presente, intercâmbio, parceria, generosidade que cria conexão.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nWUNJO (ᚹ) — Alegria/Clã: bem-estar, alegria, a sensação de pertencer. Direta: felicidade, harmonia, objetivos alcançados, sentido de comunidade. Merkstave: alegria vazia, felicidade superficial, conflito dentro do grupo.",
         "exemplo": "Numa tiragem para alguém que pergunta sobre sua situação financeira, Fehu aparece merkstave e Raidho aparece direta. Leitura: há uma estagnação ou perda na área financeira (Fehu invertida), mas o movimento está a caminho (Raidho direta) — a situação está em transição, não em colapso.",
         "aplicacao": "1. Memorize as 8 runas do Primeiro Aett e seus significados. 2. Para cada uma, pense numa situação da sua vida onde aquela energia esteve presente. 3. Pratique identificar qual seria o significado merkstave de cada uma.",
         "exercicio": "Escolha uma runa do Primeiro Aett que ressoa com algo que você está vivendo agora. Escreva seu símbolo três vezes, pronuncie seu nome em voz alta, e reflita por 5 minutos sobre como essa energia está presente (ou ausente) na sua vida.",
@@ -21251,7 +21142,7 @@ CURSOS = {
       },
       "3": {
         "titulo": "O Segundo Aett — As Runas de Heimdall",
-        "conteudo": "O Segundo Aett está sob a regência de Heimdall (o guardião dos mundos) e Mordgud. Estas runas lidam com desafios, transformação, e os ciclos mais profundos da existência.\\\\\\\\n\\\\\\\\nHAGALAZ (ᚺ) — Granizo: destruição súbita vinda de forças fora do nosso controle, como uma tempestade de granizo que arrasa a colheita. Não tem merkstave (é simétrica no Elder Futhark). Sempre significa: ruptura súbita, crise fora do controle, caos necessário para transformação. É uma das runas mais temidas mas também uma das mais transformadoras — o granizo destrói, mas fertiliza o solo para nova plantação.\\\\\\\\n\\\\\\\\nNAUTHIZ (ᚾ) — Necessidade/Limitação: a runa da restrição, da necessidade não satisfeita, mas também da resistência que fortalece. É no atrito que a faísca nasce. Direta: necessidade, limitação que ensina, paciência forçada, perseverança necessária. Merkstave: limitação paralisante, resistência que sufoca, recusa em aceitar restrições.\\\\\\\\n\\\\\\\\nISA (ᛁ) — Gelo: paralisia, congelamento, quietude forçada. Não tem merkstave. Sempre significa: tudo parou, é hora de aguardar, não force nada agora. O gelo não é o fim — é a preservação durante o inverno.\\\\\\\\n\\\\\\\\nJERA (ᛃ) — Ano/Colheita: o ciclo completo, a colheita que vem depois do plantio e da espera. Não tem merkstave. Sempre significa: o tempo certo chegou, a colheita é proporcional ao plantio, os ciclos da vida estão se completando.\\\\\\\\n\\\\\\\\nEIHWAZ (ᛇ) — Teixo/Transformação: o teixo é a árvore que vive por milênios, cuja madeira era usada para arcos de guerra, e que cresce em cemitérios — ela conecta vida e morte. Runa da transformação profunda e da perseverança através das crises. Direta: transformação, força que vem de dentro, confiabilidade. Merkstave: fraqueza interna, rigidez, bloqueio na transformação.\\\\\\\\n\\\\\\\\nPERTHRO (ᛈ) — Copa/Mistério: a mais misteriosa das runas. Seu significado exato é debatido. Associada ao destino, ao acaso, ao que está escondido. Direta: mistério se revelando, o acaso trabalhando a seu favor, prazer oculto. Merkstave: segredos dolorosos, o acaso trabalhando contra, vícios ocultos.\\\\\\\\n\\\\\\\\nALGIZ (ᛉ) — Alce/Escudo: proteção, conexão com o divino, consciência expandida. Direta: proteção, conexão espiritual, estar no lugar certo. Merkstave: vulnerabilidade, proteção enfraquecida, conexão com forças que drenam.\\\\\\\\n\\\\\\\\nSOWILO (ᛊ) — Sol: vitória, força solar, clareza. Não tem merkstave. Sempre positiva: sucesso, energia vital, clareza de propósito, vitória.",
+        "conteudo": "O Segundo Aett está sob a regência de Heimdall (o guardião dos mundos) e Mordgud. Estas runas lidam com desafios, transformação, e os ciclos mais profundos da existência.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nHAGALAZ (ᚺ) — Granizo: destruição súbita vinda de forças fora do nosso controle, como uma tempestade de granizo que arrasa a colheita. Não tem merkstave (é simétrica no Elder Futhark). Sempre significa: ruptura súbita, crise fora do controle, caos necessário para transformação. É uma das runas mais temidas mas também uma das mais transformadoras — o granizo destrói, mas fertiliza o solo para nova plantação.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNAUTHIZ (ᚾ) — Necessidade/Limitação: a runa da restrição, da necessidade não satisfeita, mas também da resistência que fortalece. É no atrito que a faísca nasce. Direta: necessidade, limitação que ensina, paciência forçada, perseverança necessária. Merkstave: limitação paralisante, resistência que sufoca, recusa em aceitar restrições.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nISA (ᛁ) — Gelo: paralisia, congelamento, quietude forçada. Não tem merkstave. Sempre significa: tudo parou, é hora de aguardar, não force nada agora. O gelo não é o fim — é a preservação durante o inverno.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nJERA (ᛃ) — Ano/Colheita: o ciclo completo, a colheita que vem depois do plantio e da espera. Não tem merkstave. Sempre significa: o tempo certo chegou, a colheita é proporcional ao plantio, os ciclos da vida estão se completando.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nEIHWAZ (ᛇ) — Teixo/Transformação: o teixo é a árvore que vive por milênios, cuja madeira era usada para arcos de guerra, e que cresce em cemitérios — ela conecta vida e morte. Runa da transformação profunda e da perseverança através das crises. Direta: transformação, força que vem de dentro, confiabilidade. Merkstave: fraqueza interna, rigidez, bloqueio na transformação.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPERTHRO (ᛈ) — Copa/Mistério: a mais misteriosa das runas. Seu significado exato é debatido. Associada ao destino, ao acaso, ao que está escondido. Direta: mistério se revelando, o acaso trabalhando a seu favor, prazer oculto. Merkstave: segredos dolorosos, o acaso trabalhando contra, vícios ocultos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nALGIZ (ᛉ) — Alce/Escudo: proteção, conexão com o divino, consciência expandida. Direta: proteção, conexão espiritual, estar no lugar certo. Merkstave: vulnerabilidade, proteção enfraquecida, conexão com forças que drenam.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSOWILO (ᛊ) — Sol: vitória, força solar, clareza. Não tem merkstave. Sempre positiva: sucesso, energia vital, clareza de propósito, vitória.",
         "exemplo": "Hagalaz aparece numa tiragem sobre um relacionamento. Em vez de dizer 'crise devastadora', o leitor experiente diz: 'Há uma ruptura que não pode ser controlada chegando — ou já acontecendo. Mas o granizo fertiliza o solo. O que está sendo destruído aqui pode ser o espaço para algo novo e mais autêntico crescer.'",
         "aplicacao": "1. Memorize as 8 runas do Segundo Aett. 2. Perceba que várias delas (Hagalaz, Isa, Jera) não têm merkstave — são forças neutras que se manifestam como são. 3. Identifique qual dessas energias está mais presente na sua vida agora.",
         "exercicio": "Qual das runas do Segundo Aett descreve melhor a fase que você está vivendo? Escreva um parágrafo sobre como essa energia está se manifestando na sua vida.",
@@ -21259,7 +21150,7 @@ CURSOS = {
       },
       "4": {
         "titulo": "O Terceiro Aett — As Runas de Tyr",
-        "conteudo": "O Terceiro Aett está sob a regência de Tyr (deus da guerra justa e da lei) e Zisa. Estas runas lidam com humanidade, comunidade, herança e o fim dos ciclos.\\\\\\\\n\\\\\\\\nTIWAZ (ᛏ) — Tyr/Justiça: nomeada pelo deus que sacrificou a mão para acorrentar o lobo Fenrir, Tiwaz é a runa do sacrifício pelo bem maior, da justiça, da coragem moral. Direta: justiça, sacrifício honroso, vitória pela integridade. Merkstave: injustiça, sacrifício em vão, motivações desonestas disfarçadas de nobreza.\\\\\\\\n\\\\\\\\nBERKANO (ᛒ) — Bétula/Renascimento: a bétula é a primeira árvore a brotar após um incêndio florestal. Runa do renascimento, da feminidade, do cuidado que nutre. Direta: novo começo, nutrição, cura, renascimento após destruição. Merkstave: estagnação, incapacidade de crescer, controle disfarçado de cuidado.\\\\\\\\n\\\\\\\\nEHWAZ (ᛖ) — Cavalo/Parceria: dois cavalos trabalhando juntos — parceria que multiplica o poder de cada um. Direta: parceria frutífera, movimento em sincronia, confiança mútua. Merkstave: parceria desequilibrada, movimento sem direção, desconfiança.\\\\\\\\n\\\\\\\\nMANNAZ (ᛗ) — Humanidade: a runa da natureza humana, do ser social, da consciência de si mesmo dentro da coletividade. Direta: humanidade em equilíbrio, consciência expandida, cooperação. Merkstave: ego inflado, manipulação, perda da perspectiva sobre si mesmo.\\\\\\\\n\\\\\\\\nLAGUZ (ᛚ) — Água/Fluxo: a água que não pode ser controlada mas pode ser navegada. Intuição, inconsciente, fluxo das emoções. Direta: intuição confiável, fluir com a vida, emoções como guia. Merkstave: intuição bloqueada, emoções avassaladoras, afogamento nos sentimentos.\\\\\\\\n\\\\\\\\nINGWAZ (ᛜ) — Ing/Potencial: associada ao deus Ingwaz (Freyr), é a semente antes de germinar — potencial concentrado pronto para explodir. Não tem merkstave. Sempre significa: potencial pronto para se manifestar, conclusão de uma fase, energia concentrada.\\\\\\\\n\\\\\\\\nDAGAZ (ᛞ) — Amanhecer/Clareza: o momento entre a noite e o dia, quando tudo muda. Transformação, clareza repentina, breakthrough. Não tem merkstave. Sempre significa: transformação profunda, clareza que vem de dentro, novo dia que começa.\\\\\\\\n\\\\\\\\nOTHALA (ᛟ) — Herança/Lar: o que foi herdado — terra, sangue, tradição, valores familiares. Direta: herança valiosa, raízes que sustentam, propriedade e pertencimento. Merkstave: herança que prende, valores familiares tóxicos, incapacidade de deixar o passado.",
+        "conteudo": "O Terceiro Aett está sob a regência de Tyr (deus da guerra justa e da lei) e Zisa. Estas runas lidam com humanidade, comunidade, herança e o fim dos ciclos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nTIWAZ (ᛏ) — Tyr/Justiça: nomeada pelo deus que sacrificou a mão para acorrentar o lobo Fenrir, Tiwaz é a runa do sacrifício pelo bem maior, da justiça, da coragem moral. Direta: justiça, sacrifício honroso, vitória pela integridade. Merkstave: injustiça, sacrifício em vão, motivações desonestas disfarçadas de nobreza.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nBERKANO (ᛒ) — Bétula/Renascimento: a bétula é a primeira árvore a brotar após um incêndio florestal. Runa do renascimento, da feminidade, do cuidado que nutre. Direta: novo começo, nutrição, cura, renascimento após destruição. Merkstave: estagnação, incapacidade de crescer, controle disfarçado de cuidado.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nEHWAZ (ᛖ) — Cavalo/Parceria: dois cavalos trabalhando juntos — parceria que multiplica o poder de cada um. Direta: parceria frutífera, movimento em sincronia, confiança mútua. Merkstave: parceria desequilibrada, movimento sem direção, desconfiança.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nMANNAZ (ᛗ) — Humanidade: a runa da natureza humana, do ser social, da consciência de si mesmo dentro da coletividade. Direta: humanidade em equilíbrio, consciência expandida, cooperação. Merkstave: ego inflado, manipulação, perda da perspectiva sobre si mesmo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nLAGUZ (ᛚ) — Água/Fluxo: a água que não pode ser controlada mas pode ser navegada. Intuição, inconsciente, fluxo das emoções. Direta: intuição confiável, fluir com a vida, emoções como guia. Merkstave: intuição bloqueada, emoções avassaladoras, afogamento nos sentimentos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nINGWAZ (ᛜ) — Ing/Potencial: associada ao deus Ingwaz (Freyr), é a semente antes de germinar — potencial concentrado pronto para explodir. Não tem merkstave. Sempre significa: potencial pronto para se manifestar, conclusão de uma fase, energia concentrada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDAGAZ (ᛞ) — Amanhecer/Clareza: o momento entre a noite e o dia, quando tudo muda. Transformação, clareza repentina, breakthrough. Não tem merkstave. Sempre significa: transformação profunda, clareza que vem de dentro, novo dia que começa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOTHALA (ᛟ) — Herança/Lar: o que foi herdado — terra, sangue, tradição, valores familiares. Direta: herança valiosa, raízes que sustentam, propriedade e pertencimento. Merkstave: herança que prende, valores familiares tóxicos, incapacidade de deixar o passado.",
         "exemplo": "Dagaz aparece numa tiragem para alguém que está no meio de uma crise existencial profunda. A mensagem: você está no limiar — não na escuridão, não na luz, mas no momento exato de transição. Dagaz não promete que vai ser fácil, mas confirma que a clareza está chegando e que esta crise é, na verdade, o amanhecer de algo novo.",
         "aplicacao": "1. Memorize as 8 runas do Terceiro Aett. 2. Perceba a progressão dos três Aettir: do instintivo e material (1º) ao caótico e transformador (2º) ao humano e comunitário (3º). 3. Identifique onde cada Aett aparece na sua vida agora.",
         "exercicio": "Escolha uma runa do Terceiro Aett e pesquise sua mitologia nórdica associada. Como a história do deus ou símbolo relacionado ilumina o significado da runa?",
@@ -21267,7 +21158,7 @@ CURSOS = {
       },
       "5": {
         "titulo": "Métodos de Tiragem Rúnica",
-        "conteudo": "Existem muitas formas de fazer uma tiragem rúnica. As mais comuns vão de uma única runa a layouts complexos de 9 ou mais runas. A escolha do método depende da complexidade da pergunta e da profundidade de resposta desejada.\\\\\\\\n\\\\\\\\nA RUNA DO DIA: tire uma única runa pela manhã como orientação para o dia. Não faça uma pergunta específica — simplesmente abra a mente para receber uma mensagem. A runa revelada pode ser literal (Raidho num dia de viagem) ou simbólica (Isa num dia que pede pausa e reflexão).\\\\\\\\n\\\\\\\\nA TIRAGEM DE TRÊS RUNAS é o layout mais versátil. Dependendo da intenção, pode representar: Passado-Presente-Futuro / Situação-Ação-Resultado / Problema-Causa-Solução / Você-O Outro-A Relação. Esta flexibilidade torna a tiragem de três runas adequada para quase qualquer pergunta.\\\\\\\\n\\\\\\\\nA TIRAGEM DE CINCO RUNAS expande para: Situação Atual / O que Está Oculto / Conselho / Caminho Mais Provável / Resultado Final. É boa para situações mais complexas onde a dimensão oculta é importante.\\\\\\\\n\\\\\\\\nA CRUZ NÓRDICA (5 runas em forma de cruz) oferece: Centro (o coração da questão) / Norte (o passado relevante) / Sul (o possível futuro) / Leste (forças que ajudam) / Oeste (forças que dificultam).\\\\\\\\n\\\\\\\\nO CAST (lançamento livre) é o método mais antigo: as runas são jogadas sobre uma superfície e lidas com base em quais caíram com a face para cima, quais caíram perto do centro (mais relevantes), quais ficaram agrupadas, e quais caíram sozinhas.\\\\\\\\n\\\\\\\\nCOMO PREPARAR-SE: antes de qualquer tiragem, crie um estado de concentração e intenção. Muitos praticantes seguram as runas nas mãos por um momento, respiram profundamente, e formulam uma pergunta clara. A clareza da pergunta influencia a clareza da resposta.\\\\\\\\n\\\\\\\\nCOMO LIMPAR AS RUNAS: após uso, especialmente para outros, algumas tradições recomendam passar as runas pela fumaça de ervas (sálvia, arruda), enterrá-las brevemente na terra, ou simplesmente guardá-las num saco escuro por um tempo.",
+        "conteudo": "Existem muitas formas de fazer uma tiragem rúnica. As mais comuns vão de uma única runa a layouts complexos de 9 ou mais runas. A escolha do método depende da complexidade da pergunta e da profundidade de resposta desejada.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA RUNA DO DIA: tire uma única runa pela manhã como orientação para o dia. Não faça uma pergunta específica — simplesmente abra a mente para receber uma mensagem. A runa revelada pode ser literal (Raidho num dia de viagem) ou simbólica (Isa num dia que pede pausa e reflexão).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TIRAGEM DE TRÊS RUNAS é o layout mais versátil. Dependendo da intenção, pode representar: Passado-Presente-Futuro / Situação-Ação-Resultado / Problema-Causa-Solução / Você-O Outro-A Relação. Esta flexibilidade torna a tiragem de três runas adequada para quase qualquer pergunta.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TIRAGEM DE CINCO RUNAS expande para: Situação Atual / O que Está Oculto / Conselho / Caminho Mais Provável / Resultado Final. É boa para situações mais complexas onde a dimensão oculta é importante.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA CRUZ NÓRDICA (5 runas em forma de cruz) oferece: Centro (o coração da questão) / Norte (o passado relevante) / Sul (o possível futuro) / Leste (forças que ajudam) / Oeste (forças que dificultam).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO CAST (lançamento livre) é o método mais antigo: as runas são jogadas sobre uma superfície e lidas com base em quais caíram com a face para cima, quais caíram perto do centro (mais relevantes), quais ficaram agrupadas, e quais caíram sozinhas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCOMO PREPARAR-SE: antes de qualquer tiragem, crie um estado de concentração e intenção. Muitos praticantes seguram as runas nas mãos por um momento, respiram profundamente, e formulam uma pergunta clara. A clareza da pergunta influencia a clareza da resposta.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCOMO LIMPAR AS RUNAS: após uso, especialmente para outros, algumas tradições recomendam passar as runas pela fumaça de ervas (sálvia, arruda), enterrá-las brevemente na terra, ou simplesmente guardá-las num saco escuro por um tempo.",
         "exemplo": "Alguém pergunta sobre uma decisão profissional. Tiragem de três runas: Passado (Fehu direta — prosperidade que construiu), Presente (Isa — pausa, congelamento, espera necessária), Futuro (Jera — colheita proporcional). Leitura: você construiu algo real (Fehu), está num momento de aparente paralisia que é na verdade necessário (Isa), e se respeitar esse ritmo, a colheita virá no tempo certo (Jera). Não force. Confie no ciclo.",
         "aplicacao": "1. Comece com a runa do dia por pelo menos uma semana. 2. Depois experimente a tiragem de três runas para uma pergunta real. 3. Registre suas tiragens e depois verifique se a orientação se mostrou relevante.",
         "exercicio": "Faça uma tiragem de três runas para uma situação real que você está vivendo. Use o modelo Situação-Ação-Resultado. Escreva sua interpretação e volte a ela em 2 semanas.",
@@ -21275,7 +21166,7 @@ CURSOS = {
       },
       "6": {
         "titulo": "Magia Rúnica e Runas de Proteção",
-        "conteudo": "Além da adivinhação, as runas foram historicamente usadas para magia — gravar runas em objetos para invocar proteção, amor, cura ou vitória. Essa tradição é chamada de galdrastafir (uso de runas em fórmulas mágicas) e está documentada em centenas de inscrições arqueológicas.\\\\\\\\n\\\\\\\\nAs RUNAS DE PROTEÇÃO mais poderosas incluem Algiz (proteção e conexão espiritual), Tiwaz (proteção guerreira e justiça), Thurisaz (barreira contra inimigos) e Isa (congelar situações negativas).\\\\\\\\n\\\\\\\\nAs RUNAS DE CURA incluem Berkano (renascimento e cura feminina), Laguz (fluxo e purificação emocional), Uruz (força vital e saúde) e Sowilo (energia solar e vitalidade).\\\\\\\\n\\\\\\\\nOs BINDRUNES são runas combinadas — duas ou mais runas sobrepostas para criar um símbolo composto com as energias de ambas. Muitos logos modernos e símbolos culturais são, na verdade, bindrunes ancestrais.\\\\\\\\n\\\\\\\\nA MAGIA RÚNICA na prática moderna não requer crença sobrenatural — pode ser entendida como um sistema de intenção simbólica. Gravar uma runa numa vela, carregar uma pedra com uma runa pintada, ou desenhar uma runa ao acordar são formas de intenção ritual que funcionam através da psicologia da intenção e do foco.\\\\\\\\n\\\\\\\\nRUNAS E MEDITAÇÃO: cada runa pode ser objeto de meditação. Sente-se em posição confortável, visualize a runa à sua frente, pronuncie seu nome repetidamente (canto rúnico ou 'galdr'), e abra-se para as imagens e sentimentos que surgem. Esta é a forma mais antiga de 'estudar' as runas — não através de livros, mas através de experiência direta.\\\\\\\\n\\\\\\\\nÉTICA NA PRÁTICA RÚNICA: como qualquer sistema de poder, as runas pedem responsabilidade. A tradição nórdica é clara: o uso de magia para prejudicar outros tem consequências — não necessariamente 'kármicas' no sentido orientalista, mas no sentido de que quem manipula energias destrutivas eventualmente é consumido por elas. A magia rúnica mais poderosa é sempre a que alinha a vontade pessoal com forças maiores, não a que tenta forçar resultados contra a natureza das coisas.",
+        "conteudo": "Além da adivinhação, as runas foram historicamente usadas para magia — gravar runas em objetos para invocar proteção, amor, cura ou vitória. Essa tradição é chamada de galdrastafir (uso de runas em fórmulas mágicas) e está documentada em centenas de inscrições arqueológicas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs RUNAS DE PROTEÇÃO mais poderosas incluem Algiz (proteção e conexão espiritual), Tiwaz (proteção guerreira e justiça), Thurisaz (barreira contra inimigos) e Isa (congelar situações negativas).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAs RUNAS DE CURA incluem Berkano (renascimento e cura feminina), Laguz (fluxo e purificação emocional), Uruz (força vital e saúde) e Sowilo (energia solar e vitalidade).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs BINDRUNES são runas combinadas — duas ou mais runas sobrepostas para criar um símbolo composto com as energias de ambas. Muitos logos modernos e símbolos culturais são, na verdade, bindrunes ancestrais.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA MAGIA RÚNICA na prática moderna não requer crença sobrenatural — pode ser entendida como um sistema de intenção simbólica. Gravar uma runa numa vela, carregar uma pedra com uma runa pintada, ou desenhar uma runa ao acordar são formas de intenção ritual que funcionam através da psicologia da intenção e do foco.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nRUNAS E MEDITAÇÃO: cada runa pode ser objeto de meditação. Sente-se em posição confortável, visualize a runa à sua frente, pronuncie seu nome repetidamente (canto rúnico ou 'galdr'), e abra-se para as imagens e sentimentos que surgem. Esta é a forma mais antiga de 'estudar' as runas — não através de livros, mas através de experiência direta.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nÉTICA NA PRÁTICA RÚNICA: como qualquer sistema de poder, as runas pedem responsabilidade. A tradição nórdica é clara: o uso de magia para prejudicar outros tem consequências — não necessariamente 'kármicas' no sentido orientalista, mas no sentido de que quem manipula energias destrutivas eventualmente é consumido por elas. A magia rúnica mais poderosa é sempre a que alinha a vontade pessoal com forças maiores, não a que tenta forçar resultados contra a natureza das coisas.",
         "exemplo": "Uma pessoa que se sentindo particularmente vulnerável num momento difícil desenha a runa Algiz no interior do pulso com uma caneta comum ao sair de casa. Para ela, não é um encantamento sobrenatural — é um lembrete intencional de que ela carrega proteção consigo, um âncora simbólica de força. O efeito psicológico é real: ela se sente mais centrada durante o dia.",
         "aplicacao": "1. Escolha uma runa que corresponde a algo que você quer desenvolver ou se proteger. 2. Desenhe-a num papel e coloque em lugar visível. 3. Toda vez que vê o símbolo, recorde sua intenção. 4. Pratique a meditação rúnica com pelo menos uma runa por semana.",
         "exercicio": "Escolha uma situação na sua vida que precisa de uma força específica (proteção, cura, clareza, nova energia). Identifique qual runa corresponde a essa energia. Crie um ritual simples usando essa runa — pode ser desenhá-la, meditar com ela, ou carregá-la escrita num papel por uma semana.",
@@ -21291,7 +21182,7 @@ CURSOS = {
     "aulas": {
       "1": {
         "titulo": "História e Estrutura do Tarô",
-        "conteudo": "O Tarô como o conhecemos hoje surgiu na Europa do século XV como jogo de cartas aristocrático — os 'trionfi' italianos. Sua associação com adivinhação e misticismo só se consolidou no século XVIII, especialmente através da figura do ocultista Antoine Court de Gébelin, que afirmou (incorretamente) que o Tarô seria um repositório do conhecimento do Egito Antigo. Apesar da afirmação histórica ser falsa, ela catalisou o uso do Tarô como ferramenta divinatória e esotérica que se aprofundou nos séculos seguintes.\\\\\\\\n\\\\\\\\nO baralho de Tarô padrão tem 78 cartas divididas em duas partes: os 22 ARCANOS MAIORES (do latim 'arcanum', segredo) que representam forças arquetípicas universais, e os 56 ARCANOS MENORES que lidam com os aspectos cotidianos da existência.\\\\\\\\n\\\\\\\\nOs ARCANOS MAIORES vão do 0 (O Louco) ao XXI (O Mundo) e narram a jornada do herói — a Jornada do Louco — desde a inocência inicial até a realização completa. Cada arcano maior é um arquétipo que todos os seres humanos encontram em suas vidas.\\\\\\\\n\\\\\\\\nOs ARCANOS MENORES dividem-se em quatro naipes, cada um associado a um elemento:\\\\\\\\n- PAUS (Fogo): energia, paixão, criatividade, trabalho, ambição\\\\\\\\n- COPAS (Água): emoções, amor, relacionamentos, intuição, inconsciente\\\\\\\\n- ESPADAS (Ar): mente, conflito, comunicação, verdade, desafios mentais\\\\\\\\n- OUROS (Terra): dinheiro, trabalho concreto, corpo, materialidade, recursos\\\\\\\\n\\\\\\\\nDentro de cada naipe há 14 cartas: Ás (1) até 10, mais quatro cartas da corte: Valete, Cavaleiro, Rainha e Rei. As cartas de 1 a 10 narram uma progressão temática dentro de cada naipe. As cartas da corte representam aspectos de personalidade ou pessoas reais.\\\\\\\\n\\\\\\\\nO BARALHO DE RIDER-WAITE (1909) é o mais influente da história moderna. Criado pelo ocultista Arthur Edward Waite e ilustrado pela artista Pamela Colman Smith, foi o primeiro baralho a ter ilustrações completas em todas as 78 cartas (antes, as cartas menores eram apenas símbolos repetidos). A maioria dos baralhos modernos é baseada neste sistema.",
+        "conteudo": "O Tarô como o conhecemos hoje surgiu na Europa do século XV como jogo de cartas aristocrático — os 'trionfi' italianos. Sua associação com adivinhação e misticismo só se consolidou no século XVIII, especialmente através da figura do ocultista Antoine Court de Gébelin, que afirmou (incorretamente) que o Tarô seria um repositório do conhecimento do Egito Antigo. Apesar da afirmação histórica ser falsa, ela catalisou o uso do Tarô como ferramenta divinatória e esotérica que se aprofundou nos séculos seguintes.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO baralho de Tarô padrão tem 78 cartas divididas em duas partes: os 22 ARCANOS MAIORES (do latim 'arcanum', segredo) que representam forças arquetípicas universais, e os 56 ARCANOS MENORES que lidam com os aspectos cotidianos da existência.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs ARCANOS MAIORES vão do 0 (O Louco) ao XXI (O Mundo) e narram a jornada do herói — a Jornada do Louco — desde a inocência inicial até a realização completa. Cada arcano maior é um arquétipo que todos os seres humanos encontram em suas vidas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs ARCANOS MENORES dividem-se em quatro naipes, cada um associado a um elemento:\\\\\\\\\\\\\\\\n- PAUS (Fogo): energia, paixão, criatividade, trabalho, ambição\\\\\\\\\\\\\\\\n- COPAS (Água): emoções, amor, relacionamentos, intuição, inconsciente\\\\\\\\\\\\\\\\n- ESPADAS (Ar): mente, conflito, comunicação, verdade, desafios mentais\\\\\\\\\\\\\\\\n- OUROS (Terra): dinheiro, trabalho concreto, corpo, materialidade, recursos\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDentro de cada naipe há 14 cartas: Ás (1) até 10, mais quatro cartas da corte: Valete, Cavaleiro, Rainha e Rei. As cartas de 1 a 10 narram uma progressão temática dentro de cada naipe. As cartas da corte representam aspectos de personalidade ou pessoas reais.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO BARALHO DE RIDER-WAITE (1909) é o mais influente da história moderna. Criado pelo ocultista Arthur Edward Waite e ilustrado pela artista Pamela Colman Smith, foi o primeiro baralho a ter ilustrações completas em todas as 78 cartas (antes, as cartas menores eram apenas símbolos repetidos). A maioria dos baralhos modernos é baseada neste sistema.",
         "exemplo": "Uma pessoa que nunca viu um baralho de Tarô percebe que as cartas dos Arcanos Maiores contam uma história: O Louco (0) parte sem planos; O Mago (I) usa suas ferramentas; A Sacerdotisa (II) desenvolve intuição; e assim por diante até O Mundo (XXI) onde a jornada se completa. Essa narrativa é a jornada de qualquer vida humana — de iniciante a sábio.",
         "aplicacao": "1. Familiarize-se com a estrutura dos 78 arcanos. 2. Observe os quatro naipes e seus elementos. 3. Passe por todas as cartas da corte de cada naipe. 4. Identifique qual naipe parece mais familiar ou confortável para você.",
         "exercicio": "Pegue um baralho (físico ou imagens digitais) e divida as 78 cartas em: Arcanos Maiores, Paus, Copas, Espadas e Ouros. Observe as imagens de cada grupo. Que impressão geral cada grupo transmite?",
@@ -21299,7 +21190,7 @@ CURSOS = {
       },
       "2": {
         "titulo": "Os Arcanos Maiores — A Jornada do Louco (0-X)",
-        "conteudo": "O LOUCO (0): o início de tudo. Inocência, espontaneidade, o salto no desconhecido com confiança total. Não é estupidez — é a coragem de começar sem saber onde vai terminar. Pergunta central: o que você está prestes a iniciar sem garantias?\\\\\\\\n\\\\\\\\nO MAGO (I): vontade, habilidade, poder de manifestação. O Mago tem todos os quatro elementos (Paus, Copas, Espadas, Ouros) sobre sua mesa — ele tem as ferramentas, basta usá-las. Pergunta central: você está usando todo o seu potencial?\\\\\\\\n\\\\\\\\nA SACERDOTISA (II): intuição, mistério, conhecimento que não vem dos livros mas do silêncio e da escuta interior. O que está oculto. Pergunta central: o que você sabe mas ainda não reconhece saber?\\\\\\\\n\\\\\\\\nA IMPERATRIZ (III): fertilidade, abundância, natureza, maternidade, criação. A terra fértil que nutre. Pergunta central: o que em sua vida está crescendo e precisando de cuidado?\\\\\\\\n\\\\\\\\nO IMPERADOR (IV): estrutura, autoridade, ordem, paternidade, o poder que organiza. Pergunta central: onde você precisa estabelecer mais limites e estrutura?\\\\\\\\n\\\\\\\\nO HIEROFANTE (V): tradição, ensino, instituições, transmissão de sabedoria estabelecida. Pode ser o professor ou a doutrina. Pergunta central: que crenças ou tradições estão guiando (ou aprisionando) você?\\\\\\\\n\\\\\\\\nOS AMANTES (VI): escolha, amor, valores, alinhamento entre coração e mente. Não é necessariamente sobre romance — é sobre a grande escolha que define quem você é. Pergunta central: qual é a escolha fundamental que você está evitando?\\\\\\\\n\\\\\\\\nO CARRO (VII): vitória através do controle de forças opostas, determinação, movimento com propósito. Pergunta central: você está no controle do seu caminho ou sendo levado pelas circunstâncias?\\\\\\\\n\\\\\\\\nA FORÇA (VIII): força interior, compaixão que domina o instinto bruto, coragem que não precisa de força física. A mulher que doma o leão com amor. Pergunta central: onde você precisa de suavidade para encontrar sua força real?\\\\\\\\n\\\\\\\\nO EREMITA (IX): recolhimento, sabedoria interior, a jornada solitária em busca de luz. O lanterna que ilumina apenas o próximo passo. Pergunta central: que resposta você só encontrará no silêncio?\\\\\\\\n\\\\\\\\nA RODA DA FORTUNA (X): ciclos, sorte, destino, os movimentos maiores da vida que estão além do controle pessoal. Pergunta central: que ciclo está se completando ou começando na sua vida?",
+        "conteudo": "O LOUCO (0): o início de tudo. Inocência, espontaneidade, o salto no desconhecido com confiança total. Não é estupidez — é a coragem de começar sem saber onde vai terminar. Pergunta central: o que você está prestes a iniciar sem garantias?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MAGO (I): vontade, habilidade, poder de manifestação. O Mago tem todos os quatro elementos (Paus, Copas, Espadas, Ouros) sobre sua mesa — ele tem as ferramentas, basta usá-las. Pergunta central: você está usando todo o seu potencial?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA SACERDOTISA (II): intuição, mistério, conhecimento que não vem dos livros mas do silêncio e da escuta interior. O que está oculto. Pergunta central: o que você sabe mas ainda não reconhece saber?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA IMPERATRIZ (III): fertilidade, abundância, natureza, maternidade, criação. A terra fértil que nutre. Pergunta central: o que em sua vida está crescendo e precisando de cuidado?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO IMPERADOR (IV): estrutura, autoridade, ordem, paternidade, o poder que organiza. Pergunta central: onde você precisa estabelecer mais limites e estrutura?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO HIEROFANTE (V): tradição, ensino, instituições, transmissão de sabedoria estabelecida. Pode ser o professor ou a doutrina. Pergunta central: que crenças ou tradições estão guiando (ou aprisionando) você?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOS AMANTES (VI): escolha, amor, valores, alinhamento entre coração e mente. Não é necessariamente sobre romance — é sobre a grande escolha que define quem você é. Pergunta central: qual é a escolha fundamental que você está evitando?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO CARRO (VII): vitória através do controle de forças opostas, determinação, movimento com propósito. Pergunta central: você está no controle do seu caminho ou sendo levado pelas circunstâncias?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA FORÇA (VIII): força interior, compaixão que domina o instinto bruto, coragem que não precisa de força física. A mulher que doma o leão com amor. Pergunta central: onde você precisa de suavidade para encontrar sua força real?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO EREMITA (IX): recolhimento, sabedoria interior, a jornada solitária em busca de luz. O lanterna que ilumina apenas o próximo passo. Pergunta central: que resposta você só encontrará no silêncio?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA RODA DA FORTUNA (X): ciclos, sorte, destino, os movimentos maiores da vida que estão além do controle pessoal. Pergunta central: que ciclo está se completando ou começando na sua vida?",
         "exemplo": "Uma pessoa atravessa uma fase de isolamento intenso e tira O Eremita. Em vez de interpretar isso como 'sinal negativo', o leitor percebe o alinhamento: a carta confirma e valida a fase. 'Você está num período de recollhimento necessário — não é fraqueza, é sabedoria. O Eremita não fica no escuro por punição; ele escolhe o silêncio para encontrar a luz que vai iluminar os outros depois.'",
         "aplicacao": "1. Tire cada uma dessas cartas individualmente e estude sua imagem. 2. Para cada uma, identifique: qual é o desafio dessa carta? Qual é o presente? 3. Qual dessas cartas sente mais próxima de onde você está agora?",
         "exercicio": "Escolha dois Arcanos Maiores desta lista — um que ressoa positivamente e um que te desconforta. Para cada um, escreva: por que essa carta me atrai/repele? O que ela diz sobre onde estou agora?",
@@ -21307,7 +21198,7 @@ CURSOS = {
       },
       "3": {
         "titulo": "Os Arcanos Maiores — A Jornada do Louco (XI-XXI)",
-        "conteudo": "A JUSTIÇA (XI): causa e efeito, equilíbrio, consequências das escolhas. Não é punição — é equilíbrio. O que você colhe é o que plantou. Pergunta central: que padrão em sua vida está produzindo as consequências que você está vivendo?\\\\\\\\n\\\\\\\\nO ENFORCADO (XII): suspensão voluntária, mudança de perspectiva, sacrifício de uma forma de ver para ganhar uma mais verdadeira. O Enforcado escolheu se suspender — não é vítima. Pergunta central: que ponto de vista você precisa abandonar para enxergar mais claro?\\\\\\\\n\\\\\\\\nA MORTE (XIII): transformação profunda, fim de uma fase, o encerramento necessário para o novo começo. Raramente significa morte física — quase sempre significa a morte de uma identidade, relacionamento, ou forma de vida. Pergunta central: o que precisa morrer em você para que algo novo possa nascer?\\\\\\\\n\\\\\\\\nA TEMPERANÇA (XIV): equilíbrio, paciência, mistura cuidadosa de opostos, alquimia interior. Pergunta central: que extremos em sua vida precisam ser integrados?\\\\\\\\n\\\\\\\\nO DIABO (XV): ilusão de prisão, sombra, vícios, apego a coisas que nos limitam. Note na imagem do Rider-Waite: as correntes dos cativos são soltas o suficiente para que eles possam se libertar — eles ficam por escolha. Pergunta central: a que você está preso que na verdade não te prende?\\\\\\\\n\\\\\\\\nA TORRE (XVI): ruptura súbita, revelação que desaba estruturas falsas, libertação violenta de algo que precisava cair. É a carta mais temida mas frequentemente a mais libertadora. Pergunta central: que estrutura em sua vida está sendo desafiada porque era baseada em algo falso?\\\\\\\\n\\\\\\\\nA ESTRELA (XVII): esperança, renovação, cura, conexão com o divino após a escuridão. Depois da Torre, a Estrela. Sempre positiva: você está sendo renovado. Pergunta central: onde está a esperança que você ainda não permite ver?\\\\\\\\n\\\\\\\\nA LUA (XVIII): ilusão, medo, o inconsciente que emerge, o caminho tortuoso que deve ser navegado com intuição mais do que razão. Pergunta central: que medo ou ilusão está distorcendo sua percepção da realidade?\\\\\\\\n\\\\\\\\nO SOL (XIX): alegria, clareza, sucesso, vitalidade, a criança que sabe brincar. Sempre positiva: luz, transparência, vida plena. Pergunta central: onde você está proibindo a si mesmo de sentir alegria?\\\\\\\\n\\\\\\\\nO JULGAMENTO (XX): chamada, despertar, transformação final antes da conclusão, avaliação honesta de si mesmo. Pergunta central: qual chamada em sua vida você tem ignorado?\\\\\\\\n\\\\\\\\nO MUNDO (XXI): completude, integração, celebração do ciclo completo, síntese de tudo que foi aprendido. E então o ciclo recomeça com O Louco. Sempre positiva: você chegou num ponto de completude. Pergunta central: o que em sua vida está chegando a uma conclusão digna de celebração?",
+        "conteudo": "A JUSTIÇA (XI): causa e efeito, equilíbrio, consequências das escolhas. Não é punição — é equilíbrio. O que você colhe é o que plantou. Pergunta central: que padrão em sua vida está produzindo as consequências que você está vivendo?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO ENFORCADO (XII): suspensão voluntária, mudança de perspectiva, sacrifício de uma forma de ver para ganhar uma mais verdadeira. O Enforcado escolheu se suspender — não é vítima. Pergunta central: que ponto de vista você precisa abandonar para enxergar mais claro?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA MORTE (XIII): transformação profunda, fim de uma fase, o encerramento necessário para o novo começo. Raramente significa morte física — quase sempre significa a morte de uma identidade, relacionamento, ou forma de vida. Pergunta central: o que precisa morrer em você para que algo novo possa nascer?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TEMPERANÇA (XIV): equilíbrio, paciência, mistura cuidadosa de opostos, alquimia interior. Pergunta central: que extremos em sua vida precisam ser integrados?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO DIABO (XV): ilusão de prisão, sombra, vícios, apego a coisas que nos limitam. Note na imagem do Rider-Waite: as correntes dos cativos são soltas o suficiente para que eles possam se libertar — eles ficam por escolha. Pergunta central: a que você está preso que na verdade não te prende?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TORRE (XVI): ruptura súbita, revelação que desaba estruturas falsas, libertação violenta de algo que precisava cair. É a carta mais temida mas frequentemente a mais libertadora. Pergunta central: que estrutura em sua vida está sendo desafiada porque era baseada em algo falso?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA ESTRELA (XVII): esperança, renovação, cura, conexão com o divino após a escuridão. Depois da Torre, a Estrela. Sempre positiva: você está sendo renovado. Pergunta central: onde está a esperança que você ainda não permite ver?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LUA (XVIII): ilusão, medo, o inconsciente que emerge, o caminho tortuoso que deve ser navegado com intuição mais do que razão. Pergunta central: que medo ou ilusão está distorcendo sua percepção da realidade?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO SOL (XIX): alegria, clareza, sucesso, vitalidade, a criança que sabe brincar. Sempre positiva: luz, transparência, vida plena. Pergunta central: onde você está proibindo a si mesmo de sentir alegria?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO JULGAMENTO (XX): chamada, despertar, transformação final antes da conclusão, avaliação honesta de si mesmo. Pergunta central: qual chamada em sua vida você tem ignorado?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MUNDO (XXI): completude, integração, celebração do ciclo completo, síntese de tudo que foi aprendido. E então o ciclo recomeça com O Louco. Sempre positiva: você chegou num ponto de completude. Pergunta central: o que em sua vida está chegando a uma conclusão digna de celebração?",
         "exemplo": "A Torre aparece numa tiragem sobre um casamento em crise. O leitor inexperiente teme. O experiente diz: 'O que está sendo sacudido aqui não é o amor — é a estrutura que vocês construíram em torno do amor que talvez não seja mais verdadeira. A Torre não destrói o que é real. O que vai ficar de pé depois é o que merece ficar.'",
         "aplicacao": "1. Memorize as onze cartas desta aula. 2. Note as cartas difíceis (Morte, Diabo, Torre, Lua) e como cada uma tem uma face transformadora além do aspecto temível. 3. Complete a sequência da Jornada do Louco na sua mente.",
         "exercicio": "Leia a sequência completa da Jornada do Louco (0 ao XXI) como se fosse uma história. Onde você está nessa jornada agora? Em qual carta você se reconhece?",
@@ -21315,7 +21206,7 @@ CURSOS = {
       },
       "4": {
         "titulo": "Os Arcanos Menores — Os Quatro Naipes",
-        "conteudo": "Os Arcanos Menores descrevem as experiências cotidianas da vida. Enquanto os Maiores lidam com forças arquetípicas universais, os Menores lidam com o que acontece dia a dia — conversas, dinheiro, sentimentos, conflitos, decisões.\\\\\\\\n\\\\\\\\nAS CARTAS DE ÁS representam o puro potencial de cada naipe, a semente antes de qualquer desenvolvimento:\\\\\\\\n- Ás de Paus: centelha criativa, nova inspiração, o início de um projeto com entusiasmo genuíno\\\\\\\\n- Ás de Copas: novo amor, abertura emocional, um coração que recomeça\\\\\\\\n- Ás de Espadas: clareza cortante, verdade revelada, novo insight\\\\\\\\n- Ás de Ouros: nova oportunidade material, semente de prosperidade\\\\\\\\n\\\\\\\\nAS CARTAS DE 2 AO 10 narram uma progressão:\\\\\\\\n- 2: equilíbrio inicial, escolha entre dois caminhos\\\\\\\\n- 3: expansão, criatividade, resultado inicial das sementes plantadas\\\\\\\\n- 4: estabilidade, descanso, consolidação\\\\\\\\n- 5: desafio, conflito, perda temporária\\\\\\\\n- 6: harmonia recuperada, presente, generosidade\\\\\\\\n- 7: reflexão, estratégia, autoexame\\\\\\\\n- 8: movimento rápido, poder em ação, mudanças\\\\\\\\n- 9: quase lá, intensidade antes do final, o pico da jornada do naipe\\\\\\\\n- 10: conclusão, completude, fim de um ciclo (pode ser fardo ou realização dependendo do naipe)\\\\\\\\n\\\\\\\\nEXEMPLOS POR NAIPE:\\\\\\\\n10 de Paus: fardo excessivo, carregar responsabilidades demais — é hora de delegar\\\\\\\\n10 de Copas: família em harmonia, felicidade emocional completa — realização\\\\\\\\n10 de Espadas: derrota aparente, fundo do poço — mas o sol está nascendo ao fundo da imagem\\\\\\\\n10 de Ouros: riqueza duradoura, legado familiar, abundância consolidada\\\\\\\\n\\\\\\\\nAS CARTAS DA CORTE representam aspectos de personalidade (partes de você) ou pessoas reais em sua vida:\\\\\\\\n- VALETE: energia jovem, aprendiz, mensagens, início de algo\\\\\\\\n- CAVALEIRO: ação, movimento, excesso da energia do naipe\\\\\\\\n- RAINHA: domínio maduro da energia interior do naipe\\\\\\\\n- REI: domínio maduro da energia exterior e de liderança do naipe",
+        "conteudo": "Os Arcanos Menores descrevem as experiências cotidianas da vida. Enquanto os Maiores lidam com forças arquetípicas universais, os Menores lidam com o que acontece dia a dia — conversas, dinheiro, sentimentos, conflitos, decisões.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS CARTAS DE ÁS representam o puro potencial de cada naipe, a semente antes de qualquer desenvolvimento:\\\\\\\\\\\\\\\\n- Ás de Paus: centelha criativa, nova inspiração, o início de um projeto com entusiasmo genuíno\\\\\\\\\\\\\\\\n- Ás de Copas: novo amor, abertura emocional, um coração que recomeça\\\\\\\\\\\\\\\\n- Ás de Espadas: clareza cortante, verdade revelada, novo insight\\\\\\\\\\\\\\\\n- Ás de Ouros: nova oportunidade material, semente de prosperidade\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS CARTAS DE 2 AO 10 narram uma progressão:\\\\\\\\\\\\\\\\n- 2: equilíbrio inicial, escolha entre dois caminhos\\\\\\\\\\\\\\\\n- 3: expansão, criatividade, resultado inicial das sementes plantadas\\\\\\\\\\\\\\\\n- 4: estabilidade, descanso, consolidação\\\\\\\\\\\\\\\\n- 5: desafio, conflito, perda temporária\\\\\\\\\\\\\\\\n- 6: harmonia recuperada, presente, generosidade\\\\\\\\\\\\\\\\n- 7: reflexão, estratégia, autoexame\\\\\\\\\\\\\\\\n- 8: movimento rápido, poder em ação, mudanças\\\\\\\\\\\\\\\\n- 9: quase lá, intensidade antes do final, o pico da jornada do naipe\\\\\\\\\\\\\\\\n- 10: conclusão, completude, fim de um ciclo (pode ser fardo ou realização dependendo do naipe)\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nEXEMPLOS POR NAIPE:\\\\\\\\\\\\\\\\n10 de Paus: fardo excessivo, carregar responsabilidades demais — é hora de delegar\\\\\\\\\\\\\\\\n10 de Copas: família em harmonia, felicidade emocional completa — realização\\\\\\\\\\\\\\\\n10 de Espadas: derrota aparente, fundo do poço — mas o sol está nascendo ao fundo da imagem\\\\\\\\\\\\\\\\n10 de Ouros: riqueza duradoura, legado familiar, abundância consolidada\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS CARTAS DA CORTE representam aspectos de personalidade (partes de você) ou pessoas reais em sua vida:\\\\\\\\\\\\\\\\n- VALETE: energia jovem, aprendiz, mensagens, início de algo\\\\\\\\\\\\\\\\n- CAVALEIRO: ação, movimento, excesso da energia do naipe\\\\\\\\\\\\\\\\n- RAINHA: domínio maduro da energia interior do naipe\\\\\\\\\\\\\\\\n- REI: domínio maduro da energia exterior e de liderança do naipe",
         "exemplo": "3 de Espadas — a carta com três espadas atravessando um coração sob chuva. É uma das cartas mais literalmente dolorosas do baralho. Significa: dor emocional real, tristeza, separação, decepção. Um bom leitor não ameniza: 'Isso dói. A carta não mente. Mas observe: a chuva passa. E dor processada honestamente é a que liberta.'",
         "aplicacao": "1. Familiarize-se com a progressão numérica em cada naipe. 2. Compare a mesma posição numérica nos quatro naipes — o 5 de Paus (luta física/competição) vs o 5 de Copas (perda emocional) vs o 5 de Espadas (conflito mental) vs o 5 de Ouros (dificuldade material). 3. Pratique com as cartas da corte — qual Rainha você é? Qual Rei?",
         "exercicio": "Separe todos os Ases. Para cada um, escreva: que novo começo esse naipe representa na sua vida agora? Há uma centelha de Paus, uma abertura de Copas, uma clareza de Espadas ou uma oportunidade de Ouros chegando?",
@@ -21323,7 +21214,7 @@ CURSOS = {
       },
       "5": {
         "titulo": "Métodos de Tiragem — Do Simples ao Complexo",
-        "conteudo": "A CARTA DO DIA é o método mais simples e poderoso para quem está aprendendo. Tire uma carta pela manhã e carregue a questão que ela levanta durante o dia. À noite, reflita: como essa energia se manifestou? Esse exercício, feito por 30 dias consecutivos, desenvolve mais intuição do que anos de estudo teórico.\\\\\\\\n\\\\\\\\nA TIRAGEM DE TRÊS CARTAS é a mais versátil:\\\\\\\\n- Passado / Presente / Futuro\\\\\\\\n- Situação / Conselho / Resultado\\\\\\\\n- Mente / Corpo / Espírito\\\\\\\\n- Você / O Outro / A Relação\\\\\\\\n- O Problema / A Causa / A Solução\\\\\\\\n\\\\\\\\nA CRUZ CELTA é o layout mais tradicional e completo, com 10 cartas:\\\\\\\\n1. A situação central\\\\\\\\n2. O que cruza (obstáculo ou apoio)\\\\\\\\n3. O que está abaixo (fundação, o que você não vê)\\\\\\\\n4. O que ficou para trás\\\\\\\\n5. O que pode vir\\\\\\\\n6. O que está à frente imediatamente\\\\\\\\n7. Como você se vê\\\\\\\\n8. Como os outros te veem\\\\\\\\n9. Esperanças e medos\\\\\\\\n10. O resultado mais provável\\\\\\\\n\\\\\\\\nA TIRAGEM DA LUA (especial para questões emocionais e relacionamentos):\\\\\\\\n1. Onde você está emocionalmente agora\\\\\\\\n2. O que está oculto no inconsciente\\\\\\\\n3. O que o coração realmente quer\\\\\\\\n4. O que a mente diz\\\\\\\\n5. O que está impedindo\\\\\\\\n6. O que pode ser feito\\\\\\\\n7. O resultado se seguir o coração\\\\\\\\n\\\\\\\\nA LEITURA INVERTIDA: quando uma carta aparece de cabeça para baixo, pode significar: energia bloqueada ou interiorizada, resistência a essa energia, ou o aspecto shadow da carta. Não há consenso entre leitores — alguns não leem invertidas; outros as consideram essenciais. Experimente os dois sistemas e veja qual ressoa mais com você.\\\\\\\\n\\\\\\\\nO DIÁRIO DE TAROT: manter um caderno onde você registra cada tiragem, sua interpretação inicial e depois o que realmente aconteceu é o método mais eficaz de aprendizado. Com o tempo, você cria seu próprio sistema de referências baseado na experiência real.",
+        "conteudo": "A CARTA DO DIA é o método mais simples e poderoso para quem está aprendendo. Tire uma carta pela manhã e carregue a questão que ela levanta durante o dia. À noite, reflita: como essa energia se manifestou? Esse exercício, feito por 30 dias consecutivos, desenvolve mais intuição do que anos de estudo teórico.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TIRAGEM DE TRÊS CARTAS é a mais versátil:\\\\\\\\\\\\\\\\n- Passado / Presente / Futuro\\\\\\\\\\\\\\\\n- Situação / Conselho / Resultado\\\\\\\\\\\\\\\\n- Mente / Corpo / Espírito\\\\\\\\\\\\\\\\n- Você / O Outro / A Relação\\\\\\\\\\\\\\\\n- O Problema / A Causa / A Solução\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA CRUZ CELTA é o layout mais tradicional e completo, com 10 cartas:\\\\\\\\\\\\\\\\n1. A situação central\\\\\\\\\\\\\\\\n2. O que cruza (obstáculo ou apoio)\\\\\\\\\\\\\\\\n3. O que está abaixo (fundação, o que você não vê)\\\\\\\\\\\\\\\\n4. O que ficou para trás\\\\\\\\\\\\\\\\n5. O que pode vir\\\\\\\\\\\\\\\\n6. O que está à frente imediatamente\\\\\\\\\\\\\\\\n7. Como você se vê\\\\\\\\\\\\\\\\n8. Como os outros te veem\\\\\\\\\\\\\\\\n9. Esperanças e medos\\\\\\\\\\\\\\\\n10. O resultado mais provável\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA TIRAGEM DA LUA (especial para questões emocionais e relacionamentos):\\\\\\\\\\\\\\\\n1. Onde você está emocionalmente agora\\\\\\\\\\\\\\\\n2. O que está oculto no inconsciente\\\\\\\\\\\\\\\\n3. O que o coração realmente quer\\\\\\\\\\\\\\\\n4. O que a mente diz\\\\\\\\\\\\\\\\n5. O que está impedindo\\\\\\\\\\\\\\\\n6. O que pode ser feito\\\\\\\\\\\\\\\\n7. O resultado se seguir o coração\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA LEITURA INVERTIDA: quando uma carta aparece de cabeça para baixo, pode significar: energia bloqueada ou interiorizada, resistência a essa energia, ou o aspecto shadow da carta. Não há consenso entre leitores — alguns não leem invertidas; outros as consideram essenciais. Experimente os dois sistemas e veja qual ressoa mais com você.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO DIÁRIO DE TAROT: manter um caderno onde você registra cada tiragem, sua interpretação inicial e depois o que realmente aconteceu é o método mais eficaz de aprendizado. Com o tempo, você cria seu próprio sistema de referências baseado na experiência real.",
         "exemplo": "Uma leitora faz uma Cruz Celta para entender por que não consegue avançar num projeto criativo. A posição 3 (o que está abaixo, fundação oculta) revela O Enforcado — ela está se suspendendo voluntariamente, esperando algo (talvez permissão) que nunca vai chegar de fora. A posição 7 (como ela se vê) revela O Eremita. A integração: ela se vê como alguém que precisa de mais preparação e isolamento, mas na verdade está usando a introspecção como desculpa para não agir.",
         "aplicacao": "1. Comece com carta do dia por 30 dias. 2. Depois pratique tiragem de 3 cartas para situações reais. 3. Experimente a Cruz Celta apenas quando estiver confortável com as cartas individuais. 4. Mantenha diário.",
         "exercicio": "Faça uma tiragem de três cartas para uma situação real: Situação-Conselho-Resultado. Fotografe ou escreva as cartas. Escreva sua interpretação. Em duas semanas, volte e compare com o que aconteceu.",
@@ -21331,7 +21222,7 @@ CURSOS = {
       },
       "6": {
         "titulo": "Intuição no Tarô — Além das Definições",
-        "conteudo": "Memorizar os significados das 78 cartas é apenas o primeiro nível de aprendizado no Tarô. O segundo nível — e o mais poderoso — é desenvolver a leitura intuitiva: a capacidade de olhar para uma carta dentro de um contexto específico e deixar que ela fale além das definições tradicionais.\\\\\\\\n\\\\\\\\nO MÉTODO INTUITIVO começa com a imagem: antes de pensar no significado aprendido, olhe para a imagem. O que você vê? Que emoção a imagem evoca? Que personagem na carta chama mais sua atenção? Onde seus olhos vão primeiro? Essas respostas são frequentemente mais relevantes para a pessoa à sua frente do que o significado genérico.\\\\\\\\n\\\\\\\\nO CONTEXTO TRANSFORMA O SIGNIFICADO: a Morte numa pergunta sobre saúde tem uma qualidade diferente do que a Morte numa pergunta sobre carreira. O contexto restringe e aprofunda o significado. A Lua para alguém perguntando sobre criatividade fala de imaginação e sonho; para alguém perguntando sobre relacionamento, fala de ilusão e projeção.\\\\\\\\n\\\\\\\\nA CONVERSA COM O CONSULTANTE: as melhores leituras não são monólogos — são diálogos. Perguntar 'o que essa imagem te faz pensar?' ou 'alguém específico vem à mente quando você vê essa carta?' frequentemente revela a camada mais profunda da leitura. O consultante sempre sabe mais do que você sobre a situação dele.\\\\\\\\n\\\\\\\\nAS COMBINAÇÕES ENTRE CARTAS: na Cruz Celta ou qualquer layout com múltiplas cartas, as cartas conversam entre si. Duas cartas de Espadas juntas amplificam o tema mental/conflitual. Uma carta de Copas entre duas de Espadas pode indicar emoções no meio de um conflito intelectual. Aprender a ver padrões entre cartas é o nível avançado.\\\\\\\\n\\\\\\\\nO DESCONFORTO HONESTO: algumas cartas são difíceis de entregar. A Torre para alguém que acabou de se casar. A Morte para alguém doente. O Diabo para alguém que acredita muito em si mesmo. O leitor experiente não evita essas cartas — ele encontra a forma honesta e compassiva de entregá-las. Omitir informação importante para não desconfortar é uma forma de desrespeito ao consultante.\\\\\\\\n\\\\\\\\nA CONFIANÇA NO PROCESSO: com o tempo, muitos leitores de Tarô descrevem uma experiência que vai além do conhecimento — uma sensação de que certas palavras simplesmente 'vêm' durante uma leitura, ou que certas cartas parecem 'querer' ser lidas de determinada forma naquele contexto. Isso pode ser chamado de intuição, inconsciente, conexão espiritual — o nome importa menos que cultivar essa abertura.",
+        "conteudo": "Memorizar os significados das 78 cartas é apenas o primeiro nível de aprendizado no Tarô. O segundo nível — e o mais poderoso — é desenvolver a leitura intuitiva: a capacidade de olhar para uma carta dentro de um contexto específico e deixar que ela fale além das definições tradicionais.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MÉTODO INTUITIVO começa com a imagem: antes de pensar no significado aprendido, olhe para a imagem. O que você vê? Que emoção a imagem evoca? Que personagem na carta chama mais sua atenção? Onde seus olhos vão primeiro? Essas respostas são frequentemente mais relevantes para a pessoa à sua frente do que o significado genérico.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO CONTEXTO TRANSFORMA O SIGNIFICADO: a Morte numa pergunta sobre saúde tem uma qualidade diferente do que a Morte numa pergunta sobre carreira. O contexto restringe e aprofunda o significado. A Lua para alguém perguntando sobre criatividade fala de imaginação e sonho; para alguém perguntando sobre relacionamento, fala de ilusão e projeção.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA CONVERSA COM O CONSULTANTE: as melhores leituras não são monólogos — são diálogos. Perguntar 'o que essa imagem te faz pensar?' ou 'alguém específico vem à mente quando você vê essa carta?' frequentemente revela a camada mais profunda da leitura. O consultante sempre sabe mais do que você sobre a situação dele.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS COMBINAÇÕES ENTRE CARTAS: na Cruz Celta ou qualquer layout com múltiplas cartas, as cartas conversam entre si. Duas cartas de Espadas juntas amplificam o tema mental/conflitual. Uma carta de Copas entre duas de Espadas pode indicar emoções no meio de um conflito intelectual. Aprender a ver padrões entre cartas é o nível avançado.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO DESCONFORTO HONESTO: algumas cartas são difíceis de entregar. A Torre para alguém que acabou de se casar. A Morte para alguém doente. O Diabo para alguém que acredita muito em si mesmo. O leitor experiente não evita essas cartas — ele encontra a forma honesta e compassiva de entregá-las. Omitir informação importante para não desconfortar é uma forma de desrespeito ao consultante.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA CONFIANÇA NO PROCESSO: com o tempo, muitos leitores de Tarô descrevem uma experiência que vai além do conhecimento — uma sensação de que certas palavras simplesmente 'vêm' durante uma leitura, ou que certas cartas parecem 'querer' ser lidas de determinada forma naquele contexto. Isso pode ser chamado de intuição, inconsciente, conexão espiritual — o nome importa menos que cultivar essa abertura.",
         "exemplo": "Um leitor faz uma tiragem para uma mulher sobre sua carreira. Ele tira A Imperatriz, e em vez de citar a definição clássica ('fertilidade, abundância, criatividade'), ele olha para a imagem e diz: 'Vejo uma mulher que tem tudo para nutrir e criar, mas que está confortavelmente sentada em seu trono quando o terreno ao redor dela está pedindo que ela se levante e plante.' A mulher chora: é exatamente o que está acontecendo — ela tem potencial mas está esperando as condições perfeitas para agir.",
         "aplicacao": "1. Para cada nova carta que estuda, passe 2 minutos olhando apenas para a imagem antes de ler o significado. 2. Numa leitura real, diga o que a imagem te faz sentir ANTES de citar o significado aprendido. 3. Convide o consultante a participar.",
         "exercicio": "Tire uma carta agora. Antes de pensar no significado, olhe para a imagem por 1 minuto. Escreva tudo que você observa e que emoção ela evoca. Depois leia o significado tradicional. Que diferenças há entre sua leitura intuitiva e a definição? O que sua leitura acrescentou?",
@@ -21339,7 +21230,7 @@ CURSOS = {
       },
       "7": {
         "titulo": "Ética e Responsabilidade na Leitura do Tarô",
-        "conteudo": "Ler Tarô para outros é um ato de responsabilidade. As pessoas que procuram leituras frequentemente estão em momentos de vulnerabilidade, indecisão ou dor. O que um leitor diz — e como diz — tem impacto real.\\\\\\\\n\\\\\\\\nNUNCA FAÇA PREVISÕES ABSOLUTAS: 'Você vai se separar' ou 'Esse negócio vai falir' são afirmações irresponsáveis que podem criar profecias autocumpridas ou gerar ansiedade desnecessária. O Tarô mostra tendências, não fatalidades. A linguagem correta: 'As energias presentes sugerem...', 'Há uma tendência para...', 'Se nada mudar, a direção parece ser...'.\\\\\\\\n\\\\\\\\nNÃO SUBSTITUA AJUDA PROFISSIONAL: se alguém chega com sinais claros de depressão grave, pensamentos autodestrutivos, ou situação de abuso, o Tarô não é a ferramenta adequada como única resposta. O leitor responsável reconhece seus limites e direciona para ajuda profissional quando necessário.\\\\\\\\n\\\\\\\\nCONFIDENCIALIDADE: o que se compartilha numa leitura é privado. Usar informações de uma leitura para fofoca ou para impressionar outros é uma violação ética grave.\\\\\\\\n\\\\\\\\nO CÓDIGO DAS TRÊS ÉTICAS do Tarô, como proposto por Rachel Pollack: (1) O consultante tem o direito de saber o que as cartas mostram. (2) O consultante tem o direito de não saber se preferir. (3) O leitor tem o dever de entregar informações difíceis de forma responsável.\\\\\\\\n\\\\\\\\nLEITURAS PARA TERCEIROS: ler cartas sobre outra pessoa (sem sua presença ou conhecimento) é eticamente questionável. Você está analisando alguém que não deu permissão. Se fizer isso, mantenha o foco em ajudar o consultante a entender a dinâmica, não em 'expor' o terceiro.\\\\\\\\n\\\\\\\\nSEU PRÓPRIO ESTADO EMOCIONAL: não leia para outros quando estiver em estado emocional muito carregado. Sua perturbação afeta a leitura — tanto a clareza da interpretação quanto a qualidade da presença que você oferece. E seja cuidadoso ao ler para si mesmo sobre situações em que você está muito investido emocionalmente — é muito fácil ver o que quer ver.",
+        "conteudo": "Ler Tarô para outros é um ato de responsabilidade. As pessoas que procuram leituras frequentemente estão em momentos de vulnerabilidade, indecisão ou dor. O que um leitor diz — e como diz — tem impacto real.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNUNCA FAÇA PREVISÕES ABSOLUTAS: 'Você vai se separar' ou 'Esse negócio vai falir' são afirmações irresponsáveis que podem criar profecias autocumpridas ou gerar ansiedade desnecessária. O Tarô mostra tendências, não fatalidades. A linguagem correta: 'As energias presentes sugerem...', 'Há uma tendência para...', 'Se nada mudar, a direção parece ser...'.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNÃO SUBSTITUA AJUDA PROFISSIONAL: se alguém chega com sinais claros de depressão grave, pensamentos autodestrutivos, ou situação de abuso, o Tarô não é a ferramenta adequada como única resposta. O leitor responsável reconhece seus limites e direciona para ajuda profissional quando necessário.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCONFIDENCIALIDADE: o que se compartilha numa leitura é privado. Usar informações de uma leitura para fofoca ou para impressionar outros é uma violação ética grave.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO CÓDIGO DAS TRÊS ÉTICAS do Tarô, como proposto por Rachel Pollack: (1) O consultante tem o direito de saber o que as cartas mostram. (2) O consultante tem o direito de não saber se preferir. (3) O leitor tem o dever de entregar informações difíceis de forma responsável.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nLEITURAS PARA TERCEIROS: ler cartas sobre outra pessoa (sem sua presença ou conhecimento) é eticamente questionável. Você está analisando alguém que não deu permissão. Se fizer isso, mantenha o foco em ajudar o consultante a entender a dinâmica, não em 'expor' o terceiro.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSEU PRÓPRIO ESTADO EMOCIONAL: não leia para outros quando estiver em estado emocional muito carregado. Sua perturbação afeta a leitura — tanto a clareza da interpretação quanto a qualidade da presença que você oferece. E seja cuidadoso ao ler para si mesmo sobre situações em que você está muito investido emocionalmente — é muito fácil ver o que quer ver.",
         "exemplo": "Uma cliente pede uma leitura sobre se deve se separar do marido. Um leitor ético não diz 'as cartas dizem para se separar' — isso seria tirar uma decisão vital das mãos dela. Ele usa as cartas para ajudá-la a clarificar o que ela já sente: 'O que as cartas mostram sobre como você se sente nessa relação? O que elas mostram sobre o que você mais teme? O que elas dizem sobre o que você realmente quer?'",
         "aplicacao": "1. Defina sua própria política de leituras — o que você lê, para quem, e como. 2. Desenvolva um 'protocolo de acolhimento' para começar uma leitura criando um espaço seguro. 3. Pratique a linguagem de possibilidade vs certeza.",
         "exercicio": "Escreva 5 exemplos de afirmações problemáticas e reformule cada uma de forma responsável. Ex: 'Você vai ter problemas de saúde' → 'Há uma energia pedindo mais atenção ao corpo e ao descanso neste período.'",
@@ -21347,7 +21238,7 @@ CURSOS = {
       },
       "8": {
         "titulo": "Desenvolvendo seu Estilo de Leitura",
-        "conteudo": "Depois de aprender os fundamentos, o próximo passo é desenvolver seu estilo único de leitura. Cada leitor é diferente — e a tentativa de imitar outro leitor produz leituras mecânicas e sem vida.\\\\\\\\n\\\\\\\\nENCONTRE SEU BARALHO: o baralho de Rider-Waite é a base de ensino, mas não precisa ser o baralho com o qual você lê. Explore diferentes baralhos até encontrar um cujas imagens falam diretamente à sua intuição. Alguns preferem o Thoth Tarot (mais hermético e simbólico), outros o Tarot de Marselha (mais antigo, sem cenas nas cartas menores), outros baralhos modernos com estilos variados.\\\\\\\\n\\\\\\\\nDEFINA SUA ABORDAGEM FILOSÓFICA: você lê Tarô como ferramenta psicológica, como sistema espiritual, como tradição esotérica, ou como uma combinação? Não há resposta certa — mas clareza sobre sua própria abordagem torna as leituras mais coesas.\\\\\\\\n\\\\\\\\nDESENVOLVA RITUAIS DE PREPARAÇÃO: muitos leitores têm um ritual simples antes de uma leitura — embaralhar as cartas de uma forma específica, um momento de silêncio, uma vela, uma pergunta mental de intenção. Esses rituais não são superstição — são ferramentas de foco que criam um estado mental propício para a leitura.\\\\\\\\n\\\\\\\\nAPRECIE AS CARTAS DIFÍCEIS: os leitores que mais crescem são os que aprendem a amar as cartas que antes temiam. A Torre, o Diabo, a Morte, o Dez de Espadas — cada uma dessas cartas, quando entendida profundamente, torna-se uma aliada poderosa. Elas aparecem quando são necessárias.\\\\\\\\n\\\\\\\\nESTUDE OS SISTEMAS CONECTADOS: o Tarô está profundamente conectado à Cabala, à astrologia e à numerologia. Os Arcanos Maiores correspondem a caminhos na Árvore da Vida cabalística. Cada naipe corresponde a um elemento astrológico. Cada número tem um significado numerológico. Esses sistemas se iluminam mutuamente.\\\\\\\\n\\\\\\\\nA JORNADA NUNCA TERMINA: praticantes com décadas de experiência continuam descobrindo novas camadas nas mesmas cartas. O Tarô é um sistema suficientemente rico para durar uma vida inteira de exploração. Cada fase da sua vida ilumina as cartas de uma nova forma — e as cartas iluminam cada fase.",
+        "conteudo": "Depois de aprender os fundamentos, o próximo passo é desenvolver seu estilo único de leitura. Cada leitor é diferente — e a tentativa de imitar outro leitor produz leituras mecânicas e sem vida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nENCONTRE SEU BARALHO: o baralho de Rider-Waite é a base de ensino, mas não precisa ser o baralho com o qual você lê. Explore diferentes baralhos até encontrar um cujas imagens falam diretamente à sua intuição. Alguns preferem o Thoth Tarot (mais hermético e simbólico), outros o Tarot de Marselha (mais antigo, sem cenas nas cartas menores), outros baralhos modernos com estilos variados.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDEFINA SUA ABORDAGEM FILOSÓFICA: você lê Tarô como ferramenta psicológica, como sistema espiritual, como tradição esotérica, ou como uma combinação? Não há resposta certa — mas clareza sobre sua própria abordagem torna as leituras mais coesas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDESENVOLVA RITUAIS DE PREPARAÇÃO: muitos leitores têm um ritual simples antes de uma leitura — embaralhar as cartas de uma forma específica, um momento de silêncio, uma vela, uma pergunta mental de intenção. Esses rituais não são superstição — são ferramentas de foco que criam um estado mental propício para a leitura.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAPRECIE AS CARTAS DIFÍCEIS: os leitores que mais crescem são os que aprendem a amar as cartas que antes temiam. A Torre, o Diabo, a Morte, o Dez de Espadas — cada uma dessas cartas, quando entendida profundamente, torna-se uma aliada poderosa. Elas aparecem quando são necessárias.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nESTUDE OS SISTEMAS CONECTADOS: o Tarô está profundamente conectado à Cabala, à astrologia e à numerologia. Os Arcanos Maiores correspondem a caminhos na Árvore da Vida cabalística. Cada naipe corresponde a um elemento astrológico. Cada número tem um significado numerológico. Esses sistemas se iluminam mutuamente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA JORNADA NUNCA TERMINA: praticantes com décadas de experiência continuam descobrindo novas camadas nas mesmas cartas. O Tarô é um sistema suficientemente rico para durar uma vida inteira de exploração. Cada fase da sua vida ilumina as cartas de uma nova forma — e as cartas iluminam cada fase.",
         "exemplo": "Uma leitora com 10 anos de experiência conta que só entendeu O Enforcado de verdade quando passou por uma fase de sua própria vida onde precisou parar, esperar e mudar completamente de perspectiva. 'Antes eu ensinava o Enforcado. Depois de vivê-lo, passei a sentir o Enforcado nas leituras. Essa é a diferença entre saber e compreender.'",
         "aplicacao": "1. Experimente pelo menos 3 baralhos diferentes. 2. Defina sua abordagem filosófica em uma frase. 3. Crie um ritual simples de preparação para leituras. 4. Escolha uma carta com a qual você tem dificuldade e passe um mês estudando apenas ela.",
         "exercicio": "Escreva sua 'declaração de intenção' como leitora/leitor de Tarô: por que você lê? Para quem? Com que objetivo? Que valores guiam sua prática? Esse texto se torna sua âncora ética e filosófica.",
@@ -21363,7 +21254,7 @@ CURSOS = {
     "aulas": {
       "1": {
         "titulo": "O que é Astrologia e como funciona",
-        "conteudo": "A astrologia é o estudo da relação entre as posições dos corpos celestes e os padrões da vida humana. Suas raízes remontam à Mesopotâmia, há mais de 4.000 anos, e ela é encontrada em praticamente todas as grandes civilizações — babilônica, egípcia, grega, romana, indiana (Jyotish) e chinesa. A versão ocidental que conhecemos hoje é uma síntese greco-romana desenvolvida entre 400 a.C. e 200 d.C.\\\\\\\\n\\\\\\\\nA PREMISSA FUNDAMENTAL da astrologia não é que os planetas 'causam' eventos — é que o cosmo e a vida humana são espelhos um do outro, seguindo os mesmos padrões. Como escreveu Hermes Trismegisto: 'Como é em cima, é embaixo; como é embaixo, é em cima.' Os planetas não determinam — eles indicam energias e tendências que se manifestam tanto no céu quanto na Terra.\\\\\\\\n\\\\\\\\nO MAPA NATAL (ou Mapa Astral) é uma fotografia do céu no exato momento e lugar do nascimento de uma pessoa. É um círculo dividido em 12 casas, com os 10 planetas posicionados nos 12 signos. A interpretação desse mapa revela a personalidade, os talentos, os desafios, os padrões relacionais e a trajetória de vida da pessoa.\\\\\\\\n\\\\\\\\nOs ELEMENTOS FUNDAMENTAIS do mapa são três: os PLANETAS (o que), os SIGNOS (como) e as CASAS (onde). Por exemplo: Marte (o que — ação, energia, desejo) em Escorpião (como — intenso, obsessivo, transformador) na 7ª Casa (onde — nos relacionamentos). Leitura: a pessoa age de forma intensa e transformadora especialmente nos relacionamentos.\\\\\\\\n\\\\\\\\nOs ASPECTOS são os ângulos entre planetas no mapa — as relações entre eles. Uma conjunção (planetas próximos) intensifica as energias. Uma oposição cria tensão. Um trígono facilita o fluxo. Um quadrado cria atrito que produz força. Um sextil cria oportunidade.\\\\\\\\n\\\\\\\\nA DIFERENÇA entre a astrologia solar (dos horóscopos de jornal) e a astrologia completa é enorme. O signo solar — o que a maioria das pessoas conhece — é apenas um dos muitos elementos do mapa. É como julgar uma sinfonia pela nota de abertura.",
+        "conteudo": "A astrologia é o estudo da relação entre as posições dos corpos celestes e os padrões da vida humana. Suas raízes remontam à Mesopotâmia, há mais de 4.000 anos, e ela é encontrada em praticamente todas as grandes civilizações — babilônica, egípcia, grega, romana, indiana (Jyotish) e chinesa. A versão ocidental que conhecemos hoje é uma síntese greco-romana desenvolvida entre 400 a.C. e 200 d.C.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA PREMISSA FUNDAMENTAL da astrologia não é que os planetas 'causam' eventos — é que o cosmo e a vida humana são espelhos um do outro, seguindo os mesmos padrões. Como escreveu Hermes Trismegisto: 'Como é em cima, é embaixo; como é embaixo, é em cima.' Os planetas não determinam — eles indicam energias e tendências que se manifestam tanto no céu quanto na Terra.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO MAPA NATAL (ou Mapa Astral) é uma fotografia do céu no exato momento e lugar do nascimento de uma pessoa. É um círculo dividido em 12 casas, com os 10 planetas posicionados nos 12 signos. A interpretação desse mapa revela a personalidade, os talentos, os desafios, os padrões relacionais e a trajetória de vida da pessoa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs ELEMENTOS FUNDAMENTAIS do mapa são três: os PLANETAS (o que), os SIGNOS (como) e as CASAS (onde). Por exemplo: Marte (o que — ação, energia, desejo) em Escorpião (como — intenso, obsessivo, transformador) na 7ª Casa (onde — nos relacionamentos). Leitura: a pessoa age de forma intensa e transformadora especialmente nos relacionamentos.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs ASPECTOS são os ângulos entre planetas no mapa — as relações entre eles. Uma conjunção (planetas próximos) intensifica as energias. Uma oposição cria tensão. Um trígono facilita o fluxo. Um quadrado cria atrito que produz força. Um sextil cria oportunidade.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA DIFERENÇA entre a astrologia solar (dos horóscopos de jornal) e a astrologia completa é enorme. O signo solar — o que a maioria das pessoas conhece — é apenas um dos muitos elementos do mapa. É como julgar uma sinfonia pela nota de abertura.",
         "exemplo": "Dois Áries completamente diferentes: um tem Lua em Câncer e Ascendente em Peixes — por baixo da energia aguerrida de Áries há uma sensibilidade emocional profunda e uma presença suave. O outro tem Lua em Escorpião e Ascendente em Capricórnio — a energia de Áries é amplificada por intensidade emocional e ambição estruturada. O signo solar sozinho não conta a história completa.",
         "aplicacao": "1. Calcule seu mapa natal (use Astro.com, gratuito, com data, hora e cidade de nascimento). 2. Identifique seu signo solar, lunar e ascendente. 3. Observe onde estão os planetas nos signos. 4. Familiarize-se com a estrutura das 12 casas.",
         "exercicio": "Calcule seu mapa natal completo agora. Identifique: signo solar, signo lunar, ascendente. São harmônicos (do mesmo elemento) ou contrastantes? O que isso sugere sobre possíveis tensões internas?",
@@ -21371,7 +21262,7 @@ CURSOS = {
       },
       "2": {
         "titulo": "Os Doze Signos — Arquétipos do Zodíaco",
-        "conteudo": "ÁRIES (Fogo, Cardinal, Marte): o pioneiro, o guerreiro, o iniciador. Energia: ação direta, coragem, impulsividade, liderança instintiva. Desafio: impaciência, incapacidade de terminar o que começa, ego inflado. Dom: capacidade de iniciar o que outros não ousam começar.\\\\\\\\n\\\\\\\\nTOURO (Terra, Fixo, Vênus): o cultivador, o construtor de valores. Energia: sensualidade, estabilidade, determinação, amor pela beleza e pelo conforto. Desafio: teimosia, resistência à mudança, possessividade. Dom: perseverança e capacidade de criar valor duradouro.\\\\\\\\n\\\\\\\\nGÊMEOS (Ar, Mutável, Mercúrio): o comunicador, o eterno curioso. Energia: versatilidade, comunicação, curiosidade, habilidade de ver múltiplos lados. Desafio: superficialidade, dificuldade de comprometimento, ansiedade. Dom: adaptabilidade e capacidade de conectar ideias e pessoas.\\\\\\\\n\\\\\\\\nCÂNCER (Água, Cardinal, Lua): o nutrido, o guardião do lar. Energia: sensibilidade, memória emocional, cuidado, intuição, lealdade. Desafio: humor instável, dependência emocional, rancor que não libera. Dom: profunda empatia e capacidade de criar segurança para outros.\\\\\\\\n\\\\\\\\nLEÃO (Fogo, Fixo, Sol): o criador, o rei/rainha. Energia: criatividade, generosidade, carisma, necessidade de expressão e reconhecimento. Desafio: ego, necessidade de aprovação, dramaturgia. Dom: capacidade de inspirar e iluminar os outros.\\\\\\\\n\\\\\\\\nVIRGEM (Terra, Mutável, Mercúrio): o analista, o servidor dedicado. Energia: análise, precisão, serviço, atenção ao detalhe, pragmatismo. Desafio: perfeccionismo que paralisa, autocrítica excessiva, ansiedade. Dom: capacidade de ver o que precisa ser melhorado e de servir com excelência.\\\\\\\\n\\\\\\\\nLIBRA (Ar, Cardinal, Vênus): o diplomata, o buscador de harmonia. Energia: equilíbrio, beleza, relacionamentos, justiça, parceria. Desafio: indecisão, dependência do outro, aversão ao conflito que vira desonestidade. Dom: capacidade única de ver todos os lados e criar harmonia.\\\\\\\\n\\\\\\\\nESCORPIÃO (Água, Fixo, Plutão/Marte): o transformador, o mergulhador nas profundezas. Energia: intensidade, poder, transformação, lealdade absoluta, capacidade de ir ao fundo de qualquer questão. Desafio: controle, obsessão, rancor, manipulação. Dom: capacidade de morrer e renascer, de transformar o mais sombrio em ouro.\\\\\\\\n\\\\\\\\nSAGITÁRIO (Fogo, Mutável, Júpiter): o filósofo, o explorador. Energia: expansão, otimismo, busca por significado, aventura, visão de futuro. Desafio: irresponsabilidade, excesso de promessas, dogmatismo disfarçado de abertura. Dom: capacidade de enxergar além do imediato e inspirar esperança.\\\\\\\\n\\\\\\\\nCAPRICÓRNIO (Terra, Cardinal, Saturno): o realizador, o construtor de legados. Energia: ambição, disciplina, responsabilidade, estrutura, maturidade. Desafio: frieza emocional, workaholic, rigidez, medo do fracasso. Dom: capacidade de construir estruturas que duram além de uma vida.\\\\\\\\n\\\\\\\\nAQUÁRIO (Ar, Fixo, Urano/Saturno): o visionário, o rebelde. Energia: originalidade, pensamento inovador, humanitarismo, desapego. Desafio: frieza emocional, rebeldia pela rebeldia, desconexão com o individual em nome do coletivo. Dom: capacidade de ver o futuro e de criar novas formas de organização humana.\\\\\\\\n\\\\\\\\nPEIXES (Água, Mutável, Netuno/Júpiter): o místico, o dissoluto. Energia: compaixão, espiritualidade, criatividade, empatia universal, dissolução de fronteiras. Desafio: fuga da realidade, dificuldade de limites, vitimização. Dom: capacidade de conexão espiritual e de compaixão que transcende o ego.",
+        "conteudo": "ÁRIES (Fogo, Cardinal, Marte): o pioneiro, o guerreiro, o iniciador. Energia: ação direta, coragem, impulsividade, liderança instintiva. Desafio: impaciência, incapacidade de terminar o que começa, ego inflado. Dom: capacidade de iniciar o que outros não ousam começar.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nTOURO (Terra, Fixo, Vênus): o cultivador, o construtor de valores. Energia: sensualidade, estabilidade, determinação, amor pela beleza e pelo conforto. Desafio: teimosia, resistência à mudança, possessividade. Dom: perseverança e capacidade de criar valor duradouro.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nGÊMEOS (Ar, Mutável, Mercúrio): o comunicador, o eterno curioso. Energia: versatilidade, comunicação, curiosidade, habilidade de ver múltiplos lados. Desafio: superficialidade, dificuldade de comprometimento, ansiedade. Dom: adaptabilidade e capacidade de conectar ideias e pessoas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCÂNCER (Água, Cardinal, Lua): o nutrido, o guardião do lar. Energia: sensibilidade, memória emocional, cuidado, intuição, lealdade. Desafio: humor instável, dependência emocional, rancor que não libera. Dom: profunda empatia e capacidade de criar segurança para outros.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nLEÃO (Fogo, Fixo, Sol): o criador, o rei/rainha. Energia: criatividade, generosidade, carisma, necessidade de expressão e reconhecimento. Desafio: ego, necessidade de aprovação, dramaturgia. Dom: capacidade de inspirar e iluminar os outros.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nVIRGEM (Terra, Mutável, Mercúrio): o analista, o servidor dedicado. Energia: análise, precisão, serviço, atenção ao detalhe, pragmatismo. Desafio: perfeccionismo que paralisa, autocrítica excessiva, ansiedade. Dom: capacidade de ver o que precisa ser melhorado e de servir com excelência.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nLIBRA (Ar, Cardinal, Vênus): o diplomata, o buscador de harmonia. Energia: equilíbrio, beleza, relacionamentos, justiça, parceria. Desafio: indecisão, dependência do outro, aversão ao conflito que vira desonestidade. Dom: capacidade única de ver todos os lados e criar harmonia.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nESCORPIÃO (Água, Fixo, Plutão/Marte): o transformador, o mergulhador nas profundezas. Energia: intensidade, poder, transformação, lealdade absoluta, capacidade de ir ao fundo de qualquer questão. Desafio: controle, obsessão, rancor, manipulação. Dom: capacidade de morrer e renascer, de transformar o mais sombrio em ouro.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSAGITÁRIO (Fogo, Mutável, Júpiter): o filósofo, o explorador. Energia: expansão, otimismo, busca por significado, aventura, visão de futuro. Desafio: irresponsabilidade, excesso de promessas, dogmatismo disfarçado de abertura. Dom: capacidade de enxergar além do imediato e inspirar esperança.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nCAPRICÓRNIO (Terra, Cardinal, Saturno): o realizador, o construtor de legados. Energia: ambição, disciplina, responsabilidade, estrutura, maturidade. Desafio: frieza emocional, workaholic, rigidez, medo do fracasso. Dom: capacidade de construir estruturas que duram além de uma vida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAQUÁRIO (Ar, Fixo, Urano/Saturno): o visionário, o rebelde. Energia: originalidade, pensamento inovador, humanitarismo, desapego. Desafio: frieza emocional, rebeldia pela rebeldia, desconexão com o individual em nome do coletivo. Dom: capacidade de ver o futuro e de criar novas formas de organização humana.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPEIXES (Água, Mutável, Netuno/Júpiter): o místico, o dissoluto. Energia: compaixão, espiritualidade, criatividade, empatia universal, dissolução de fronteiras. Desafio: fuga da realidade, dificuldade de limites, vitimização. Dom: capacidade de conexão espiritual e de compaixão que transcende o ego.",
         "exemplo": "Uma pessoa com Sol em Capricórnio, Lua em Câncer e Ascendente em Leão vive uma tríade fascinante e tensa: a ambição estruturada e séria de Capricórnio (Solar) com uma vida emocional profundamente ligada ao lar e à família (Lunar Câncer), mas projetando para o mundo uma presença calorosa, criativa e que quer ser admirada (Ascendente Leão). Essa pessoa trabalha muito (Capricórnio), precisa de segurança emocional para funcionar (Câncer), mas precisa também brilhar e ser reconhecida (Leão).",
         "aplicacao": "1. Leia com atenção seu signo solar, lunar e ascendente. 2. Para cada um, identifique os dons e os desafios. 3. Perceba como esses três aspectos interagem na sua vida. 4. Identifique qual dos três parece mais dominante no seu dia a dia.",
         "exercicio": "Para cada um dos seus três signos principais, escreva um exemplo concreto de como aquela energia se manifesta positivamente na sua vida, e um exemplo de como o desafio daquele signo aparece.",
@@ -21379,7 +21270,7 @@ CURSOS = {
       },
       "3": {
         "titulo": "Os Planetas — Vozes do Mapa",
-        "conteudo": "Cada planeta representa uma função psicológica, uma 'voz' dentro da psique humana. A posição do planeta no signo diz como essa função se expressa; a posição na casa diz em qual área da vida ela atua.\\\\\\\\n\\\\\\\\nSOL: a identidade central, o ego, a vontade criativa. O que você está aqui para ser. O signo solar é a qualidade que você está desenvolvendo ao longo de toda a vida — não é o que você nasceu sendo, mas o que está se tornando.\\\\\\\\n\\\\\\\\nLUA: o mundo emocional, os instintos, as necessidades de segurança, o passado, a infância, a mãe. O signo lunar revela como você reage emocionalmente, o que te faz sentir seguro ou ameaçado, e como seu mundo interior funciona.\\\\\\\\n\\\\\\\\nMERCÚRIO: a mente, a comunicação, a forma de pensar e de processar informação. Revela se você pensa de forma linear ou associativa, se se comunica de forma direta ou indireta.\\\\\\\\n\\\\\\\\nVÊNUS: amor, beleza, valores, prazer, relacionamentos, o que te atrai e o que você acha belo. Revela o que você busca em relacionamentos e em experiências estéticas.\\\\\\\\n\\\\\\\\nMART: ação, desejo, energia, sexualidade, agressividade. Como você age para conseguir o que quer. Onde você coloca sua energia e força.\\\\\\\\n\\\\\\\\nJÚPITER: expansão, abundância, oportunidade, sabedoria, filosofia. Onde a vida tende a se expandir e oferecer oportunidades — mas também onde o excesso pode aparecer.\\\\\\\\n\\\\\\\\nSATURNO: limitação, disciplina, responsabilidade, karma, estrutura, medos profundos. Onde a vida exige mais esforço e onde as maiores conquistas são construídas através da perseverança. Saturno é severo mas justo.\\\\\\\\n\\\\\\\\nURANO: revolução, originalidade, ruptura súbita, liberdade, o futuro. Onde você é rebelde e onde rupturas são necessárias para crescimento.\\\\\\\\n\\\\\\\\nNETUNO: espiritualidade, ilusão, dissolução, sonhos, compaixão universal, o inconsciente coletivo. Onde você busca o transcendente — e onde pode se iludir.\\\\\\\\n\\\\\\\\nPLUTÃO: transformação profunda, poder, morte e renascimento, o inconsciente mais profundo. Onde você experimenta as transformações mais radicais da vida.",
+        "conteudo": "Cada planeta representa uma função psicológica, uma 'voz' dentro da psique humana. A posição do planeta no signo diz como essa função se expressa; a posição na casa diz em qual área da vida ela atua.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSOL: a identidade central, o ego, a vontade criativa. O que você está aqui para ser. O signo solar é a qualidade que você está desenvolvendo ao longo de toda a vida — não é o que você nasceu sendo, mas o que está se tornando.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nLUA: o mundo emocional, os instintos, as necessidades de segurança, o passado, a infância, a mãe. O signo lunar revela como você reage emocionalmente, o que te faz sentir seguro ou ameaçado, e como seu mundo interior funciona.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nMERCÚRIO: a mente, a comunicação, a forma de pensar e de processar informação. Revela se você pensa de forma linear ou associativa, se se comunica de forma direta ou indireta.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nVÊNUS: amor, beleza, valores, prazer, relacionamentos, o que te atrai e o que você acha belo. Revela o que você busca em relacionamentos e em experiências estéticas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nMART: ação, desejo, energia, sexualidade, agressividade. Como você age para conseguir o que quer. Onde você coloca sua energia e força.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nJÚPITER: expansão, abundância, oportunidade, sabedoria, filosofia. Onde a vida tende a se expandir e oferecer oportunidades — mas também onde o excesso pode aparecer.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nSATURNO: limitação, disciplina, responsabilidade, karma, estrutura, medos profundos. Onde a vida exige mais esforço e onde as maiores conquistas são construídas através da perseverança. Saturno é severo mas justo.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nURANO: revolução, originalidade, ruptura súbita, liberdade, o futuro. Onde você é rebelde e onde rupturas são necessárias para crescimento.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nNETUNO: espiritualidade, ilusão, dissolução, sonhos, compaixão universal, o inconsciente coletivo. Onde você busca o transcendente — e onde pode se iludir.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nPLUTÃO: transformação profunda, poder, morte e renascimento, o inconsciente mais profundo. Onde você experimenta as transformações mais radicais da vida.",
         "exemplo": "Saturno em Câncer na 4ª Casa: a função de Saturno (disciplina, responsabilidade, medo, construção lenta) expressa de forma canceriana (emocional, ligada ao lar, cuidadora) na área da família e lar (4ª Casa). Provável: responsabilidades familiares pesadas desde cedo, relação com a família que exigiu muito, dificuldade de sentir segurança emocional — mas também, quando trabalhado, capacidade de construir uma base familiar extraordinariamente sólida.",
         "aplicacao": "1. No seu mapa natal, identifique a posição de cada planeta. 2. Para os planetas pessoais (Sol, Lua, Mercúrio, Vênus, Marte), leia signo e casa. 3. Para Saturno especificamente, leia com atenção — ele revela onde está o maior trabalho e a maior recompensa.",
         "exercicio": "Onde está Saturno no seu mapa? Em qual signo e em qual casa? Esse posicionamento ressoa com os desafios e aprendizados mais constantes da sua vida?",
@@ -21387,7 +21278,7 @@ CURSOS = {
       },
       "4": {
         "titulo": "As Doze Casas Astrológicas",
-        "conteudo": "As 12 casas do mapa natal representam as 12 áreas da vida onde os planetas e signos atuam. Elas são determinadas pelo horário e local de nascimento — por isso o mesmo Sol em Áries de duas pessoas pode manifestar-se de formas muito diferentes dependendo de em qual casa ele está.\\\\\\\\n\\\\\\\\n1ª CASA (Ascendente): identidade, aparência, como você se apresenta ao mundo, a máscara social, o início de tudo. O signo na cúspide da 1ª casa é o Ascendente — a impressão imediata que você passa.\\\\\\\\n\\\\\\\\n2ª CASA: valores, recursos pessoais, dinheiro, posses, autoestima. Como você ganha e gasta. O que você considera valioso.\\\\\\\\n\\\\\\\\n3ª CASA: comunicação, irmãos, vizinhança, aprendizado básico, viagens curtas, mente cotidiana. Como você pensa e se comunica no dia a dia.\\\\\\\\n\\\\\\\\n4ª CASA (Fundo do Céu): lar, família de origem, raízes, o que está na base de tudo, a vida privada. A mãe ou figura materna.\\\\\\\\n\\\\\\\\n5ª CASA: criatividade, prazer, filhos, amor romântico (diferente de parceria), jogo, autoexpressão espontânea. Onde você se diverte e cria.\\\\\\\\n\\\\\\\\n6ª CASA: trabalho cotidiano (diferente de carreira), saúde, rotinas, serviço, os pequenos hábitos que constroem a vida.\\\\\\\\n\\\\\\\\n7ª CASA (Descendente): parcerias, casamento, contratos, o que você busca no outro, como são seus relacionamentos sérios. O oposto do Ascendente — o que você precisa do outro para se completar.\\\\\\\\n\\\\\\\\n8ª CASA: transformação, morte e renascimento, sexualidade profunda, heranças, recursos compartilhados, o que é oculto, o inconsciente.\\\\\\\\n\\\\\\\\n9ª CASA: filosofia, espiritualidade, viagens longas, ensino superior, busca por significado, o pai ou figura paterna, crenças expansivas.\\\\\\\\n\\\\\\\\n10ª CASA (Meio do Céu): carreira, reputação pública, status, autoridade, o que você quer conquistar no mundo. Como você é visto profissionalmente.\\\\\\\\n\\\\\\\\n11ª CASA: amizades, grupos, coletivo, causas, esperanças, o futuro, redes de apoio.\\\\\\\\n\\\\\\\\n12ª CASA: o inconsciente profundo, o que está oculto, padrões kármicos, isolamento, espiritualidade, o que precisa ser liberado.",
+        "conteudo": "As 12 casas do mapa natal representam as 12 áreas da vida onde os planetas e signos atuam. Elas são determinadas pelo horário e local de nascimento — por isso o mesmo Sol em Áries de duas pessoas pode manifestar-se de formas muito diferentes dependendo de em qual casa ele está.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n1ª CASA (Ascendente): identidade, aparência, como você se apresenta ao mundo, a máscara social, o início de tudo. O signo na cúspide da 1ª casa é o Ascendente — a impressão imediata que você passa.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n2ª CASA: valores, recursos pessoais, dinheiro, posses, autoestima. Como você ganha e gasta. O que você considera valioso.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n3ª CASA: comunicação, irmãos, vizinhança, aprendizado básico, viagens curtas, mente cotidiana. Como você pensa e se comunica no dia a dia.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n4ª CASA (Fundo do Céu): lar, família de origem, raízes, o que está na base de tudo, a vida privada. A mãe ou figura materna.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n5ª CASA: criatividade, prazer, filhos, amor romântico (diferente de parceria), jogo, autoexpressão espontânea. Onde você se diverte e cria.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n6ª CASA: trabalho cotidiano (diferente de carreira), saúde, rotinas, serviço, os pequenos hábitos que constroem a vida.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n7ª CASA (Descendente): parcerias, casamento, contratos, o que você busca no outro, como são seus relacionamentos sérios. O oposto do Ascendente — o que você precisa do outro para se completar.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n8ª CASA: transformação, morte e renascimento, sexualidade profunda, heranças, recursos compartilhados, o que é oculto, o inconsciente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n9ª CASA: filosofia, espiritualidade, viagens longas, ensino superior, busca por significado, o pai ou figura paterna, crenças expansivas.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n10ª CASA (Meio do Céu): carreira, reputação pública, status, autoridade, o que você quer conquistar no mundo. Como você é visto profissionalmente.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n11ª CASA: amizades, grupos, coletivo, causas, esperanças, o futuro, redes de apoio.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n12ª CASA: o inconsciente profundo, o que está oculto, padrões kármicos, isolamento, espiritualidade, o que precisa ser liberado.",
         "exemplo": "Sol na 12ª Casa: a identidade central (Sol) expressa-se no domínio do que está oculto, do inconsciente e do espiritual (12ª Casa). Frequentemente indica alguém que prefere trabalhar nos bastidores, que tem dificuldade de brilhar publicamente mesmo com grande talento, e que tem uma vida espiritual ou psicológica rica. Muitos monges, artistas reclusisos e terapeutas têm Sol na 12ª Casa.",
         "aplicacao": "1. Identifique em qual casa está cada planeta pessoal no seu mapa. 2. Para cada planeta em casa, combine: função do planeta + qualidade do signo + área da casa. 3. Identifique suas casas mais cheias (com vários planetas) — elas indicam as áreas mais ativas da sua vida.",
         "exercicio": "Identifique as três casas mais cheias do seu mapa. Essas áreas da vida são realmente as mais ativas, complexas ou significativas para você? Como se manifestam?",
@@ -21395,7 +21286,7 @@ CURSOS = {
       },
       "5": {
         "titulo": "Trânsitos e Progressões — A Astrologia do Tempo",
-        "conteudo": "O mapa natal é fixo — uma fotografia do nascimento. Mas os planetas continuam se movendo após o nascimento, e quando eles transitam sobre pontos do mapa natal, ativam aquelas energias. Isso é a astrologia preditiva ou de timing.\\\\\\\\n\\\\\\\\nOS TRÂNSITOS são as posições dos planetas no céu hoje, comparadas com seu mapa natal. Quando Saturno transita sobre seu Sol natal, você entra numa fase de responsabilidades, limitações e maturidade forçada — dura aproximadamente 2 anos. Quando Júpiter transita sobre seu Sol, você entra numa fase de expansão, oportunidades e otimismo — dura cerca de 1 ano.\\\\\\\\n\\\\\\\\nOs PLANETAS LENTOS (Saturno, Urano, Netuno, Plutão) criam os trânsitos mais impactantes porque ficam mais tempo sobre cada ponto e ativam transformações profundas e duradouras. Os planetas rápidos (Sol, Lua, Mercúrio, Vênus, Marte) criam ativações menores e mais passageiras.\\\\\\\\n\\\\\\\\nO RETORNO DE SATURNO acontece quando Saturno volta à mesma posição que ocupava no nascimento — o que acontece aproximadamente aos 29-30 anos, 58-60 anos e 87-90 anos. É uma das grandes iniciações da vida: Saturno apresenta a conta das escolhas feitas e força uma reavaliação profunda. Os 'crises dos 30' que muitas pessoas descrevem são frequentemente o Retorno de Saturno.\\\\\\\\n\\\\\\\\nO RETORNO SOLAR acontece todo ano, quando o Sol volta à mesma posição do nascimento. O aniversário, basicamente. Um mapa do Retorno Solar (calculado para o momento exato em que o Sol retorna à posição natal) revela os temas do ano que se inicia.\\\\\\\\n\\\\\\\\nAS PROGRESSÕES são um sistema diferente onde o mapa natal 'avança' simbolicamente — um dia depois do nascimento equivale a um ano de vida. As progressões revelam o desenvolvimento interno, mais lento e profundo do que os trânsitos.",
+        "conteudo": "O mapa natal é fixo — uma fotografia do nascimento. Mas os planetas continuam se movendo após o nascimento, e quando eles transitam sobre pontos do mapa natal, ativam aquelas energias. Isso é a astrologia preditiva ou de timing.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOS TRÂNSITOS são as posições dos planetas no céu hoje, comparadas com seu mapa natal. Quando Saturno transita sobre seu Sol natal, você entra numa fase de responsabilidades, limitações e maturidade forçada — dura aproximadamente 2 anos. Quando Júpiter transita sobre seu Sol, você entra numa fase de expansão, oportunidades e otimismo — dura cerca de 1 ano.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOs PLANETAS LENTOS (Saturno, Urano, Netuno, Plutão) criam os trânsitos mais impactantes porque ficam mais tempo sobre cada ponto e ativam transformações profundas e duradouras. Os planetas rápidos (Sol, Lua, Mercúrio, Vênus, Marte) criam ativações menores e mais passageiras.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO RETORNO DE SATURNO acontece quando Saturno volta à mesma posição que ocupava no nascimento — o que acontece aproximadamente aos 29-30 anos, 58-60 anos e 87-90 anos. É uma das grandes iniciações da vida: Saturno apresenta a conta das escolhas feitas e força uma reavaliação profunda. Os 'crises dos 30' que muitas pessoas descrevem são frequentemente o Retorno de Saturno.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO RETORNO SOLAR acontece todo ano, quando o Sol volta à mesma posição do nascimento. O aniversário, basicamente. Um mapa do Retorno Solar (calculado para o momento exato em que o Sol retorna à posição natal) revela os temas do ano que se inicia.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nAS PROGRESSÕES são um sistema diferente onde o mapa natal 'avança' simbolicamente — um dia depois do nascimento equivale a um ano de vida. As progressões revelam o desenvolvimento interno, mais lento e profundo do que os trânsitos.",
         "exemplo": "Uma mulher passa por uma crise existencial profunda aos 29 anos: fim de relacionamento longo, questionamento da carreira, sensação de que tudo que construiu não é mais suficiente. O mapa mostra Saturno transitando exatamente sobre seu Sol natal — o Retorno de Saturno clássico. A astrologia nomeia e contextualiza: não é crise, é iniciação. Saturno está pedindo que ela construa sua vida sobre bases mais verdadeiras.",
         "aplicacao": "1. Verifique onde Saturno está no céu hoje e em qual posição do seu mapa ele está transitando. 2. Se você tem entre 28-30, 57-60 ou 86-89 anos, você está num Retorno de Saturno. 3. Use sites como Astro.com (seção de trânsitos) para visualizar os trânsitos atuais no seu mapa.",
         "exercicio": "Pesquise os trânsitos atuais dos planetas lentos (Saturno, Urano, Netuno, Plutão) no seu mapa natal. Em qual casa cada um está? Esses temas de vida estão ativos agora?",
@@ -21403,7 +21294,7 @@ CURSOS = {
       },
       "6": {
         "titulo": "Lendo um Mapa Astral — Integrando Tudo",
-        "conteudo": "Uma leitura astrológica completa integra todos os elementos estudados numa narrativa coerente sobre quem a pessoa é, qual é sua jornada e em que momento ela está.\\\\\\\\n\\\\\\\\nO PROCESSO DE LEITURA começa com a impressão geral: qual elemento domina (Fogo, Terra, Ar ou Água)? Qual modalidade (Cardinal, Fixo ou Mutável)? Há um desequilíbrio óbvio (todos os planetas num lado do mapa, muitos em certas casas, elemento ausente)?\\\\\\\\n\\\\\\\\nDEPOIS vêm os três pontos fundamentais: Sol (identidade central e missão), Lua (mundo emocional e necessidades), Ascendente (forma de se apresentar e perceber o mundo).\\\\\\\\n\\\\\\\\nEM SEGUIDA os planetas pessoais (Mercúrio, Vênus, Marte) revelam como a pessoa pensa, o que ama e como age. Depois os planetas sociais (Júpiter, Saturno) revelam onde há expansão e onde há trabalho.\\\\\\\\n\\\\\\\\nOS ASPECTOS MAIS IMPORTANTES entre planetas revelam as dinâmicas internas — conjunções (fusão de energias), oposições (tensão que pede integração), trígonos (fluxo natural), quadrados (atrito que produz força).\\\\\\\\n\\\\\\\\nA SÍNTESE é o momento onde o astrólogo (ou você, lendo seu próprio mapa) monta a narrativa: não é uma lista de características — é uma história sobre quem essa pessoa é, que desafios carrega, que dons tem, e em que está no momento.\\\\\\\\n\\\\\\\\nASTROLOGIA E LIVRE-ARBÍTRIO: a astrologia mostra tendências, não fatalidades. Dois mapas idênticos (gêmeos) produzem vidas diferentes porque as escolhas são diferentes. O mapa é o terreno — você é o jardineiro. Mesmo o terreno mais difícil, cultivado com sabedoria, pode produzir flores extraordinárias.\\\\\\\\n\\\\\\\\nETICA NA PRÁTICA ASTROLÓGICA: assim como no Tarô, a astrologia pede responsabilidade. Nunca assuste com aspectos difíceis. Nunca faça previsões absolutas. Sempre use a linguagem de tendência e possibilidade. E lembre: o objetivo é iluminar, não determinar.",
+        "conteudo": "Uma leitura astrológica completa integra todos os elementos estudados numa narrativa coerente sobre quem a pessoa é, qual é sua jornada e em que momento ela está.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nO PROCESSO DE LEITURA começa com a impressão geral: qual elemento domina (Fogo, Terra, Ar ou Água)? Qual modalidade (Cardinal, Fixo ou Mutável)? Há um desequilíbrio óbvio (todos os planetas num lado do mapa, muitos em certas casas, elemento ausente)?\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nDEPOIS vêm os três pontos fundamentais: Sol (identidade central e missão), Lua (mundo emocional e necessidades), Ascendente (forma de se apresentar e perceber o mundo).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nEM SEGUIDA os planetas pessoais (Mercúrio, Vênus, Marte) revelam como a pessoa pensa, o que ama e como age. Depois os planetas sociais (Júpiter, Saturno) revelam onde há expansão e onde há trabalho.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nOS ASPECTOS MAIS IMPORTANTES entre planetas revelam as dinâmicas internas — conjunções (fusão de energias), oposições (tensão que pede integração), trígonos (fluxo natural), quadrados (atrito que produz força).\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nA SÍNTESE é o momento onde o astrólogo (ou você, lendo seu próprio mapa) monta a narrativa: não é uma lista de características — é uma história sobre quem essa pessoa é, que desafios carrega, que dons tem, e em que está no momento.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nASTROLOGIA E LIVRE-ARBÍTRIO: a astrologia mostra tendências, não fatalidades. Dois mapas idênticos (gêmeos) produzem vidas diferentes porque as escolhas são diferentes. O mapa é o terreno — você é o jardineiro. Mesmo o terreno mais difícil, cultivado com sabedoria, pode produzir flores extraordinárias.\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\nETICA NA PRÁTICA ASTROLÓGICA: assim como no Tarô, a astrologia pede responsabilidade. Nunca assuste com aspectos difíceis. Nunca faça previsões absolutas. Sempre use a linguagem de tendência e possibilidade. E lembre: o objetivo é iluminar, não determinar.",
         "exemplo": "Um homem de 35 anos com Sol em Capricórnio (12ª Casa), Lua em Escorpião (10ª Casa), Ascendente Touro, Saturno em Escorpião (7ª Casa), e Júpiter em Áries (12ª Casa). Leitura integrada: há uma tensão fundamental entre a necessidade de ser visto e reconhecido profissionalmente (Lua em Escorpião na 10ª) e a tendência a trabalhar nos bastidores ou de forma oculta (Sol na 12ª). O Ascendente Touro apresenta ao mundo uma pessoa estável e confiável, mas por baixo há uma profundidade emocional e uma ambição que poucos percebem. Saturno na 7ª indica relacionamentos que são trabalho sério, onde as maiores lições de vida acontecem.",
         "aplicacao": "1. Leia seu mapa natal completo seguindo a sequência: impressão geral, trídade básica (Sol-Lua-Asc), planetas pessoais, aspectos principais. 2. Escreva uma síntese de um parágrafo. 3. Compare com o que você sabe sobre si mesmo.",
         "exercicio": "Escreva uma síntese de três parágrafos sobre seu próprio mapa natal: quem você é (Sun, Moon, Asc), como você age e o que busca (Mercúrio, Vênus, Marte), e qual é o seu maior desafio e maior dom (Saturno e Júpiter). Use linguagem de tendência, não de certeza.",
@@ -21570,7 +21461,7 @@ with tab3:
             c1, c2 = st.columns(2)
             if c1.form_submit_button("ENVIAR RESPOSTA", key="tendaravfsb501") and resp_usuario:
                 st.session_state['historico'].append({"role": "user", "content": resp_usuario})
-                hist_full = "\\\\\\\\n".join([f"{m['role']}: {m['content']}" for m in st.session_state['historico']])
+                hist_full = "\\\\\\\\\\\\\\\\n".join([f"{m['role']}: {m['content']}" for m in st.session_state['historico']])
                 nova_res = consultar_ravengar(f"Ravengar, histórico: {hist_full}", "Continue o diálogo.", chave_api)
                 st.session_state['historico'].append({"role": "ravengar", "content": nova_res})
                 st.rerun()
@@ -22213,10 +22104,8 @@ with tab13:
                     else:
                         st.success("✅ Esta aula já foi concluída!")
 
-# --- SALVAR / CARREGAR DADOS ---
 st.markdown("<div class='rodape-ravengar'>✦ EXPLORANDO OS MISTÉRIOS DA MENTE E DO DESTINO ✦</div>", unsafe_allow_html=True)
 
-import json as _json_rv
 
 # --- RODAPÉ ---
 st.markdown(
@@ -22224,6 +22113,7 @@ st.markdown(
     "© 2026 TENDA DO RAVENGAR · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
+
 
 
 
