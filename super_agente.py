@@ -9540,11 +9540,11 @@ with tab_metas:
             m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
             m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
             c1, c2  = st.columns(2)
-            m_val   = st.number_input("Valor total (R$)", min_value=0.0, value=float(st.session_state.get('_m_val_tmp', 1000.0)), step=100.0)
+            with c1: m_val   = st.number_input("Valor total (R$)", min_value=0.0, step=100.0, key="oraculof24")
             with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
-            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, value=0.0, step=100.0, key="oraculof26")
+            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
             if st.form_submit_button("🚀 CRIAR META", key="oraculoffsb505"):
-                if m_nome and m_val:
+                if m_nome and m_val > 0:
                     mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
                     st.session_state.metas.append({"nome":m_nome,"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
                     st.rerun()
