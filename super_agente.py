@@ -14669,7 +14669,7 @@ elif st.session_state.etapa == "App":
 
 
     # TABS — navegação nativa
-    (_tab_Home, _tab_Consumidor, _tab_Trabalho, _tab_Moradia, _tab_Contratos, _tab_Transito, _tab_Familia, _tab_GolpesDigitais, _tab_Crimes, _tab_Condominio, _tab_MEI, _tab_CrimesHonra, _tab_Provas, _tab_Ajuda, _tab_Biblioteca) = st.tabs(['🏠 Painel', '⚖️ Consumidor', '💼 Trabalho', '🏠 Moradia', '📜 Contratos', '🚗 Trânsito', '👨\\\\u200d👩\\\\u200d👧 Família', '📱 Golpes Digitais', '👮 Crimes', '🏢 Condomínio', '🏪 MEI', '😤 Crimes Honra', '📂 Provas', '❓ Ajuda', '📚 Biblioteca'])
+    (_tab_Home, _tab_Consumidor, _tab_Trabalho, _tab_Moradia, _tab_Contratos, _tab_Transito, _tab_Familia, _tab_GolpesDigitais, _tab_Crimes, _tab_Condominio, _tab_MEI, _tab_CrimesHonra, _tab_Provas, _tab_Ajuda, _tab_Biblioteca) = st.tabs(['🏠 Painel', '⚖️ Consumidor', '💼 Trabalho', '🏠 Moradia', '📜 Contratos', '🚗 Trânsito', '👨‍👩‍👧 Família', '📱 Golpes Digitais', '👮 Crimes', '🏢 Condomínio', '🏪 MEI', '😤 Crimes Honra', '📂 Provas', '❓ Ajuda', '📚 Biblioteca'])
 
 
 
