@@ -463,17 +463,19 @@ def normalizar_tabelas_frases(texto: str) -> str:
 def viagem_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um especialista em turismo e planejamento de viagens no Brasil e no mundo. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
-Usuário: {st.session_state.usuario}.
-Cidade de origem: {st.session_state.cidade_origem or 'Brasil'}.
-Perfil de viagem: {st.session_state.perfil_viagem}.
-{system_extra}
-REGRAS:
-- Seja específico com nomes de lugares, restaurantes, hotéis e atrações reais
-- REGRA CRÍTICA DE FORMATAÇÃO: sempre escreva R$30, R$120, R$1.500 — NUNCA escreva "R 30" ou "R 120" sem o cifrão. O símbolo correto é R$ colado ao número, sem espaço entre R e $.
-- Indique horários de funcionamento quando relevante
-- Dê dicas práticas que guias normais não dão
-- Escreva em português brasileiro natural e animado'''
+        system = (
+            "Você é um especialista em turismo e planejamento de viagens no Brasil e no mundo. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
+            "Usuário: {st.session_state.usuario}.\n" +
+            "Cidade de origem: {st.session_state.cidade_origem or 'Brasil'}.\n" +
+            "Perfil de viagem: {st.session_state.perfil_viagem}.\n" +
+            "{system_extra}\n" +
+            "REGRAS:\n" +
+            "- Seja específico com nomes de lugares, restaurantes, hotéis e atrações reais\n" +
+            "- REGRA CRÍTICA DE FORMATAÇÃO: sempre escreva R$30, R$120, R$1.500 — NUNCA escreva \"R 30\" ou \"R 120\" sem o cifrão. O símbolo correto é R$ colado ao número, sem espaço entre R e $.\n" +
+            "- Indique horários de funcionamento quando relevante\n" +
+            "- Dê dicas práticas que guias normais não dão\n" +
+            "- Escreva em português brasileiro natural e animado\n"
+        )
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -2246,33 +2248,36 @@ elif st.session_state.etapa == "App":
             xp = st.session_state.get('xp_total', 0)
             dias = st.session_state.get('dias_plano', 0)
 
-            st.markdown(f'''
-            <div class='painel-nutri'>
-                <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:12px;'>🍽️ NUTRIMIND AI — PAINEL DE SAÚDE</div>
-                <div style='display:grid;grid-template-columns:repeat(5,1fr);gap:14px;'>
-                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                        <div style='font-size:0.7em;opacity:0.6;'>🔥 META CALÓRICA</div>
-                        <div style='font-size:1.6em;font-weight:700;'>{st.session_state.calorias_padrao} kcal</div>
-                    </div>
-                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                        <div style='font-size:0.7em;opacity:0.6;'>❤️ SAÚDE NUTRI</div>
-                        <div style='font-size:1.6em;font-weight:700;'>{saude}/100</div>
-                    </div>
-                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                        <div style='font-size:0.7em;opacity:0.6;'>🔥 SEQUÊNCIA</div>
-                        <div style='font-size:1.6em;font-weight:700;'>{streak} dias</div>
-                    </div>
-                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                        <div style='font-size:0.7em;opacity:0.6;'>⭐ XP TOTAL</div>
-                        <div style='font-size:1.6em;font-weight:700;'>{xp}</div>
-                    </div>
-                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                        <div style='font-size:0.7em;opacity:0.6;'>📅 DIAS NO PLANO</div>
-                        <div style='font-size:1.6em;font-weight:700;'>{dias}</div>
-                    </div>
-                </div>
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_chef_1 = (
+                "'\n"
+                "            <div class='painel-nutri'>\n"
+                "                <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:12px;'>🍽️ NUTRIMIND AI — PAINEL DE SAÚDE</div>\n"
+                "                <div style='display:grid;grid-template-columns:repeat(5,1fr);gap:14px;'>\n"
+                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
+                "                        <div style='font-size:0.7em;opacity:0.6;'>🔥 META CALÓRICA</div>\n"
+                f"                        <div style='font-size:1.6em;font-weight:700;'>{st.session_state.calorias_padrao} kcal</div>\n"
+                "                    </div>\n"
+                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
+                "                        <div style='font-size:0.7em;opacity:0.6;'>❤️ SAÚDE NUTRI</div>\n"
+                f"                        <div style='font-size:1.6em;font-weight:700;'>{saude}/100</div>\n"
+                "                    </div>\n"
+                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
+                "                        <div style='font-size:0.7em;opacity:0.6;'>🔥 SEQUÊNCIA</div>\n"
+                f"                        <div style='font-size:1.6em;font-weight:700;'>{streak} dias</div>\n"
+                "                    </div>\n"
+                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
+                "                        <div style='font-size:0.7em;opacity:0.6;'>⭐ XP TOTAL</div>\n"
+                f"                        <div style='font-size:1.6em;font-weight:700;'>{xp}</div>\n"
+                "                    </div>\n"
+                "                    <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>\n"
+                "                        <div style='font-size:0.7em;opacity:0.6;'>📅 DIAS NO PLANO</div>\n"
+                f"                        <div style='font-size:1.6em;font-weight:700;'>{dias}</div>\n"
+                "                    </div>\n"
+                "                </div>\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_chef_1, unsafe_allow_html=True)
 
             # DASHBOARD
             st.markdown("### 📊 Dashboard")
@@ -3398,13 +3403,16 @@ elif st.session_state.etapa == "App":
                 elif clima_h == "Muito quente/Úmido": base += 600
                 meta_agua = base / 1000
 
-                st.markdown(f'''
-                <div class='meta-box' style='margin:12px 0;'>
-                    <div style='font-size:0.82em;color:#C2410C;'>💧 SUA META DIÁRIA DE ÁGUA</div>
-                    <div class='meta-numero'>{meta_agua:.1f} L</div>
-                    <div style='font-size:0.85em;color:#C2410C;'>({int(meta_agua/0.25)} copos de 250ml)</div>
-                </div>
-                ''', unsafe_allow_html=True)
+                _htmp_chef_2 = (
+                    "'\n"
+                    "                <div class='meta-box' style='margin:12px 0;'>\n"
+                    "                    <div style='font-size:0.82em;color:#C2410C;'>💧 SUA META DIÁRIA DE ÁGUA</div>\n"
+                    f"                    <div class='meta-numero'>{meta_agua:.1f} L</div>\n"
+                    f"                    <div style='font-size:0.85em;color:#C2410C;'>({int(meta_agua/0.25)} copos de 250ml)</div>\n"
+                    "                </div>\n"
+                    "                \n"
+                )
+                st.markdown(_htmp_chef_2, unsafe_allow_html=True)
 
                 if st.button("💧 GUIA COMPLETO DE HIDRATAÇÃO", key="chefcalo62"):
                     with st.spinner("..."):
@@ -3633,20 +3641,22 @@ for k, v in defaults.items():
 def personal_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um Personal Trainer profissional especialista em treinamento físico. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
-Usuário: {st.session_state.usuario}.
-Objetivo: {st.session_state.objetivo_treino}.
-Local de treino: {st.session_state.local_treino}.
-Nível: {st.session_state.nivel_treino}.
-Limitações físicas: {st.session_state.limitacoes or 'nenhuma'}.
-Tempo disponível: {st.session_state.tempo_treino}.
-{system_extra}
-REGRAS:
-- Sempre indique séries, repetições e tempo de descanso
-- Adapte ao nível e limitações do usuário
-- Explique brevemente como executar cada exercício
-- Use emojis para deixar visual e motivador
-- Escreva em português brasileiro'''
+        system = (
+            "Você é um Personal Trainer profissional especialista em treinamento físico. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
+            "Usuário: {st.session_state.usuario}.\n" +
+            "Objetivo: {st.session_state.objetivo_treino}.\n" +
+            "Local de treino: {st.session_state.local_treino}.\n" +
+            "Nível: {st.session_state.nivel_treino}.\n" +
+            "Limitações físicas: {st.session_state.limitacoes or 'nenhuma'}.\n" +
+            "Tempo disponível: {st.session_state.tempo_treino}.\n" +
+            "{system_extra}\n" +
+            "REGRAS:\n" +
+            "- Sempre indique séries, repetições e tempo de descanso\n" +
+            "- Adapte ao nível e limitações do usuário\n" +
+            "- Explique brevemente como executar cada exercício\n" +
+            "- Use emojis para deixar visual e motivador\n" +
+            "- Escreva em português brasileiro\n"
+        )
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -5432,32 +5442,36 @@ elif st.session_state.etapa == "App":
                 dias_restantes = "—"
 
         ultima = st.session_state.get('ultima_atividade', 'Nenhuma')
-        st.markdown(f'''
-        <div class='painel-exec'>
-            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:8px;'>🎓 MENTOR INTELIGENTE DE ESTUDOS</div>
-            <div style='font-size:1.1em;opacity:0.7;margin-bottom:16px;'>Seu treinador pessoal com Inteligência Artificial · <span style='color:#22C55E;'>🟢 IA Online</span></div>
-            <div style='display:flex;flex-wrap:wrap;gap:20px;'>
-                <div><div style='font-size:0.75em;opacity:0.6;'>🎯 OBJETIVO</div><div style='font-size:1.1em;font-weight:700;'>{st.session_state.concurso_foco or "—"} {("— " + st.session_state.cargo_foco) if st.session_state.cargo_foco else ""}</div></div>
-                <div><div style='font-size:0.75em;opacity:0.6;'>📅 DIAS RESTANTES</div><div style='font-size:1.1em;font-weight:700;'>{dias_restantes}</div></div>
-                <div><div style='font-size:0.75em;opacity:0.6;'>🔥 SEQUÊNCIA</div><div style='font-size:1.1em;font-weight:700;'>{st.session_state.get("streak_atual",0)} dias</div></div>
-                <div><div style='font-size:0.75em;opacity:0.6;'>📖 ÚLTIMA ATIVIDADE</div><div style='font-size:1.1em;font-weight:700;'>{ultima}</div></div>
-            </div>
-        </div>
-        ''', unsafe_allow_html=True)
+        _concurso_foco_val = st.session_state.concurso_foco or "\u2014"
+        _cargo_foco_val = ("\u2014 " + st.session_state.cargo_foco) if st.session_state.cargo_foco else ""
+        _streak_atual_val = st.session_state.get("streak_atual", 0)
+        _htmp_tc_1 = (
+            "<div class='painel-exec'>"
+            "<div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:8px;'>\U0001f393 MENTOR INTELIGENTE DE ESTUDOS</div>"
+            "<div style='font-size:1.1em;opacity:0.7;margin-bottom:16px;'>Seu treinador pessoal com Intelig\u00eancia Artificial \u00b7 <span style='color:#22C55E;'>\U0001f7e2 IA Online</span></div>"
+            "<div style='display:flex;flex-wrap:wrap;gap:20px;'>"
+            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f3af OBJETIVO</div><div style='font-size:1.1em;font-weight:700;'>{_concurso_foco_val} {_cargo_foco_val}</div></div>"
+            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f4c5 DIAS RESTANTES</div><div style='font-size:1.1em;font-weight:700;'>{dias_restantes}</div></div>"
+            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f525 SEQU\u00caNCIA</div><div style='font-size:1.1em;font-weight:700;'>{_streak_atual_val} dias</div></div>"
+            f"<div><div style='font-size:0.75em;opacity:0.6;'>\U0001f4d6 \u00daTIMA ATIVIDADE</div><div style='font-size:1.1em;font-weight:700;'>{ultima}</div></div>"
+            "</div></div>"
+        )
+        st.markdown(_htmp_tc_1, unsafe_allow_html=True)
 
         # ÍNDICE DE PREPARAÇÃO
         idx = calcular_indice_preparacao()
         nivel_idx, prob, cor = classificar_indice(idx)
         col_idx, col_mot = st.columns([1, 2])
         with col_idx:
-            st.markdown(f'''
-            <div class='indice-box'>
-                <div style='font-size:0.85em;opacity:0.8;'>ÍNDICE DE PREPARAÇÃO</div>
-                <div class='indice-numero'>{idx}%</div>
-                <div style='font-size:0.9em;'>Nível: <strong>{nivel_idx}</strong></div>
-                <div style='font-size:0.85em;opacity:0.8;'>Prob. estimada: {prob}</div>
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tc_2 = (
+                "<div class='indice-box'>"
+                "<div style='font-size:0.85em;opacity:0.8;'>\u00cdNDICE DE PREPARA\u00c7\u00c3O</div>"
+                f"<div class='indice-numero'>{idx}%</div>"
+                f"<div style='font-size:0.9em;'>N\u00edvel: <strong>{nivel_idx}</strong></div>"
+                f"<div style='font-size:0.85em;opacity:0.8;'>Prob. estimada: {prob}</div>"
+                "</div>"
+            )
+            st.markdown(_htmp_tc_2, unsafe_allow_html=True)
         with col_mot:
             frase_mot = random.choice(MOTIVACOES)
             streak = st.session_state.get('streak_atual', 0)
@@ -5689,23 +5703,24 @@ elif st.session_state.etapa == "App":
                 # Timer via JS usando components — roda no browser sem rerun
                 import streamlit.components.v1 as _comp
                 _inicio_ts = int(st.session_state.get('red_inicio', _tm.time()) * 1000)
-                _comp.html(f'''
-                <div style="text-align:center;font-size:2em;font-weight:700;color:#64748B;
-                     background:#F8F9FA;border-radius:10px;padding:8px;margin-bottom:4px;
-                     font-family:monospace;">
-                  ⏱️ <span id="tv">00:00</span>
-                </div>
-                <script>
-                var s0 = {_inicio_ts};
-                function tick(){{
-                    var e = Math.floor((Date.now()-s0)/1000);
-                    var m = Math.floor(e/60), ss = e%60;
-                    var el = document.getElementById('tv');
-                    if(el) el.textContent=(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;
-                }}
-                tick(); setInterval(tick,500);
-                </script>
-                ''', height=70)
+                _htmp_tc_3 = (
+                    '<div style="text-align:center;font-size:2em;font-weight:700;color:#64748B;'
+                    'background:#F8F9FA;border-radius:10px;padding:8px;margin-bottom:4px;'
+                    'font-family:monospace;">'
+                    '\u23f1\ufe0f <span id="tv">00:00</span>'
+                    '</div>'
+                    '<script>'
+                    f'var s0 = {_inicio_ts};'
+                    'function tick(){'
+                    '    var e = Math.floor((Date.now()-s0)/1000);'
+                    '    var m = Math.floor(e/60), ss = e%60;'
+                    '    var el = document.getElementById(\'tv\');'
+                    '    if(el) el.textContent=(m<10?\'0\':'')+m+\':\'+(ss<10?\'0\':\'\')+ss;'
+                    '}'
+                    'tick(); setInterval(tick,500);'
+                    '</script>'
+                )
+                _comp.html(_htmp_tc_3, height=70)
                 _elapsed = int(_tm.time() - st.session_state.get('red_inicio', _tm.time()))
 
                 with st.expander("📋 Tema", expanded=True):
@@ -6908,14 +6923,17 @@ elif st.session_state.etapa == "diagnostico":
         # Diagnóstico concluído
         _nivel_final = st.session_state.diag_nivel
         _acertos = st.session_state.diag_acertos
-        st.markdown(f'''
-        <div class='card-professor'>
-            <h3>🎉 Diagnóstico concluído!</h3>
-            <p>Você acertou <b>{_acertos} de {_total}</b> questões.</p>
-            <p>Seu nível estimado: <span class='nivel-tag nivel-{_nivel_final}'>{_nivel_final} — {NIVEL_DESC.get(_nivel_final,'')}</span></p>
-            <p style='color:#475569;font-size:0.9em'>Este diagnóstico textual é uma estimativa inicial. O professor irá ajustar conforme você pratica.</p>
-        </div>
-        ''', unsafe_allow_html=True)
+        _htmp_nexu_1 = (
+            "'\n"
+            "        <div class='card-professor'>\n"
+            "            <h3>🎉 Diagnóstico concluído!</h3>\n"
+            f"            <p>Você acertou <b>{_acertos} de {_total}</b> questões.</p>\n"
+            f"            <p>Seu nível estimado: <span class='nivel-tag nivel-{_nivel_final}'>{_nivel_final} — {NIVEL_DESC.get(_nivel_final,'')}</span></p>\n"
+            "            <p style='color:#475569;font-size:0.9em'>Este diagnóstico textual é uma estimativa inicial. O professor irá ajustar conforme você pratica.</p>\n"
+            "        </div>\n"
+            "        \n"
+        )
+        st.markdown(_htmp_nexu_1, unsafe_allow_html=True)
 
         if st.button("🚀 COMEÇAR MINHA TRILHA PERSONALIZADA", key="diag_fim"):
             st.session_state.perfil["nivel_estimado"] = _nivel_final
@@ -6950,30 +6968,33 @@ elif st.session_state.etapa == "app":
     st.markdown("<div style='margin-bottom:10px'><span class='badge'>MeusAgentesIA.com.br</span></div>", unsafe_allow_html=True)
 
     # Stats
-    st.markdown(f'''
-    <div class='stat-grid'>
-        <div class='stat-tile streak-tile'>
-            <div class='stat-num'>🔥 {p.get('streak_dias',0)}</div>
-            <div class='stat-label'>Dias seguidos</div>
-        </div>
-        <div class='stat-tile'>
-            <div class='stat-num'>{p.get('pontos',0)}</div>
-            <div class='stat-label'>Pontos</div>
-        </div>
-        <div class='stat-tile'>
-            <div class='stat-num'>{len(p.get('habilidades',{}))}</div>
-            <div class='stat-label'>Habilidades</div>
-        </div>
-        <div class='stat-tile'>
-            <div class='stat-num'>{_dominio_medio}%</div>
-            <div class='stat-label'>Domínio médio</div>
-        </div>
-        <div class='stat-tile'>
-            <div class='stat-num'>{len(_revisoes)}</div>
-            <div class='stat-label'>Revisões pendentes</div>
-        </div>
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_nexu_2 = (
+        "'\n"
+        "    <div class='stat-grid'>\n"
+        "        <div class='stat-tile streak-tile'>\n"
+        f"            <div class='stat-num'>🔥 {p.get('streak_dias',0)}</div>\n"
+        "            <div class='stat-label'>Dias seguidos</div>\n"
+        "        </div>\n"
+        "        <div class='stat-tile'>\n"
+        f"            <div class='stat-num'>{p.get('pontos',0)}</div>\n"
+        "            <div class='stat-label'>Pontos</div>\n"
+        "        </div>\n"
+        "        <div class='stat-tile'>\n"
+        f"            <div class='stat-num'>{len(p.get('habilidades',{}))}</div>\n"
+        "            <div class='stat-label'>Habilidades</div>\n"
+        "        </div>\n"
+        "        <div class='stat-tile'>\n"
+        f"            <div class='stat-num'>{_dominio_medio}%</div>\n"
+        "            <div class='stat-label'>Domínio médio</div>\n"
+        "        </div>\n"
+        "        <div class='stat-tile'>\n"
+        f"            <div class='stat-num'>{len(_revisoes)}</div>\n"
+        "            <div class='stat-label'>Revisões pendentes</div>\n"
+        "        </div>\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_nexu_2, unsafe_allow_html=True)
 
     # Alerta de revisões
     if _revisoes:
@@ -6990,13 +7011,16 @@ elif st.session_state.etapa == "app":
 
         # Info da unidade atual
         _uid, _utitulo, _utipo = _unidade
-        st.markdown(f'''
-        <div class='card-professor'>
-            <div style='font-size:0.8em;color:#4F46E5;margin-bottom:6px'>UNIDADE ATUAL · {_utipo.upper()}</div>
-            <h3 style='margin:0 0 8px 0'>{_utitulo}</h3>
-            <p style='color:#475569;margin:0'>Trilha: <b>{_nivel}</b> — {NIVEL_DESC.get(_nivel,'')}</p>
-        </div>
-        ''', unsafe_allow_html=True)
+        _htmp_nexu_3 = (
+            "'\n"
+            "        <div class='card-professor'>\n"
+            f"            <div style='font-size:0.8em;color:#4F46E5;margin-bottom:6px'>UNIDADE ATUAL · {_utipo.upper()}</div>\n"
+            f"            <h3 style='margin:0 0 8px 0'>{_utitulo}</h3>\n"
+            f"            <p style='color:#475569;margin:0'>Trilha: <b>{_nivel}</b> — {NIVEL_DESC.get(_nivel,'')}</p>\n"
+            "        </div>\n"
+            "        \n"
+        )
+        st.markdown(_htmp_nexu_3, unsafe_allow_html=True)
 
         # Histórico da aula
         _hist = st.session_state.aula_historico
@@ -7259,16 +7283,19 @@ elif st.session_state.etapa == "app":
             for _hid, _h in list(p["habilidades"].items())[:15]:
                 _dom = int(_h.get("dominio", 0) * 100)
                 _bar_color = "#10B981" if _dom >= 85 else "#6366F1" if _dom >= 50 else "#F59E0B"
-                st.markdown(f'''
-                <div style='margin-bottom:10px'>
-                    <div style='display:flex;justify-content:space-between;font-size:0.85em;color:#475569'>
-                        <span>{_hid.replace('_',' ')}</span><span>{_dom}%</span>
-                    </div>
-                    <div class='prog-bar-bg'>
-                        <div style='height:10px;border-radius:8px;background:{_bar_color};width:{_dom}%'></div>
-                    </div>
-                </div>
-                ''', unsafe_allow_html=True)
+                _htmp_nexu_4 = (
+                    "'\n"
+                    "                <div style='margin-bottom:10px'>\n"
+                    "                    <div style='display:flex;justify-content:space-between;font-size:0.85em;color:#475569'>\n"
+                    f"                        <span>{_hid.replace('_',' ')}</span><span>{_dom}%</span>\n"
+                    "                    </div>\n"
+                    "                    <div class='prog-bar-bg'>\n"
+                    f"                        <div style='height:10px;border-radius:8px;background:{_bar_color};width:{_dom}%'></div>\n"
+                    "                    </div>\n"
+                    "                </div>\n"
+                    "                \n"
+                )
+                st.markdown(_htmp_nexu_4, unsafe_allow_html=True)
 
         if p.get("erros_recorrentes"):
             st.markdown("---")
@@ -7518,11 +7545,13 @@ investigações ou evidências reais.
 def sherlock_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é Sherlock IA — um consultor de investigação lógica, raciocínio dedutivo e pensamento REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
-crítico, inspirado nos grandes métodos investigativos clássicos.
-Usuário: {st.session_state.usuario}. Caso atual: {st.session_state.caso_padrao or 'não informado'}.
-{PRINCIPIO_RIGOR}
-{system_extra}'''
+        system = (
+            "Você é Sherlock IA — um consultor de investigação lógica, raciocínio dedutivo e pensamento REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
+            "crítico, inspirado nos grandes métodos investigativos clássicos.\n" +
+            "Usuário: {st.session_state.usuario}. Caso atual: {st.session_state.caso_padrao or 'não informado'}.\n" +
+            "{PRINCIPIO_RIGOR}\n" +
+            "{system_extra}\n"
+        )
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -7543,14 +7572,17 @@ def renderizar_indice(texto: str, titulo_indice: str = "CONSISTÊNCIA"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXA"
 
-    st.markdown(f'''
-    <div class="indice-box {classe}">
-        <div style="font-size:2.2em;">{emoji}</div>
-        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
-        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
-        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa baseada nas informações fornecidas</div>
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_sher_1 = (
+        "'\n"
+        f'    <div class="indice-box {classe}">\n'
+        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
+        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
+        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
+        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa baseada nas informações fornecidas</div>\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_sher_1, unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -7992,12 +8024,15 @@ elif st.session_state.etapa == "App":
             ranking = sorted(modulos_count.items(), key=lambda x: x[1], reverse=True)
             for i, (modulo, count) in enumerate(ranking[:8]):
                 pct = round(count / total_casos * 100) if total_casos else 0
-                st.markdown(f'''
-                <div style="margin-bottom:10px;">
-                    <div style="display:flex;justify-content:space-between;font-size:0.85em;font-weight:600;"><span>{i+1}. {modulo}</span><span>{count}x</span></div>
-                    <div style="background:#E2E8F0;border-radius:999px;height:10px;overflow:hidden;"><div style="height:100%;border-radius:999px;background:#0F172A;width:{pct}%;"></div></div>
-                </div>
-                ''', unsafe_allow_html=True)
+                _htmp_sher_2 = (
+                    "'\n"
+                    "                <div style=\"margin-bottom:10px;\">\n"
+                    f'                    <div style="display:flex;justify-content:space-between;font-size:0.85em;font-weight:600;"><span>{i+1}. {modulo}</span><span>{count}x</span></div>\n'
+                    f'                    <div style="background:#E2E8F0;border-radius:999px;height:10px;overflow:hidden;"><div style="height:100%;border-radius:999px;background:#0F172A;width:{pct}%;"></div></div>\n'
+                    "                </div>\n"
+                    "                \n"
+                )
+                st.markdown(_htmp_sher_2, unsafe_allow_html=True)
 
         # ========================
         # ACADEMIA SHERLOCK
@@ -9364,18 +9399,21 @@ with tabs[7]:
 
     # Monta contexto financeiro para a IA
     def _of_contexto():
-        ctx = f'''SITUACAO FINANCEIRA DO USUARIO:
-Renda total: {_of_fmt(_of_renda_total())}
-Gastos totais: {_of_fmt(_of_gastos_total())}
-Saldo mensal: {_of_fmt(_of_saldo())}
-Reserva de emergencia: {_of_fmt(_of_parse(st.session_state.of_reserva))}
-Total de dividas: {_of_fmt(_of_divida_total())}
-Patrimonio liquido: {_of_fmt(_of_patrimonio_liquido())}
-Numero de metas: {len(st.session_state.of_metas)}
-Numero de investimentos: {len(st.session_state.of_investimentos)}
-Idade: {st.session_state.of_idade or "nao informada"}
-Dependentes: {st.session_state.of_dependentes or 0}
-'''
+        _of_idade_val = st.session_state.of_idade or "nao informada"
+        _of_dep_val = st.session_state.of_dependentes or 0
+        ctx = (
+            "SITUACAO FINANCEIRA DO USUARIO:\n"
+            "Renda total: " + _of_fmt(_of_renda_total()) + "\n"
+            "Gastos totais: " + _of_fmt(_of_gastos_total()) + "\n"
+            "Saldo mensal: " + _of_fmt(_of_saldo()) + "\n"
+            "Reserva de emergencia: " + _of_fmt(_of_parse(st.session_state.of_reserva)) + "\n"
+            "Total de dividas: " + _of_fmt(_of_divida_total()) + "\n"
+            "Patrimonio liquido: " + _of_fmt(_of_patrimonio_liquido()) + "\n"
+            "Numero de metas: " + str(len(st.session_state.of_metas)) + "\n"
+            "Numero de investimentos: " + str(len(st.session_state.of_investimentos)) + "\n"
+            "Idade: " + str(_of_idade_val) + "\n"
+            "Dependentes: " + str(_of_dep_val) + "\n"
+        )
         return ctx
 
     # Mostra histórico
@@ -9391,14 +9429,14 @@ Dependentes: {st.session_state.of_dependentes or 0}
         st.session_state.of_historico_chat.append({'role': 'user', 'content': pergunta})
 
         ctx = _of_contexto()
-        prompt_sistema = f'''Voce e o Oraculo Financeiro IA, um consultor financeiro pessoal experiente e empatico.
-Responda sempre em portugues brasileiro.
-Seja direto, pratico e use linguagem clara.
-Baseie suas respostas nos dados financeiros do usuario abaixo.
-
-{ctx}
-
-Pergunta: {pergunta}'''
+        prompt_sistema = (
+            "Voce e o Oraculo Financeiro IA, um consultor financeiro pessoal experiente e empatico.\n"
+            "Responda sempre em portugues brasileiro.\n"
+            "Seja direto, pratico e use linguagem clara.\n"
+            "Baseie suas respostas nos dados financeiros do usuario abaixo.\n\n"
+            + ctx +
+            "\nPergunta: " + pergunta
+        )
 
         try:
             from openai import OpenAI as _OAI
@@ -9412,13 +9450,12 @@ Pergunta: {pergunta}'''
             )
             resposta = _resp.choices[0].message.content
         except Exception as _e:
-            resposta = f'''Com base nos seus dados:
-
-{ctx}
-
-Para responder sua pergunta sobre "{pergunta}", analise seus numeros acima e consulte um especialista financeiro certificado (CFP) para orientacao personalizada.
-
-(Servico de IA temporariamente indisponivel: {str(_e)[:100]})'''
+            resposta = (
+                "Com base nos seus dados:\n\n"
+                + ctx +
+                "\nPara responder sua pergunta sobre \"" + pergunta + "\", analise seus numeros acima e consulte um especialista financeiro certificado (CFP) para orientacao personalizada.\n\n"
+                "(Servico de IA temporariamente indisponivel: " + str(_e)[:100] + ")"
+            )
 
         st.session_state.of_historico_chat.append({'role': 'assistant', 'content': resposta})
         st.rerun()
@@ -9677,10 +9714,12 @@ e confiante — não fingir ser alguém que não é.
 def presenca_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um mentor de presença, charme e oratória — o coach que o protagonista de Hollywood teria.
-Usuário: {st.session_state.usuario}. Nível atual: {st.session_state.nivel_atual}.
-{PRINCIPIO}
-{system_extra}'''
+        system = (
+            "Você é um mentor de presença, charme e oratória — o coach que o protagonista de Hollywood teria.\n" +
+            "Usuário: {st.session_state.usuario}. Nível atual: {st.session_state.nivel_atual}.\n" +
+            "{PRINCIPIO}\n" +
+            "{system_extra}\n"
+        )
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -9751,13 +9790,16 @@ elif st.session_state.etapa == "App":
         pts = st.session_state.pontuacao_total
         treinos = st.session_state.treinos_completos
 
-        st.markdown(f'''
-        <div class="nivel-box">
-            <div style="font-size:0.85em;opacity:0.8;">SEU NÍVEL ATUAL</div>
-            <div class="nivel-titulo">⚡ {nivel}</div>
-            <div style="font-size:0.9em;margin-top:4px;">{pts} pontos · {treinos} treinos completos</div>
-        </div>
-        ''', unsafe_allow_html=True)
+        _htmp_sedu_1 = (
+            "'\n"
+            "        <div class=\"nivel-box\">\n"
+            "            <div style=\"font-size:0.85em;opacity:0.8;\">SEU NÍVEL ATUAL</div>\n"
+            f'            <div class="nivel-titulo">⚡ {nivel}</div>\n'
+            f'            <div style="font-size:0.9em;margin-top:4px;">{pts} pontos · {treinos} treinos completos</div>\n'
+            "        </div>\n"
+            "        \n"
+        )
+        st.markdown(_htmp_sedu_1, unsafe_allow_html=True)
 
         c1, c2, c3, c4 = st.columns(4)
         c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_consultas)}</div><div style='color:#CBD5E1'>Sessões</div></div>", unsafe_allow_html=True)
@@ -10695,11 +10737,13 @@ dependem de execução, mercado e fatores não previsíveis. Use como ponto de p
 def invencoes_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um consultor de inovação completo — um misto de inventor, estrategista de negócios, REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
-pesquisador de mercado, designer de produtos e mentor de startups.
-Usuário: {st.session_state.usuario}. Ideia/projeto principal: {st.session_state.ideia_padrao or 'não informado'}.
-{PRINCIPIO_HONESTIDADE}
-{system_extra}'''
+        system = (
+            "Você é um consultor de inovação completo — um misto de inventor, estrategista de negócios, REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.\n" +
+            "pesquisador de mercado, designer de produtos e mentor de startups.\n" +
+            "Usuário: {st.session_state.usuario}. Ideia/projeto principal: {st.session_state.ideia_padrao or 'não informado'}.\n" +
+            "{PRINCIPIO_HONESTIDADE}\n" +
+            "{system_extra}\n"
+        )
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -10720,14 +10764,17 @@ def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
 
-    st.markdown(f'''
-    <div class="indice-box {classe}">
-        <div style="font-size:2.2em;">{emoji}</div>
-        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
-        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
-        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa estratégica baseada nas informações fornecidas</div>
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_inve_1 = (
+        "'\n"
+        f'    <div class="indice-box {classe}">\n'
+        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
+        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
+        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
+        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa estratégica baseada nas informações fornecidas</div>\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_inve_1, unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -12916,11 +12963,14 @@ if st.session_state.etapa == "Login":
                     msg = "Limite de requisições atingido."
                 else:
                     msg = err_msg[:80]
-                st.markdown(f'''<div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;
-                padding:10px 14px;font-size:0.82em;color:#7F1D1D;">
-                🔴 <strong>Groq API:</strong> erro<br>
-                <span style="font-size:0.9em;">{msg}</span>
-                </div>''', unsafe_allow_html=True)
+                _htmp_nexu_1 = (
+                    "'<div style=\"background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;\n"
+                    "                padding:10px 14px;font-size:0.82em;color:#7F1D1D;\">\n"
+                    "                🔴 <strong>Groq API:</strong> erro<br>\n"
+                    f'                <span style="font-size:0.9em;">{msg}</span>\n'
+                    "                </div>\n"
+                )
+                st.markdown(_htmp_nexu_1, unsafe_allow_html=True)
         else:
             st.markdown('''<div style="background:#F1F5F9;border:1px solid #CBD5E1;border-radius:8px;
             padding:10px 14px;font-size:0.82em;color:#64748B;">
@@ -13040,14 +13090,17 @@ elif st.session_state.etapa == "Formulario":
     if tudo_preenchido:
         st.divider()
         st.markdown("#### Resumo do que será gerado")
-        st.markdown(f'''<div class="preview-box">
-        📚 <strong>E-book:</strong> {d.get('nome_eb')} — 60 cartões educativos<br>
-        🎁 <strong>3 E-books Bônus</strong> complementares<br>
-        📣 <strong>1 Anúncio</strong> alinhado com a landing page<br>
-        🌐 <strong>1 Landing Page</strong> alinhada com o anúncio<br>
-        💬 <strong>Funil completo de Mensagens</strong> — boas-vindas + aquecimento + véspera + venda<br>
-        🚀 <strong>Lançamento:</strong> {d['data_lancto'].strftime('%d/%m/%Y') if hasattr(d.get('data_lancto'), 'strftime') else str(d.get('data_lancto', 'a definir'))}
-        </div>''', unsafe_allow_html=True)
+        _htmp_nexu_2 = (
+            "'<div class=\"preview-box\">\n"
+            f"        📚 <strong>E-book:</strong> {d.get('nome_eb')} — 60 cartões educativos<br>\n"
+            "        🎁 <strong>3 E-books Bônus</strong> complementares<br>\n"
+            "        📣 <strong>1 Anúncio</strong> alinhado com a landing page<br>\n"
+            "        🌐 <strong>1 Landing Page</strong> alinhada com o anúncio<br>\n"
+            "        💬 <strong>Funil completo de Mensagens</strong> — boas-vindas + aquecimento + véspera + venda<br>\n"
+            f"        🚀 <strong>Lançamento:</strong> {d['data_lancto'].strftime('%d/%m/%Y') if hasattr(d.get('data_lancto'), 'strftime') else str(d.get('data_lancto', 'a definir'))}\n"
+            "        </div>\n"
+        )
+        st.markdown(_htmp_nexu_2, unsafe_allow_html=True)
 
     if st.button("AVANÇAR →", key="nx52"):
         faltando = [c for c in campos_obrigatorios if not d.get(c,'').strip()]
@@ -13222,9 +13275,12 @@ elif st.session_state.etapa == "Copy_Face":
         # ── MODIFICAÇÃO: segundo texto com instruções completas ──
         link_lp_atual = st.session_state.dados.get('link_lp','')
         if link_lp_atual:
-            st.markdown(f'''<div style="background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;">
-            ✅ <strong>Link salvo:</strong> ao subir esse anúncio no Facebook Ads, coloque <strong>{link_lp_atual}</strong> como URL de destino do botão.
-            </div>''', unsafe_allow_html=True)
+            _htmp_nexu_3 = (
+                "'<div style=\"background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;\">\n"
+                f"            ✅ <strong>Link salvo:</strong> ao subir esse anúncio no Facebook Ads, coloque <strong>{link_lp_atual}</strong> como URL de destino do botão.\n"
+                "            </div>\n"
+            )
+            st.markdown(_htmp_nexu_3, unsafe_allow_html=True)
         else:
             st.markdown('''<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#78350F;margin-bottom:10px;">
             ⚠️ <strong>Importante:</strong> ao subir esse anúncio no Facebook Ads, insira o link da sua landing page como URL de destino do botão CTA.
@@ -13337,30 +13393,36 @@ elif st.session_state.etapa == "Copy_LP":
 
         link_grupo_atual = st.session_state.dados.get('link_grupo','')
         if link_grupo_atual:
-            st.markdown(f'''<div style="background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;">
-            ✅ <strong>Lembre-se:</strong> configure o botão CTA da sua landing page apontando para <strong>{link_grupo_atual}</strong>
-            </div>''', unsafe_allow_html=True)
+            _htmp_nexu_4 = (
+                "'<div style=\"background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#064E3B;margin-bottom:10px;\">\n"
+                f"            ✅ <strong>Lembre-se:</strong> configure o botão CTA da sua landing page apontando para <strong>{link_grupo_atual}</strong>\n"
+                "            </div>\n"
+            )
+            st.markdown(_htmp_nexu_4, unsafe_allow_html=True)
         else:
             st.markdown('''<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;font-size:0.85em;color:#78350F;margin-bottom:10px;">
             ⚠️ <strong>Importante:</strong> configure o botão CTA da landing page apontando para o link de convite do seu grupo.
             </div>''', unsafe_allow_html=True)
 
         # ── NOVO: segundo bloco com workflow Gamma ──
-        st.markdown(f'''<div class="dica-ferramenta">
-        <strong>🌐 Próximo passo — transformar em site com Gamma AI:</strong><br><br>
-        <strong>1. Copie o texto</strong> com o botão acima (Copiar como .txt)<br><br>
-        <strong>2. Acesse o Gamma AI:</strong><br>
-        &nbsp;&nbsp;&nbsp;• Abra <a href="https://gamma.app" target="_blank" style="color:#92400E;">gamma.app</a> e crie uma conta gratuita<br>
-        &nbsp;&nbsp;&nbsp;• Clique em <strong>New → Page (site/landing page)</strong><br>
-        &nbsp;&nbsp;&nbsp;• Cole o texto copiado no campo de geração<br>
-        &nbsp;&nbsp;&nbsp;• Escolha o tema visual que combine com seu nicho<br>
-        &nbsp;&nbsp;&nbsp;• Clique em <strong>Generate</strong> — o Gamma criará o site automaticamente<br><br>
-        <strong>3. Configure o botão CTA:</strong><br>
-        &nbsp;&nbsp;&nbsp;• No editor do Gamma, clique no botão CTA gerado<br>
-        &nbsp;&nbsp;&nbsp;• Insira o link do grupo: <strong>{link_grupo_atual if link_grupo_atual else '[link do seu grupo aqui]'}</strong><br>
-        &nbsp;&nbsp;&nbsp;• Clique em <strong>Publish</strong> para obter o link público do site<br><br>
-        <strong>4. Use o link do site</strong> como URL de destino do seu anúncio no Facebook Ads
-        </div>''', unsafe_allow_html=True)
+        _htmp_nexu_5 = (
+            "'<div class=\"dica-ferramenta\">\n"
+            "        <strong>🌐 Próximo passo — transformar em site com Gamma AI:</strong><br><br>\n"
+            "        <strong>1. Copie o texto</strong> com o botão acima (Copiar como .txt)<br><br>\n"
+            "        <strong>2. Acesse o Gamma AI:</strong><br>\n"
+            "        &nbsp;&nbsp;&nbsp;• Abra <a href=\"https://gamma.app\" target=\"_blank\" style=\"color:#92400E;\">gamma.app</a> e crie uma conta gratuita<br>\n"
+            "        &nbsp;&nbsp;&nbsp;• Clique em <strong>New → Page (site/landing page)</strong><br>\n"
+            "        &nbsp;&nbsp;&nbsp;• Cole o texto copiado no campo de geração<br>\n"
+            "        &nbsp;&nbsp;&nbsp;• Escolha o tema visual que combine com seu nicho<br>\n"
+            "        &nbsp;&nbsp;&nbsp;• Clique em <strong>Generate</strong> — o Gamma criará o site automaticamente<br><br>\n"
+            "        <strong>3. Configure o botão CTA:</strong><br>\n"
+            "        &nbsp;&nbsp;&nbsp;• No editor do Gamma, clique no botão CTA gerado<br>\n"
+            f"        &nbsp;&nbsp;&nbsp;• Insira o link do grupo: <strong>{link_grupo_atual if link_grupo_atual else '[link do seu grupo aqui]'}</strong><br>\n"
+            "        &nbsp;&nbsp;&nbsp;• Clique em <strong>Publish</strong> para obter o link público do site<br><br>\n"
+            "        <strong>4. Use o link do site</strong> como URL de destino do seu anúncio no Facebook Ads\n"
+            "        </div>\n"
+        )
+        st.markdown(_htmp_nexu_5, unsafe_allow_html=True)
 
         if st.button("AVANÇAR →", key="nx38"): st.session_state.etapa = "Mensagens_Grupo"; st.rerun()
 
@@ -13386,11 +13448,14 @@ elif st.session_state.etapa == "Mensagens_Grupo":
     # ── AVISO REVISÃO BÔNUS ───────────────────────────────────
     bonus_resumo = st.session_state.dados.get('bonus_resumo','')
     if bonus_resumo:
-        st.markdown(f'''<div style="background:#FEF9C3;border:1px solid #FDE047;border-radius:8px;padding:12px 16px;margin-bottom:8px;color:#713F12;font-size:0.88em;line-height:1.6;">
-        ⚠️ <strong>Confira os nomes dos seus bônus antes de gerar:</strong><br>
-        {bonus_resumo}<br>
-        <em>Eles aparecerão na mensagem de venda. Se quiser alterar, volte em Bônus e regenere.</em>
-        </div>''', unsafe_allow_html=True)
+        _htmp_nexu_6 = (
+            "'<div style=\"background:#FEF9C3;border:1px solid #FDE047;border-radius:8px;padding:12px 16px;margin-bottom:8px;color:#713F12;font-size:0.88em;line-height:1.6;\">\n"
+            "        ⚠️ <strong>Confira os nomes dos seus bônus antes de gerar:</strong><br>\n"
+            f"        {bonus_resumo}<br>\n"
+            "        <em>Eles aparecerão na mensagem de venda. Se quiser alterar, volte em Bônus e regenere.</em>\n"
+            "        </div>\n"
+        )
+        st.markdown(_htmp_nexu_6, unsafe_allow_html=True)
 
     st.markdown('''<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:10px 16px;margin-bottom:8px;color:#78350F;font-size:0.85em;line-height:1.6;">
     ⚠️ <strong>Antes de enviar, revise:</strong>
@@ -13447,34 +13512,36 @@ elif st.session_state.etapa == "Visualizacao":
     st.title(f"PROJETO: {nome_projeto}")
     d = st.session_state.dados
 
-    texto_completo = f'''NEXUS LAUNCHER — PROJETO COMPLETO
-{'='*50}
-E-BOOK: {d.get('nome_eb','')}
-NICHO: {d.get('nicho','')}
-PÚBLICO: {d.get('publico','')}
-DATA DE LANÇAMENTO: {d.get('data_lancto','')}
-PREÇO: R${d.get('preco',47)}
-{'='*50}
-
-📚 E-BOOK PRINCIPAL
-{'-'*40}
-{limpar_html(d.get('ebook_cont','Não gerado.'))}
-
-🎁 E-BOOKS BÔNUS
-{'-'*40}
-{limpar_html(d.get('bonus_cont','Não gerado.'))}
-
-📣 ANÚNCIO
-{'-'*40}
-{limpar_html(d.get('fb_copy','Não gerado.'))}
-
-🌐 LANDING PAGE
-{'-'*40}
-{limpar_html(d.get('lp_copy','Não gerado.'))}
-
-💬 MENSAGENS DO GRUPO (FUNIL COMPLETO)
-{'-'*40}
-{limpar_html(d.get('msg_grupo','Não gerado.'))}'''.strip()
+    texto_completo = (
+        "NEXUS LAUNCHER — PROJETO COMPLETO\n" +
+        "{'='*50}\n" +
+        "E-BOOK: {d.get('nome_eb','')}\n" +
+        "NICHO: {d.get('nicho','')}\n" +
+        "PÚBLICO: {d.get('publico','')}\n" +
+        "DATA DE LANÇAMENTO: {d.get('data_lancto','')}\n" +
+        "PREÇO: R${d.get('preco',47)}\n" +
+        "{'='*50}\n" +
+        "\n" +
+        "📚 E-BOOK PRINCIPAL\n" +
+        "{'-'*40}\n" +
+        "{limpar_html(d.get('ebook_cont','Não gerado.'))}\n" +
+        "\n" +
+        "🎁 E-BOOKS BÔNUS\n" +
+        "{'-'*40}\n" +
+        "{limpar_html(d.get('bonus_cont','Não gerado.'))}\n" +
+        "\n" +
+        "📣 ANÚNCIO\n" +
+        "{'-'*40}\n" +
+        "{limpar_html(d.get('fb_copy','Não gerado.'))}\n" +
+        "\n" +
+        "🌐 LANDING PAGE\n" +
+        "{'-'*40}\n" +
+        "{limpar_html(d.get('lp_copy','Não gerado.'))}\n" +
+        "\n" +
+        "💬 MENSAGENS DO GRUPO (FUNIL COMPLETO)\n" +
+        "{'-'*40}\n" +
+        "{limpar_html(d.get('msg_grupo','Não gerado.'))}\n"
+    )
 
     nome_arquivo = nome_projeto.replace(' ', '_').lower()
 
@@ -13931,18 +13998,20 @@ elif st.session_state.etapa == "Video_Gerar":
         st.divider()
         st.success("✅ Lançamento CPL completo gerado!")
         nome_v = d.get('v_produto','curso').replace(' ','_')
-        texto_v = f'''NEXUS LAUNCHER — LANÇAMENTO DE VIDEOAULAS
-{'='*50}
-CURSO: {d.get('v_produto','')}
-NICHO: {d.get('v_nicho','')}
-{'='*50}
-
-PRÉ-PRÉ-LANÇAMENTO\\n{'-'*40}\\n{limpar_html(d.get('v_pre_pre',''))}
-CPL 1\\n{'-'*40}\\n{limpar_html(d.get('v_cpl1',''))}
-CPL 2\\n{'-'*40}\\n{limpar_html(d.get('v_cpl2',''))}
-CPL 3\\n{'-'*40}\\n{limpar_html(d.get('v_cpl3',''))}
-ABERTURA\\n{'-'*40}\\n{limpar_html(d.get('v_abertura',''))}
-FECHAMENTO\\n{'-'*40}\\n{limpar_html(d.get('v_fechamento',''))}'''
+        texto_v = (
+            "NEXUS LAUNCHER — LANÇAMENTO DE VIDEOAULAS\n" +
+            "{'='*50}\n" +
+            "CURSO: {d.get('v_produto','')}\n" +
+            "NICHO: {d.get('v_nicho','')}\n" +
+            "{'='*50}\n" +
+            "\n" +
+            "PRÉ-PRÉ-LANÇAMENTO\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_pre_pre',''))}\n" +
+            "CPL 1\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_cpl1',''))}\n" +
+            "CPL 2\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_cpl2',''))}\n" +
+            "CPL 3\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_cpl3',''))}\n" +
+            "ABERTURA\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_abertura',''))}\n" +
+            "FECHAMENTO\\\\n{'-'*40}\\\\n{limpar_html(d.get('v_fechamento',''))}\n"
+        )
 
         col_txt_v, col_json_v = st.columns(2)
         with col_txt_v:
@@ -14196,10 +14265,12 @@ def juridico_ia(prompt: str, modulo: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
         contexto_estado = f"\\\\nEstado/região do usuário (se relevante para legislação local): {st.session_state.estado_padrao}." if st.session_state.estado_padrao else ""
-        system = f'''Você é um consultor de orientação jurídica geral, especialista em {modulo}, com conhecimento da legislação brasileira.
-Usuário: {st.session_state.usuario}.{contexto_estado}
-{PRINCIPIO_JURIDICO}
-{system_extra}'''
+        system = (
+            "Você é um consultor de orientação jurídica geral, especialista em {modulo}, com conhecimento da legislação brasileira.\n" +
+            "Usuário: {st.session_state.usuario}.{contexto_estado}\n" +
+            "{PRINCIPIO_JURIDICO}\n" +
+            "{system_extra}\n"
+        )
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -14971,18 +15042,20 @@ for k, v in defaults.items():
 def mente_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um especialista em neurolinguística (PNL), meditação e reprogramação mental.
-Usuário: {st.session_state.usuario}.
-Maior bloqueio atual: {st.session_state.maior_bloqueio or 'não informado'}.
-Objetivo mental: {st.session_state.objetivo_mental or 'não informado'}.
-Estado emocional: {st.session_state.estado_emocional}.
-{system_extra}
-PRINCÍPIOS:
-- Baseie-se em PNL, Mindfulness, Terapia Cognitivo-Comportamental e Neurociência
-- Tom acolhedor, seguro e transformador — nunca julgue
-- Linguagem acessível, sem jargões técnicos desnecessários
-- Sempre oriente a buscar ajuda profissional para casos clínicos sérios
-- Escreva em português brasileiro natural e humanizado'''
+        system = (
+            "Você é um especialista em neurolinguística (PNL), meditação e reprogramação mental.\n" +
+            "Usuário: {st.session_state.usuario}.\n" +
+            "Maior bloqueio atual: {st.session_state.maior_bloqueio or 'não informado'}.\n" +
+            "Objetivo mental: {st.session_state.objetivo_mental or 'não informado'}.\n" +
+            "Estado emocional: {st.session_state.estado_emocional}.\n" +
+            "{system_extra}\n" +
+            "PRINCÍPIOS:\n" +
+            "- Baseie-se em PNL, Mindfulness, Terapia Cognitivo-Comportamental e Neurociência\n" +
+            "- Tom acolhedor, seguro e transformador — nunca julgue\n" +
+            "- Linguagem acessível, sem jargões técnicos desnecessários\n" +
+            "- Sempre oriente a buscar ajuda profissional para casos clínicos sérios\n" +
+            "- Escreva em português brasileiro natural e humanizado\n"
+        )
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -15798,14 +15871,17 @@ elif st.session_state.etapa == "App":
             # Tela de sucesso após cadastro
             if st.session_state.get('pet_cadastrado_ok'):
                 pet_nome_ok = st.session_state.get('pet_cadastrado_nome','')
-                st.markdown(f'''
-                <div style='text-align:center;padding:40px 20px;'>
-                    <div style='font-size:4em;'>🐾</div>
-                    <h2 style='color:#065F46;'>Cadastro realizado!</h2>
-                    <p style='font-size:1.1em;color:#065F46;'><b>{pet_nome_ok}</b> foi cadastrado com sucesso.</p>
-                    <p style='color:#6B7280;'>Agora você pode usar todas as funcionalidades personalizadas para o seu pet.</p>
-                </div>
-                ''', unsafe_allow_html=True)
+                _htmp_pet__1 = (
+                    "'\n"
+                    "                <div style='text-align:center;padding:40px 20px;'>\n"
+                    "                    <div style='font-size:4em;'>🐾</div>\n"
+                    "                    <h2 style='color:#065F46;'>Cadastro realizado!</h2>\n"
+                    f"                    <p style='font-size:1.1em;color:#065F46;'><b>{pet_nome_ok}</b> foi cadastrado com sucesso.</p>\n"
+                    "                    <p style='color:#6B7280;'>Agora você pode usar todas as funcionalidades personalizadas para o seu pet.</p>\n"
+                    "                </div>\n"
+                    "                \n"
+                )
+                st.markdown(_htmp_pet__1, unsafe_allow_html=True)
                 if st.button("➕ Cadastrar outro pet", key="btn_cad_outro", use_container_width=True):
                     st.session_state['pet_cadastrado_ok'] = False
                     st.rerun()
@@ -16667,11 +16743,13 @@ avaliadores e anúncios reais de motos similares no mercado atual.
 def motos_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é o maior especialista em motocicletas clássicas do Brasil — um misto de restaurador
-experiente, historiador, mecânico especializado em motos antigas e avaliador de mercado.
-Usuário: {st.session_state.usuario}. Moto de interesse: {st.session_state.moto_padrao or 'não informada'}.
-{PRINCIPIO_HONESTIDADE}
-{system_extra}'''
+        system = (
+            "Você é o maior especialista em motocicletas clássicas do Brasil — um misto de restaurador\n" +
+            "experiente, historiador, mecânico especializado em motos antigas e avaliador de mercado.\n" +
+            "Usuário: {st.session_state.usuario}. Moto de interesse: {st.session_state.moto_padrao or 'não informada'}.\n" +
+            "{PRINCIPIO_HONESTIDADE}\n" +
+            "{system_extra}\n"
+        )
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -16692,14 +16770,17 @@ def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
 
-    st.markdown(f'''
-    <div class="indice-box {classe}">
-        <div style="font-size:2.2em;">{emoji}</div>
-        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
-        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
-        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa educativa baseada na descrição fornecida</div>
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_clas_1 = (
+        "'\n"
+        f'    <div class="indice-box {classe}">\n'
+        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
+        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
+        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
+        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa educativa baseada na descrição fornecida</div>\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_clas_1, unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -18115,11 +18196,13 @@ avaliadores especializados e anúncios reais de veículos similares no mercado a
 def classicos_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é o maior especialista em carros antigos e clássicos do Brasil — um misto de restaurador
-experiente, historiador automotivo, mecânico especializado e avaliador de mercado.
-Usuário: {st.session_state.usuario}. Veículo de interesse: {st.session_state.veiculo_padrao or 'não informado'}.
-{PRINCIPIO_HONESTIDADE}
-{system_extra}'''
+        system = (
+            "Você é o maior especialista em carros antigos e clássicos do Brasil — um misto de restaurador\n" +
+            "experiente, historiador automotivo, mecânico especializado e avaliador de mercado.\n" +
+            "Usuário: {st.session_state.usuario}. Veículo de interesse: {st.session_state.veiculo_padrao or 'não informado'}.\n" +
+            "{PRINCIPIO_HONESTIDADE}\n" +
+            "{system_extra}\n"
+        )
         response = client.chat.completions.create(
             messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             model="openai/gpt-oss-120b",
@@ -18140,14 +18223,17 @@ def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
     else:
         classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
 
-    st.markdown(f'''
-    <div class="indice-box {classe}">
-        <div style="font-size:2.2em;">{emoji}</div>
-        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
-        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
-        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa educativa baseada na descrição fornecida</div>
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_clas_1 = (
+        "'\n"
+        f'    <div class="indice-box {classe}">\n'
+        f'        <div style="font-size:2.2em;">{emoji}</div>\n'
+        f'        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>\n'
+        f'        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>\n'
+        "        <div style=\"font-size:0.82em;color:#555;margin-top:6px;\">Estimativa educativa baseada na descrição fornecida</div>\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_clas_1, unsafe_allow_html=True)
 
 # --- BARRA DE SALVAR ---
 
@@ -19457,11 +19543,13 @@ FORMATO OBRIGATÓRIO — TODA resposta de relatório/análise deve:
 def guardiao_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um consultor especializado em segurança pessoal e prevenção de riscos urbanos.
-Usuário: {st.session_state.usuario}.
-{PRINCIPIO_COMUNICACAO}
-{system_extra}
-Seja prático, específico e útil. Escreva em português brasileiro, tom calmo e responsável — nunca alarmista.'''
+        system = (
+            "Você é um consultor especializado em segurança pessoal e prevenção de riscos urbanos.\n" +
+            "Usuário: {st.session_state.usuario}.\n" +
+            "{PRINCIPIO_COMUNICACAO}\n" +
+            "{system_extra}\n" +
+            "Seja prático, específico e útil. Escreva em português brasileiro, tom calmo e responsável — nunca alarmista.\n"
+        )
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
@@ -19487,14 +19575,17 @@ def renderizar_nivel_risco(texto: str) -> int:
 
     indice = extrair_indice_seguranca(texto)
 
-    st.markdown(f'''
-    <div class="risco-box {classe}">
-        <div style="font-size:2.5em;">{emoji}</div>
-        <div class="risco-titulo">ÍNDICE DE SEGURANÇA: {indice}/100</div>
-        <div style="font-size:0.95em;color:#444;margin-top:2px;font-weight:600;">Nível de risco: {nivel}</div>
-        <div style="font-size:0.85em;color:#555;margin-top:6px;">Estimativa preventiva baseada nas informações fornecidas</div>
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_guar_1 = (
+        "'\n"
+        f"    <div class='risco-box {classe}'>\n"
+        f"        <div style='font-size:2.5em;'>{emoji}</div>\n"
+        f"        <div class='risco-titulo'>ÍNDICE DE SEGURANÇA: {indice}/100</div>\n"
+        f"        <div style='font-size:0.95em;color:#444;margin-top:2px;font-weight:600;'>Nível de risco: {nivel}</div>\n"
+        "        <div style=\"font-size:0.85em;color:#555;margin-top:6px;\">Estimativa preventiva baseada nas informações fornecidas</div>\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_guar_1, unsafe_allow_html=True)
     return indice
 
 DISCLAIMER_PADRAO = '''
@@ -19586,13 +19677,16 @@ elif st.session_state.etapa == "App":
             else:
                 cor_idx, emoji_idx, msg_idx, classe_idx = "#B91C1C", "🔴", "Há recomendações importantes nas suas últimas análises.", "risco-elevado"
 
-            st.markdown(f'''
-            <div class="indice-protecao-box {classe_idx}" style="border-color:{cor_idx};">
-                <div style="font-size:0.85em;color:#555;letter-spacing:1px;">ÍNDICE DE PROTEÇÃO (média recente)</div>
-                <div class="indice-numero" style="color:{cor_idx};">{emoji_idx} {indice_medio}/100</div>
-                <div class="indice-sub">{msg_idx}</div>
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_guar_2 = (
+                "'\n"
+                f"            <div class='indice-protecao-box {classe_idx}' style='border-color:{cor_idx};'>\n"
+                "                <div style=\"font-size:0.85em;color:#555;letter-spacing:1px;\">ÍNDICE DE PROTEÇÃO (média recente)</div>\n"
+                f"                <div class='indice-numero' style='color:{cor_idx};'>{emoji_idx} {indice_medio}/100</div>\n"
+                f"                <div class='indice-sub'>{msg_idx}</div>\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_guar_2, unsafe_allow_html=True)
         else:
             st.markdown('''
             <div class="indice-protecao-box" style="border-color:#3B82F6;background:#EFF6FF;">
@@ -19651,12 +19745,15 @@ elif st.session_state.etapa == "App":
         ]
         for label, tipo_cat, meta in categorias_progresso:
             pct = calcular_progresso_categoria(tipo_cat, meta)
-            st.markdown(f'''
-            <div class="progresso-categoria">
-                <div class="progresso-categoria-label"><span>{label}</span><span>{pct}%</span></div>
-                <div class="progresso-barra-bg"><div class="progresso-barra-fill" style="width:{pct}%;"></div></div>
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_guar_3 = (
+                "'\n"
+                "            <div class=\"progresso-categoria\">\n"
+                f"                <div class='progresso-categoria-label'><span>{label}</span><span>{pct}%</span></div>\n"
+                f"                <div class='progresso-barra-bg'><div class='progresso-barra-fill' style='width:{pct}%;'></div></div>\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_guar_3, unsafe_allow_html=True)
 
 
         # ── CONQUISTAS ──
@@ -19667,15 +19764,18 @@ elif st.session_state.etapa == "App":
             desbloqueada = c['id'] in st.session_state.conquistas_desbloqueadas
             classe = "conquista-card" if desbloqueada else "conquista-card conquista-bloqueada"
             with col:
-                st.markdown(f'''
-                <div class="{classe}">
-                    <div class="conquista-emoji">{c['emoji'] if desbloqueada else '🔒'}</div>
-                    <div>
-                        <div style="font-weight:600;">{c['nome']}</div>
-                        <div style="font-size:0.78em;color:#888;">{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>
-                    </div>
-                </div>
-                ''', unsafe_allow_html=True)
+                _htmp_guar_4 = (
+                    "'\n"
+                    f"                <div class='{classe}'>\n"
+                    f"                    <div class='conquista-emoji'>{c['emoji'] if desbloqueada else '🔒'}</div>\n"
+                    "                    <div>\n"
+                    f"                        <div style='font-weight:600;'>{c['nome']}</div>\n"
+                    f"                        <div style='font-size:0.78em;color:#888;'>{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>\n"
+                    "                    </div>\n"
+                    "                </div>\n"
+                    "                \n"
+                )
+                st.markdown(_htmp_guar_4, unsafe_allow_html=True)
 
 
         # ── PERFIL ──
@@ -20170,12 +20270,15 @@ elif st.session_state.etapa == "App":
 
         pct_checklist = round(marcados / len(itens_checklist) * 100)
         cor_check = "#22C55E" if pct_checklist == 100 else ("#B45309" if pct_checklist >= 50 else "#B91C1C")
-        st.markdown(f'''
-        <div class="progresso-categoria">
-            <div class="progresso-categoria-label"><span>Checklist de hoje</span><span>{marcados}/{len(itens_checklist)}</span></div>
-            <div class="progresso-barra-bg"><div class="progresso-barra-fill" style="width:{pct_checklist}%;background:{cor_check};"></div></div>
-        </div>
-        ''', unsafe_allow_html=True)
+        _htmp_guar_5 = (
+            "'\n"
+            "        <div class=\"progresso-categoria\">\n"
+            f"            <div class='progresso-categoria-label'><span>Checklist de hoje</span><span>{marcados}/{len(itens_checklist)}</span></div>\n"
+            f"            <div class='progresso-barra-bg'><div class='progresso-barra-fill' style='width:{pct_checklist}%;background:{cor_check};'></div></div>\n"
+            "        </div>\n"
+            "        \n"
+        )
+        st.markdown(_htmp_guar_5, unsafe_allow_html=True)
 
         if pct_checklist == 100:
             st.success("✅ Checklist completo! Você está com tudo certo para sair.")
@@ -20880,12 +20983,14 @@ if 'frase_boas_vindas' not in st.session_state:
     st.session_state['frase_boas_vindas'] = random.choice(FRASES_RAVENGAR)
 
 frase = st.session_state['frase_boas_vindas']
-st.markdown(f'''
-<div class='boas-vindas-box'>
-    <div class='boas-vindas-hora'>🕯️ Você chegou às {hora_fmt} de uma {dia_semana}. Os espíritos já te aguardavam. 🕯️</div>
-    <div class='boas-vindas-frase'>"{frase}"<br><br>— <strong>Ravengar</strong></div>
-</div>
-''', unsafe_allow_html=True)
+_htmp_tend_1 = (
+    "'\n"
+    "<div class='boas-vindas-box'>\n"
+    f"    <div class='boas-vindas-hora'>🕯️ Você chegou às {hora_fmt} de uma {dia_semana}. Os espíritos já te aguardavam. 🕯️</div>\n"
+    f"    <div class='boas-vindas-frase'>'{frase}'<br><br>— <strong>Ravengar</strong></div>\n"
+    "</div>\n"
+)
+st.markdown(_htmp_tend_1, unsafe_allow_html=True)
 
 
 # --- ABAS ---
@@ -21127,13 +21232,16 @@ with tab6:
 
     if 'carta_do_dia' in st.session_state:
         carta = st.session_state['carta_do_dia']
-        st.markdown(f'''
-        <div class='tarot-card'>
-            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;'>ARCANO {carta['numero']}</div>
-            <div class='tarot-simbolo'>{carta['simbolo']}</div>
-            <div class='tarot-titulo'>{carta['nome']}</div>
-        </div>
-        ''', unsafe_allow_html=True)
+        _htmp_tend_2 = (
+            "'\n"
+            "        <div class='tarot-card'>\n"
+            f"            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;'>ARCANO {carta['numero']}</div>\n"
+            f"            <div class='tarot-simbolo'>{carta['simbolo']}</div>\n"
+            f"            <div class='tarot-titulo'>{carta['nome']}</div>\n"
+            "        </div>\n"
+            "        \n"
+        )
+        st.markdown(_htmp_tend_2, unsafe_allow_html=True)
         if chave_api:
             with st.spinner("O Ravengar interpreta os símbolos..."):
                 sistema_tarot = (
@@ -21178,11 +21286,14 @@ with tab7:
                     f"Data: {data_nasc}. Hora: {hora_nasc or 'não informada'}. Cidade: {cidade_nasc or 'não informada'}.",
                     chave_api
                 )
-            st.markdown(f'''
-            <div class='astral-box'>
-                ⭐ <strong>Seu Mapa Astral</strong><br><br>{leitura_astral}
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tend_3 = (
+                "'\n"
+                "            <div class='astral-box'>\n"
+                f"                ⭐ <strong>Seu Mapa Astral</strong><br><br>{leitura_astral}\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_tend_3, unsafe_allow_html=True)
         else:
             st.warning("Informe ao menos a data de nascimento.")
 
@@ -21337,14 +21448,17 @@ with tab12:
 
     if 'runa_do_dia' in st.session_state:
         runa = st.session_state['runa_do_dia']
-        st.markdown(f'''
-        <div class='runa-card'>
-            <div style='font-size:0.82em;opacity:0.6;letter-spacing:2px;'>RUNA DO DIA · {runa['elemento'].upper()}</div>
-            <div class='runa-simbolo'>{runa['simbolo']}</div>
-            <div class='runa-nome'>{runa['nome']}</div>
-            <div style='font-size:0.95em;margin-top:6px;opacity:0.8;'>{runa['palavra']}</div>
-        </div>
-        ''', unsafe_allow_html=True)
+        _htmp_tend_4 = (
+            "'\n"
+            "        <div class='runa-card'>\n"
+            f"            <div style='font-size:0.82em;opacity:0.6;letter-spacing:2px;'>RUNA DO DIA · {runa['elemento'].upper()}</div>\n"
+            f"            <div class='runa-simbolo'>{runa['simbolo']}</div>\n"
+            f"            <div class='runa-nome'>{runa['nome']}</div>\n"
+            f"            <div style='font-size:0.95em;margin-top:6px;opacity:0.8;'>{runa['palavra']}</div>\n"
+            "        </div>\n"
+            "        \n"
+        )
+        st.markdown(_htmp_tend_4, unsafe_allow_html=True)
 
         if chave_api:
             with st.spinner("As runas sussurram..."):
@@ -21398,14 +21512,17 @@ with tab13:
                 total = curso['total_aulas']
                 pct = int(concluidas / total * 100) if total > 0 else 0
                 with col:
-                    st.markdown(f'''
-                    <div class='curso-card'>
-                        <div style='font-size:2.2em;'>{curso['icone']}</div>
-                        <div style='font-size:1.1em;font-weight:bold;margin:6px 0;'>{curso['titulo']}</div>
-                        <div style='font-size:0.82em;opacity:0.8;'>{curso['descricao'][:80]}...</div>
-                        <div style='margin-top:10px;font-size:0.85em;'>{total} aulas · {pct}% concluído</div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                    _htmp_tend_5 = (
+                        "'\n"
+                        "                    <div class='curso-card'>\n"
+                        f"                        <div style='font-size:2.2em;'>{curso['icone']}</div>\n"
+                        f"                        <div style='font-size:1.1em;font-weight:bold;margin:6px 0;'>{curso['titulo']}</div>\n"
+                        f"                        <div style='font-size:0.82em;opacity:0.8;'>{curso['descricao'][:80]}...</div>\n"
+                        f"                        <div style='margin-top:10px;font-size:0.85em;'>{total} aulas · {pct}% concluído</div>\n"
+                        "                    </div>\n"
+                        "                    \n"
+                    )
+                    st.markdown(_htmp_tend_5, unsafe_allow_html=True)
                     if col.button(f"ENTRAR NO CURSO", key=f"entrar_{chave}"):
                         st.session_state.curso_ativo = chave
                         st.session_state.aula_ativa = None
@@ -21429,11 +21546,14 @@ with tab13:
             st.markdown(f"*{curso['descricao']}*")
 
             pct = int(len(concluidas) / curso['total_aulas'] * 100)
-            st.markdown(f'''
-            <div class='progresso-curso'>
-                📚 {len(concluidas)} de {curso['total_aulas']} aulas concluídas — {pct}% do curso
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tend_6 = (
+                "'\n"
+                "            <div class='progresso-curso'>\n"
+                f"                📚 {len(concluidas)} de {curso['total_aulas']} aulas concluídas — {pct}% do curso\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_tend_6, unsafe_allow_html=True)
             st.progress(pct / 100)
 
             st.markdown("### 📋 Aulas do Curso")
@@ -21502,35 +21622,47 @@ with tab13:
             st.markdown(f"## Aula {num} — {aula['titulo']}")
 
             # Conteúdo
-            st.markdown(f'''
-            <div class='aula-conteudo'>
-                {aula['conteudo'].replace(chr(10), '<br>')}
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tend_7 = (
+                "'\n"
+                "            <div class='aula-conteudo'>\n"
+                f"                {aula['conteudo'].replace(chr(10), '<br>')}\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_tend_7, unsafe_allow_html=True)
 
             # Exemplo
-            st.markdown(f'''
-            <div class='aula-secao'>
-                <strong>🎬 Exemplo Prático</strong><br><br>
-                {aula['exemplo'].replace(chr(10), '<br>')}
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tend_8 = (
+                "'\n"
+                "            <div class='aula-secao'>\n"
+                "                <strong>🎬 Exemplo Prático</strong><br><br>\n"
+                f"                {aula['exemplo'].replace(chr(10), '<br>')}\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_tend_8, unsafe_allow_html=True)
 
             # Aplicação
-            st.markdown(f'''
-            <div class='aula-secao'>
-                <strong>⚙️ Como Aplicar</strong><br><br>
-                {aula['aplicacao'].replace(chr(10), '<br>')}
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tend_9 = (
+                "'\n"
+                "            <div class='aula-secao'>\n"
+                "                <strong>⚙️ Como Aplicar</strong><br><br>\n"
+                f"                {aula['aplicacao'].replace(chr(10), '<br>')}\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_tend_9, unsafe_allow_html=True)
 
             # Exercício
-            st.markdown(f'''
-            <div class='aula-secao'>
-                <strong>🏋️ Exercício Prático</strong><br><br>
-                {aula['exercicio'].replace(chr(10), '<br>')}
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_tend_10 = (
+                "'\n"
+                "            <div class='aula-secao'>\n"
+                "                <strong>🏋️ Exercício Prático</strong><br><br>\n"
+                f"                {aula['exercicio'].replace(chr(10), '<br>')}\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_tend_10, unsafe_allow_html=True)
 
             # Gabarito (oculto até clicar)
             with st.expander("✅ Ver Gabarito Comentado"):
@@ -21832,17 +21964,19 @@ def vida_ia(prompt: str, system_extra: str = "") -> str:
     try:
         client = Groq(api_key=st.session_state.api_key)
         notas_txt = ", ".join([f"{a}: {n}/10" for a, n in st.session_state.notas_areas_vida.items()])
-        system = f'''Você é um Gerente Pessoal de Vida com IA — um misto de coach, planejador e consultor estratégico.
-Usuário: {st.session_state.usuario}.
-Notas atuais das áreas da vida: {notas_txt}.
-{system_extra}
-
-PRINCÍPIOS:
-- Seja prático, direto e organizado — sempre estruture em etapas claras
-- Considere o contexto real da pessoa, nunca dê conselhos genéricos
-- Quando relevante, mencione no final que existe uma ferramenta complementar no ecossistema para aprofundar
-  (mas só se for genuinamente útil, não force isso)
-- Português do Brasil, tom de gerente pessoal experiente — confiável e organizado, não robótico'''
+        system = (
+            "Você é um Gerente Pessoal de Vida com IA — um misto de coach, planejador e consultor estratégico.\n" +
+            "Usuário: {st.session_state.usuario}.\n" +
+            "Notas atuais das áreas da vida: {notas_txt}.\n" +
+            "{system_extra}\n" +
+            "\n" +
+            "PRINCÍPIOS:\n" +
+            "- Seja prático, direto e organizado — sempre estruture em etapas claras\n" +
+            "- Considere o contexto real da pessoa, nunca dê conselhos genéricos\n" +
+            "- Quando relevante, mencione no final que existe uma ferramenta complementar no ecossistema para aprofundar\n" +
+            "  (mas só se for genuinamente útil, não force isso)\n" +
+            "- Português do Brasil, tom de gerente pessoal experiente — confiável e organizado, não robótico\n"
+        )
 
         response = client.chat.completions.create(
             messages=[
@@ -21878,13 +22012,16 @@ def detectar_app_recomendado(texto: str) -> dict | None:
 # --- BARRA DE SALVAR ---
 
 def renderizar_encaminhamento(app_info: dict):
-    st.markdown(f'''
-    <div class="encaminhamento-box">
-        💡 <strong>Dica do ecossistema:</strong> para se aprofundar nesse assunto, o app
-        <strong>{app_info['emoji']} {app_info['nome']}</strong> é especializado em {app_info['quando']}.
-        Se você tiver esse app disponível, vale a pena consultá-lo.
-    </div>
-    ''', unsafe_allow_html=True)
+    _htmp_vida_1 = (
+        "'\n"
+        "    <div class=\"encaminhamento-box\">\n"
+        "        💡 <strong>Dica do ecossistema:</strong> para se aprofundar nesse assunto, o app\n"
+        f"        <strong>{app_info['emoji']} {app_info['nome']}</strong> é especializado em {app_info['quando']}.\n"
+        "        Se você tiver esse app disponível, vale a pena consultá-lo.\n"
+        "    </div>\n"
+        "    \n"
+    )
+    st.markdown(_htmp_vida_1, unsafe_allow_html=True)
 
 # ============================================================
 # TELA: LOGIN
@@ -21954,15 +22091,18 @@ elif st.session_state.etapa == "App":
                 with col:
                     nota_atual = st.session_state.notas_areas_vida.get(area, 5)
                     cor = "#22C55E" if nota_atual >= 7 else ("#B45309" if nota_atual >= 4 else "#B91C1C")
-                    st.markdown(f'''
-                    <div class="area-vida-box">
-                        <div class="area-vida-header">
-                            <span>{EMOJI_AREA[area]} {area}</span>
-                            <span class="area-vida-nota" style="color:{cor};">{nota_atual}/10</span>
-                        </div>
-                        <div class="barra-bg"><div class="barra-fill" style="width:{nota_atual*10}%;background:{cor};"></div></div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                    _htmp_vida_2 = (
+                        "'\n"
+                        "                    <div class=\"area-vida-box\">\n"
+                        "                        <div class=\"area-vida-header\">\n"
+                        f"                            <span>{EMOJI_AREA[area]} {area}</span>\n"
+                        f"                            <span class='area-vida-nota' style='color:{cor};'>{nota_atual}/10</span>\n"
+                        "                        </div>\n"
+                        f"                        <div class='barra-bg'><div class='barra-fill' style='width:{nota_atual*10}%;background:{cor};'></div></div>\n"
+                        "                    </div>\n"
+                        "                    \n"
+                    )
+                    st.markdown(_htmp_vida_2, unsafe_allow_html=True)
                     nova_nota = st.slider(f"Ajustar {area}", 0, 10, nota_atual, key=f"slider_{area}", label_visibility="collapsed")
                     st.session_state.notas_areas_vida[area] = nova_nota
 
@@ -21970,13 +22110,16 @@ elif st.session_state.etapa == "App":
             area_mais_fraca = min(st.session_state.notas_areas_vida, key=st.session_state.notas_areas_vida.get)
 
             cor_media = "#22C55E" if media_geral >= 7 else ("#B45309" if media_geral >= 4 else "#B91C1C")
-            st.markdown(f'''
-            <div class="card" style="text-align:center;">
-                <div style="font-size:0.85em;color:#555;">SUA MÉDIA GERAL DE VIDA</div>
-                <div style="font-size:2.2em;font-weight:700;color:{cor_media};font-family:'Playfair Display',serif;">{media_geral}/10</div>
-                <div style="font-size:0.9em;color:#555;margin-top:4px;">🎯 Comece por: <strong>{EMOJI_AREA[area_mais_fraca]} {area_mais_fraca}</strong> — é sua área mais frágil agora</div>
-            </div>
-            ''', unsafe_allow_html=True)
+            _htmp_vida_3 = (
+                "'\n"
+                "            <div class=\"card\" style=\"text-align:center;\">\n"
+                "                <div style=\"font-size:0.85em;color:#555;\">SUA MÉDIA GERAL DE VIDA</div>\n"
+                f"                <div style='font-size:2.2em;font-weight:700;color:{cor_media};font-family:'Playfair Display',serif;'>{media_geral}/10</div>\n"
+                f"                <div style='font-size:0.9em;color:#555;margin-top:4px;'>🎯 Comece por: <strong>{EMOJI_AREA[area_mais_fraca]} {area_mais_fraca}</strong> — é sua área mais frágil agora</div>\n"
+                "            </div>\n"
+                "            \n"
+            )
+            st.markdown(_htmp_vida_3, unsafe_allow_html=True)
 
             if st.button("🎯 CRIAR PLANO PARA MELHORAR ESSA ÁREA", key="btn_plano_area_fraca", use_container_width=True):
                 st.session_state.pagina = "Objetivos"
@@ -22179,12 +22322,15 @@ elif st.session_state.etapa == "App":
                 st.session_state.missoes_concluidas_hoje_temp = concluidas_hoje
                 pct = round(len(concluidas_hoje) / len(st.session_state.missoes_hoje) * 100) if st.session_state.missoes_hoje else 0
 
-                st.markdown(f'''
-                <div class="missao-dia-box">
-                    <div style="text-align:center;font-size:1.3em;font-weight:700;">{pct}% concluído hoje</div>
-                    <div class="barra-bg"><div class="barra-fill" style="width:{pct}%;background:#6366F1;"></div></div>
-                </div>
-                ''', unsafe_allow_html=True)
+                _htmp_vida_4 = (
+                    "'\n"
+                    "                <div class=\"missao-dia-box\">\n"
+                    f"                    <div style='text-align:center;font-size:1.3em;font-weight:700;'>{pct}% concluído hoje</div>\n"
+                    f"                    <div class='barra-bg'><div class='barra-fill' style='width:{pct}%;background:#6366F1;'></div></div>\n"
+                    "                </div>\n"
+                    "                \n"
+                )
+                st.markdown(_htmp_vida_4, unsafe_allow_html=True)
 
                 if pct == 100 and hoje not in st.session_state.missoes_concluidas_hoje:
                     st.session_state.missoes_concluidas_hoje.append(hoje)
@@ -22441,13 +22587,16 @@ elif st.session_state.etapa == "App":
                 for meta in st.session_state.grandes_metas:
                     pct = min(100, round(meta.get('valor_atual', '') / meta['valor_total'] * 100)) if meta['valor_total'] > 0 else 0
                     falta = max(0, meta['valor_total'] - meta.get('valor_atual', ''))
-                    st.markdown(f'''
-                    <div class="card">
-                        <strong>🏆 {meta['nome']}</strong> — {meta.get('prazo','sem prazo definido')}<br>
-                        <div class="barra-bg" style="margin:8px 0;"><div class="barra-fill" style="width:{pct}%;background:#6366F1;"></div></div>
-                        R$ {meta.get('valor_atual', ''):,.2f} de R$ {meta['valor_total']:,.2f} ({pct}%) — faltam R$ {falta:,.2f}
-                    </div>
-                    ''', unsafe_allow_html=True)
+                    _htmp_vida_5 = (
+                        "'\n"
+                        "                    <div class=\"card\">\n"
+                        f"                        <strong>🏆 {meta['nome']}</strong> — {meta.get('prazo','sem prazo definido')}<br>\n"
+                        f"                        <div class='barra-bg' style='margin:8px 0;'><div class='barra-fill' style='width:{pct}%;background:#6366F1;'></div></div>\n"
+                        f"                        R$ {meta.get('valor_atual', ''):,.2f} de R$ {meta['valor_total']:,.2f} ({pct}%) — faltam R$ {falta:,.2f}\n"
+                        "                    </div>\n"
+                        "                    \n"
+                    )
+                    st.markdown(_htmp_vida_5, unsafe_allow_html=True)
 
         # ========================
         # MODO CRISE
@@ -22572,15 +22721,18 @@ elif st.session_state.etapa == "App":
                 desbloqueada = c['id'] in st.session_state.conquistas_desbloqueadas
                 classe = "conquista-card" if desbloqueada else "conquista-card conquista-bloqueada"
                 with col:
-                    st.markdown(f'''
-                    <div class="{classe}">
-                        <div class="conquista-emoji">{c['emoji'] if desbloqueada else '🔒'}</div>
-                        <div>
-                            <div style="font-weight:600;">{c['nome']}</div>
-                            <div style="font-size:0.78em;color:#888;">{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>
-                        </div>
-                    </div>
-                    ''', unsafe_allow_html=True)
+                    _htmp_vida_6 = (
+                        "'\n"
+                        f"                    <div class='{classe}'>\n"
+                        f"                        <div class='conquista-emoji'>{c['emoji'] if desbloqueada else '🔒'}</div>\n"
+                        "                        <div>\n"
+                        f"                            <div style='font-weight:600;'>{c['nome']}</div>\n"
+                        f"                            <div style='font-size:0.78em;color:#888;'>{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>\n"
+                        "                        </div>\n"
+                        "                    </div>\n"
+                        "                    \n"
+                    )
+                    st.markdown(_htmp_vida_6, unsafe_allow_html=True)
 
             pct_conquistas = round(len(st.session_state.conquistas_desbloqueadas) / len(CONQUISTAS_DEFINIDAS) * 100)
             st.markdown(f"<div class='card' style='text-align:center;'>🎖️ Você desbloqueou <strong>{len(st.session_state.conquistas_desbloqueadas)}/{len(CONQUISTAS_DEFINIDAS)}</strong> conquistas ({pct_conquistas}%)</div>", unsafe_allow_html=True)
