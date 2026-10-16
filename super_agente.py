@@ -6798,8 +6798,8 @@ if st.session_state.etapa == "login":
     _buf = _io_csv.StringIO()
     _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
     _writer.writeheader()
-    for _row in st.session_state['aula_historico']:
-        _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['role', 'content']})
+    for _row in st.session_state.get('aula_historico', []):
+        _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else '') for c in ['role', 'content']})
     st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Nexus_English.csv", mime="text/csv", use_container_width=True, key="dl_aula_historico")
 
     st.markdown("<div style='text-align:center'><span class='badge'>MeusAgentesIA.com.br</span></div>", unsafe_allow_html=True)
@@ -9540,7 +9540,7 @@ with tab_metas:
             m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
             m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
             c1, c2  = st.columns(2)
-            with c1: m_val   = st.number_input("Valor total (R$)", min_value=0.0, value=1000.0, step=100.0, key="oraculof24")
+            m_val   = st.number_input("Valor total (R$)", min_value=0.0, value=float(st.session_state.get('_m_val_tmp', 1000.0)), step=100.0)
             with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
             m_atual = st.number_input("Já guardei (R$)", min_value=0.0, value=0.0, step=100.0, key="oraculof26")
             if st.form_submit_button("🚀 CRIAR META", key="oraculoffsb505"):
@@ -10040,22 +10040,19 @@ with tab_cfg:
 # --- RODAPÉ ---
 # ── EXPORTAR PLANILHA FINANCEIRA ──
 import io as _io_csv_or, csv as _csv_mod_or
-_tem_dados_or = (st.session_state.get('gastos') or st.session_state.get('metas') or
-                 st.session_state.get('contas_fixas') or st.session_state.get('dividas'))
-if _tem_dados_or:
-    _buf_or = _io_csv_or.StringIO()
-    _w_or = _csv_mod_or.writer(_buf_or)
-    _w_or.writerow(['Tipo', 'Nome/Descrição', 'Valor (R$)', 'Categoria/Info'])
-    for _g in st.session_state.get('gastos', []):
-        _w_or.writerow(['Gasto', _g.get('desc',''), _g.get('valor',''), _g.get('cat','')])
-    for _m in st.session_state.get('metas', []):
-        _w_or.writerow(['Meta', _m.get('nome',''), _m.get('valor',''), f"atual:{_m.get('atual',0)} prazo:{_m.get('prazo','')}m"])
-    for _f in st.session_state.get('contas_fixas', []):
-        _w_or.writerow(['Conta Fixa', _f.get('nome',''), _f.get('valor',''), _f.get('cat','')])
-    for _dv in st.session_state.get('dividas', []):
-        _w_or.writerow(['Dívida', _dv.get('nome',''), _dv.get('valor',''), f"parcelas:{_dv.get('parcelas','')}"])
-    st.download_button('⬇️ Baixar dados financeiros (.csv)', data=_buf_or.getvalue().encode('utf-8-sig'),
-        file_name='Oraculo_Financeiro.csv', mime='text/csv', use_container_width=True, key='dl_oraculo_csv')
+_buf_or = _io_csv_or.StringIO()
+_w_or = _csv_mod_or.writer(_buf_or)
+_w_or.writerow(['Tipo', 'Nome/Descricao', 'Valor (R$)', 'Categoria/Info'])
+for _g in st.session_state.get('gastos', []):
+    _w_or.writerow(['Gasto', _g.get('descricao',''), _g.get('valor',''), _g.get('tipo','')])
+for _m in st.session_state.get('metas', []):
+    _w_or.writerow(['Meta', _m.get('nome',''), _m.get('valor',''), f"atual:{_m.get('atual',0)} prazo:{_m.get('prazo','')}m"])
+for _f in st.session_state.get('contas_fixas', []):
+    _w_or.writerow(['Conta Fixa', _f.get('nome',''), _f.get('valor',''), _f.get('cat','')])
+for _dv in st.session_state.get('dividas', []):
+    _w_or.writerow(['Divida', _dv.get('nome',''), _dv.get('valor_total',''), f"parcelas:{_dv.get('parcelas','')}"])
+st.download_button('⬇️ Baixar dados financeiros (.csv)', data=_buf_or.getvalue().encode('utf-8-sig'),
+    file_name='Oraculo_Financeiro.csv', mime='text/csv', use_container_width=True, key='dl_oraculo_csv')
 
 st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;padding-bottom:20px;'>"
