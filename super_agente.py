@@ -9536,18 +9536,26 @@ with tab_metas:
     with col_m1:
         st.markdown('<div class="card-purple">', unsafe_allow_html=True)
         st.markdown("<b style='color:#1A1A2E;'>🎯 Criar Nova Meta</b>", unsafe_allow_html=True)
-        with st.form("meta_form", clear_on_submit=True):
-            m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
-            m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
-            c1, c2  = st.columns(2)
-            with c1: m_val   = st.number_input("Valor total (R$)", min_value=0.0, step=100.0, key="oraculof24")
-            with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
-            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
-            if st.form_submit_button("🚀 CRIAR META", key="oraculoffsb505"):
-                if m_nome and m_val > 0:
-                    mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
-                    st.session_state.metas.append({"nome":m_nome,"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
-                    st.rerun()
+        m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
+        m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
+        c1, c2  = st.columns(2)
+        with c1: _m_val_str  = st.text_input("Valor total (R$)", placeholder="Ex: 5000", key="oraculof24")
+        with c2: _m_prazo_str = st.text_input("Prazo (meses)", placeholder="Ex: 12", value="12", key="oraculof25")
+        _m_atual_str = st.text_input("Já guardei (R$)", placeholder="Ex: 500", value="0", key="oraculof26")
+        if st.button("🚀 CRIAR META", key="oraculoffsb505", use_container_width=True):
+            try:
+                m_val   = float(_m_val_str.replace(',','.').replace('R$','').strip()) if _m_val_str.strip() else 0.0
+                m_prazo = int(_m_prazo_str.strip()) if _m_prazo_str.strip() else 12
+                m_atual = float(_m_atual_str.replace(',','.').replace('R$','').strip()) if _m_atual_str.strip() else 0.0
+            except ValueError:
+                st.error("Digite apenas números nos campos de valor e prazo.")
+                m_val = 0.0
+            if m_nome and m_val > 0:
+                mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
+                st.session_state.metas.append({"nome":m_nome,"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
+                for _k in ["oraculof22","oraculof23","oraculof24","oraculof25","oraculof26"]:
+                    if _k in st.session_state: del st.session_state[_k]
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_m2:
