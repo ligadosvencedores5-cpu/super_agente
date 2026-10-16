@@ -5793,17 +5793,33 @@ Critérios (0-20 cada):
                                 _cli = _GrQ(api_key=st.session_state.api_key)
                                 _r = _cli.chat.completions.create(
                                     model="openai/gpt-oss-120b",
-                                    messages=[{"role":"system","content":"Você é um tutor especializado em concursos públicos brasileiros. Sempre responda em português do Brasil, de forma clara, didática e objetiva."}, {"role":"user","content":f'''Gere exatamente {_qtd_quiz} questões de {_mat_quiz} no estilo {_banca_quiz}, nível {_nivel_quiz}.
+                                    messages=[{"role":"system","content":"Voce e um especialista em elaboracao de questoes para concursos publicos brasileiros. Gere questoes no estilo oficial das bancas. Use APENAS texto puro nos enunciados e alternativas, sem emojis, sem setas, sem simbolos especiais."}, {"role":"user","content":f'''Gere exatamente {_qtd_quiz} questoes de {_mat_quiz} no estilo {_banca_quiz}, nivel {_nivel_quiz}.
 
-Responda APENAS em JSON válido, sem texto extra:
-{{"questoes": [{{"enunciado": "texto da questão", "alternativas": {{"A": "texto A", "B": "texto B", "C": "texto C", "D": "texto D", "E": "texto E"}}, "gabarito": "A", "explicacao": "Por que A está correta..."}}]}}'''}],
+REGRAS: enunciados com texto puro sem emojis ou simbolos; alternativas diretas; explicacao detalhada sobre por que a correta esta certa e as erradas estao erradas.
+Responda APENAS em JSON valido, sem texto extra: {{"questoes": [{{"enunciado": "texto da questao", "alternativas": {{"A": "texto A", "B": "texto B", "C": "texto C", "D": "texto D", "E": "texto E"}}, "gabarito": "A", "explicacao": "Explicacao detalhada..."}}]}}'''}],
                                     max_tokens=4000
                                 )
                                 import json as _json
                                 _raw = _r.choices[0].message.content
                                 _s = _raw.find('{'); _e = _raw.rfind('}')
                                 _dados = _json.loads(_raw[_s:_e+1])
-                                st.session_state['quiz_banco'] = _dados['questoes']
+                                import re as _re_q
+                                def _limpar_texto(t):
+                                    if not isinstance(t, str): return t
+                                    # Remove emojis e símbolos especiais que quebram o expander
+                                    t = _re_q.sub(r'[\\U00010000-\\U0010ffff]', '', t)
+                                    t = _re_q.sub(r'[\\u2190-\\u21FF\\u2600-\\u26FF\\u2700-\\u27BF\\uFE00-\\uFE0F]', '', t)
+                                    return t.strip()
+                                _questoes_limpas = []
+                                for _q_item in _dados['questoes']:
+                                    _q_item['enunciado'] = _limpar_texto(_q_item.get('enunciado',''))
+                                    _q_item['explicacao'] = _limpar_texto(_q_item.get('explicacao',''))
+                                    _alts_limpas = {}
+                                    for _k, _v in _q_item.get('alternativas', {}).items():
+                                        _alts_limpas[_k] = _limpar_texto(_v)
+                                    _q_item['alternativas'] = _alts_limpas
+                                    _questoes_limpas.append(_q_item)
+                                st.session_state['quiz_banco'] = _questoes_limpas
                                 st.session_state['quiz_idx'] = 0
                                 st.session_state['quiz_acertos'] = 0
                                 st.session_state['quiz_erros'] = []
