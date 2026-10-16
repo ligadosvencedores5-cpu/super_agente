@@ -22922,6 +22922,49 @@ def _sa_remover_rastreio(originais):
             pass
 
 
+# Chaves de controle interno das telas (não são dados do usuário)
+_SA_PADRAO_INTERNO = re.compile(
+    r"^(pagina|page|aba|tab|menu|tela|diag_idx)$"
+    r"|(_idx|_index|_fase|_key|_etapa|_inicio|_step|_modo|_pos|_cursor)$"
+)
+
+# Palavras sem acento nos nomes das chaves -> forma correta para leitura
+_SA_ACENTOS = {
+    "descricao": "descrição", "historico": "histórico", "nivel": "nível", "evolucao": "evolução",
+    "decisao": "decisão", "emergencia": "emergência", "patrimonio": "patrimônio", "dividas": "dívidas",
+    "divida": "dívida", "ultima": "última", "ultimo": "último", "sessoes": "sessões", "sessao": "sessão",
+    "conteudo": "conteúdo", "titulo": "título", "proteina": "proteína", "agua": "água",
+    "refeicoes": "refeições", "refeicao": "refeição", "questoes": "questões", "questao": "questão",
+    "analise": "análise", "analises": "análises", "informacoes": "informações", "observacoes": "observações",
+    "observacao": "observação", "concluido": "concluído", "concluida": "concluída", "numero": "número",
+    "periodo": "período", "mes": "mês", "inicio": "início", "codigo": "código", "pagina": "página",
+    "orcamento": "orçamento", "credito": "crédito", "debito": "débito", "saude": "saúde",
+    "educacao": "educação", "alimentacao": "alimentação", "situacao": "situação", "acao": "ação",
+    "acoes": "ações", "duracao": "duração", "pontuacao": "pontuação", "redacao": "redação",
+    "redacoes": "redações", "materia": "matéria", "materias": "matérias", "simulados": "simulados",
+    "conquistas": "conquistas", "calorias": "calorias", "calorico": "calórico", "diario": "diário",
+    "evidencias": "evidências", "hipoteses": "hipóteses", "pratica": "prática", "praticas": "práticas",
+    "licao": "lição", "licoes": "lições", "vocabulario": "vocabulário", "experiencia": "experiência",
+    "instituicao": "instituição", "preferencia": "preferência", "preferencias": "preferências",
+    "invencoes": "invenções", "invencao": "invenção", "caracteristicas": "características",
+    "familia": "família", "relatorio": "relatório", "relatorios": "relatórios", "previsao": "previsão",
+    "previsoes": "previsões", "consultas": "consultas", "vacinas": "vacinas", "racao": "ração",
+    "veterinario": "veterinário", "seguranca": "segurança", "manutencao": "manutenção",
+    "restricoes": "restrições", "restricao": "restrição", "limitacoes": "limitações", "area": "área",
+    "areas": "áreas", "habitos": "hábitos", "habito": "hábito", "rotina": "rotina", "reflexoes": "reflexões",
+    "gratidao": "gratidão", "emocoes": "emoções", "emocao": "emoção", "sintomas": "sintomas",
+    "tecnico": "técnico", "tecnicas": "técnicas", "estrategia": "estratégia", "estrategias": "estratégias",
+    "juridico": "jurídico", "documentos": "documentos", "peticao": "petição", "clausulas": "cláusulas",
+    "sugestoes": "sugestões", "sugestao": "sugestão", "opcoes": "opções", "opcao": "opção",
+    "contratacao": "contratação", "negocio": "negócio", "negocios": "negócios", "validacao": "validação",
+    "publico": "público", "proximo": "próximo", "proximos": "próximos", "media": "média", "minimo": "mínimo",
+    "maximo": "máximo", "basico": "básico", "rapido": "rápido", "pre": "pré", "nao": "não", "sim": "sim",
+    "padrao": "padrão", "dominio": "domínio", "historia": "história", "maquina": "máquina",
+    "voce": "você", "usuario": "usuário", "venc": "vencimento", "qtd": "quantidade",
+    "obs": "observações", "desc": "descrição", "cat": "categoria", "dt": "data", "parcelas": "parcelas", "economia": "economia",
+}
+
+
 def _sa_chave_valida(k: str, valor, widgets: set) -> bool:
     if not isinstance(k, str) or k.startswith("_") or k.startswith("sa_") or ":" in k:
         return False
@@ -22929,11 +22972,18 @@ def _sa_chave_valida(k: str, valor, widgets: set) -> bool:
         return False
     if any(p in k.lower() for p in _SA_PALAVRAS_SENSIVEIS):
         return False
+    if _SA_PADRAO_INTERNO.search(k.lower()):
+        return False
     if isinstance(valor, bool) or valor is None:
         return False
     if isinstance(valor, str) and valor.strip().startswith("gsk_"):
         return False
     return True
+
+
+def _sa_campo_sensivel(nome) -> bool:
+    n = str(nome).lower()
+    return any(p in n for p in _SA_PALAVRAS_SENSIVEIS)
 
 
 def _sa_tem_conteudo(valor) -> bool:
@@ -22949,65 +22999,139 @@ def _sa_tem_conteudo(valor) -> bool:
 
 
 def _sa_titulo(k: str) -> str:
-    t = k.replace("_", " ").strip()
+    k = str(k).strip()
+    m = re.match(r"^(?:res_(.+)|(.+)_temp)$", k)
+    if m:
+        return "Último resultado gerado — " + _sa_titulo(m.group(1) or m.group(2)).lower()
+    palavras = re.split(r"[_\s]+", k)
+    palavras = [_SA_ACENTOS.get(p.lower(), p.lower()) for p in palavras if p]
+    t = " ".join(palavras)
     return t[:1].upper() + t[1:]
 
 
-def _sa_fmt_simples(v) -> str:
+def _sa_limpar_texto(s: str) -> str:
+    """Remove tags HTML e espaços sobrando, mantendo quebras de linha."""
+    s = str(s)
+    if "<" in s and ">" in s:
+        s = re.sub(r"<br\s*/?>", "\n", s, flags=re.I)
+        s = re.sub(r"</(p|div|li|h[1-6]|tr)>", "\n", s, flags=re.I)
+        s = re.sub(r"<[^>]+>", "", s)
+        s = (s.replace("&nbsp;", " ").replace("&amp;", "&")
+              .replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"'))
+    # marcações de formatação do Markdown (negrito, títulos) -> texto limpo
+    s = re.sub(r"\*\*(.+?)\*\*", r"\1", s)
+    s = re.sub(r"__(.+?)__", r"\1", s)
+    s = re.sub(r"(?m)^\s{0,3}#{1,6}\s+", "", s)
+    s = re.sub(r"(?m)^\s*[-*_]{3,}\s*$", "", s)
+    s = re.sub(r"[ \t]+\n", "\n", s)
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    return s.strip()
+
+
+def _sa_num_br(v) -> str:
     if isinstance(v, float):
         return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    if hasattr(v, "isoformat"):
-        return v.isoformat()
-    if isinstance(v, (dict, list, tuple, set)):
-        try:
-            return json.dumps(v, ensure_ascii=False, default=str)
-        except Exception:
-            return str(v)
     return str(v)
 
 
-def _sa_fmt_valor(v, nivel: int = 0) -> str:
-    pad = "  " * nivel
+def _sa_data_br(s: str) -> str:
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?", s.strip())
+    if not m or len(s.strip()) > 26:
+        return s
+    d = f"{m.group(3)}/{m.group(2)}/{m.group(1)}"
+    return f"{d} {m.group(4)}:{m.group(5)}" if m.group(4) else d
+
+
+def _sa_fmt_simples(v) -> str:
+    if isinstance(v, bool):
+        return "Sim" if v else "Não"
+    if v is None:
+        return "—"
+    if isinstance(v, (int, float)):
+        return _sa_num_br(v)
+    if hasattr(v, "isoformat"):
+        return _sa_data_br(v.isoformat())
     if isinstance(v, dict):
-        if not v:
-            return pad + "(vazio)"
+        return "; ".join(f"{_sa_titulo(kk)}: {_sa_fmt_simples(vv)}"
+                         for kk, vv in v.items() if not _sa_campo_sensivel(kk)) or "—"
+    if isinstance(v, (list, tuple, set)):
+        return ", ".join(_sa_fmt_simples(i) for i in v) or "—"
+    return _sa_data_br(_sa_limpar_texto(v)) or "—"
+
+
+def _sa_eh_chat(item) -> bool:
+    return isinstance(item, dict) and ("content" in item or "conteudo" in item or "texto" in item) \
+        and any(c in item for c in ("role", "autor", "papel", "quem"))
+
+
+def _sa_quem(item) -> str:
+    papel = str(item.get("role", item.get("autor", item.get("papel", item.get("quem", ""))))).lower()
+    if papel in ("user", "usuario", "usuário", "voce", "você", "human"):
+        return "Você"
+    if papel in ("system", "sistema"):
+        return "Sistema"
+    return "IA"
+
+
+def _sa_indentar(texto: str, pad: str) -> str:
+    return "\n".join(pad + l if l.strip() else "" for l in str(texto).splitlines())
+
+
+_SA_JA_IMPRESSO = {}
+
+
+def _sa_fmt_valor(v, nivel: int = 0, secao: str = "", item: int = 0) -> str:
+    pad = "   " * nivel
+    if isinstance(v, dict):
         linhas = []
         for kk, vv in v.items():
-            if isinstance(vv, (dict, list, tuple)) and vv:
-                linhas.append(f"{pad}{_sa_titulo(str(kk))}:")
+            if _sa_campo_sensivel(kk):
+                continue
+            if isinstance(vv, (dict, list, tuple, set)) and vv:
+                linhas.append(f"{pad}{_sa_titulo(kk)}:")
                 linhas.append(_sa_fmt_valor(vv, nivel + 1))
+            elif isinstance(vv, str) and ("\n" in _sa_limpar_texto(vv) or len(vv) > 120):
+                limpo = _sa_limpar_texto(vv)
+                ref = _SA_JA_IMPRESSO.get(limpo)
+                if ref and secao and ref[0] != secao:
+                    linhas.append(f"{pad}{_sa_titulo(kk)}: (mesmo texto do item {ref[1]} de \"{ref[0]}\")")
+                else:
+                    if secao and limpo not in _SA_JA_IMPRESSO:
+                        _SA_JA_IMPRESSO[limpo] = (secao, item)
+                    linhas.append(f"{pad}{_sa_titulo(kk)}:")
+                    linhas.append(_sa_indentar(limpo, pad + "   "))
             else:
-                linhas.append(f"{pad}{_sa_titulo(str(kk))}: {_sa_fmt_simples(vv)}")
-        return "\n".join(linhas)
+                linhas.append(f"{pad}{_sa_titulo(kk)}: {_sa_fmt_simples(vv)}")
+        return "\n".join(linhas) if linhas else pad + "—"
     if isinstance(v, (list, tuple, set)):
+        itens = list(v)
+        if itens and all(_sa_eh_chat(i) for i in itens):
+            blocos = []
+            for i in itens:
+                txt = _sa_limpar_texto(i.get("content", i.get("conteudo", i.get("texto", ""))))
+                blocos.append(f"{pad}[{_sa_quem(i)}]\n{_sa_indentar(txt, pad + '   ')}")
+            return "\n\n".join(blocos)
         linhas = []
-        for n, item in enumerate(list(v), 1):
-            if isinstance(item, dict) and "content" in item and ("role" in item or "autor" in item):
-                papel = str(item.get("role", item.get("autor", "")))
-                quem = "Você" if papel in ("user", "usuario", "usuário") else "IA"
-                linhas.append(f"{pad}[{quem}] {item.get('content', '')}")
-            elif isinstance(item, dict):
-                campos = " | ".join(
-                    f"{_sa_titulo(str(kk))}: {_sa_fmt_simples(vv)}" for kk, vv in item.items()
-                )
-                linhas.append(f"{pad}{n}. {campos}")
+        for n, item in enumerate(itens, 1):
+            if isinstance(item, dict):
+                corpo = _sa_fmt_valor(item, nivel + 1, secao, n).lstrip()
+                linhas.append(f"{pad}{n}) {corpo}")
+            elif isinstance(item, (list, tuple)):
+                linhas.append(f"{pad}{n}) {_sa_fmt_simples(item)}")
             else:
-                linhas.append(f"{pad}{n}. {_sa_fmt_simples(item)}")
-        return "\n".join(linhas) if linhas else pad + "(vazio)"
+                linhas.append(f"{pad}{n}) {_sa_fmt_simples(item)}")
+        sep = "\n\n" if any(isinstance(i, dict) for i in itens) else "\n"
+        return sep.join(linhas) if linhas else pad + "—"
+    if isinstance(v, str):
+        return _sa_indentar(_sa_limpar_texto(v), pad)
     return pad + _sa_fmt_simples(v)
 
 
-def _sa_texto_exportacao(agente: dict, chaves: list) -> str:
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
-    cab = [
-        "=" * 60,
-        f"{agente['emoji']} {agente['nome']} — {agente['categoria']}",
-        f"Usuário: {st.session_state.get('sa_usuario', '')}",
-        f"Exportado em: {agora}",
-        "=" * 60,
-        "",
-    ]
-    blocos, vistos = [], set()
+def _sa_coletar(chaves: list, codigo_key: str = ""):
+    """Separa o que foi registrado em: valores simples, tabelas/listas e textos longos.
+    Ignora valores iguais ao padrão que o agente cria ao abrir (não foram feitos pelo usuário)."""
+    base = st.session_state.get(f"_sa_base_{codigo_key}", {}) if codigo_key else {}
+    simples, blocos, vistos = [], [], set()
     for k in chaves:
         if k not in st.session_state:
             continue
@@ -23015,21 +23139,71 @@ def _sa_texto_exportacao(agente: dict, chaves: list) -> str:
         if not _sa_tem_conteudo(v):
             continue
         assin = _sa_assinatura(v)
+        if k in base and base[k] == assin:
+            continue  # ainda é o valor padrão do agente
         if isinstance(v, str) and assin in vistos:
             continue  # mesmo texto guardado em duas chaves
         vistos.add(assin)
-        try:
-            corpo = _sa_fmt_valor(v)
-        except Exception:
-            corpo = str(v)
-        blocos.append(f"■ {_sa_titulo(k)}\n{'-' * 60}\n{corpo}\n")
-    if not blocos:
+        if isinstance(v, (list, tuple, set, dict)):
+            blocos.append((k, v))
+        elif isinstance(v, str) and (len(v) > 120 or "\n" in v.strip()):
+            blocos.append((k, v))
+        else:
+            simples.append((k, v))
+    # textos soltos (ex.: último resultado) que já aparecem dentro de alguma lista não se repetem
+    def _textos_em(v, acc):
+        if isinstance(v, str):
+            acc.add(_sa_limpar_texto(v))
+        elif isinstance(v, dict):
+            for x in v.values():
+                _textos_em(x, acc)
+        elif isinstance(v, (list, tuple, set)):
+            for x in v:
+                _textos_em(x, acc)
+        return acc
+    dentro = set()
+    for k, v in blocos:
+        if isinstance(v, (list, tuple, set, dict)):
+            _textos_em(v, dentro)
+    blocos = [(k, v) for k, v in blocos if not (isinstance(v, str) and _sa_limpar_texto(v) in dentro)]
+    eh_conversa = lambda par: isinstance(par[1], (list, tuple)) and par[1] and all(_sa_eh_chat(i) for i in par[1])
+    blocos = [b for b in blocos if not eh_conversa(b)] + [b for b in blocos if eh_conversa(b)]
+    return simples, blocos
+
+
+def _sa_texto_exportacao(agente: dict, chaves: list) -> str:
+    simples, blocos = _sa_coletar(chaves, agente.get("codigo", ""))
+    _SA_JA_IMPRESSO.clear()
+    if not simples and not blocos:
         return ""
-    return "\n".join(cab) + "\n".join(blocos)
+    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+    linhas = [
+        "=" * 60,
+        f"{agente['emoji']} {agente['nome'].upper()} — {agente['categoria']}",
+        f"Usuário: {st.session_state.get('sa_usuario', '')}",
+        f"Exportado em: {agora}",
+        "=" * 60,
+        "",
+    ]
+    if simples:
+        linhas += ["■ DADOS PRINCIPAIS", "-" * 60]
+        largura = max(len(_sa_titulo(k)) for k, _ in simples)
+        for k, v in simples:
+            linhas.append(f"{_sa_titulo(k).ljust(largura)} : {_sa_fmt_simples(v)}")
+        linhas.append("")
+    for k, v in blocos:
+        qtd = f" ({len(v)})" if isinstance(v, (list, tuple, set)) else ""
+        linhas += [f"■ {_sa_titulo(k).upper()}{qtd}", "-" * 60]
+        try:
+            linhas.append(_sa_fmt_valor(v, 0, _sa_titulo(k)))
+        except Exception:
+            linhas.append(str(v))
+        linhas.append("")
+    return "\n".join(linhas).rstrip() + "\n"
 
 
 def _sa_nome_aba(nome: str, usados: set) -> str:
-    base = re.sub(r"[\[\]\:\*\?\/\\\\]", " ", nome).strip()[:28] or "Dados"
+    base = re.sub(r"[\[\]\:\*\?\/\\]", " ", nome).strip()[:28] or "Dados"
     final, n = base, 2
     while final.lower() in usados:
         final = f"{base[:25]} {n}"
@@ -23039,14 +23213,15 @@ def _sa_nome_aba(nome: str, usados: set) -> str:
 
 
 def _sa_celula(v):
-    if isinstance(v, (int, float, str)) or v is None:
+    if isinstance(v, bool):
+        return "Sim" if v else "Não"
+    if v is None:
+        return ""
+    if isinstance(v, (int, float)):
         return v
-    if hasattr(v, "isoformat"):
-        return v.isoformat()
-    try:
-        return json.dumps(v, ensure_ascii=False, default=str)
-    except Exception:
-        return str(v)
+    if isinstance(v, str):
+        return _sa_data_br(_sa_limpar_texto(v))
+    return _sa_fmt_simples(v)
 
 
 def _sa_xml(texto) -> str:
@@ -23066,7 +23241,8 @@ def _sa_col(n: int) -> str:
 
 def _sa_xlsx_bytes(abas: list) -> bytes:
     """Gera um .xlsx só com a biblioteca padrão (sem openpyxl/pandas).
-    abas = [(nome, [[cabeçalho...], [linha...], ...]), ...]"""
+    abas = [(nome, [[cabeçalho...], [linha...], ...]), ...]
+    Estilos: 1 = cabeçalho verde, 2 = número com 2 casas, 3 = texto com quebra de linha."""
     import io, zipfile
     planilhas = []
     for nome, linhas in abas:
@@ -23076,21 +23252,27 @@ def _sa_xlsx_bytes(abas: list) -> bytes:
             cels = []
             for j, v in enumerate(linha, 1):
                 ref = f"{_sa_col(j)}{i}"
-                estilo = ' s="1"' if i == 1 else ""
                 if isinstance(v, bool) or v is None:
                     v = "" if v is None else ("Sim" if v else "Não")
                 if isinstance(v, (int, float)):
+                    estilo = ' s="1"' if i == 1 else (' s="2"' if isinstance(v, float) else ' s="4"')
                     cels.append(f'<c r="{ref}"{estilo}><v>{v}</v></c>')
-                    tam = len(str(v))
+                    tam = len(_sa_num_br(v))
                 else:
-                    cels.append(f'<c r="{ref}"{estilo} t="inlineStr"><is><t xml:space="preserve">{_sa_xml(v)}</t></is></c>')
-                    tam = max((len(x) for x in str(v).splitlines()), default=0)
-                larguras[j] = max(larguras.get(j, 8), min(tam + 2, 80))
+                    sv = str(v)
+                    longo = len(sv) > 60 or "\n" in sv
+                    estilo = ' s="1"' if i == 1 else (' s="3"' if longo else ' s="4"')
+                    cels.append(f'<c r="{ref}"{estilo} t="inlineStr"><is><t xml:space="preserve">{_sa_xml(sv)}</t></is></c>')
+                    tam = max((len(x) for x in sv.splitlines()), default=0)
+                larguras[j] = max(larguras.get(j, 10), min(tam + 2, 70))
             xml_linhas.append(f'<row r="{i}">{"".join(cels)}</row>')
         cols = "".join(f'<col min="{j}" max="{j}" width="{w}" customWidth="1"/>' for j, w in sorted(larguras.items()))
+        congelar = ('<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" '
+                    'activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>') if len(linhas) > 1 else ""
         planilhas.append(
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            + congelar
             + (f"<cols>{cols}</cols>" if cols else "")
             + f'<sheetData>{"".join(xml_linhas)}</sheetData></worksheet>'
         )
@@ -23134,8 +23316,15 @@ def _sa_xlsx_bytes(abas: list) -> bytes:
         '<fill><patternFill patternType="solid"><fgColor rgb="FF16A34A"/><bgColor indexed="64"/></patternFill></fill></fills>'
         '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'
         '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
-        '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
-        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>'
+        '<cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1">'
+        '<alignment vertical="top"/></xf>'
+        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'
+        '<xf numFmtId="4" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyAlignment="1">'
+        '<alignment vertical="top"/></xf>'
+        '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1">'
+        '<alignment wrapText="1" vertical="top"/></xf>'
+        '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1">'
+        '<alignment vertical="top"/></xf></cellXfs>'
         '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
         "</styleSheet>"
     )
@@ -23151,52 +23340,70 @@ def _sa_xlsx_bytes(abas: list) -> bytes:
     return buf.getvalue()
 
 
+def _sa_excel_lista(titulo: str, itens: list) -> list:
+    """Converte uma lista em linhas de planilha (cabeçalho + uma linha por item)."""
+    if itens and all(_sa_eh_chat(i) for i in itens):
+        linhas = [["#", "Quem", "Mensagem"]]
+        for n, i in enumerate(itens, 1):
+            linhas.append([n, _sa_quem(i), _sa_celula(i.get("content", i.get("conteudo", i.get("texto", ""))))])
+        return linhas
+    if itens and all(isinstance(i, dict) for i in itens):
+        colunas = []
+        for i in itens:
+            for kk in i.keys():
+                if kk not in colunas and not _sa_campo_sensivel(kk):
+                    colunas.append(kk)
+        linhas = [["#"] + [_sa_titulo(c) for c in colunas]]
+        for n, i in enumerate(itens, 1):
+            linhas.append([n] + [_sa_celula(i.get(c)) for c in colunas])
+        return linhas
+    return [["#", titulo]] + [[n, _sa_celula(i)] for n, i in enumerate(itens, 1)]
+
+
 def _sa_excel_exportacao(agente: dict, chaves: list):
-    """Gera o .xlsx: aba Resumo + uma aba por lista/tabela registrada. Retorna bytes ou None."""
+    """Gera o .xlsx: aba Resumo + uma aba por lista/tabela/texto longo. Retorna bytes ou None."""
+    simples, blocos = _sa_coletar(chaves, agente.get("codigo", ""))
+    if not simples and not blocos:
+        return None
     resumo = [
         ["Item", "Valor"],
         ["Agente", f"{agente['nome']} — {agente['categoria']}"],
         ["Usuário", st.session_state.get("sa_usuario", "")],
         ["Exportado em", datetime.now().strftime("%d/%m/%Y %H:%M")],
     ]
-    abas, vistos = [], set()
-    for k in chaves:
-        if k not in st.session_state:
-            continue
-        v = st.session_state[k]
-        if not _sa_tem_conteudo(v):
-            continue
-        assin = _sa_assinatura(v)
-        if isinstance(v, str) and assin in vistos:
-            continue
-        vistos.add(assin)
+    for k, v in simples:
+        resumo.append([_sa_titulo(k), _sa_celula(v)])
+    abas, abas_extra = [], []
+    for k, v in blocos:
         titulo = _sa_titulo(k)
         try:
             if isinstance(v, (list, tuple, set)):
                 itens = list(v)
-                if itens and all(isinstance(i, dict) for i in itens):
-                    colunas = []
-                    for i in itens:
-                        for kk in i.keys():
-                            if kk not in colunas:
-                                colunas.append(kk)
-                    linhas = [[_sa_titulo(str(c)) for c in colunas]]
-                    linhas += [[_sa_celula(i.get(c, "")) for c in colunas] for i in itens]
-                else:
-                    linhas = [[titulo]] + [[_sa_celula(i)] for i in itens]
-                abas.append((titulo, linhas))
+                linhas = _sa_excel_lista(titulo, itens)
             elif isinstance(v, dict):
-                linhas = [["Campo", "Valor"]] + [[_sa_titulo(str(kk)), _sa_celula(vv)] for kk, vv in v.items()]
-                abas.append((titulo, linhas))
-            elif isinstance(v, str) and len(v) > 200:
-                abas.append((titulo, [[titulo]] + [[l] for l in v.splitlines()]))
+                linhas = [["Campo", "Valor"]]
+                for kk, vv in v.items():
+                    if _sa_campo_sensivel(kk):
+                        continue
+                    if isinstance(vv, (list, tuple)) and vv and all(isinstance(i, dict) for i in vv):
+                        # lista de registros dentro do dicionário -> aba própria
+                        sub = _sa_excel_lista(f"{titulo} › {_sa_titulo(kk)}", list(vv))
+                        abas_extra.append((f"{titulo} - {_sa_titulo(kk)}", sub))
+                        linhas.append([_sa_titulo(kk), f"{len(vv)} {'item' if len(vv) == 1 else 'itens'} (ver aba própria)"])
+                        continue
+                    if isinstance(vv, dict) and vv:
+                        for k2, v2 in vv.items():
+                            if not _sa_campo_sensivel(k2):
+                                linhas.append([f"{_sa_titulo(kk)} › {_sa_titulo(k2)}", _sa_celula(v2)])
+                    else:
+                        linhas.append([_sa_titulo(kk), _sa_celula(vv)])
             else:
-                resumo.append([titulo, _sa_celula(v)])
+                linhas = [[titulo]] + [[l] for l in _sa_limpar_texto(v).splitlines() if l.strip()]
+            abas.append((titulo, linhas))
+            abas.extend(abas_extra)
+            abas_extra.clear()
         except Exception:
             resumo.append([titulo, str(v)])
-
-    if len(resumo) == 4 and not abas:
-        return None
     usados = set()
     todas = [(_sa_nome_aba("Resumo", usados), resumo)]
     for titulo, linhas in abas:
@@ -23238,6 +23445,27 @@ _SA_RODAPE_CSS = """<style>
     color:#FFFFFF !important; -webkit-text-fill-color:#FFFFFF !important;
 }
 </style>"""
+
+
+def _sa_resetar_agente(codigo_key: str):
+    """Apaga da sessão tudo o que o agente criou: dados, flags e campos digitados."""
+    tocadas = set(st.session_state.get(f"_sa_tocadas_{codigo_key}", set()))
+    tocadas |= set(st.session_state.get(f"_sa_dados_{codigo_key}", []))
+    for k in tocadas:
+        if not isinstance(k, str) or k.startswith("sa_") or k.startswith("_sa_"):
+            continue
+        if k in _SA_CHAVES_IGNORADAS:
+            continue
+        try:
+            if k in st.session_state:
+                del st.session_state[k]
+        except Exception:
+            pass
+    st.session_state[f"_sa_dados_{codigo_key}"] = []
+    st.session_state[f"_sa_tocadas_{codigo_key}"] = set()
+    st.session_state.pop(f"_sa_base_{codigo_key}", None)
+    st.session_state.pop(f"_sa_iniciado_{codigo_key}", None)
+    st.session_state[f"_sa_reset_ok_{codigo_key}"] = True
 
 
 def _sa_rodape_download(agente: dict):
@@ -23301,10 +23529,7 @@ def _sa_rodape_conteudo(agente: dict):
         with c_sim:
             if st.button("✅ Sim, apagar tudo", key=f"sa_rodape_reset_sim_{codigo_key}",
                          use_container_width=True):
-                for k in list(chaves):
-                    if k in st.session_state:
-                        del st.session_state[k]
-                st.session_state[f"_sa_dados_{codigo_key}"] = []
+                _sa_resetar_agente(codigo_key)
                 del st.session_state[conf_key]
                 st.rerun()
         with c_nao:
@@ -23325,6 +23550,15 @@ def _executar_agente(agente: dict):
         return
 
     codigo = _CODIGOS_AGENTES[codigo_key]
+
+    # Depois de um reset, mostra uma tela intermediária SEM os campos do agente:
+    # isso faz o navegador descartar o que estava digitado nos campos antigos.
+    if st.session_state.get(f"_sa_reset_ok_{codigo_key}"):
+        st.success(f"✅ Pronto! Tudo o que você tinha feito no {agente['nome']} foi apagado.")
+        if st.button("▶ Continuar", key=f"sa_reset_continuar_{codigo_key}", type="primary"):
+            del st.session_state[f"_sa_reset_ok_{codigo_key}"]
+            st.rerun()
+        return
 
     # Propaga credenciais do hub
     st.session_state["usuario"] = st.session_state.sa_usuario
@@ -23388,12 +23622,23 @@ def _executar_agente(agente: dict):
     _reg_key   = f"_sa_dados_{codigo_key}"
     _registro  = st.session_state.setdefault(_reg_key, [])
     _widgets   = st.session_state.setdefault("_sa_widgets", set())
+    _tocadas   = st.session_state.setdefault(f"_sa_tocadas_{codigo_key}", set())
     _antes     = {k: _sa_assinatura(v) for k, v in st.session_state.items()}
-    _originais = _sa_instalar_rastreio(_widgets)
+    _wk_run    = set()
+    _originais = _sa_instalar_rastreio(_wk_run)
     try:
         exec(compile(codigo, f"<{codigo_key}>", "exec"), _ns)
     finally:
         _sa_remover_rastreio(_originais)
+        _widgets.update(_wk_run)
+        try:
+            # tudo o que este agente criou/alterou (dados, flags e campos) — usado pelo Resetar
+            _tocadas.update(_wk_run)
+            for _k, _v in list(st.session_state.items()):
+                if _k not in _antes or _antes[_k] != _sa_assinatura(_v):
+                    _tocadas.add(_k)
+        except Exception:
+            pass
         try:
             for _k, _v in list(st.session_state.items()):
                 if _k in _registro or not _sa_chave_valida(_k, _v, _widgets):
@@ -23401,6 +23646,13 @@ def _executar_agente(agente: dict):
                 if _k not in _antes or _antes[_k] != _sa_assinatura(_v):
                     _registro.append(_k)
             _registro[:] = [k for k in _registro if k not in _widgets]
+            # Primeira execução do agente: guarda os valores padrão (não são dados do usuário)
+            _flag_ini = f"_sa_iniciado_{codigo_key}"
+            if not st.session_state.get(_flag_ini):
+                st.session_state[f"_sa_base_{codigo_key}"] = {
+                    k: _sa_assinatura(st.session_state[k]) for k in _registro if k in st.session_state
+                }
+                st.session_state[_flag_ini] = True
         except Exception:
             pass
 
