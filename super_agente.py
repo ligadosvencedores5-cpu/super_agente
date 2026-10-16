@@ -7492,9 +7492,6 @@ elif st.session_state.etapa == "App":
 
 
 
-    # TABS
-    _tab_Home, _tab_Investigacao, _tab_Hipoteses, _tab_Evidencias, _tab_Timeline, _tab_Contradicoes, _tab_Perfil, _tab_Conversas, _tab_Imagens, _tab_Domestica, _tab_Digital, _tab_Fraudes, _tab_Padroes, _tab_Probabilidades, _tab_Perguntas, _tab_Critico, _tab_Metodo, _tab_Forense, _tab_Casos, _tab_Simulador, _tab_Diario, _tab_Painel, _tab_Academia, _tab_Desafio, _tab_Sherlock24, _tab_CasosImpossiveis, _tab_Biblioteca = st.tabs(['🏠 Painel Principal', '🔎 Investigação Geral', '🧩 Construção de Hipó', '📋 Organizador de Evi', '📄 Timeline', '📄 Contradicoes', '📄 Perfil', '📄 Conversas', '📄 Imagens', '📄 Domestica', '📄 Digital', '📄 Fraudes', '📄 Padroes', '📄 Probabilidades', '📄 Perguntas', '📄 Critico', '📄 Metodo', '📄 Forense', '📄 Casos', '📄 Simulador', '📄 Diario', '📄 Painel', '📄 Academia', '📄 Desafio', '📄 Sherlock24', '📄 CasosImpossiveis', '📄 Biblioteca'])
-
     # TABS — navegação nativa (16 + Ferramentas)
     (_tab_Home, _tab_Investigacao, _tab_Hipoteses, _tab_Evidencias, _tab_Timeline, _tab_Simulador, _tab_Diario, _tab_Painel, _tab_Academia, _tab_Desafio, _tab_Sherlock24, _tab_CasosImpossiveis, _tab_Biblioteca, _tab_Forense, _tab_Casos, _tab_Ferramentas) = st.tabs(['🏠 Home', '🔍 Investigação', '💡 Hipóteses', '🔬 Evidências', '⏱️ Timeline', '🎯 Simulador', '📖 Diário', '📈 Painel', '🎓 Academia', '🏆 Desafio', '🤖 Sherlock 24h', '💎 Casos Impossíveis', '📚 Biblioteca', '🧪 Lab Forense', '📋 Casos Históricos', '🛠️ Ferramentas'])
 
