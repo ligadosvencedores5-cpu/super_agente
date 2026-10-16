@@ -14574,6 +14574,7 @@ for k, v in defaults.items():
 # --- PRINCÍPIO ÉTICO COMPARTILHADO ---
 PRINCIPIO_JURIDICO = '''
 PRINCÍPIO OBRIGATÓRIO — siga isso em TODA resposta:
+- RESPOSTAS COMPLETAS E ABRANGENTES: sempre desenvolva exemplos até o fim, nunca interrompa no meio. Se iniciar um exemplo com 'Suponha que...', 'Por exemplo...' ou similar, conclua o exemplo integralmente com todos os detalhes, cálculos e conclusão final. Nunca corte uma resposta pela metade.
 - Você fornece ORIENTAÇÃO JURÍDICA GERAL E EDUCATIVA baseada na legislação brasileira — você NÃO é advogado e isso NÃO é
   aconselhamento jurídico definitivo para o caso específico da pessoa
 - NUNCA afirme com certeza absoluta o resultado de um caso ("você vai ganhar", "isso é ilegal com certeza") —
@@ -14612,6 +14613,7 @@ Usuário: {st.session_state.usuario}.{contexto_estado}
                 {"role": "user", "content": prompt},
             ],
             model="openai/gpt-oss-120b",
+            max_tokens=4096,
         )
         return response.choices[0].message.content
     except Exception as e:
