@@ -15160,7 +15160,7 @@ elif st.session_state.etapa == "App":
         if not st.session_state.consultas_salvas:
             st.info("Biblioteca vazia. Gere consultas nos módulos e salve as importantes aqui!")
         else:
-            modulos_bib = list(set(c['modulo'] for c in st.session_state.consultas_salvas))
+            modulos_bib = list(set(c.get('modulo','') for c in st.session_state.consultas_salvas))
             filtro = st.selectbox("Filtrar por módulo:", ["Todos"] + modulos_bib, key="consulto11")
 
             consultas_f = [
@@ -15173,7 +15173,7 @@ elif st.session_state.etapa == "App":
             for i, item in enumerate(reversed(consultas_f)):
                 idx_real = len(st.session_state.consultas_salvas) - 1 - i
                 emoji_mod = MODULOS.get(item.get('modulo', ''), {}).get('emoji', '📋')
-                with st.expander(f"{emoji_mod} [{item.get('modulo', '')}] {item.get('pergunta', '')[:60]} — {item['data']}"):
+                with st.expander(f"{emoji_mod} [{item.get('modulo', '')}] {item.get('pergunta', '')[:60]} — {item.get('data','')}"):
                     st.markdown(f"<div class='card'>{item['conteudo']}</div>", unsafe_allow_html=True)
                     col_dl, col_del = st.columns([3, 1])
                     with col_dl:
@@ -15187,7 +15187,7 @@ elif st.session_state.etapa == "App":
         if st.session_state.historico_consultas:
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
             historico_txt = "\\\\n\\\\n".join(
-                f"[{c['data']}] {c['modulo']} — {c['pergunta']}\\\\n{c['conteudo']}\\\\n{'─'*40}"
+                f"[{c.get('data','')}] {c.get('modulo','')} — {c.get('pergunta','')}\\\\n{c.get('conteudo','')}\\\\n{'─'*40}"
                 for c in st.session_state.historico_consultas
             )
             st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt,
