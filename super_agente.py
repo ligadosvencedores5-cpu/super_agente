@@ -9477,18 +9477,30 @@ with tab_metas:
     with col_m1:
         st.markdown('<div class="card-purple">', unsafe_allow_html=True)
         st.markdown("<b style='color:#1A1A2E;'>🎯 Criar Nova Meta</b>", unsafe_allow_html=True)
-        with st.form("meta_form", clear_on_submit=True):
-            m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
-            m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
-            c1, c2  = st.columns(2)
-            with c1: m_val   = st.number_input("Valor total (R$)", min_value=1.0, step=100.0, key="oraculof24")
-            with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
-            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
-            if st.form_submit_button("🚀 CRIAR META", key="oraculoffsb505"):
-                if m_nome and m_val:
-                    mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
-                    st.session_state.metas.append({"nome":m_nome,"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
-                    st.rerun()
+        # Sem st.form: Enter não envia nem apaga os campos.
+        if st.session_state.pop("_meta_reset", False):
+            st.session_state["oraculof22"] = ""
+            st.session_state["oraculof24"] = 0.0
+            st.session_state["oraculof25"] = 12
+            st.session_state["oraculof26"] = 0.0
+        m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
+        m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
+        c1, c2  = st.columns(2)
+        with c1: m_val   = st.number_input("Valor total (R$)", min_value=0.0, step=100.0, key="oraculof24")
+        with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
+        m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
+        if st.button("🚀 CRIAR META", key="oraculoffsb505"):
+            if not m_nome.strip():
+                st.warning("Informe o nome da meta.")
+            elif m_val <= 0:
+                st.warning("Informe o valor total da meta.")
+            elif m_atual > m_val:
+                st.warning("O valor já guardado não pode ser maior que o valor total.")
+            else:
+                mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
+                st.session_state.metas.append({"id": datetime.now().strftime("%Y%m%d%H%M%S%f"), "nome":m_nome.strip(),"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
+                st.session_state["_meta_reset"] = True
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_m2:
@@ -9509,7 +9521,7 @@ with tab_metas:
                 {barra(p_m, "#7C6FFF")}
                 <span style="font-size:11px;color:#5B50E8;">{p_m:.1f}% concluído</span>
                 </div>''', unsafe_allow_html=True)
-                _mk = f"meta_atual_{i}"
+                _mk = f"meta_atual_{m.get('id', i)}"
                 if _mk not in st.session_state:
                     st.session_state[_mk] = float(m.get("atual", 0))
                 col_mi, col_md = st.columns([4, 1])
