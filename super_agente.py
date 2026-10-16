@@ -2002,15 +2002,15 @@ st.markdown(
     "</div>", unsafe_allow_html=True
 )
 """,
-    "chef_calorico": """# [hub] import streamlit as st
+    "chef_calorico": """
+# [hub] import streamlit as st
 # [hub] from groq import Groq
 # [hub] from datetime import datetime, date, timedelta
-# [hub] import json
 import random
 
 # set_page_config removido pelo super_agente
 
-st.markdown(\"\"\"
+st.markdown('''
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
@@ -2019,10 +2019,10 @@ header {visibility: hidden;}
 [data-testid="stDecoration"] {visibility: hidden;}
 [data-testid="stStatusWidget"] {visibility: hidden;}
 </style>
-\"\"\", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
 
-st.markdown(\"\"\"
+st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -2101,7 +2101,7 @@ st.markdown(\"\"\"
     
 
     </style>
-\"\"\", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
 # ─── CACHE ───
 @st.cache_resource
@@ -2158,15 +2158,7 @@ CHAVES_SALVAR = [
     'checkins_nutri',
 ]
 
-def gerar_json():
-    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
-    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
-    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
 
-def carregar_json(dados):
-    for k in CHAVES_SALVAR:
-        if k in dados:
-            st.session_state[k] = dados[k]
 
 def salvar_cache(u):
     _cache["perfis"][u] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
@@ -2256,54 +2248,14 @@ def nutri_ia(prompt, system_extra=""):
     except Exception as e:
         return f"⚠️ Erro na API: {e}"
 
-def barra_salvar():
-    salvar_cache(st.session_state.usuario)
-    nome_u = st.session_state.usuario.lower().replace(' ','_') or 'sessao'
-    xp = st.session_state.get('xp_total', 0)
-    streak = st.session_state.get('streak_atual', 0)
-    col_i, col_b = st.columns([4, 2])
-    with col_i:
-        st.markdown(
-            f"<div style='background:#FFF7ED;border:1px solid #FDBA74;border-radius:10px;"
-            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
-            f"💾 <strong>Salve seus dados antes de sair.</strong><br>"
-            f"<span style='color:#EA580C;font-size:0.88em;'>"
-            f"🔥 {streak} dias seguidos · ⭐ {xp} XP · 🍽️ {st.session_state.refeicoes_geradas} refeições geradas"
-            f"</span></div>", unsafe_allow_html=True)
-    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-    st.markdown(\"\"\"<style>
-    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
-    .dica-mobile{display:none;}
-    .dica-desktop{display:block;}
-    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
-    </style>
-    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
-    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
-    \"\"\", unsafe_allow_html=True)
 
 # ============================================================
 # LOGIN
 # ============================================================
-def carregar_json_sessao(dados):
-    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
-    _pref = (
-        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
-        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
-        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
-        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
-        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
-        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
-    )
-    import re as _re
-    for k, v in dados.items():
-        if k in _bloq: continue
-        if any(k.startswith(p) for p in _pref): continue
-        if _re.match(r'.+_\\d+$', k): continue
-        st.session_state[k] = v
 
 if st.session_state.etapa == "Login":
     st.markdown("# 🍽️ NutriMind AI")
-    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.markdown("<div class=\'card\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
@@ -2324,14 +2276,8 @@ elif st.session_state.etapa == "App":
 
 
     # TABS — navegação nativa com scroll horizontal
-    _tab_Home, _tab_Perfil, _tab_DiaCompleto, _tab_Planejamento, _tab_Chef, _tab_Compras, _tab_Culinarias, _tab_Favoritos, _tab_Evolucao, _tab_Nutricionista, _tab_Fitness, _tab_Desafios, _tab_Conquistas, _tab_FotoPrato, _tab_Restaurante, _tab_IAPreventiva, _tab_Historico, _tab_Salvos, _tab_Distribuicao, _tab_NutricaoInt = st.tabs(['🏠 Painel', '📋 Perfil', '🍽️ Plano do Dia', '📅 Planejamento', '👨\\u200d🍳 Chef IA', '🛒 Compras', '🌍 Culinárias', '❤️ Favoritos', '📊 Evolução', '💬 Nutricionista', '🏃 Fitness', '🏆 Desafios', '🎖️ Conquistas', '📷 Foto Prato', '🏪 Restaurante', '🧠 IA Preventiva', '📖 Histórico', '❤️ Salvos', '🧮 Distribuição', '🥗 Nutrição'])
+    _tab_Home, _tab_Perfil, _tab_DiaCompleto, _tab_Planejamento, _tab_Chef, _tab_Compras, _tab_Culinarias, _tab_Favoritos, _tab_Evolucao, _tab_Nutricionista, _tab_Fitness, _tab_Desafios, _tab_Conquistas, _tab_FotoPrato, _tab_Restaurante, _tab_IAPreventiva, _tab_Historico, _tab_Salvos, _tab_Distribuicao, _tab_NutricaoInt = st.tabs(['🏠 Painel', '📋 Perfil', '🍽️ Plano do Dia', '📅 Planejamento', '👨\u200d🍳 Chef IA', '🛒 Compras', '🌍 Culinárias', '❤️ Favoritos', '📊 Evolução', '💬 Nutricionista', '🏃 Fitness', '🏆 Desafios', '🎖️ Conquistas', '📷 Foto Prato', '🏪 Restaurante', '🧠 IA Preventiva', '📖 Histórico', '❤️ Salvos', '🧮 Distribuição', '🥗 Nutrição'])
 
-    # ── BARRA SALVAR — aparece em todas as abas ──
-    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
-        _bsc1, _bsc2 = st.columns(2)
-        with _bsc1:
-            import json as _jsv
-            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
     with _tab_Home:
             col_u, col_r = st.columns([3,1])
             with col_u:
@@ -2345,11 +2291,11 @@ elif st.session_state.etapa == "App":
                     st.rerun()
 
             if not st.session_state.objetivo or not st.session_state.peso_atual:
-                st.markdown(\"\"\"<div style="background:#FFF7ED;border:2px solid #F97316;border-radius:12px;
+                st.markdown('''<div style="background:#FFF7ED;border:2px solid #F97316;border-radius:12px;
                 padding:16px 20px;margin-bottom:16px;">
                 <span style='font-size:1em;font-weight:600;color:#C2410C;'>
                 ⚡ Configure seu 📋 Perfil Nutricional para ativar todos os recursos personalizados.
-                </span></div>\"\"\", unsafe_allow_html=True)
+                </span></div>''', unsafe_allow_html=True)
 
             # PAINEL PRINCIPAL
             saude = calcular_saude_nutri()
@@ -2358,7 +2304,7 @@ elif st.session_state.etapa == "App":
             xp = st.session_state.get('xp_total', 0)
             dias = st.session_state.get('dias_plano', 0)
 
-            st.markdown(f\"\"\"
+            st.markdown(f'''
             <div class='painel-nutri'>
                 <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;margin-bottom:12px;'>🍽️ NUTRIMIND AI — PAINEL DE SAÚDE</div>
                 <div style='display:grid;grid-template-columns:repeat(5,1fr);gap:14px;'>
@@ -2384,7 +2330,7 @@ elif st.session_state.etapa == "App":
                     </div>
                 </div>
             </div>
-            \"\"\", unsafe_allow_html=True)
+            ''', unsafe_allow_html=True)
 
             # DASHBOARD
             st.markdown("### 📊 Dashboard")
@@ -2401,7 +2347,7 @@ elif st.session_state.etapa == "App":
             dica = random.choice(DICAS_IA)
             frase = random.choice(FRASES_DIA)
             st.markdown(f"<div class='ia-preventiva'>🤖 <strong>IA Preventiva:</strong> {dica}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='card'><em>💬 \\"{frase}\\"</em></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='card'><em>💬 \"{frase}\"</em></div>", unsafe_allow_html=True)
 
             # COACH DIÁRIO
             st.markdown("### 🎯 Coach do Dia")
@@ -2410,13 +2356,13 @@ elif st.session_state.etapa == "App":
                 if st.button("💡 DICA + MISSÃO DO DIA", key="chefcalo4"):
                     with st.spinner("Preparando seu coach..."):
                         prompt = (
-                            f"Crie o coaching nutricional diário para {st.session_state.usuario}.\\n"
-                            f"Objetivo: {st.session_state.objetivo}. Meta: {st.session_state.calorias_padrao} kcal.\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"💡 DICA NUTRICIONAL DO DIA:\\n[dica específica e baseada em ciência]\\n\\n"
-                            f"🥗 RECEITA EXCLUSIVA DE HOJE:\\n[1 receita rápida com macro e calorias]\\n\\n"
-                            f"🎯 MISSÃO DO DIA:\\n[1 hábito alimentar para praticar hoje]\\n\\n"
-                            f"🔥 MOTIVAÇÃO PERSONALIZADA:\\n[mensagem baseada no objetivo da pessoa]"
+                            f"Crie o coaching nutricional diário para {st.session_state.usuario}.\n"
+                            f"Objetivo: {st.session_state.objetivo}. Meta: {st.session_state.calorias_padrao} kcal.\n\n"
+                            f"FORMATO:\n\n"
+                            f"💡 DICA NUTRICIONAL DO DIA:\n[dica específica e baseada em ciência]\n\n"
+                            f"🥗 RECEITA EXCLUSIVA DE HOJE:\n[1 receita rápida com macro e calorias]\n\n"
+                            f"🎯 MISSÃO DO DIA:\n[1 hábito alimentar para praticar hoje]\n\n"
+                            f"🔥 MOTIVAÇÃO PERSONALIZADA:\n[mensagem baseada no objetivo da pessoa]"
                         )
                         res = nutri_ia(prompt)
                         salvar_receita("Coach Diário", "Coaching do dia", res)
@@ -2535,20 +2481,20 @@ elif st.session_state.etapa == "App":
             if st.button("🍽️ GERAR PLANO DO DIA COMPLETO", key="chefcalo15"):
                 with st.spinner("Montando seu dia alimentar perfeito..."):
                     prompt = (
-                        f"Crie um plano alimentar completo e detalhado para hoje.\\n"
+                        f"Crie um plano alimentar completo e detalhado para hoje.\n"
                         f"Refeições: {', '.join(refeicoes_dia)}. Contexto: {contexto_dia or 'dia normal'}. "
-                        f"Culinária: {culinaria_dia}.\\n\\n"
-                        f"Para CADA refeição use este formato:\\n\\n"
-                        f"[EMOJI] [NOME DA REFEIÇÃO] · [HORÁRIO SUGERIDO]\\n"
-                        f"[Prato principal com ingredientes]\\n"
-                        f"🔥 [X] kcal · 💪 [X]g proteína · 🍞 [X]g carbo · 🥑 [X]g gordura\\n"
-                        f"👨‍🍳 Preparo rápido: [como fazer em poucos passos]\\n\\n"
-                        f"[repita para todas as refeições]\\n\\n"
-                        f"📊 TOTAL DO DIA:\\n"
-                        f"🔥 Total: [X] kcal (meta: {st.session_state.calorias_padrao} kcal)\\n"
-                        f"💪 Proteína: [X]g (meta: {st.session_state.proteina_meta}g)\\n"
-                        f"🍞 Carboidrato: [X]g · 🥑 Gordura: [X]g\\n\\n"
-                        f"⚖️ ANÁLISE: [como esse dia se compara à meta — está dentro? acima? como ajustar se necessário]\\n\\n"
+                        f"Culinária: {culinaria_dia}.\n\n"
+                        f"Para CADA refeição use este formato:\n\n"
+                        f"[EMOJI] [NOME DA REFEIÇÃO] · [HORÁRIO SUGERIDO]\n"
+                        f"[Prato principal com ingredientes]\n"
+                        f"🔥 [X] kcal · 💪 [X]g proteína · 🍞 [X]g carbo · 🥑 [X]g gordura\n"
+                        f"👨‍🍳 Preparo rápido: [como fazer em poucos passos]\n\n"
+                        f"[repita para todas as refeições]\n\n"
+                        f"📊 TOTAL DO DIA:\n"
+                        f"🔥 Total: [X] kcal (meta: {st.session_state.calorias_padrao} kcal)\n"
+                        f"💪 Proteína: [X]g (meta: {st.session_state.proteina_meta}g)\n"
+                        f"🍞 Carboidrato: [X]g · 🥑 Gordura: [X]g\n\n"
+                        f"⚖️ ANÁLISE: [como esse dia se compara à meta — está dentro? acima? como ajustar se necessário]\n\n"
                         f"💡 DICA DO DIA: [1 orientação específica para o contexto de hoje]"
                     )
                     res = nutri_ia(prompt)
@@ -2588,21 +2534,21 @@ elif st.session_state.etapa == "App":
                 with st.spinner(f"Criando {dias_plan} de alimentação variada e personalizada..."):
                     dias_num = int(dias_plan.split()[0])
                     prompt = (
-                        f"Crie um planejamento alimentar completo de {dias_plan} com foco em {foco_plan}.\\n"
-                        f"Varie as receitas para evitar repetição. Cada dia deve ter cardápio diferente.\\n\\n"
-                        f"Para cada dia use:\\n\\n"
-                        f"📅 DIA [N] — [TEMA DO DIA]\\n"
-                        f"☕ Café: [prato] ([X] kcal)\\n"
-                        f"🍽️ Almoço: [prato] ([X] kcal)\\n"
-                        f"🍎 Lanche: [prato] ([X] kcal)\\n"
-                        f"🌙 Jantar: [prato] ([X] kcal)\\n"
-                        f"🔥 Total: [X] kcal · 💪 [X]g prot\\n\\n"
-                        f"[repita para todos os {dias_num} dias]\\n\\n"
+                        f"Crie um planejamento alimentar completo de {dias_plan} com foco em {foco_plan}.\n"
+                        f"Varie as receitas para evitar repetição. Cada dia deve ter cardápio diferente.\n\n"
+                        f"Para cada dia use:\n\n"
+                        f"📅 DIA [N] — [TEMA DO DIA]\n"
+                        f"☕ Café: [prato] ([X] kcal)\n"
+                        f"🍽️ Almoço: [prato] ([X] kcal)\n"
+                        f"🍎 Lanche: [prato] ([X] kcal)\n"
+                        f"🌙 Jantar: [prato] ([X] kcal)\n"
+                        f"🔥 Total: [X] kcal · 💪 [X]g prot\n\n"
+                        f"[repita para todos os {dias_num} dias]\n\n"
                     )
                     if incluir_lista:
-                        prompt += f"🛒 LISTA DE COMPRAS CONSOLIDADA:\\n[itens organizados por setor]\\n\\n"
+                        prompt += f"🛒 LISTA DE COMPRAS CONSOLIDADA:\n[itens organizados por setor]\n\n"
                     if incluir_dicas:
-                        prompt += f"💡 DICAS NUTRICIONAIS DA SEMANA:\\n[3-5 dicas práticas]"
+                        prompt += f"💡 DICAS NUTRICIONAIS DA SEMANA:\n[3-5 dicas práticas]"
 
                     res = nutri_ia(prompt)
                     salvar_receita("Planejamento", f"{dias_plan} — {foco_plan}", res)
@@ -2644,19 +2590,19 @@ elif st.session_state.etapa == "App":
                 if prato_chef.strip():
                     with st.spinner(f"O Chef IA está reinventando {prato_chef}..."):
                         prompt = (
-                            f"Crie uma versão saudável de {prato_chef} com adaptação: {tipo_chef}. Porções: {porcoes_chef}.\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"👨‍🍳 {prato_chef.upper()} — VERSÃO {tipo_chef.upper()}\\n\\n"
-                            f"📊 COMPARAÇÃO NUTRICIONAL:\\n"
-                            f"| | Versão Original | Versão Saudável |\\n"
-                            f"|---|---|---|\\n"
-                            f"| Calorias | [X] kcal | [X] kcal |\\n"
-                            f"| Proteína | [X]g | [X]g |\\n"
-                            f"| Gordura | [X]g | [X]g |\\n\\n"
-                            f"🥘 INGREDIENTES SUBSTITUÍDOS:\\n[o que mudou e por quê — explique os benefícios]\\n\\n"
-                            f"📋 INGREDIENTES (para {porcoes_chef} porções):\\n[lista completa]\\n\\n"
-                            f"👨‍🍳 MODO DE PREPARO:\\n[passo a passo]\\n\\n"
-                            f"⏱️ Tempo: [X] min · 🔥 [X] kcal/porção · 💪 [X]g proteína/porção\\n\\n"
+                            f"Crie uma versão saudável de {prato_chef} com adaptação: {tipo_chef}. Porções: {porcoes_chef}.\n\n"
+                            f"FORMATO:\n\n"
+                            f"👨‍🍳 {prato_chef.upper()} — VERSÃO {tipo_chef.upper()}\n\n"
+                            f"📊 COMPARAÇÃO NUTRICIONAL:\n"
+                            f"| | Versão Original | Versão Saudável |\n"
+                            f"|---|---|---|\n"
+                            f"| Calorias | [X] kcal | [X] kcal |\n"
+                            f"| Proteína | [X]g | [X]g |\n"
+                            f"| Gordura | [X]g | [X]g |\n\n"
+                            f"🥘 INGREDIENTES SUBSTITUÍDOS:\n[o que mudou e por quê — explique os benefícios]\n\n"
+                            f"📋 INGREDIENTES (para {porcoes_chef} porções):\n[lista completa]\n\n"
+                            f"👨‍🍳 MODO DE PREPARO:\n[passo a passo]\n\n"
+                            f"⏱️ Tempo: [X] min · 🔥 [X] kcal/porção · 💪 [X]g proteína/porção\n\n"
                             f"💡 DICA DO CHEF: [1 truque para manter o sabor original]"
                         )
                         res = nutri_ia(prompt)
@@ -2701,18 +2647,18 @@ elif st.session_state.etapa == "App":
                 with st.spinner("Montando sua lista inteligente..."):
                     orcamento_txt = f"Orçamento: R${orcamento_compras}." if orcamento_compras > 0 else ""
                     prompt = (
-                        f"Crie uma lista de compras inteligente e organizada.\\n"
-                        f"Pessoas: {pessoas_compras}. Duração: {dias_compras}. Foco: {foco_compras}. {orcamento_txt}\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"🛒 LISTA DE COMPRAS — {dias_compras.upper()} para {pessoas_compras.upper()}\\n\\n"
-                        f"🥩 CARNES E PROTEÍNAS:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"🥬 HORTIFRUTI:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"🥛 LATICÍNIOS E OVOS:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"🌾 GRÃOS E CEREAIS:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"🧂 TEMPEROS E CONDIMENTOS:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"🧃 BEBIDAS:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"🍫 OUTROS:\\n[item — quantidade — preço estimado]\\n\\n"
-                        f"💰 TOTAL ESTIMADO: R$[X]\\n\\n"
+                        f"Crie uma lista de compras inteligente e organizada.\n"
+                        f"Pessoas: {pessoas_compras}. Duração: {dias_compras}. Foco: {foco_compras}. {orcamento_txt}\n\n"
+                        f"FORMATO:\n\n"
+                        f"🛒 LISTA DE COMPRAS — {dias_compras.upper()} para {pessoas_compras.upper()}\n\n"
+                        f"🥩 CARNES E PROTEÍNAS:\n[item — quantidade — preço estimado]\n\n"
+                        f"🥬 HORTIFRUTI:\n[item — quantidade — preço estimado]\n\n"
+                        f"🥛 LATICÍNIOS E OVOS:\n[item — quantidade — preço estimado]\n\n"
+                        f"🌾 GRÃOS E CEREAIS:\n[item — quantidade — preço estimado]\n\n"
+                        f"🧂 TEMPEROS E CONDIMENTOS:\n[item — quantidade — preço estimado]\n\n"
+                        f"🧃 BEBIDAS:\n[item — quantidade — preço estimado]\n\n"
+                        f"🍫 OUTROS:\n[item — quantidade — preço estimado]\n\n"
+                        f"💰 TOTAL ESTIMADO: R$[X]\n\n"
                         f"💡 DICA DE ECONOMIA: [como economizar sem abrir mão da qualidade nutricional]"
                     )
                     res = nutri_ia(prompt)
@@ -2744,16 +2690,16 @@ elif st.session_state.etapa == "App":
             if st.button("🌍 DESCOBRIR RECEITA", key="chefcalo32"):
                 with st.spinner(f"Buscando inspiração na culinária {culinaria_sel}..."):
                     prompt = (
-                        f"Crie uma receita autêntica da culinária {culinaria_sel}, adaptada para ser saudável.\\n"
-                        f"Tipo: {tipo_refeicao_cul}. Dificuldade: {dificuldade_cul}.\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"🌍 [NOME DO PRATO] — {culinaria_sel.upper()}\\n\\n"
-                        f"🗺️ ORIGEM E HISTÓRIA:\\n[2-3 linhas sobre o prato e sua origem cultural]\\n\\n"
-                        f"📊 INFORMAÇÕES NUTRICIONAIS:\\n🔥 [X] kcal · 💪 [X]g prot · 🍞 [X]g carbo · 🥑 [X]g gord\\n\\n"
-                        f"📋 INGREDIENTES:\\n[lista]\\n\\n"
-                        f"👨‍🍳 PREPARO:\\n[passo a passo]\\n\\n"
-                        f"⏱️ Tempo: [X] min · Porções: [X]\\n\\n"
-                        f"🥗 VERSÃO MAIS SAUDÁVEL:\\n[adaptações para reduzir calorias ou aumentar proteína]"
+                        f"Crie uma receita autêntica da culinária {culinaria_sel}, adaptada para ser saudável.\n"
+                        f"Tipo: {tipo_refeicao_cul}. Dificuldade: {dificuldade_cul}.\n\n"
+                        f"FORMATO:\n\n"
+                        f"🌍 [NOME DO PRATO] — {culinaria_sel.upper()}\n\n"
+                        f"🗺️ ORIGEM E HISTÓRIA:\n[2-3 linhas sobre o prato e sua origem cultural]\n\n"
+                        f"📊 INFORMAÇÕES NUTRICIONAIS:\n🔥 [X] kcal · 💪 [X]g prot · 🍞 [X]g carbo · 🥑 [X]g gord\n\n"
+                        f"📋 INGREDIENTES:\n[lista]\n\n"
+                        f"👨‍🍳 PREPARO:\n[passo a passo]\n\n"
+                        f"⏱️ Tempo: [X] min · Porções: [X]\n\n"
+                        f"🥗 VERSÃO MAIS SAUDÁVEL:\n[adaptações para reduzir calorias ou aumentar proteína]"
                     )
                     res = nutri_ia(prompt)
                     salvar_receita("Culinária", culinaria_sel, res)
@@ -2839,17 +2785,17 @@ elif st.session_state.etapa == "App":
                     hist = st.session_state.get('evolucao_peso', [])
                     agua_hist = st.session_state.get('historico_agua', [])
                     prompt = (
-                        f"Analise a evolução nutricional deste usuário.\\n"
+                        f"Analise a evolução nutricional deste usuário.\n"
                         f"Objetivo: {st.session_state.objetivo}. Peso atual: {st.session_state.peso_atual}kg. "
                         f"Altura: {st.session_state.altura}cm. IMC: {imc}. "
                         f"Histórico de peso: {hist[-5:] if hist else 'não registrado'}. "
-                        f"Saúde nutricional: {saude}/100. Streak: {st.session_state.streak_atual} dias.\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"📊 ANÁLISE DE EVOLUÇÃO\\n\\n"
-                        f"📈 O QUE ESTÁ FUNCIONANDO:\\n[pontos positivos]\\n\\n"
-                        f"⚠️ O QUE AJUSTAR:\\n[pontos a melhorar]\\n\\n"
-                        f"🎯 META PARA AS PRÓXIMAS 2 SEMANAS:\\n[objetivo específico e realista]\\n\\n"
-                        f"💡 RECOMENDAÇÃO DA IA:\\n[ajuste no plano alimentar baseado nos dados]"
+                        f"Saúde nutricional: {saude}/100. Streak: {st.session_state.streak_atual} dias.\n\n"
+                        f"FORMATO:\n\n"
+                        f"📊 ANÁLISE DE EVOLUÇÃO\n\n"
+                        f"📈 O QUE ESTÁ FUNCIONANDO:\n[pontos positivos]\n\n"
+                        f"⚠️ O QUE AJUSTAR:\n[pontos a melhorar]\n\n"
+                        f"🎯 META PARA AS PRÓXIMAS 2 SEMANAS:\n[objetivo específico e realista]\n\n"
+                        f"💡 RECOMENDAÇÃO DA IA:\n[ajuste no plano alimentar baseado nos dados]"
                     )
                     res = nutri_ia(prompt)
                     salvar_receita("Análise", "Evolução nutricional", res)
@@ -2866,12 +2812,12 @@ elif st.session_state.etapa == "App":
             st.header("💬 Nutricionista IA")
             st.markdown("Converse naturalmente. A IA reorganiza seu plano quando há imprevistos.")
 
-            st.markdown(\"\"\"
+            st.markdown('''
             <div class='ia-preventiva'>
             💡 <strong>Exemplos:</strong> "Vou viajar essa semana" · "Hoje comi pizza no almoço, como compenso?"
             · "Não gosto de peixe" · "Quero incluir mais fibras" · "Tenho um churrasco amanhã"
             </div>
-            \"\"\", unsafe_allow_html=True)
+            ''', unsafe_allow_html=True)
 
             if 'chat_nutri' not in st.session_state:
                 st.session_state.chat_nutri = []
@@ -2935,19 +2881,19 @@ elif st.session_state.etapa == "App":
             if st.button("🏃 CALCULAR E AJUSTAR CARDÁPIO", key="chefcalo41"):
                 with st.spinner("Calculando gasto calórico e ajustando cardápio..."):
                     prompt = (
-                        f"Calcule o gasto calórico e ajuste o cardápio do dia.\\n"
+                        f"Calcule o gasto calórico e ajuste o cardápio do dia.\n"
                         f"Atividade: {atividade_fit}. Duração: {duracao_fit} min. Intensidade: {intensidade_fit}. "
-                        f"Peso: {peso_fit}kg. Meta base: {st.session_state.calorias_padrao} kcal.\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"🏃 ANÁLISE FITNESS DO DIA\\n\\n"
-                        f"🔥 GASTO CALÓRICO ESTIMADO: [X] kcal\\n\\n"
-                        f"📊 META CALÓRICA AJUSTADA:\\n"
-                        f"Base: {st.session_state.calorias_padrao} kcal\\n"
-                        f"+ Exercício: [X] kcal\\n"
-                        f"= Total de hoje: [X] kcal\\n\\n"
-                        f"🍽️ AJUSTE NO CARDÁPIO:\\n[o que adicionar ou remover para compensar o gasto]\\n\\n"
-                        f"💪 REFEIÇÃO PÓS-TREINO IDEAL:\\n[receita específica com macros — foco em recuperação]\\n\\n"
-                        f"💧 HIDRATAÇÃO RECOMENDADA:\\n[quantos litros para hoje com esse exercício]"
+                        f"Peso: {peso_fit}kg. Meta base: {st.session_state.calorias_padrao} kcal.\n\n"
+                        f"FORMATO:\n\n"
+                        f"🏃 ANÁLISE FITNESS DO DIA\n\n"
+                        f"🔥 GASTO CALÓRICO ESTIMADO: [X] kcal\n\n"
+                        f"📊 META CALÓRICA AJUSTADA:\n"
+                        f"Base: {st.session_state.calorias_padrao} kcal\n"
+                        f"+ Exercício: [X] kcal\n"
+                        f"= Total de hoje: [X] kcal\n\n"
+                        f"🍽️ AJUSTE NO CARDÁPIO:\n[o que adicionar ou remover para compensar o gasto]\n\n"
+                        f"💪 REFEIÇÃO PÓS-TREINO IDEAL:\n[receita específica com macros — foco em recuperação]\n\n"
+                        f"💧 HIDRATAÇÃO RECOMENDADA:\n[quantos litros para hoje com esse exercício]"
                     )
                     res = nutri_ia(prompt)
                     salvar_receita("Fitness", f"{atividade_fit} — {duracao_fit}min", res)
@@ -2983,7 +2929,7 @@ elif st.session_state.etapa == "App":
                         if st.button("🚀 Iniciar", key=f"des_{chave}"):
                             with st.spinner("Preparando seu desafio..."):
                                 prompt = (
-                                    f"Crie um guia completo para o desafio: {nome} ({dias} dias).\\n\\n"
+                                    f"Crie um guia completo para o desafio: {nome} ({dias} dias).\n\n"
                                     f"Inclua: o que esperar dia a dia, dicas para não desistir, "
                                     f"o que comer no lugar do item eliminado, e os benefícios científicos."
                                 )
@@ -3065,21 +3011,21 @@ elif st.session_state.etapa == "App":
                 if descricao_prato.strip():
                     with st.spinner("Analisando os nutrientes..."):
                         prompt = (
-                            f"Analise os macronutrientes e calorias deste prato.\\n"
-                            f"Descrição: {descricao_prato}. Porção: {porcao_prato}.\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"📷 ANÁLISE NUTRICIONAL DO PRATO\\n\\n"
-                            f"📊 ESTIMATIVA NUTRICIONAL:\\n"
-                            f"🔥 Calorias: [X] kcal\\n"
-                            f"💪 Proteína: [X]g\\n"
-                            f"🍞 Carboidratos: [X]g\\n"
-                            f"🥑 Gorduras: [X]g\\n"
-                            f"🌾 Fibras: [X]g\\n\\n"
-                            f"⭐ NOTA NUTRICIONAL: [0-100]\\n[justificativa da nota]\\n\\n"
-                            f"✅ PONTOS POSITIVOS:\\n[o que está bom neste prato]\\n\\n"
-                            f"💡 COMO MELHORAR:\\n[1-2 sugestões simples para tornar mais nutritivo]\\n\\n"
-                            f"📋 COMO SE ENCAIXA NA SUA META:\\n"
-                            f"[Comparação com a meta de {st.session_state.calorias_padrao} kcal — sobrou ou gastou quanto?]\\n\\n"
+                            f"Analise os macronutrientes e calorias deste prato.\n"
+                            f"Descrição: {descricao_prato}. Porção: {porcao_prato}.\n\n"
+                            f"FORMATO:\n\n"
+                            f"📷 ANÁLISE NUTRICIONAL DO PRATO\n\n"
+                            f"📊 ESTIMATIVA NUTRICIONAL:\n"
+                            f"🔥 Calorias: [X] kcal\n"
+                            f"💪 Proteína: [X]g\n"
+                            f"🍞 Carboidratos: [X]g\n"
+                            f"🥑 Gorduras: [X]g\n"
+                            f"🌾 Fibras: [X]g\n\n"
+                            f"⭐ NOTA NUTRICIONAL: [0-100]\n[justificativa da nota]\n\n"
+                            f"✅ PONTOS POSITIVOS:\n[o que está bom neste prato]\n\n"
+                            f"💡 COMO MELHORAR:\n[1-2 sugestões simples para tornar mais nutritivo]\n\n"
+                            f"📋 COMO SE ENCAIXA NA SUA META:\n"
+                            f"[Comparação com a meta de {st.session_state.calorias_padrao} kcal — sobrou ou gastou quanto?]\n\n"
                             f"⚠️ Aviso: estas são estimativas — os valores reais podem variar conforme preparo e ingredientes exatos."
                         )
                         res = nutri_ia(prompt)
@@ -3112,18 +3058,18 @@ elif st.session_state.etapa == "App":
             if st.button("🏪 RECOMENDAR PRATOS", key="chefcalo48"):
                 if restaurante_nome.strip():
                     with st.spinner(f"Analisando o {restaurante_nome}..."):
-                        cardapio_txt = f"Cardápio disponível:\\n{cardapio_rest}" if cardapio_rest.strip() else "Cardápio não informado — baseie-se no tipo de restaurante."
+                        cardapio_txt = f"Cardápio disponível:\n{cardapio_rest}" if cardapio_rest.strip() else "Cardápio não informado — baseie-se no tipo de restaurante."
                         prompt = (
-                            f"Recomende os melhores pratos para comer em {restaurante_nome} ({situacao_rest}).\\n"
-                            f"{cardapio_txt}\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"🏪 {restaurante_nome.upper()} — GUIA DE PEDIDO\\n\\n"
-                            f"✅ MELHOR OPÇÃO (mais alinhada ao objetivo):\\n[prato, por quê, estimativa calórica]\\n\\n"
-                            f"🥈 SEGUNDA OPÇÃO:\\n[prato alternativo com justificativa]\\n\\n"
-                            f"❌ EVITAR:\\n[o que NÃO pedir e por quê]\\n\\n"
-                            f"💡 DICAS INTELIGENTES:\\n"
-                            f"• Como pedir modificações no prato\\n"
-                            f"• Acompanhamentos a pedir ou evitar\\n"
+                            f"Recomende os melhores pratos para comer em {restaurante_nome} ({situacao_rest}).\n"
+                            f"{cardapio_txt}\n\n"
+                            f"FORMATO:\n\n"
+                            f"🏪 {restaurante_nome.upper()} — GUIA DE PEDIDO\n\n"
+                            f"✅ MELHOR OPÇÃO (mais alinhada ao objetivo):\n[prato, por quê, estimativa calórica]\n\n"
+                            f"🥈 SEGUNDA OPÇÃO:\n[prato alternativo com justificativa]\n\n"
+                            f"❌ EVITAR:\n[o que NÃO pedir e por quê]\n\n"
+                            f"💡 DICAS INTELIGENTES:\n"
+                            f"• Como pedir modificações no prato\n"
+                            f"• Acompanhamentos a pedir ou evitar\n"
                             f"• Como compensar no restante do dia"
                         )
                         res = nutri_ia(prompt)
@@ -3151,18 +3097,18 @@ elif st.session_state.etapa == "App":
                     streak = st.session_state.get('streak_atual', 0)
 
                     prompt = (
-                        f"Faça uma análise preventiva completa dos hábitos nutricionais.\\n"
+                        f"Faça uma análise preventiva completa dos hábitos nutricionais.\n"
                         f"Média de água/dia (7 dias): {agua_media:.1f}L (meta: {st.session_state.agua_meta}L). "
                         f"Streak atual: {streak} dias. Objetivo: {st.session_state.objetivo}. "
                         f"Refeições geradas: {st.session_state.refeicoes_geradas}. "
-                        f"Check-ins: {len(checkins)}.\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"🧠 ANÁLISE PREVENTIVA — {st.session_state.usuario.upper()}\\n\\n"
-                        f"🔍 O QUE IDENTIFIQUEI NOS SEUS PADRÕES:\\n[análise honesta dos dados disponíveis]\\n\\n"
-                        f"⚠️ ALERTAS PREVENTIVOS:\\n[o que pode estar acontecendo que a pessoa não percebe]\\n\\n"
-                        f"💧 HIDRATAÇÃO:\\n[avaliação e recomendação]\\n\\n"
-                        f"💡 3 SUGESTÕES IMEDIATAS:\\n[ações concretas para os próximos 7 dias]\\n\\n"
-                        f"🎯 MISSÃO DA SEMANA:\\n[1 hábito para implementar]"
+                        f"Check-ins: {len(checkins)}.\n\n"
+                        f"FORMATO:\n\n"
+                        f"🧠 ANÁLISE PREVENTIVA — {st.session_state.usuario.upper()}\n\n"
+                        f"🔍 O QUE IDENTIFIQUEI NOS SEUS PADRÕES:\n[análise honesta dos dados disponíveis]\n\n"
+                        f"⚠️ ALERTAS PREVENTIVOS:\n[o que pode estar acontecendo que a pessoa não percebe]\n\n"
+                        f"💧 HIDRATAÇÃO:\n[avaliação e recomendação]\n\n"
+                        f"💡 3 SUGESTÕES IMEDIATAS:\n[ações concretas para os próximos 7 dias]\n\n"
+                        f"🎯 MISSÃO DA SEMANA:\n[1 hábito para implementar]"
                     )
                     res = nutri_ia(prompt)
                     salvar_receita("IA Preventiva", "Análise automática", res)
@@ -3209,7 +3155,7 @@ elif st.session_state.etapa == "App":
                                 st.session_state.receitas_salvas.append({**item, 'favorito': False})
                                 st.success("❤️ Salvo!")
 
-                hist_txt = "\\n\\n".join(f"[{e['data']}] {e['tipo']} — {e['nome']}\\n{e['conteudo']}\\n{'─'*40}" for e in st.session_state.historico_cardapios)
+                hist_txt = "\n\n".join(f"[{e['data']}] {e['tipo']} — {e['nome']}\n{e['conteudo']}\n{'─'*40}" for e in st.session_state.historico_cardapios)
                 st.download_button("⬇️ Exportar histórico completo (.txt)", data=hist_txt, file_name="historico_nutrimind.txt", mime="text/plain",
         key="dl_chef_cal_7"
     )
@@ -3353,13 +3299,13 @@ elif st.session_state.etapa == "App":
                     for r in lista
                 )
                 prompt = (
-                    f"Plano: {cul_val}, {kcal_val} kcal/dia, {nref_val} refeições.\\n"
-                    f"Distribuição: {refs_txt}\\n\\n"
-                    f"Para cada refeição:\\n"
-                    f"**[Nome] — [kcal]**\\n"
-                    f"Prato: [nome]\\n"
-                    f"Ingredientes: [lista curta]\\n"
-                    f"Preparo: [1 linha]\\n\\n"
+                    f"Plano: {cul_val}, {kcal_val} kcal/dia, {nref_val} refeições.\n"
+                    f"Distribuição: {refs_txt}\n\n"
+                    f"Para cada refeição:\n"
+                    f"**[Nome] — [kcal]**\n"
+                    f"Prato: [nome]\n"
+                    f"Ingredientes: [lista curta]\n"
+                    f"Preparo: [1 linha]\n\n"
                     f"Gere TODAS as {nref_val} refeições. Seja breve. Português brasileiro."
                 )
                 with st.spinner(f"Gerando {nref_val} refeições — {kcal_val} kcal..."):
@@ -3397,21 +3343,21 @@ elif st.session_state.etapa == "App":
                     if dieta_desc.strip():
                         with st.spinner("Analisando nutricionalmente..."):
                             prompt = (
-                                f"Faça uma análise nutricional completa da dieta descrita.\\n"
-                                f"Dieta: {dieta_desc}\\n"
-                                f"Peso: {peso_n}kg. Idade: {idade_n}. Objetivo: {objetivo_n}. Atividade: {atividade_n}.\\n\\n"
-                                f"FORMATO:\\n\\n"
-                                f"🔬 ANÁLISE NUTRICIONAL COMPLETA\\n\\n"
-                                f"📊 ESTIMATIVA DE MACROS DIÁRIOS:\\n"
-                                f"🔥 Calorias: ~[X] kcal (necessidade estimada: [X] kcal)\\n"
-                                f"💪 Proteína: ~[X]g (recomendado: [X]g)\\n"
-                                f"🍞 Carboidratos: ~[X]g (recomendado: [X]g)\\n"
-                                f"🥑 Gorduras: ~[X]g (recomendado: [X]g)\\n"
-                                f"🌾 Fibras: ~[X]g (recomendado: 25-35g)\\n\\n"
-                                f"✅ O QUE ESTÁ BOM:\\n[pontos positivos da dieta]\\n\\n"
-                                f"⚠️ O QUE PRECISA MELHORAR:\\n[deficiências e problemas]\\n\\n"
-                                f"🎯 ADEQUAÇÃO AO OBJETIVO '{objetivo_n}':\\n[análise específica]\\n\\n"
-                                f"💡 3 MUDANÇAS SIMPLES QUE FARIAM GRANDE DIFERENÇA:\\n[sugestões práticas e realistas]"
+                                f"Faça uma análise nutricional completa da dieta descrita.\n"
+                                f"Dieta: {dieta_desc}\n"
+                                f"Peso: {peso_n}kg. Idade: {idade_n}. Objetivo: {objetivo_n}. Atividade: {atividade_n}.\n\n"
+                                f"FORMATO:\n\n"
+                                f"🔬 ANÁLISE NUTRICIONAL COMPLETA\n\n"
+                                f"📊 ESTIMATIVA DE MACROS DIÁRIOS:\n"
+                                f"🔥 Calorias: ~[X] kcal (necessidade estimada: [X] kcal)\n"
+                                f"💪 Proteína: ~[X]g (recomendado: [X]g)\n"
+                                f"🍞 Carboidratos: ~[X]g (recomendado: [X]g)\n"
+                                f"🥑 Gorduras: ~[X]g (recomendado: [X]g)\n"
+                                f"🌾 Fibras: ~[X]g (recomendado: 25-35g)\n\n"
+                                f"✅ O QUE ESTÁ BOM:\n[pontos positivos da dieta]\n\n"
+                                f"⚠️ O QUE PRECISA MELHORAR:\n[deficiências e problemas]\n\n"
+                                f"🎯 ADEQUAÇÃO AO OBJETIVO '{objetivo_n}':\n[análise específica]\n\n"
+                                f"💡 3 MUDANÇAS SIMPLES QUE FARIAM GRANDE DIFERENÇA:\n[sugestões práticas e realistas]"
                             )
                             res = nutri_ia(prompt)
                             salvar_receita("Análise Nutricional", "Dieta do dia", res)
@@ -3434,19 +3380,19 @@ elif st.session_state.etapa == "App":
                     if sintomas.strip():
                         with st.spinner("Analisando..."):
                             prompt = (
-                                f"Com base nos sintomas e dieta, identifique possíveis carências nutricionais.\\n"
-                                f"Sintomas: {sintomas}\\nDieta: {dieta_car or 'não informada'}\\n\\n"
-                                f"FORMATO:\\n\\n"
-                                f"⚠️ POSSÍVEIS CARÊNCIAS IDENTIFICADAS\\n\\n"
-                                f"⚠️ IMPORTANTE: Esta análise é educacional e não substitui avaliação médica.\\n\\n"
-                                f"Para cada carência suspeita:\\n\\n"
-                                f"🔴 [NUTRIENTE]\\n"
-                                f"Sintomas compatíveis: [quais sintomas relatados]\\n"
-                                f"Fontes alimentares: [alimentos ricos nesse nutriente]\\n"
-                                f"Como incluir na dieta: [sugestão prática]\\n"
-                                f"Quando buscar médico: [sinais de alerta]\\n\\n"
-                                f"[Repita para cada carência]\\n\\n"
-                                f"🥗 ALIMENTOS PARA INCLUIR NA ROTINA:\\n[lista com os mais importantes]\\n\\n"
+                                f"Com base nos sintomas e dieta, identifique possíveis carências nutricionais.\n"
+                                f"Sintomas: {sintomas}\nDieta: {dieta_car or 'não informada'}\n\n"
+                                f"FORMATO:\n\n"
+                                f"⚠️ POSSÍVEIS CARÊNCIAS IDENTIFICADAS\n\n"
+                                f"⚠️ IMPORTANTE: Esta análise é educacional e não substitui avaliação médica.\n\n"
+                                f"Para cada carência suspeita:\n\n"
+                                f"🔴 [NUTRIENTE]\n"
+                                f"Sintomas compatíveis: [quais sintomas relatados]\n"
+                                f"Fontes alimentares: [alimentos ricos nesse nutriente]\n"
+                                f"Como incluir na dieta: [sugestão prática]\n"
+                                f"Quando buscar médico: [sinais de alerta]\n\n"
+                                f"[Repita para cada carência]\n\n"
+                                f"🥗 ALIMENTOS PARA INCLUIR NA ROTINA:\n[lista com os mais importantes]\n\n"
                                 f"⚕️ RECOMENDAÇÃO: Consulte um nutricionista ou médico para exames e diagnóstico preciso."
                             )
                             res = nutri_ia(prompt)
@@ -3467,19 +3413,19 @@ elif st.session_state.etapa == "App":
                 if st.button("💊 GERAR GUIA DE SUPLEMENTAÇÃO", key="chefcalo61"):
                     with st.spinner("Analisando..."):
                         prompt = (
-                            f"Crie um guia de suplementação para:\\nObjetivo: {obj_supl}\\nNível: {nivel_supl}\\nRestrições: {restricoes_supl or 'nenhuma'}\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"💊 GUIA DE SUPLEMENTAÇÃO — {obj_supl.upper()}\\n\\n"
-                            f"⚠️ AVISO: Consulte um profissional de saúde antes de iniciar suplementação.\\n\\n"
-                            f"✅ SUPLEMENTOS RECOMENDADOS:\\n\\n"
-                            f"Para cada suplemento:\\n"
-                            f"[Nome] — [benefício principal]\\n"
-                            f"• Quando tomar: [horário e momento]\\n"
-                            f"• Dosagem sugerida: [quantidade]\\n"
-                            f"• Custo estimado: [faixa de preço]\\n"
-                            f"• Prioridade: [essencial / recomendado / opcional]\\n\\n"
-                            f"🚫 O QUE EVITAR:\\n[suplementos desnecessários ou com riscos]\\n\\n"
-                            f"🥗 ANTES DOS SUPLEMENTOS, PRIORIZE:\\n[ajustes alimentares que substituem suplementos]"
+                            f"Crie um guia de suplementação para:\nObjetivo: {obj_supl}\nNível: {nivel_supl}\nRestrições: {restricoes_supl or 'nenhuma'}\n\n"
+                            f"FORMATO:\n\n"
+                            f"💊 GUIA DE SUPLEMENTAÇÃO — {obj_supl.upper()}\n\n"
+                            f"⚠️ AVISO: Consulte um profissional de saúde antes de iniciar suplementação.\n\n"
+                            f"✅ SUPLEMENTOS RECOMENDADOS:\n\n"
+                            f"Para cada suplemento:\n"
+                            f"[Nome] — [benefício principal]\n"
+                            f"• Quando tomar: [horário e momento]\n"
+                            f"• Dosagem sugerida: [quantidade]\n"
+                            f"• Custo estimado: [faixa de preço]\n"
+                            f"• Prioridade: [essencial / recomendado / opcional]\n\n"
+                            f"🚫 O QUE EVITAR:\n[suplementos desnecessários ou com riscos]\n\n"
+                            f"🥗 ANTES DOS SUPLEMENTOS, PRIORIZE:\n[ajustes alimentares que substituem suplementos]"
                         )
                         res = nutri_ia(prompt)
                         salvar_receita("Suplementação", obj_supl, res)
@@ -3507,26 +3453,26 @@ elif st.session_state.etapa == "App":
                 elif clima_h == "Muito quente/Úmido": base += 600
                 meta_agua = base / 1000
 
-                st.markdown(f\"\"\"
+                st.markdown(f'''
                 <div class='meta-box' style='margin:12px 0;'>
                     <div style='font-size:0.82em;color:#C2410C;'>💧 SUA META DIÁRIA DE ÁGUA</div>
                     <div class='meta-numero'>{meta_agua:.1f} L</div>
                     <div style='font-size:0.85em;color:#C2410C;'>({int(meta_agua/0.25)} copos de 250ml)</div>
                 </div>
-                \"\"\", unsafe_allow_html=True)
+                ''', unsafe_allow_html=True)
 
                 if st.button("💧 GUIA COMPLETO DE HIDRATAÇÃO", key="chefcalo62"):
                     with st.spinner("..."):
                         prompt = (
-                            f"Crie um guia completo de hidratação personalizado.\\n"
-                            f"Peso: {peso_h}kg. Atividade: {ativ_h}. Clima: {clima_h}. Saúde: {saude_h or 'sem restrições'}.\\n"
-                            f"Meta calculada: {meta_agua:.1f}L/dia.\\n\\n"
-                            f"💧 GUIA DE HIDRATAÇÃO\\n\\n"
-                            f"Meta diária: {meta_agua:.1f}L\\n\\n"
-                            f"⏰ DISTRIBUIÇÃO AO LONGO DO DIA:\\n[horários sugeridos para beber água]\\n\\n"
-                            f"✅ ALÉM DA ÁGUA — outras fontes de hidratação:\\n[alimentos e bebidas que contribuem]\\n\\n"
-                            f"🚨 SINAIS DE DESIDRATAÇÃO:\\n[o que observar]\\n\\n"
-                            f"💡 DICAS PARA BEBER MAIS ÁGUA:\\n[estratégias práticas e realistas]"
+                            f"Crie um guia completo de hidratação personalizado.\n"
+                            f"Peso: {peso_h}kg. Atividade: {ativ_h}. Clima: {clima_h}. Saúde: {saude_h or 'sem restrições'}.\n"
+                            f"Meta calculada: {meta_agua:.1f}L/dia.\n\n"
+                            f"💧 GUIA DE HIDRATAÇÃO\n\n"
+                            f"Meta diária: {meta_agua:.1f}L\n\n"
+                            f"⏰ DISTRIBUIÇÃO AO LONGO DO DIA:\n[horários sugeridos para beber água]\n\n"
+                            f"✅ ALÉM DA ÁGUA — outras fontes de hidratação:\n[alimentos e bebidas que contribuem]\n\n"
+                            f"🚨 SINAIS DE DESIDRATAÇÃO:\n[o que observar]\n\n"
+                            f"💡 DICAS PARA BEBER MAIS ÁGUA:\n[estratégias práticas e realistas]"
                         )
                         res = nutri_ia(prompt)
                         salvar_receita("Hidratação", f"{meta_agua:.1f}L", res)
@@ -3547,6 +3493,7 @@ st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
     "</div>", unsafe_allow_html=True
 )
+
 """,
     "personal_trainer": """# [hub] import streamlit as st
 # [hub] from groq import Groq
