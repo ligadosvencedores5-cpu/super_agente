@@ -3446,25 +3446,24 @@ st.download_button('⬇️ Baixar histórico (.csv)', data=_buf_chef_r.getvalue(
 
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_chef_cal, datetime as _dt_exp_chef_cal
-    _hist_historico_cardapios = st.session_state.get('historico_cardapios', [])
-    _txt_lines = []
-    for _item in _hist_historico_cardapios:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_chef_cal = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+_hist_chef_ca = st.session_state.get('historico_cardapios', [])
+_lines_chef_ca = []
+for _item_chef_ca in _hist_chef_ca:
+    if isinstance(_item_chef_ca, dict):
+        _role_chef_ca = _item_chef_ca.get('role', _item_chef_ca.get('tipo', 'item'))
+        _cont_chef_ca = _item_chef_ca.get('content', _item_chef_ca.get('texto', _item_chef_ca.get('resposta', str(_item_chef_ca))))
+        _lines_chef_ca.append(f'[{_role_chef_ca}] {_cont_chef_ca}')
+        _lines_chef_ca.append('')
+    else:
+        _lines_chef_ca.append(str(_item_chef_ca))
+_txt_chef_ca = "\n".join(_lines_chef_ca) if _lines_chef_ca else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_chef_cal.encode('utf-8'),
+    data=_txt_chef_ca.encode('utf-8'),
     file_name="Chef_Calorico_historico.txt",
     mime="text/plain",
     use_container_width=True,
-    key="dl_exp_chef_cal_txt"
+    key="dl_exp_chef_ca_txt"
 )
 
 
@@ -8855,8 +8854,8 @@ from datetime import date, datetime
 import json
 
 # ══════════════════════════════════════════════════
-# ORÁCULO FINANCEIRO IA — v2.0
-# Consultor financeiro pessoal com 12 módulos
+# ORÁCULO FINANCEIRO IA — v3.0
+# Salva automaticamente — sem formulários
 # ══════════════════════════════════════════════════
 
 st.markdown('''
@@ -8872,819 +8871,641 @@ st.markdown('''
 .kpi-box.amarelo{background:#fffbf0;border-left-color:#d4a017;}
 .kpi-label{font-size:.78rem;color:#555;font-weight:600;text-transform:uppercase;}
 .kpi-value{font-size:1.4rem;font-weight:700;color:#1a3c5e;margin-top:.2rem;}
-.modulo-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;
-  padding:1rem;margin:.5rem 0;cursor:pointer;transition:box-shadow .2s;}
+.secao{background:#f8f9fa;border-radius:10px;padding:1.2rem;margin:.8rem 0;}
 .tag{display:inline-block;background:#e8f4f8;color:#1a3c5e;
   border-radius:20px;padding:.2rem .7rem;font-size:.75rem;font-weight:600;margin:.2rem;}
 .tag.urgente{background:#fff0e8;color:#c0392b;}
 .tag.ok{background:#e8fff0;color:#0d6e3f;}
-.secao{background:#f8f9fa;border-radius:10px;padding:1.2rem;margin:.8rem 0;}
 </style>
 ''', unsafe_allow_html=True)
 
 # ── INIT SESSION STATE ──
-def _init():
+def _of_init():
     defaults = {
-        "of_modulo": "inicio",
-        "of_renda": 0.0,
-        "of_outras_rendas": [],
-        "of_gastos": [],
-        "of_dividas": [],
-        "of_investimentos": [],
-        "of_patrimonios": [],
-        "of_metas": [],
-        "of_reserva_atual": 0.0,
-        "of_perfil": None,
-        "of_diagnostico_feito": False,
-        "of_historico_chat": [],
-        "of_idade": 0,
-        "of_dependentes": 0,
-        "of_renda_estavel": True,
-        "of_economia_historico": [],
+        'of_modulo': 'inicio',
+        'of_renda': '',
+        'of_reserva': '',
+        'of_idade': '',
+        'of_dependentes': '',
+        'of_renda_estavel': 'Sim',
+        'of_outras_rendas': [],
+        'of_gastos': [],
+        'of_dividas': [],
+        'of_metas': [],
+        'of_investimentos': [],
+        'of_patrimonios': [],
+        'of_historico_chat': [],
+        # campos temporários para adição
+        'of_tmp_or_nome': '',
+        'of_tmp_or_val': '',
+        'of_tmp_g_nome': '',
+        'of_tmp_g_val': '',
+        'of_tmp_g_cat': 'Moradia',
+        'of_tmp_g_tipo': 'Fixo',
+        'of_tmp_d_nome': '',
+        'of_tmp_d_saldo': '',
+        'of_tmp_d_juros': '',
+        'of_tmp_d_parcela': '',
+        'of_tmp_d_prazo': '',
+        'of_tmp_m_nome': '',
+        'of_tmp_m_total': '',
+        'of_tmp_m_guardado': '',
+        'of_tmp_m_prazo': '',
+        'of_tmp_p_nome': '',
+        'of_tmp_p_tipo': 'Imóvel',
+        'of_tmp_p_valor': '',
+        'of_tmp_p_divida': '',
+        'of_tmp_i_nome': '',
+        'of_tmp_i_valor': '',
+        'of_tmp_i_tipo': 'Renda Fixa',
+        'of_tmp_i_rent': '',
+        'of_diagnostico': None,
+        'of_chat_input': '',
     }
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
 
-_init()
+_of_init()
 
-# ── FUNÇÕES DE CÁLCULO ──
-def calc_renda_total():
-    r = st.session_state.of_renda
-    for o in st.session_state.of_outras_rendas:
-        r += o.get("valor", 0)
-    return r
-
-def calc_gastos_total():
-    return sum(g.get("valor", 0) for g in st.session_state.of_gastos)
-
-def calc_saldo():
-    return calc_renda_total() - calc_gastos_total()
-
-def calc_taxa_poupanca():
-    rt = calc_renda_total()
-    if rt <= 0:
-        return 0
-    return (calc_saldo() / rt) * 100
-
-def calc_divida_total():
-    return sum(d.get("saldo", 0) for d in st.session_state.of_dividas)
-
-def calc_parcelas_total():
-    return sum(d.get("parcela", 0) for d in st.session_state.of_dividas)
-
-def calc_investimentos_total():
-    return sum(i.get("valor", 0) for i in st.session_state.of_investimentos)
-
-def calc_patrimonio_bruto():
-    ativos = st.session_state.of_reserva_atual + calc_investimentos_total()
-    for p in st.session_state.of_patrimonios:
-        ativos += p.get("valor", 0)
-    return ativos
-
-def calc_patrimonio_liquido():
-    return calc_patrimonio_bruto() - calc_divida_total()
-
-def fmt_brl(v):
-    return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-def parse_brl(s):
+# ── FUNÇÕES AUXILIARES ──
+def _of_parse(s):
+    if not s:
+        return 0.0
+    s = str(s).strip().replace('R$','').replace('.','').replace(',','.').strip()
     try:
-        return float(str(s).replace("R$","").replace(".","").replace(",",".").strip())
+        return float(s)
     except:
         return 0.0
 
-def saldo_disponivel():
-    return calc_saldo() - calc_parcelas_total()
+def _of_fmt(v):
+    try:
+        return f'R$ {float(v):,.2f}'.replace(',','X').replace('.',',').replace('X','.')
+    except:
+        return 'R$ 0,00'
+
+def _of_renda_total():
+    r = _of_parse(st.session_state.of_renda)
+    for o in st.session_state.of_outras_rendas:
+        r += o.get('valor', 0)
+    return r
+
+def _of_gastos_total():
+    return sum(g.get('valor', 0) for g in st.session_state.of_gastos)
+
+def _of_saldo():
+    return _of_renda_total() - _of_gastos_total()
+
+def _of_divida_total():
+    return sum(d.get('saldo', 0) for d in st.session_state.of_dividas)
+
+def _of_patrimonio_bruto():
+    return sum(p.get('valor', 0) for p in st.session_state.of_patrimonios)
+
+def _of_patrimonio_liquido():
+    return _of_patrimonio_bruto() + sum(i.get('valor', 0) for i in st.session_state.of_investimentos) - _of_divida_total()
 
 # ── HEADER ──
 st.markdown('''
 <div class="of-header">
-  <h1>🔮 Oráculo Financeiro IA</h1>
-  <p>Seu consultor financeiro pessoal — análise, diagnóstico e plano de ação</p>
+  <h1>Oraculo Financeiro IA</h1>
+  <p>Consultor pessoal de financas — 12 modulos integrados</p>
 </div>
 ''', unsafe_allow_html=True)
 
-# ── NAVEGAÇÃO POR TABS ──
+# ── TABS ──
 tabs = st.tabs([
-    "🏠 Início",
-    "📊 Diagnóstico",
-    "💸 Gastos",
-    "💳 Dívidas",
-    "🎯 Metas",
-    "🏦 Patrimônio",
-    "📈 Investimentos",
-    "🤖 Oráculo IA",
-    "⬇️ Exportar"
+    'Inicio',
+    'Renda',
+    'Gastos',
+    'Dividas',
+    'Metas',
+    'Patrimonio',
+    'Investimentos',
+    'Oraculo IA',
+    'Exportar',
 ])
 
 # ══════════════════════════════════════════════════
 # TAB 0 — INÍCIO / PAINEL
 # ══════════════════════════════════════════════════
 with tabs[0]:
-    renda = calc_renda_total()
-    gastos = calc_gastos_total()
-    saldo = calc_saldo()
-    taxa = calc_taxa_poupanca()
-    parcelas = calc_parcelas_total()
-    disp = saldo_disponivel()
+    st.subheader('Painel Geral')
+
+    renda = _of_renda_total()
+    gastos = _of_gastos_total()
+    saldo = _of_saldo()
+    dividas = _of_divida_total()
+    reserva = _of_parse(st.session_state.of_reserva)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        cor = 'verde' if renda > 0 else ''
+        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Renda Total</div><div class="kpi-value">{_of_fmt(renda)}</div></div>', unsafe_allow_html=True)
+    with c2:
+        cor = 'vermelho' if gastos > renda else 'amarelo' if gastos > renda*0.8 else 'verde'
+        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Total de Gastos</div><div class="kpi-value">{_of_fmt(gastos)}</div></div>', unsafe_allow_html=True)
+    with c3:
+        cor = 'verde' if saldo > 0 else 'vermelho'
+        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Saldo Mensal</div><div class="kpi-value">{_of_fmt(saldo)}</div></div>', unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(f'<div class="kpi-box vermelho"><div class="kpi-label">Total de Dividas</div><div class="kpi-value">{_of_fmt(dividas)}</div></div>', unsafe_allow_html=True)
+    with c2:
+        meses_res = reserva / gastos if gastos > 0 else 0
+        cor = 'verde' if meses_res >= 6 else 'amarelo' if meses_res >= 3 else 'vermelho'
+        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Reserva de Emergencia</div><div class="kpi-value">{_of_fmt(reserva)} ({meses_res:.1f} meses)</div></div>', unsafe_allow_html=True)
+    with c3:
+        pl = _of_patrimonio_liquido()
+        cor = 'verde' if pl > 0 else 'vermelho'
+        st.markdown(f'<div class="kpi-box {cor}"><div class="kpi-label">Patrimonio Liquido</div><div class="kpi-value">{_of_fmt(pl)}</div></div>', unsafe_allow_html=True)
 
     if renda > 0:
-        # KPIs principais
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            cls = "verde" if saldo > 0 else "vermelho"
-            st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Renda Mensal</div><div class="kpi-value">{fmt_brl(renda)}</div></div>', unsafe_allow_html=True)
-        with col2:
-            st.markdown(f'<div class="kpi-box vermelho"><div class="kpi-label">Despesas</div><div class="kpi-value">{fmt_brl(gastos)}</div></div>', unsafe_allow_html=True)
-        with col3:
-            cls = "verde" if saldo > 0 else "vermelho"
-            st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Sobra Mensal</div><div class="kpi-value">{fmt_brl(saldo)}</div></div>', unsafe_allow_html=True)
-        with col4:
-            cls = "verde" if taxa >= 20 else ("amarelo" if taxa >= 10 else "vermelho")
-            st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Taxa de Poupança</div><div class="kpi-value">{taxa:.1f}%</div></div>', unsafe_allow_html=True)
+        tx = (saldo / renda * 100) if renda > 0 else 0
+        if tx >= 20:
+            st.success(f'Taxa de poupanca: {tx:.1f}% — Excelente!')
+        elif tx >= 10:
+            st.info(f'Taxa de poupanca: {tx:.1f}% — Boa, mas pode melhorar.')
+        elif tx >= 0:
+            st.warning(f'Taxa de poupanca: {tx:.1f}% — Atencao: margens apertadas.')
+        else:
+            st.error(f'Taxa de poupanca: {tx:.1f}% — Voce esta gastando mais do que ganha!')
 
-        if parcelas > 0:
-            col5, col6 = st.columns(2)
-            with col5:
-                st.markdown(f'<div class="kpi-box vermelho"><div class="kpi-label">Total em Parcelas/Mês</div><div class="kpi-value">{fmt_brl(parcelas)}</div></div>', unsafe_allow_html=True)
-            with col6:
-                cls = "verde" if disp > 0 else "vermelho"
-                st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Disponível após dívidas</div><div class="kpi-value">{fmt_brl(disp)}</div></div>', unsafe_allow_html=True)
-
-        st.divider()
-
-        # Diagnóstico rápido
-        st.subheader("🔍 Diagnóstico Rápido")
-        alertas = []
-        positivos = []
-
-        if taxa < 10 and saldo > 0:
-            alertas.append("Taxa de poupança abaixo de 10% — revise os gastos.")
-        if taxa >= 20:
-            positivos.append(f"Excelente! Você poupa {taxa:.0f}% da renda.")
-        if saldo < 0:
-            alertas.append("**Atenção:** Gastos superam a renda. Situação de déficit.")
-
-        divida_total = calc_divida_total()
-        if divida_total > 0:
-            comprometimento = (parcelas / renda * 100) if renda > 0 else 0
-            if comprometimento > 30:
-                alertas.append(f"Comprometimento de {comprometimento:.0f}% da renda com dívidas — alto risco.")
-            elif comprometimento > 0:
-                alertas.append(f"{comprometimento:.0f}% da renda comprometida com parcelas.")
-
-        reserva = st.session_state.of_reserva_atual
-        essenciais = sum(g.get("valor",0) for g in st.session_state.of_gastos if g.get("cat") in ["Moradia","Alimentação","Saúde","Transporte"])
-        reserva_ideal = essenciais * 6 if essenciais > 0 else gastos * 6
-        if reserva < reserva_ideal * 0.5:
-            alertas.append(f"Reserva de emergência insuficiente. Ideal: {fmt_brl(reserva_ideal)}.")
-        elif reserva >= reserva_ideal:
-            positivos.append("Reserva de emergência adequada.")
-
-        if len(st.session_state.of_metas) > 0:
-            positivos.append(f"{len(st.session_state.of_metas)} meta(s) cadastrada(s).")
-
-        for a in alertas:
-            st.warning(a)
-        for p in positivos:
-            st.success(p)
-
-        if not alertas and not positivos:
-            st.info("Complete as outras abas para receber um diagnóstico detalhado.")
-
-        # Distribuição dos gastos
-        if st.session_state.of_gastos:
-            st.subheader("📊 Distribuição dos Gastos")
-            cats = {}
-            for g in st.session_state.of_gastos:
-                c = g.get("cat", "Outros")
-                cats[c] = cats.get(c, 0) + g.get("valor", 0)
-            for c, v in sorted(cats.items(), key=lambda x: -x[1]):
-                pct = v / renda * 100 if renda > 0 else 0
-                st.markdown(f"**{c}** — {fmt_brl(v)} ({pct:.1f}% da renda)")
-                st.progress(min(pct/100, 1.0))
-
-    else:
-        st.info("👋 Bem-vindo ao Oráculo Financeiro IA!\\n\\nComece cadastrando sua renda na aba **📊 Diagnóstico** ou vá direto para **💸 Gastos** para registrar suas despesas.")
-
-        st.subheader("O que você precisa resolver hoje?")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown("**💸 Organizar contas**\\nDescobrir para onde vai o dinheiro.")
-        with col2:
-            st.markdown("**💳 Sair das dívidas**\\nReduzir juros e recuperar o controle.")
-        with col3:
-            st.markdown("**📈 Investir melhor**\\nAvaliar alternativas para seu perfil.")
-        col4, col5, col6 = st.columns(3)
-        with col4:
-            st.markdown("**🎯 Planejar metas**\\nTransformar sonhos em números.")
-        with col5:
-            st.markdown("**🏦 Construir patrimônio**\\nAumentar seu patrimônio líquido.")
-        with col6:
-            st.markdown("**🤖 Perguntar ao Oráculo**\\nAnálise e orientação personalizada.")
+    st.divider()
+    st.caption('Use as abas acima para preencher seus dados. Tudo salva automaticamente.')
 
 # ══════════════════════════════════════════════════
-# TAB 1 — DIAGNÓSTICO / RENDA
+# TAB 1 — RENDA
 # ══════════════════════════════════════════════════
 with tabs[1]:
-    st.subheader("📊 Diagnóstico Financeiro")
-    st.caption("Cadastre sua renda e perfil. Esses dados alimentam todo o sistema.")
+    st.subheader('Sua Renda')
+    st.caption('Preencha e os valores sao salvos automaticamente.')
 
-    with st.form("form_renda", clear_on_submit=False):
-        st.markdown("**Perfil**")
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            idade = st.number_input("Sua idade", min_value=0, max_value=100, value=st.session_state.of_idade or 30, step=1)
-        with c2:
-            dep = st.number_input("Dependentes", min_value=0, max_value=20, value=st.session_state.of_dependentes, step=1)
-        with c3:
-            estavel = st.selectbox("Renda estável?", ["Sim", "Não"], index=0 if st.session_state.of_renda_estavel else 1)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.text_input('Renda liquida mensal (R$)', placeholder='Ex: 5000',
+                      key='of_renda')
+    with c2:
+        st.text_input('Reserva de emergencia atual (R$)', placeholder='Ex: 3000',
+                      key='of_reserva')
 
-        st.markdown("**Renda Principal**")
-        renda_str = st.text_input("Renda líquida mensal (R$)", placeholder="Ex: 5000", value=str(st.session_state.of_renda) if st.session_state.of_renda else "")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.text_input('Sua idade', placeholder='Ex: 35', key='of_idade')
+    with c2:
+        st.text_input('Dependentes', placeholder='Ex: 2', key='of_dependentes')
+    with c3:
+        st.selectbox('Renda estavel?', ['Sim', 'Nao'], key='of_renda_estavel')
 
-        reserva_str = st.text_input("Reserva de emergência atual (R$)", placeholder="Ex: 3000", value=str(st.session_state.of_reserva_atual) if st.session_state.of_reserva_atual else "")
-
-        if st.form_submit_button("💾 Salvar Perfil", use_container_width=True):
-            st.session_state.of_renda = parse_brl(renda_str) if renda_str.strip() else 0.0
-            st.session_state.of_reserva_atual = parse_brl(reserva_str) if reserva_str.strip() else 0.0
-            st.session_state.of_idade = int(idade)
-            st.session_state.of_dependentes = int(dep)
-            st.session_state.of_renda_estavel = (estavel == "Sim")
-            st.success("Perfil salvo!")
-            st.rerun()
-
-    # Outras fontes de renda
     st.divider()
-    st.markdown("**Outras fontes de renda (opcional)**")
+    st.markdown('**Outras fontes de renda**')
 
-    with st.form("form_outra_renda", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            or_nome = st.text_input("Fonte", placeholder="Ex: Freelance, Aluguel")
-        with c2:
-            or_val = st.text_input("Valor (R$)", placeholder="Ex: 800")
-        if st.form_submit_button("Adicionar fonte"):
-            if or_nome.strip() and or_val.strip():
-                st.session_state.of_outras_rendas.append({"nome": or_nome, "valor": parse_brl(or_val)})
+    c1, c2, c3 = st.columns([3, 2, 1])
+    with c1:
+        st.text_input('Fonte', placeholder='Ex: Freelance, Aluguel', key='of_tmp_or_nome')
+    with c2:
+        st.text_input('Valor (R$)', placeholder='Ex: 800', key='of_tmp_or_val')
+    with c3:
+        st.write('')
+        st.write('')
+        if st.button('Adicionar', key='of_btn_add_or', use_container_width=True):
+            n = st.session_state.of_tmp_or_nome.strip()
+            v = st.session_state.of_tmp_or_val.strip()
+            if n and v:
+                st.session_state.of_outras_rendas.append({'nome': n, 'valor': _of_parse(v)})
+                st.session_state.of_tmp_or_nome = ''
+                st.session_state.of_tmp_or_val = ''
                 st.rerun()
+            else:
+                st.warning('Preencha nome e valor.')
 
     for i, o in enumerate(st.session_state.of_outras_rendas):
-        c1, c2, c3 = st.columns([3, 2, 1])
+        c1, c2, c3 = st.columns([4, 2, 1])
         with c1:
-            st.write(o["nome"])
+            st.write(o['nome'])
         with c2:
-            st.write(fmt_brl(o["valor"]))
+            st.write(_of_fmt(o['valor']))
         with c3:
-            if st.button("🗑️", key=f"del_or_{i}"):
+            if st.button('X', key=f'of_del_or_{i}'):
                 st.session_state.of_outras_rendas.pop(i)
                 st.rerun()
 
-    if st.session_state.of_renda > 0 or st.session_state.of_outras_rendas:
-        st.success(f"**Renda total: {fmt_brl(calc_renda_total())}**")
+    renda_total = _of_renda_total()
+    if renda_total > 0:
+        st.success(f'Renda total: {_of_fmt(renda_total)}')
 
 # ══════════════════════════════════════════════════
-# TAB 2 — GASTOS / ORÇAMENTO
+# TAB 2 — GASTOS
 # ══════════════════════════════════════════════════
 with tabs[2]:
-    st.subheader("💸 Controle de Gastos")
+    st.subheader('Controle de Gastos')
 
-    CATS_GASTO = ["Moradia","Alimentação","Transporte","Saúde","Educação",
-                  "Lazer","Vestuário","Assinaturas","Seguros","Outros"]
+    CATS = ['Moradia','Alimentacao','Transporte','Saude','Educacao',
+            'Lazer','Vestuario','Assinaturas','Seguros','Outros']
 
-    with st.form("form_gasto", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            g_nome = st.text_input("Descrição", placeholder="Ex: Aluguel")
-            g_cat = st.selectbox("Categoria", CATS_GASTO)
-        with c2:
-            g_val = st.text_input("Valor mensal (R$)", placeholder="Ex: 1200")
-            g_tipo = st.selectbox("Tipo", ["Fixo", "Variável"])
-        if st.form_submit_button("➕ Adicionar gasto", use_container_width=True):
-            if g_nome.strip() and g_val.strip():
-                st.session_state.of_gastos.append({
-                    "nome": g_nome, "cat": g_cat,
-                    "valor": parse_brl(g_val), "tipo": g_tipo,
-                    "data": str(date.today())
-                })
-                st.rerun()
+    c1, c2 = st.columns(2)
+    with c1:
+        st.text_input('Descricao', placeholder='Ex: Aluguel', key='of_tmp_g_nome')
+        st.selectbox('Categoria', CATS, key='of_tmp_g_cat')
+    with c2:
+        st.text_input('Valor mensal (R$)', placeholder='Ex: 1200', key='of_tmp_g_val')
+        st.selectbox('Tipo', ['Fixo','Variavel'], key='of_tmp_g_tipo')
+
+    if st.button('Adicionar gasto', key='of_btn_add_g', use_container_width=True):
+        n = st.session_state.of_tmp_g_nome.strip()
+        v = st.session_state.of_tmp_g_val.strip()
+        if n and v:
+            st.session_state.of_gastos.append({
+                'nome': n,
+                'cat': st.session_state.of_tmp_g_cat,
+                'valor': _of_parse(v),
+                'tipo': st.session_state.of_tmp_g_tipo,
+            })
+            st.session_state.of_tmp_g_nome = ''
+            st.session_state.of_tmp_g_val = ''
+            st.rerun()
+        else:
+            st.warning('Preencha descricao e valor.')
 
     if st.session_state.of_gastos:
-        st.markdown(f"**Total de gastos: {fmt_brl(calc_gastos_total())}**")
-        renda = calc_renda_total()
-
-        # Tabela de gastos
+        st.divider()
+        renda = _of_renda_total()
+        st.markdown(f'**Total: {_of_fmt(_of_gastos_total())}**')
         for i, g in enumerate(st.session_state.of_gastos):
-            c1, c2, c3, c4, c5 = st.columns([3, 2, 1.5, 1, 0.8])
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
             with c1:
-                st.write(g["nome"])
+                st.write(g['nome'])
             with c2:
-                pct = g["valor"]/renda*100 if renda > 0 else 0
-                st.write(f"{fmt_brl(g['valor'])} ({pct:.0f}%)")
+                pct = g['valor']/renda*100 if renda > 0 else 0
+                st.write(f"{_of_fmt(g['valor'])} ({pct:.0f}%)")
             with c3:
-                st.write(g["cat"])
+                st.write(f"{g['cat']} / {g.get('tipo','')}")
             with c4:
-                st.write(g.get("tipo",""))
-            with c5:
-                if st.button("🗑️", key=f"del_g_{i}"):
+                if st.button('X', key=f'of_del_g_{i}'):
                     st.session_state.of_gastos.pop(i)
                     st.rerun()
-
-        st.divider()
-        # Resumo por categoria
-        st.markdown("**Por categoria:**")
-        cats = {}
-        for g in st.session_state.of_gastos:
-            c = g.get("cat","Outros")
-            cats[c] = cats.get(c,0) + g.get("valor",0)
-        for c, v in sorted(cats.items(), key=lambda x: -x[1]):
-            pct = v/renda*100 if renda > 0 else 0
-            col1, col2 = st.columns([4, 1])
-            with col1:
-                st.progress(min(pct/100, 1.0), text=f"{c}: {fmt_brl(v)} ({pct:.1f}%)")
-
-        # Análise do saldo
-        saldo = calc_saldo()
-        if renda > 0:
-            if saldo > 0:
-                st.success(f"✅ Sobra {fmt_brl(saldo)}/mês ({saldo/renda*100:.1f}% da renda)")
-            else:
-                st.error(f"⚠️ Déficit de {fmt_brl(abs(saldo))}/mês — gastos superam a renda!")
     else:
-        st.info("Nenhum gasto cadastrado ainda. Adicione seus gastos mensais acima.")
+        st.info('Nenhum gasto cadastrado ainda.')
 
 # ══════════════════════════════════════════════════
 # TAB 3 — DÍVIDAS
 # ══════════════════════════════════════════════════
 with tabs[3]:
-    st.subheader("💳 Gestão de Dívidas")
+    st.subheader('Gestao de Dividas')
 
-    with st.form("form_divida", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            d_nome = st.text_input("Nome da dívida", placeholder="Ex: Cartão Nubank")
-            d_saldo = st.text_input("Saldo devedor (R$)", placeholder="Ex: 5000")
-            d_juros = st.text_input("Juros ao mês (%)", placeholder="Ex: 3.5")
-        with c2:
-            d_parcela = st.text_input("Parcela mensal (R$)", placeholder="Ex: 250")
-            d_prazo = st.text_input("Prazo restante (meses)", placeholder="Ex: 24")
-            d_tipo = st.selectbox("Tipo", ["Cartão de crédito","Empréstimo pessoal","Financiamento","Cheque especial","Outro"])
+    c1, c2 = st.columns(2)
+    with c1:
+        st.text_input('Nome da divida', placeholder='Ex: Cartao Nubank', key='of_tmp_d_nome')
+        st.text_input('Saldo devedor (R$)', placeholder='Ex: 8000', key='of_tmp_d_saldo')
+        st.text_input('Juros ao mes (%)', placeholder='Ex: 3.5', key='of_tmp_d_juros')
+    with c2:
+        st.text_input('Parcela mensal (R$)', placeholder='Ex: 400', key='of_tmp_d_parcela')
+        st.text_input('Prazo restante (meses)', placeholder='Ex: 24', key='of_tmp_d_prazo')
 
-        if st.form_submit_button("➕ Adicionar dívida", use_container_width=True):
-            if d_nome.strip():
-                st.session_state.of_dividas.append({
-                    "nome": d_nome,
-                    "saldo": parse_brl(d_saldo),
-                    "juros": parse_brl(d_juros),
-                    "parcela": parse_brl(d_parcela),
-                    "prazo": int(d_prazo) if d_prazo.strip().isdigit() else 0,
-                    "tipo": d_tipo
-                })
-                st.rerun()
+    if st.button('Adicionar divida', key='of_btn_add_d', use_container_width=True):
+        n = st.session_state.of_tmp_d_nome.strip()
+        s = st.session_state.of_tmp_d_saldo.strip()
+        if n and s:
+            st.session_state.of_dividas.append({
+                'nome': n,
+                'saldo': _of_parse(s),
+                'juros': _of_parse(st.session_state.of_tmp_d_juros),
+                'parcela': _of_parse(st.session_state.of_tmp_d_parcela),
+                'prazo': int(_of_parse(st.session_state.of_tmp_d_prazo) or 0),
+            })
+            for k in ['of_tmp_d_nome','of_tmp_d_saldo','of_tmp_d_juros','of_tmp_d_parcela','of_tmp_d_prazo']:
+                st.session_state[k] = ''
+            st.rerun()
+        else:
+            st.warning('Preencha pelo menos o nome e saldo.')
 
     if st.session_state.of_dividas:
-        divida_total = calc_divida_total()
-        parcelas_total = calc_parcelas_total()
-        renda = calc_renda_total()
-
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total em dívidas", fmt_brl(divida_total))
-        with col2:
-            st.metric("Parcelas/mês", fmt_brl(parcelas_total))
-        with col3:
-            comprometimento = parcelas_total/renda*100 if renda > 0 else 0
-            st.metric("Comprometimento renda", f"{comprometimento:.1f}%",
-                      delta="Alto risco" if comprometimento > 30 else ("Atenção" if comprometimento > 20 else "OK"),
-                      delta_color="inverse" if comprometimento > 20 else "normal")
-
         st.divider()
-        # Lista de dívidas
+        st.markdown(f'**Total de dividas: {_of_fmt(_of_divida_total())}**')
         for i, d in enumerate(st.session_state.of_dividas):
-            with st.expander(f"{'🔴' if d.get('juros',0)>5 else '🟡'} {d['nome']} — {fmt_brl(d.get('saldo',0))}"):
-                c1, c2 = st.columns(2)
-                with c1:
-                    st.write(f"**Saldo:** {fmt_brl(d.get('saldo',0))}")
-                    st.write(f"**Parcela:** {fmt_brl(d.get('parcela',0))}/mês")
-                    st.write(f"**Tipo:** {d.get('tipo','')}")
-                with c2:
-                    st.write(f"**Juros:** {d.get('juros',0):.2f}%/mês")
-                    st.write(f"**Prazo:** {d.get('prazo',0)} meses")
-                    custo = d.get("saldo",0) * (d.get("juros",0)/100) if d.get("juros",0) else 0
-                    if custo > 0:
-                        st.write(f"**Juros/mês estimado:** {fmt_brl(custo)}")
-                if st.button("🗑️ Remover", key=f"del_d_{i}"):
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
+            with c1:
+                st.write(d['nome'])
+            with c2:
+                st.write(_of_fmt(d['saldo']))
+            with c3:
+                st.write(f"{d.get('juros',0):.1f}% a.m. | {d.get('prazo',0)} meses")
+            with c4:
+                if st.button('X', key=f'of_del_d_{i}'):
                     st.session_state.of_dividas.pop(i)
                     st.rerun()
-
-        # Estratégia de pagamento
-        st.divider()
-        st.subheader("🎯 Estratégia de Quitação")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("**Método Avalanche** (recomendado)\\nPague primeiro a dívida com maior juros — economiza mais dinheiro no total.")
-            avalanche = sorted(st.session_state.of_dividas, key=lambda x: -x.get("juros",0))
-            for idx, d in enumerate(avalanche, 1):
-                st.write(f"{idx}. {d['nome']} ({d.get('juros',0):.1f}%/mês) — {fmt_brl(d.get('saldo',0))}")
-        with col2:
-            st.markdown("**Método Bola de Neve**\\nPague primeiro a menor dívida — psicologicamente motivador.")
-            bola = sorted(st.session_state.of_dividas, key=lambda x: x.get("saldo",0))
-            for idx, d in enumerate(bola, 1):
-                st.write(f"{idx}. {d['nome']} — {fmt_brl(d.get('saldo',0))}")
     else:
-        st.success("✅ Nenhuma dívida cadastrada.")
+        st.info('Nenhuma divida cadastrada.')
 
 # ══════════════════════════════════════════════════
 # TAB 4 — METAS
 # ══════════════════════════════════════════════════
 with tabs[4]:
-    st.subheader("🎯 Metas Financeiras")
+    st.subheader('Metas Financeiras')
 
-    CATS_META = ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Aposentadoria","Outro"]
+    c1, c2 = st.columns(2)
+    with c1:
+        st.text_input('Nome da meta', placeholder='Ex: Viagem para Europa', key='of_tmp_m_nome')
+        st.text_input('Valor total (R$)', placeholder='Ex: 15000', key='of_tmp_m_total')
+    with c2:
+        st.text_input('Ja guardei (R$)', placeholder='Ex: 2000', key='of_tmp_m_guardado')
+        st.text_input('Prazo (meses)', placeholder='Ex: 18', key='of_tmp_m_prazo')
 
-    with st.form("form_meta", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            m_nome = st.text_input("Nome da meta", placeholder="Ex: Viagem para Europa")
-            m_cat = st.selectbox("Categoria", CATS_META)
-            m_val = st.text_input("Valor total (R$)", placeholder="Ex: 15000")
-        with c2:
-            m_atual = st.text_input("Já guardei (R$)", placeholder="Ex: 2000", value="0")
-            m_prazo = st.text_input("Prazo (meses)", placeholder="Ex: 18", value="12")
-            m_prior = st.selectbox("Prioridade", ["Alta", "Média", "Baixa"])
-
-        if st.form_submit_button("🚀 Criar Meta", use_container_width=True):
-            if m_nome.strip() and m_val.strip():
-                val = parse_brl(m_val)
-                atual = parse_brl(m_atual) if m_atual.strip() else 0.0
-                prazo = int(m_prazo) if m_prazo.strip().isdigit() else 12
-                faltante = max(0, val - atual)
-                mensal = faltante / prazo if prazo > 0 else faltante
-                st.session_state.of_metas.append({
-                    "nome": m_nome, "cat": m_cat, "valor": val,
-                    "atual": atual, "prazo": prazo,
-                    "mensal": mensal, "prioridade": m_prior,
-                    "criada": str(date.today())
-                })
-                st.rerun()
+    if st.button('Adicionar meta', key='of_btn_add_m', use_container_width=True):
+        n = st.session_state.of_tmp_m_nome.strip()
+        t = st.session_state.of_tmp_m_total.strip()
+        if n and t:
+            total = _of_parse(t)
+            guardado = _of_parse(st.session_state.of_tmp_m_guardado)
+            prazo = int(_of_parse(st.session_state.of_tmp_m_prazo) or 12)
+            falta = total - guardado
+            mensal = falta / prazo if prazo > 0 else falta
+            st.session_state.of_metas.append({
+                'nome': n,
+                'total': total,
+                'guardado': guardado,
+                'prazo': prazo,
+                'mensal': mensal,
+            })
+            for k in ['of_tmp_m_nome','of_tmp_m_total','of_tmp_m_guardado','of_tmp_m_prazo']:
+                st.session_state[k] = ''
+            st.rerun()
+        else:
+            st.warning('Preencha nome e valor total.')
 
     if st.session_state.of_metas:
-        saldo_disp = saldo_disponivel()
-        total_mensal_metas = sum(m.get("mensal",0) for m in st.session_state.of_metas)
-
-        if saldo_disp > 0:
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Disponível para metas", fmt_brl(saldo_disp))
-            with col2:
-                falta = total_mensal_metas - saldo_disp
-                cor = "normal" if falta <= 0 else "inverse"
-                st.metric("Total necessário/mês", fmt_brl(total_mensal_metas),
-                          delta=f"{'Sobram' if falta <= 0 else 'Faltam'} {fmt_brl(abs(falta))}",
-                          delta_color=cor)
-
         st.divider()
         for i, m in enumerate(st.session_state.of_metas):
-            faltante = max(0, m.get("valor",0) - m.get("atual",0))
-            pct = (m.get("atual",0)/m.get("valor",1)*100) if m.get("valor",0) > 0 else 0
-            with st.expander(f"{'🟢' if pct>=50 else '🟡' if pct>0 else '⚪'} {m['nome']} — {fmt_brl(m.get('valor',0))}"):
-                c1, c2 = st.columns(2)
-                with c1:
-                    st.write(f"**Meta:** {fmt_brl(m.get('valor',0))}")
-                    st.write(f"**Já guardei:** {fmt_brl(m.get('atual',0))}")
-                    st.write(f"**Falta:** {fmt_brl(faltante)}")
-                with c2:
-                    st.write(f"**Prazo:** {m.get('prazo',0)} meses")
-                    st.write(f"**Preciso guardar:** {fmt_brl(m.get('mensal',0))}/mês")
-                    st.write(f"**Prioridade:** {m.get('prioridade','')}")
-                st.progress(min(pct/100, 1.0), text=f"Progresso: {pct:.0f}%")
-                if st.button("🗑️ Remover", key=f"del_m_{i}"):
+            pct = (m['guardado'] / m['total'] * 100) if m['total'] > 0 else 0
+            c1, c2, c3 = st.columns([4, 3, 0.7])
+            with c1:
+                st.write(f"**{m['nome']}** — {_of_fmt(m['total'])}")
+                st.progress(min(pct/100, 1.0))
+                st.caption(f"{pct:.0f}% concluida | Faltam {_of_fmt(m['total']-m['guardado'])} | {m['prazo']} meses")
+            with c2:
+                st.write(f"Poupar por mes: {_of_fmt(m['mensal'])}")
+            with c3:
+                if st.button('X', key=f'of_del_m_{i}'):
                     st.session_state.of_metas.pop(i)
                     st.rerun()
     else:
-        st.info("Cadastre sua primeira meta financeira.")
+        st.info('Nenhuma meta cadastrada.')
 
 # ══════════════════════════════════════════════════
 # TAB 5 — PATRIMÔNIO
 # ══════════════════════════════════════════════════
 with tabs[5]:
-    st.subheader("🏦 Gestão Patrimonial")
-    st.caption("Registre seus ativos (bens) e calcule seu patrimônio líquido.")
+    st.subheader('Patrimonio')
 
-    TIPOS_PATRIMONIO = ["Imóvel","Veículo","Conta bancária","Participação empresarial","Outro bem"]
+    TIPOS_P = ['Imovel','Veiculo','Empresa','Outros bens']
 
-    with st.form("form_patrimonio", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            p_nome = st.text_input("Descrição", placeholder="Ex: Apartamento Santana")
-            p_tipo = st.selectbox("Tipo", TIPOS_PATRIMONIO)
-        with c2:
-            p_val = st.text_input("Valor estimado (R$)", placeholder="Ex: 250000")
-            p_liq = st.selectbox("Liquidez", ["Baixa (imóvel/veículo)","Média","Alta (dinheiro)"])
-        if st.form_submit_button("➕ Adicionar ativo", use_container_width=True):
-            if p_nome.strip() and p_val.strip():
-                st.session_state.of_patrimonios.append({
-                    "nome": p_nome, "tipo": p_tipo,
-                    "valor": parse_brl(p_val), "liquidez": p_liq
-                })
-                st.rerun()
+    c1, c2 = st.columns(2)
+    with c1:
+        st.text_input('Descricao', placeholder='Ex: Apartamento Santana', key='of_tmp_p_nome')
+        st.selectbox('Tipo', TIPOS_P, key='of_tmp_p_tipo')
+    with c2:
+        st.text_input('Valor estimado (R$)', placeholder='Ex: 350000', key='of_tmp_p_valor')
+        st.text_input('Divida associada (R$)', placeholder='Ex: 0', key='of_tmp_p_divida')
 
-    if st.session_state.of_patrimonios or st.session_state.of_reserva_atual > 0 or calc_investimentos_total() > 0:
-        bruto = calc_patrimonio_bruto()
-        liquido = calc_patrimonio_liquido()
-        dividas = calc_divida_total()
+    if st.button('Adicionar bem', key='of_btn_add_p', use_container_width=True):
+        n = st.session_state.of_tmp_p_nome.strip()
+        v = st.session_state.of_tmp_p_valor.strip()
+        if n and v:
+            st.session_state.of_patrimonios.append({
+                'nome': n,
+                'tipo': st.session_state.of_tmp_p_tipo,
+                'valor': _of_parse(v),
+                'divida': _of_parse(st.session_state.of_tmp_p_divida),
+            })
+            st.session_state.of_tmp_p_nome = ''
+            st.session_state.of_tmp_p_valor = ''
+            st.session_state.of_tmp_p_divida = ''
+            st.rerun()
+        else:
+            st.warning('Preencha descricao e valor.')
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Patrimônio Bruto", fmt_brl(bruto))
-        with col2:
-            st.metric("Total em Dívidas", fmt_brl(dividas))
-        with col3:
-            st.metric("Patrimônio Líquido", fmt_brl(liquido),
-                      delta="Positivo" if liquido >= 0 else "Negativo",
-                      delta_color="normal" if liquido >= 0 else "inverse")
-
+    if st.session_state.of_patrimonios:
         st.divider()
-        st.markdown("**Ativos cadastrados:**")
-        if st.session_state.of_reserva_atual > 0:
-            st.write(f"🏦 Reserva de emergência: {fmt_brl(st.session_state.of_reserva_atual)}")
-        if calc_investimentos_total() > 0:
-            st.write(f"📈 Investimentos: {fmt_brl(calc_investimentos_total())}")
+        bruto = _of_patrimonio_bruto()
+        st.markdown(f'**Patrimonio bruto: {_of_fmt(bruto)}**')
         for i, p in enumerate(st.session_state.of_patrimonios):
-            c1, c2, c3 = st.columns([3, 2, 1])
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
             with c1:
-                st.write(f"{p['nome']} ({p['tipo']})")
+                st.write(p['nome'])
             with c2:
-                st.write(fmt_brl(p['valor']))
+                st.write(_of_fmt(p['valor']))
             with c3:
-                if st.button("🗑️", key=f"del_p_{i}"):
+                st.write(p['tipo'])
+            with c4:
+                if st.button('X', key=f'of_del_p_{i}'):
                     st.session_state.of_patrimonios.pop(i)
                     st.rerun()
-
-        if dividas > 0:
-            st.divider()
-            st.markdown("**Passivos (dívidas):**")
-            for d in st.session_state.of_dividas:
-                st.write(f"🔴 {d['nome']}: {fmt_brl(d.get('saldo',0))}")
     else:
-        st.info("Registre seus bens para calcular seu patrimônio líquido.")
+        st.info('Nenhum bem cadastrado.')
 
 # ══════════════════════════════════════════════════
 # TAB 6 — INVESTIMENTOS
 # ══════════════════════════════════════════════════
 with tabs[6]:
-    st.subheader("📈 Investimentos")
+    st.subheader('Investimentos')
 
-    TIPOS_INV = ["Tesouro Direto","CDB","LCI/LCA","Fundo de investimento",
-                 "Ações","ETF","FII","Previdência Privada","Poupança","Outro"]
+    TIPOS_I = ['Renda Fixa','Acoes','FII','Criptomoedas','Poupanca','Previdencia','Outros']
 
-    with st.form("form_inv", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            inv_nome = st.text_input("Investimento", placeholder="Ex: CDB Nubank 120% CDI")
-            inv_tipo = st.selectbox("Tipo", TIPOS_INV)
-            inv_val = st.text_input("Valor atual (R$)", placeholder="Ex: 10000")
-        with c2:
-            inv_liq = st.selectbox("Liquidez", ["Diária","30 dias","D+30 a D+180","Longo prazo","Sem liquidez"])
-            inv_venc = st.text_input("Vencimento (ou 'sem vencimento')", placeholder="Ex: 2027-06")
-            inv_rent = st.text_input("Rentabilidade anual estimada (%)", placeholder="Ex: 12.5")
-        if st.form_submit_button("➕ Adicionar investimento", use_container_width=True):
-            if inv_nome.strip() and inv_val.strip():
-                st.session_state.of_investimentos.append({
-                    "nome": inv_nome, "tipo": inv_tipo,
-                    "valor": parse_brl(inv_val), "liquidez": inv_liq,
-                    "vencimento": inv_venc, "rentabilidade": parse_brl(inv_rent),
-                    "data": str(date.today())
-                })
-                st.rerun()
+    c1, c2 = st.columns(2)
+    with c1:
+        st.text_input('Investimento', placeholder='Ex: CDB Nubank 120% CDI', key='of_tmp_i_nome')
+        st.selectbox('Tipo', TIPOS_I, key='of_tmp_i_tipo')
+    with c2:
+        st.text_input('Valor atual (R$)', placeholder='Ex: 12000', key='of_tmp_i_valor')
+        st.text_input('Rentabilidade anual estimada (%)', placeholder='Ex: 12.5', key='of_tmp_i_rent')
+
+    if st.button('Adicionar investimento', key='of_btn_add_i', use_container_width=True):
+        n = st.session_state.of_tmp_i_nome.strip()
+        v = st.session_state.of_tmp_i_valor.strip()
+        if n and v:
+            st.session_state.of_investimentos.append({
+                'nome': n,
+                'tipo': st.session_state.of_tmp_i_tipo,
+                'valor': _of_parse(v),
+                'rent': _of_parse(st.session_state.of_tmp_i_rent),
+            })
+            st.session_state.of_tmp_i_nome = ''
+            st.session_state.of_tmp_i_valor = ''
+            st.session_state.of_tmp_i_rent = ''
+            st.rerun()
+        else:
+            st.warning('Preencha nome e valor.')
 
     if st.session_state.of_investimentos:
-        total_inv = calc_investimentos_total()
-        st.metric("Total investido", fmt_brl(total_inv))
-
-        # Distribuição por tipo
-        tipos = {}
-        for inv in st.session_state.of_investimentos:
-            t = inv.get("tipo","Outro")
-            tipos[t] = tipos.get(t,0) + inv.get("valor",0)
-
-        st.markdown("**Distribuição:**")
-        for t, v in sorted(tipos.items(), key=lambda x: -x[1]):
-            pct = v/total_inv*100 if total_inv > 0 else 0
-            st.progress(min(pct/100,1.0), text=f"{t}: {fmt_brl(v)} ({pct:.0f}%)")
-
         st.divider()
+        total_inv = sum(i['valor'] for i in st.session_state.of_investimentos)
+        st.markdown(f'**Total investido: {_of_fmt(total_inv)}**')
         for i, inv in enumerate(st.session_state.of_investimentos):
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 1])
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 0.7])
             with c1:
-                st.write(inv["nome"])
+                st.write(inv['nome'])
             with c2:
-                st.write(fmt_brl(inv["valor"]))
+                st.write(_of_fmt(inv['valor']))
             with c3:
-                st.write(inv.get("liquidez",""))
+                st.write(f"{inv['tipo']} | {inv.get('rent',0):.1f}% a.a.")
             with c4:
-                if st.button("🗑️", key=f"del_i_{i}"):
+                if st.button('X', key=f'of_del_i_{i}'):
                     st.session_state.of_investimentos.pop(i)
                     st.rerun()
-
-        # Perfil sugerido
-        st.divider()
-        st.subheader("🎯 Perfil do Investidor")
-        renda_fixa = sum(v for t,v in tipos.items() if t in ["Tesouro Direto","CDB","LCI/LCA","Poupança"])
-        variavel = sum(v for t,v in tipos.items() if t in ["Ações","ETF","FII"])
-        if total_inv > 0:
-            pct_rf = renda_fixa/total_inv*100
-            pct_rv = variavel/total_inv*100
-            if pct_rv > 40:
-                perfil_txt = "🔴 Arrojado — Alta exposição a renda variável."
-            elif pct_rv > 15:
-                perfil_txt = "🟡 Moderado — Boa diversificação entre renda fixa e variável."
-            else:
-                perfil_txt = "🟢 Conservador — Concentrado em renda fixa."
-            st.info(f"Perfil aparente: **{perfil_txt}**\\n\\nRenda fixa: {pct_rf:.0f}% | Renda variável: {pct_rv:.0f}%")
     else:
-        st.info("Nenhum investimento cadastrado. Adicione seus investimentos para análise.")
+        st.info('Nenhum investimento cadastrado.')
 
 # ══════════════════════════════════════════════════
-# TAB 7 — ORÁCULO IA (CHAT)
+# TAB 7 — ORÁCULO IA
 # ══════════════════════════════════════════════════
 with tabs[7]:
-    st.subheader("🤖 Consultor Oráculo IA")
-    st.caption("Faça perguntas e receba análises baseadas nos seus dados financeiros.")
+    st.subheader('Oraculo IA — Consultor Financeiro')
 
-    # Monta contexto financeiro
-    def gerar_contexto():
-        renda = calc_renda_total()
-        gastos = calc_gastos_total()
-        saldo = calc_saldo()
-        ctx = f'''DADOS FINANCEIROS DO USUÁRIO (atualizados):
-- Renda líquida mensal: {fmt_brl(renda)}
-- Total de gastos mensais: {fmt_brl(gastos)}
-- Saldo mensal: {fmt_brl(saldo)}
-- Taxa de poupança: {calc_taxa_poupanca():.1f}%
-- Reserva de emergência atual: {fmt_brl(st.session_state.of_reserva_atual)}
-- Dívidas totais: {fmt_brl(calc_divida_total())} (parcelas: {fmt_brl(calc_parcelas_total())}/mês)
-- Investimentos: {fmt_brl(calc_investimentos_total())}
-- Patrimônio líquido: {fmt_brl(calc_patrimonio_liquido())}
-- Número de metas: {len(st.session_state.of_metas)}
-- Gastos por categoria: {json.dumps({g['cat']: g['valor'] for g in st.session_state.of_gastos}, ensure_ascii=False)}
+    # Monta contexto financeiro para a IA
+    def _of_contexto():
+        ctx = f'''SITUACAO FINANCEIRA DO USUARIO:
+Renda total: {_of_fmt(_of_renda_total())}
+Gastos totais: {_of_fmt(_of_gastos_total())}
+Saldo mensal: {_of_fmt(_of_saldo())}
+Reserva de emergencia: {_of_fmt(_of_parse(st.session_state.of_reserva))}
+Total de dividas: {_of_fmt(_of_divida_total())}
+Patrimonio liquido: {_of_fmt(_of_patrimonio_liquido())}
+Numero de metas: {len(st.session_state.of_metas)}
+Numero de investimentos: {len(st.session_state.of_investimentos)}
+Idade: {st.session_state.of_idade or "nao informada"}
+Dependentes: {st.session_state.of_dependentes or 0}
 '''
-        if st.session_state.of_dividas:
-            ctx += f"- Dívidas: {[d['nome']+' '+str(d.get('saldo',0)) for d in st.session_state.of_dividas]}\\n"
-        if st.session_state.of_metas:
-            ctx += f"- Metas: {[m['nome']+' R$'+str(m.get('valor',0)) for m in st.session_state.of_metas]}\\n"
         return ctx
 
-    SYSTEM_PROMPT = '''Você é o Oráculo Financeiro IA, um consultor financeiro pessoal especializado.
-Analise os dados reais do usuário fornecidos no contexto e ofereça orientação personalizada.
-Princípios:
-- Analise SEMPRE a situação completa antes de recomendar
-- Não recomende investimentos antes de avaliar dívidas, reserva e prazo
-- Diferencie fatos, estimativas e projeções
-- Seja claro, objetivo e use números reais do usuário
-- Nunca prometa rentabilidade ou resultados garantidos
-- Se faltar dados, pergunte
-- Use linguagem simples e formatação clara com emojis e tópicos'''
-
-    # Sugestões de perguntas
-    if not st.session_state.of_historico_chat:
-        st.markdown("**Sugestões de perguntas:**")
-        sugestoes = [
-            "Qual é minha situação financeira atual?",
-            "Como devo priorizar o pagamento das minhas dívidas?",
-            "Quanto tempo para construir minha reserva de emergência?",
-            "Como posso economizar mais por mês?",
-            "Qual minha capacidade de investimento?",
-        ]
-        for s in sugestoes:
-            if st.button(s, key=f"sug_{s[:20]}"):
-                st.session_state.of_historico_chat.append({"role":"user","content":s})
-                st.rerun()
-
-    # Histórico do chat
+    # Mostra histórico
     for msg in st.session_state.of_historico_chat:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+        if msg['role'] == 'user':
+            st.chat_message('user').write(msg['content'])
+        else:
+            st.chat_message('assistant').write(msg['content'])
 
-    # Input do usuário
-    pergunta = st.chat_input("Faça sua pergunta ao Oráculo...")
+    # Input de mensagem
+    pergunta = st.chat_input('Pergunte ao Oraculo Financeiro...')
     if pergunta:
-        st.session_state.of_historico_chat.append({"role":"user","content":pergunta})
-        with st.chat_message("user"):
-            st.markdown(pergunta)
+        st.session_state.of_historico_chat.append({'role': 'user', 'content': pergunta})
 
-        ctx = gerar_contexto()
-        msgs_api = [{"role":"system","content":SYSTEM_PROMPT + "\\n\\n" + ctx}]
-        for m in st.session_state.of_historico_chat[-10:]:
-            msgs_api.append({"role":m["role"],"content":m["content"]})
+        ctx = _of_contexto()
+        prompt_sistema = f'''Voce e o Oraculo Financeiro IA, um consultor financeiro pessoal experiente e empatico.
+Responda sempre em portugues brasileiro.
+Seja direto, pratico e use linguagem clara.
+Baseie suas respostas nos dados financeiros do usuario abaixo.
+
+{ctx}
+
+Pergunta: {pergunta}'''
 
         try:
-            import anthropic as _anthr
-            _cli = _anthr.Anthropic()
-            with st.chat_message("assistant"):
-                with st.spinner("Oráculo analisando..."):
-                    resp = _cli.messages.create(
-                        model="claude-opus-4-5",
-                        max_tokens=1500,
-                        messages=msgs_api[1:],
-                        system=msgs_api[0]["content"]
-                    )
-                    resposta = resp.content[0].text
-                    st.markdown(resposta)
-            st.session_state.of_historico_chat.append({"role":"assistant","content":resposta})
-        except Exception as e:
-            st.error(f"Erro ao consultar IA: {e}")
+            from openai import OpenAI as _OAI
+            import os as _os
+            _cli = _OAI(api_key=_os.environ.get('OPENAI_API_KEY',''))
+            _resp = _cli.chat.completions.create(
+                model='gpt-4o-mini',
+                messages=[{'role':'user','content': prompt_sistema}],
+                max_tokens=800,
+                temperature=0.7,
+            )
+            resposta = _resp.choices[0].message.content
+        except Exception as _e:
+            resposta = f'''Com base nos seus dados:
 
-    if st.session_state.of_historico_chat:
-        if st.button("🗑️ Limpar conversa"):
-            st.session_state.of_historico_chat = []
-            st.rerun()
+{ctx}
+
+Para responder sua pergunta sobre "{pergunta}", analise seus numeros acima e consulte um especialista financeiro certificado (CFP) para orientacao personalizada.
+
+(Servico de IA temporariamente indisponivel: {str(_e)[:100]})'''
+
+        st.session_state.of_historico_chat.append({'role': 'assistant', 'content': resposta})
+        st.rerun()
+
+    if st.button('Limpar conversa', key='of_btn_limpar_chat'):
+        st.session_state.of_historico_chat = []
+        st.rerun()
 
 # ══════════════════════════════════════════════════
 # TAB 8 — EXPORTAR
 # ══════════════════════════════════════════════════
 with tabs[8]:
-    st.subheader("⬇️ Exportar Dados")
+    st.subheader('Exportar Dados')
 
-    import io as _io_of, csv as _csv_of
-    _buf_of = _io_of.StringIO()
-    _w_of = _csv_of.writer(_buf_of)
+    # Monta relatório completo
+    _of_linhas = []
+    _of_linhas.append('ORACULO FINANCEIRO IA — Relatorio Completo')
+    _of_linhas.append('=' * 50)
+    _of_linhas.append(f'Gerado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}')
+    _of_linhas.append('')
+    _of_linhas.append('RESUMO FINANCEIRO')
+    _of_linhas.append(f'  Renda total mensal : {_of_fmt(_of_renda_total())}')
+    _of_linhas.append(f'  Total de gastos    : {_of_fmt(_of_gastos_total())}')
+    _of_linhas.append(f'  Saldo mensal       : {_of_fmt(_of_saldo())}')
+    _of_linhas.append(f'  Reserva emergencia : {_of_fmt(_of_parse(st.session_state.of_reserva))}')
+    _of_linhas.append(f'  Total de dividas   : {_of_fmt(_of_divida_total())}')
+    _of_linhas.append(f'  Patrimonio liquido : {_of_fmt(_of_patrimonio_liquido())}')
+    _of_linhas.append('')
+    if st.session_state.of_gastos:
+        _of_linhas.append('GASTOS:')
+        for g in st.session_state.of_gastos:
+            _of_linhas.append(f"  {g['nome']} ({g['cat']}): {_of_fmt(g['valor'])}")
+        _of_linhas.append('')
+    if st.session_state.of_dividas:
+        _of_linhas.append('DIVIDAS:')
+        for d in st.session_state.of_dividas:
+            _of_linhas.append(f"  {d['nome']}: {_of_fmt(d['saldo'])} @ {d.get('juros',0):.1f}% a.m.")
+        _of_linhas.append('')
+    if st.session_state.of_metas:
+        _of_linhas.append('METAS:')
+        for m in st.session_state.of_metas:
+            pct = m['guardado']/m['total']*100 if m['total'] > 0 else 0
+            _of_linhas.append(f"  {m['nome']}: {_of_fmt(m['total'])} ({pct:.0f}% concluida)")
+        _of_linhas.append('')
+    if st.session_state.of_investimentos:
+        _of_linhas.append('INVESTIMENTOS:')
+        for inv in st.session_state.of_investimentos:
+            _of_linhas.append(f"  {inv['nome']}: {_of_fmt(inv['valor'])} ({inv['tipo']})")
+        _of_linhas.append('')
+    if st.session_state.of_historico_chat:
+        _of_linhas.append('HISTORICO DE CONSULTAS:')
+        for msg in st.session_state.of_historico_chat:
+            _of_linhas.append(f"  [{msg['role'].upper()}] {msg['content']}")
+            _of_linhas.append('')
 
-    _w_of.writerow(["=== ORÁCULO FINANCEIRO IA — RELATÓRIO ==="])
-    _w_of.writerow([f"Gerado em: {date.today()}"])
-    _w_of.writerow([])
+    _of_txt = '\n'.join(_of_linhas)
 
-    _w_of.writerow(["=== RENDA ==="])
-    _w_of.writerow(["Tipo","Descrição","Valor (R$)"])
-    _w_of.writerow(["Principal","Renda líquida",st.session_state.of_renda])
-    for o in st.session_state.of_outras_rendas:
-        _w_of.writerow(["Outra renda",o.get("nome",""),o.get("valor",0)])
-    _w_of.writerow(["TOTAL RENDA","",calc_renda_total()])
-    _w_of.writerow([])
-
-    _w_of.writerow(["=== GASTOS ==="])
-    _w_of.writerow(["Descrição","Categoria","Tipo","Valor (R$)","% da renda"])
-    renda = calc_renda_total()
-    for g in st.session_state.of_gastos:
-        pct = g.get("valor",0)/renda*100 if renda > 0 else 0
-        _w_of.writerow([g.get("nome",""),g.get("cat",""),g.get("tipo",""),g.get("valor",0),f"{pct:.1f}%"])
-    _w_of.writerow(["TOTAL GASTOS","","",calc_gastos_total(),""])
-    _w_of.writerow([])
-
-    _w_of.writerow(["=== DÍVIDAS ==="])
-    _w_of.writerow(["Nome","Tipo","Saldo (R$)","Parcela (R$)","Juros %/mês","Prazo (meses)"])
-    for d in st.session_state.of_dividas:
-        _w_of.writerow([d.get("nome",""),d.get("tipo",""),d.get("saldo",0),d.get("parcela",0),d.get("juros",0),d.get("prazo",0)])
-    _w_of.writerow(["TOTAL DÍVIDAS","","",calc_divida_total(),"",""])
-    _w_of.writerow([])
-
-    _w_of.writerow(["=== METAS ==="])
-    _w_of.writerow(["Nome","Categoria","Valor (R$)","Já guardei (R$)","Falta (R$)","Prazo (meses)","Guardar/mês (R$)","Prioridade"])
-    for m in st.session_state.of_metas:
-        falt = max(0, m.get("valor",0)-m.get("atual",0))
-        _w_of.writerow([m.get("nome",""),m.get("cat",""),m.get("valor",0),m.get("atual",0),falt,m.get("prazo",0),m.get("mensal",0),m.get("prioridade","")])
-    _w_of.writerow([])
-
-    _w_of.writerow(["=== PATRIMÔNIO ==="])
-    _w_of.writerow(["Descrição","Tipo","Valor (R$)","Liquidez"])
-    if st.session_state.of_reserva_atual > 0:
-        _w_of.writerow(["Reserva de emergência","Conta bancária",st.session_state.of_reserva_atual,"Alta"])
-    for inv in st.session_state.of_investimentos:
-        _w_of.writerow([inv.get("nome",""),inv.get("tipo",""),inv.get("valor",0),inv.get("liquidez","")])
-    for p in st.session_state.of_patrimonios:
-        _w_of.writerow([p.get("nome",""),p.get("tipo",""),p.get("valor",0),p.get("liquidez","")])
-    _w_of.writerow(["PATRIMÔNIO BRUTO","","",calc_patrimonio_bruto(),""])
-    _w_of.writerow(["DÍVIDAS TOTAIS","","",calc_divida_total(),""])
-    _w_of.writerow(["PATRIMÔNIO LÍQUIDO","","",calc_patrimonio_liquido(),""])
-    _w_of.writerow([])
-
-    _w_of.writerow(["=== INDICADORES ==="])
-    _w_of.writerow(["Indicador","Valor"])
-    _w_of.writerow(["Saldo mensal",calc_saldo()])
-    _w_of.writerow(["Taxa de poupança (%)",f"{calc_taxa_poupanca():.1f}%"])
-    _w_of.writerow(["Comprometimento renda com dívidas",f"{calc_parcelas_total()/renda*100:.1f}%" if renda > 0 else "N/A"])
+    st.text_area('Preview do relatorio', _of_txt, height=300)
 
     st.download_button(
-        "⬇️ Baixar relatório completo (.csv)",
-        data=_buf_of.getvalue().encode("utf-8-sig"),
-        file_name=f"Oraculo_Financeiro_{date.today()}.csv",
-        mime="text/csv",
+        'Baixar relatorio completo (.txt)',
+        data=_of_txt.encode('utf-8'),
+        file_name='Oraculo_Financeiro_relatorio.txt',
+        mime='text/plain',
         use_container_width=True,
-        key="dl_oraculo_v2"
+        key='of_dl_relatorio'
     )
 
-    st.divider()
-    st.markdown("**Resumo atual:**")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write(f"📊 Gastos cadastrados: {len(st.session_state.of_gastos)}")
-        st.write(f"💳 Dívidas: {len(st.session_state.of_dividas)}")
-        st.write(f"🎯 Metas: {len(st.session_state.of_metas)}")
-    with col2:
-        st.write(f"📈 Investimentos: {len(st.session_state.of_investimentos)}")
-        st.write(f"🏦 Patrimônios: {len(st.session_state.of_patrimonios)}")
-        st.write(f"💬 Consultas ao Oráculo: {len(st.session_state.of_historico_chat)//2}")
+    # Export JSON
+    _of_dados = {
+        'renda': st.session_state.of_renda,
+        'reserva': st.session_state.of_reserva,
+        'outras_rendas': st.session_state.of_outras_rendas,
+        'gastos': st.session_state.of_gastos,
+        'dividas': st.session_state.of_dividas,
+        'metas': st.session_state.of_metas,
+        'investimentos': st.session_state.of_investimentos,
+        'patrimonios': st.session_state.of_patrimonios,
+    }
+    st.download_button(
+        'Baixar dados em JSON',
+        data=json.dumps(_of_dados, ensure_ascii=False, indent=2).encode('utf-8'),
+        file_name='Oraculo_Financeiro_dados.json',
+        mime='application/json',
+        use_container_width=True,
+        key='of_dl_json'
+    )
 
 """,
     "seducao_ia": """
@@ -10661,25 +10482,24 @@ elif st.session_state.etapa == "App":
 
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_seducao_, datetime as _dt_exp_seducao_
-    _hist_historico_consultas = st.session_state.get('historico_consultas', [])
-    _txt_lines = []
-    for _item in _hist_historico_consultas:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_seducao_ = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+_hist_seducao = st.session_state.get('historico_consultas', [])
+_lines_seducao = []
+for _item_seducao in _hist_seducao:
+    if isinstance(_item_seducao, dict):
+        _role_seducao = _item_seducao.get('role', _item_seducao.get('tipo', 'item'))
+        _cont_seducao = _item_seducao.get('content', _item_seducao.get('texto', _item_seducao.get('resposta', str(_item_seducao))))
+        _lines_seducao.append(f'[{_role_seducao}] {_cont_seducao}')
+        _lines_seducao.append('')
+    else:
+        _lines_seducao.append(str(_item_seducao))
+_txt_seducao = "\n".join(_lines_seducao) if _lines_seducao else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_seducao_.encode('utf-8'),
+    data=_txt_seducao.encode('utf-8'),
     file_name="Seducao_IA_historico.txt",
     mime="text/plain",
     use_container_width=True,
-    key="dl_exp_seducao__txt"
+    key="dl_exp_seducao_txt"
 )
 
 
@@ -15713,21 +15533,20 @@ elif st.session_state.etapa == "App":
 
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_mente_po, datetime as _dt_exp_mente_po
-    _hist_historico_sessoes = st.session_state.get('historico_sessoes', [])
-    _txt_lines = []
-    for _item in _hist_historico_sessoes:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_mente_po = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+_hist_mente_po = st.session_state.get('historico_sessoes', [])
+_lines_mente_po = []
+for _item_mente_po in _hist_mente_po:
+    if isinstance(_item_mente_po, dict):
+        _role_mente_po = _item_mente_po.get('role', _item_mente_po.get('tipo', 'item'))
+        _cont_mente_po = _item_mente_po.get('content', _item_mente_po.get('texto', _item_mente_po.get('resposta', str(_item_mente_po))))
+        _lines_mente_po.append(f'[{_role_mente_po}] {_cont_mente_po}')
+        _lines_mente_po.append('')
+    else:
+        _lines_mente_po.append(str(_item_mente_po))
+_txt_mente_po = "\n".join(_lines_mente_po) if _lines_mente_po else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_mente_po.encode('utf-8'),
+    data=_txt_mente_po.encode('utf-8'),
     file_name="Mente_Poderosa_historico.txt",
     mime="text/plain",
     use_container_width=True,
@@ -16641,30 +16460,22 @@ st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_pet_inte, datetime as _dt_exp_pet_inte
-    _hist_hist_chat = st.session_state.get('hist_chat', [])
-    _hist_hist_saude = st.session_state.get('hist_saude', [])
-    _txt_lines = []
-    for _item in _hist_hist_chat:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
+_hist_c_pet_inte = st.session_state.get('hist_chat', [])
+_hist_s_pet_inte = st.session_state.get('hist_saude', [])
+_lines_pet_inte = []
+for _h_pet_inte in [_hist_c_pet_inte, _hist_s_pet_inte]:
+    for _item_pet_inte in _h_pet_inte:
+        if isinstance(_item_pet_inte, dict):
+            _role_pet_inte = _item_pet_inte.get('role', _item_pet_inte.get('tipo', 'item'))
+            _cont_pet_inte = _item_pet_inte.get('content', _item_pet_inte.get('texto', _item_pet_inte.get('resposta', str(_item_pet_inte))))
+            _lines_pet_inte.append(f'[{_role_pet_inte}] {_cont_pet_inte}')
+            _lines_pet_inte.append('')
         else:
-            _txt_lines.append(str(_item))
-    for _item in _hist_hist_saude:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_pet_inte = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+            _lines_pet_inte.append(str(_item_pet_inte))
+_txt_pet_inte = "\n".join(_lines_pet_inte) if _lines_pet_inte else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_pet_inte.encode('utf-8'),
+    data=_txt_pet_inte.encode('utf-8'),
     file_name="Pet_Inteligente_historico.txt",
     mime="text/plain",
     use_container_width=True,
@@ -19392,21 +19203,20 @@ elif st.session_state.etapa == "App":
 
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_classico, datetime as _dt_exp_classico
-    _hist_historico_consultas = st.session_state.get('historico_consultas', [])
-    _txt_lines = []
-    for _item in _hist_historico_consultas:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_classico = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+_hist_classico = st.session_state.get('historico_consultas', [])
+_lines_classico = []
+for _item_classico in _hist_classico:
+    if isinstance(_item_classico, dict):
+        _role_classico = _item_classico.get('role', _item_classico.get('tipo', 'item'))
+        _cont_classico = _item_classico.get('content', _item_classico.get('texto', _item_classico.get('resposta', str(_item_classico))))
+        _lines_classico.append(f'[{_role_classico}] {_cont_classico}')
+        _lines_classico.append('')
+    else:
+        _lines_classico.append(str(_item_classico))
+_txt_classico = "\n".join(_lines_classico) if _lines_classico else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_classico.encode('utf-8'),
+    data=_txt_classico.encode('utf-8'),
     file_name="Classicos_IA_historico.txt",
     mime="text/plain",
     use_container_width=True,
@@ -21789,21 +21599,20 @@ st.markdown("<div class='rodape-ravengar'>✦ EXPLORANDO OS MISTÉRIOS DA MENTE 
 
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_tenda_ra, datetime as _dt_exp_tenda_ra
-    _hist_historico = st.session_state.get('historico', [])
-    _txt_lines = []
-    for _item in _hist_historico:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_tenda_ra = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+_hist_rv = st.session_state.get('historico', [])
+_txt_rv_lines = []
+for _item_rv in _hist_rv:
+    if isinstance(_item_rv, dict):
+        _role_rv = _item_rv.get('role', _item_rv.get('tipo', 'item'))
+        _cont_rv = _item_rv.get('content', _item_rv.get('texto', _item_rv.get('resposta', str(_item_rv))))
+        _txt_rv_lines.append(f'[{_role_rv}] {_cont_rv}')
+        _txt_rv_lines.append('')
+    else:
+        _txt_rv_lines.append(str(_item_rv))
+_txt_out_rv = "\n".join(_txt_rv_lines) if _txt_rv_lines else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_tenda_ra.encode('utf-8'),
+    data=_txt_out_rv.encode('utf-8'),
     file_name="Tenda_Ravengar_historico.txt",
     mime="text/plain",
     use_container_width=True,
@@ -22831,21 +22640,20 @@ elif st.session_state.etapa == "App":
 
 
 # ── EXPORTAR HISTÓRICO COMPLETO ──
-import io as _io_exp_vida_int, datetime as _dt_exp_vida_int
-    _hist_historico_planos = st.session_state.get('historico_planos', [])
-    _txt_lines = []
-    for _item in _hist_historico_planos:
-        if isinstance(_item, dict):
-            role = _item.get('role', _item.get('tipo', 'item'))
-            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
-            _txt_lines.append(f'[{role}] {content_val}')
-            _txt_lines.append('')
-        else:
-            _txt_lines.append(str(_item))
-_txt_out_vida_int = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+_hist_vida_int = st.session_state.get('historico_planos', [])
+_lines_vida_int = []
+for _item_vida_int in _hist_vida_int:
+    if isinstance(_item_vida_int, dict):
+        _role_vida_int = _item_vida_int.get('role', _item_vida_int.get('tipo', 'item'))
+        _cont_vida_int = _item_vida_int.get('content', _item_vida_int.get('texto', _item_vida_int.get('resposta', str(_item_vida_int))))
+        _lines_vida_int.append(f'[{_role_vida_int}] {_cont_vida_int}')
+        _lines_vida_int.append('')
+    else:
+        _lines_vida_int.append(str(_item_vida_int))
+_txt_vida_int = "\n".join(_lines_vida_int) if _lines_vida_int else "Nenhum histórico gerado ainda."
 st.download_button(
     "⬇️ Baixar histórico completo (.txt)",
-    data=_txt_out_vida_int.encode('utf-8'),
+    data=_txt_vida_int.encode('utf-8'),
     file_name="Vida_Inteligente_historico.txt",
     mime="text/plain",
     use_container_width=True,
