@@ -16751,7 +16751,8 @@ st.markdown(
 )
 
 """,
-    "pet_inteligente": """import streamlit as st
+    "pet_inteligente": """
+import streamlit as st
 from groq import Groq
 from datetime import datetime
 import json
@@ -16895,15 +16896,12 @@ if st.session_state.etapa == "Login":
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
         chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
-        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
-        dados_login = json.load(arq_j) if arq_j else None
         if st.button("✨ ENTRAR", key="btn_entrar_login"):
             if len(nome.strip()) < 2:
                 st.warning("Digite um nome com pelo menos 2 caracteres.")
             elif chave.strip():
                 st.session_state.usuario = nome.strip()
                 st.session_state.api_key = chave
-                if dados_login: carregar_json_sessao(dados_login)
                 st.session_state.etapa = "App"
                 st.rerun()
             else:
@@ -16915,23 +16913,7 @@ elif st.session_state.etapa == "App":
     
     (_tab_home, _tab_pets, _tab_saude, _tab_alimentacao, _tab_comportamento, _tab_emergencia, _tab_agenda, _tab_peso, _tab_chat, _tab_higiene, _tab_Mais) = st.tabs(['🏠 Home', '🐾 Meus Pets', '🩺 Saúde', '🍖 Alimentação', '🧠 Comportamento', '🚨 Emergência', '📅 Agenda', '⚖️ Peso', '🤖 Converse com IA', '🧼 Higiene', '➕ Mais'])
 
-    # ── BARRA SALVAR — visível em todas as abas ──
-    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
-        _bsc1, _bsc2 = st.columns(2)
-        with _bsc1:
-            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k != 'api_key'}
-            st.download_button("💾 Baixar meus dados (.json)",
-                data=json.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
-                file_name=f"pet_inteligente_{st.session_state.get('usuario','user')}.json",
-                mime="application/json", key="dl_barra_sv_pet")
-        with _bsc2:
-            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_pet", label_visibility="collapsed")
-            if _fupsv:
-                try:
-                    _dados_car = json.loads(_fupsv.read().decode())
-                    carregar_json_sessao(_dados_car)
-                    st.success("✅ Dados restaurados!"); st.rerun()
-                except: st.error("Arquivo inválido.")
+
 
 
     with _tab_home:
