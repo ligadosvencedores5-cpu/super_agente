@@ -10375,15 +10375,16 @@ st.markdown(
     "</div>", unsafe_allow_html=True
 )
 """,
-    "conexao_magnetica": """# [hub] import streamlit as st
-# [hub] from groq import Groq
-# [hub] from datetime import datetime, date
-# [hub] import json
-import random
+    "seducao_ia": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+import re
 
-# set_page_config removido pelo super_agente
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="PRESENÇA IA", layout="wide")
 
-st.markdown(\"\"\"
+st.markdown('''
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
@@ -10392,14 +10393,15 @@ header {visibility: hidden;}
 [data-testid="stDecoration"] {visibility: hidden;}
 [data-testid="stStatusWidget"] {visibility: hidden;}
 </style>
-\"\"\", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
 
-st.markdown(\"\"\"
+# --- ESTILO CSS ---
+st.markdown('''
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    .stApp { background-color:#F8F9FA; font-family:'Inter',sans-serif; }
+    .stApp { background-color:#FDFAF6; font-family:'Inter',sans-serif; }
     [data-testid="stSidebar"] { display:none; }
 
     .stTextInput>div>div>input, .stTextArea>div>textarea,
@@ -10410,21 +10412,21 @@ st.markdown(\"\"\"
 
     .stButton>button {
         width:100%; border-radius:10px; height:3.2em;
-        background:linear-gradient(135deg,#495057,#343A40) !important; color:white !important;
+        background:linear-gradient(135deg,#92400E,#78350F) !important; color:white !important;
         font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
         font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
     }
-    .stButton>button:hover { background:linear-gradient(135deg,#343A40,#212529) !important; transform:translateY(-1px); }
+    .stButton>button:hover { background:linear-gradient(135deg,#78350F,#5C2D0A) !important; transform:translateY(-1px); }
     .stApp .stButton>button, .stApp .stButton>button p,
     .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
 
-    .stApp h1, .stApp h2, .stApp h3 { color:#1A1A2E !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+    .stApp h1, .stApp h2, .stApp h3 { color:#3D2B1F !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
 
-    .card { background:linear-gradient(135deg,#F1F3F5,#E9ECEF); padding:20px; border-radius:14px; border:1px solid #CED4DA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#1A1A2E !important; }
+    .card { background:linear-gradient(135deg,#FDF8F0,#FAF0E6); padding:20px; border-radius:14px; border:1px solid #D4B896; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#3D2B1F !important; }
 
-    .card-dark { background:linear-gradient(135deg,#E9ECEF,#DEE2E6); padding:20px; border-radius:14px; border:1px solid #ADB5BD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#1A1A2E !important; }
+    .card-dark { background:linear-gradient(135deg,#FAF0E6,#F5E6D3); padding:20px; border-radius:14px; border:1px solid #C4956A; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#3D2B1F !important; }
 
     .card-green { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
     .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
@@ -10438,275 +10440,65 @@ st.markdown(\"\"\"
     .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
     .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
 
-    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #CED4DA; }
-    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#1A1A2E !important; }
-    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#495057 !important; }
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #D4B896; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#3D2B1F !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#7C5C3E !important; }
 
-    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #CED4DA; }
-    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#1A1A2E !important; }
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #D4B896; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#3D2B1F !important; }
 
-    .badge { background:#495057; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge { background:#92400E; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
     .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
     .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
     .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
     .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
 
-    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#CED4DA,transparent); margin:18px 0; }
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#D4B896,transparent); margin:18px 0; }
 
-    .chat-user { background:#FFFFFF; border:1px solid #CED4DA; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
-    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#1A1A2E !important; }
+    .chat-user { background:#FFFFFF; border:1px solid #D4B896; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#3D2B1F !important; }
 
-    .chat-persona { background:#F8F9FA; border:1px solid #CED4DA; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
-    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#1A1A2E !important; }
+    .chat-persona { background:#FDFAF6; border:1px solid #D4B896; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#3D2B1F !important; }
 
-    .questao-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:12px; padding:18px; margin-bottom:14px; }
-    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#1A1A2E !important; }
+    .questao-box { background:#FFFFFF; border:2px solid #D4B896; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#3D2B1F !important; }
 
-    .avaliacao-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:14px; padding:18px; margin-bottom:12px; }
-    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#1A1A2E !important; }
+    .avaliacao-box { background:#FFFFFF; border:2px solid #D4B896; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#3D2B1F !important; }
 
-    .meta-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
-    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#1A1A2E !important; }
-    .stApp .meta-numero { font-size:2em; font-weight:700; color:#495057 !important; }
+    .meta-box { background:#FFFFFF; border:2px solid #D4B896; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#3D2B1F !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#7C5C3E !important; }
 
     .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
     .chat-scroll-container > * { flex-shrink:0; }
     
 
     </style>
-\"\"\", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
-# ─── CACHE ───
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
 @st.cache_resource
-def get_cache():
+def get_cache_presenca():
     return {"perfis": {}}
-_cache = get_cache()
 
-# ─── FAIXAS DA ARTE DA LÁBIA ───
-FAIXAS = [
-    (1, "⚪ Faixa Branca",  "🌱 O Invisível",    "Recebe ajuda direta. Personagem facilitador."),
-    (2, "🟡 Faixa Amarela", "🟢 O Quebra-Gelo",  "Aprende a captar ganchos. Ajuda reduzida."),
-    (3, "🟠 Faixa Laranja", "🟡 O Interessante", "Lida com silêncio e improvisação. Sem ajuda direta."),
-    (4, "🟢 Faixa Verde",   "🟠 O Inabalável",   "Provocações e pressão social."),
-    (5, "🔵 Faixa Azul",    "🔴 O Desafiador",   "Respostas frias e pouca reciprocidade."),
-    (6, "🟤 Faixa Marrom",  "⚫ O Sedutor",       "Oscilação e imprevisibilidade."),
-    (7, "⚫ Faixa Preta",   "👑 Don Juan",        "Conversa livre. Zero rede de proteção."),
-]
+_cache = get_cache_presenca()
 
-CONQUISTAS_DEF = [
-    ("primeira_analise",   "🔍 Primeira Análise",        "Realizou sua primeira análise de conversa"),
-    ("primeiro_treino",    "🎭 Primeiro Treino",          "Completou o primeiro roleplay"),
-    ("cinco_analises",     "📊 5 Conversas",              "5 conversas analisadas"),
-    ("dez_mensagens",      "✨ 10 Mensagens",             "10 mensagens aprimoradas"),
-    ("primeira_carta",     "🃏 Primeira Carta",           "Usou a Carta na Manga pela primeira vez"),
-    ("cinco_cartas",       "🎴 5 Cartas",                 "5 Cartas na Manga utilizadas"),
-    ("plano_7dias",        "🗓️ Plano 7 Dias",            "Concluiu o plano de 7 dias"),
-    ("primeiro_passo",     "🌱 Primeiro Passo",           "Concluiu a primeira conversa na Arte da Lábia"),
-    ("cacador_ganchos",    "🧩 Caçador de Ganchos",      "Aproveitou 10 ganchos em conversas"),
-    ("resposta_relampago", "⚡ Resposta Relâmpago",       "Respondeu 10 situações dentro do tempo"),
-    ("sem_roteiro",        "🧠 Sem Roteiro",              "Completou uma conversa sem ajuda"),
-    ("inabalavel",         "🛡️ Inabalável",              "Superou 5 provocações com naturalidade"),
-    ("resgatador",         "🔥 Resgatador",               "Recuperou 5 conversas esfriando"),
-    ("camaleao",           "🦎 Camaleão",                 "Adaptou-se a 10 personalidades diferentes"),
-    ("don_juan",           "👑 Don Juan",                 "Concluiu o Nível 7 — Don Juan"),
-]
-
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
 CHAVES_SALVAR = [
-    'usuario', 'historico', 'biblioteca', 'resumo_semanal',
-    'plano_conquista', 'plano_pessoa',
-    'conversas_analisadas', 'mensagens_aprimoradas', 'analises_realizadas',
-    'cartas_usadas', 'treinos_realizados', 'favoritos_total',
-    'clareza', 'naturalidade', 'reciprocidade', 'confianca', 'escuta',
-    'conquistas', 'faixa_atual', 'historico_personagens',
-    'labia_nivel', 'labia_chat', 'labia_personagem', 'labia_falha_anterior',
-    'objetivos_usuario',
+    'usuario', 'historico_consultas', 'consultas_salvas',
+    'nivel_atual', 'pontuacao_total', 'treinos_completos',
 ]
 
-def gerar_json():
+def gerar_json_sessao() -> str:
     dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
     dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
     return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
-
-def carregar_json(dados):
-    for k in CHAVES_SALVAR:
-        if k in dados:
-            st.session_state[k] = dados[k]
-
-def salvar_cache(u):
-    _cache["perfis"][u] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
-
-def perfis_salvos():
-    return list(_cache["perfis"].keys())
-
-def carregar_cache(u):
-    return _cache["perfis"].get(u)
-
-def salvar_historico(tipo, tema, conteudo):
-    st.session_state.historico.append({
-        'data': datetime.now().strftime('%d/%m %H:%M'),
-        'tipo': tipo, 'tema': tema, 'conteudo': conteudo,
-    })
-
-def verificar_conquistas():
-    c = st.session_state.get('conquistas', [])
-    novas = []
-    checks = [
-        ("primeira_analise",   st.session_state.analises_realizadas >= 1),
-        ("primeiro_treino",    st.session_state.treinos_realizados >= 1),
-        ("cinco_analises",     st.session_state.conversas_analisadas >= 5),
-        ("dez_mensagens",      st.session_state.mensagens_aprimoradas >= 10),
-        ("primeira_carta",     st.session_state.cartas_usadas >= 1),
-        ("cinco_cartas",       st.session_state.cartas_usadas >= 5),
-    ]
-    for chave, cond in checks:
-        if cond and chave not in c:
-            c.append(chave); novas.append(chave)
-    st.session_state['conquistas'] = c
-    return novas
-
-defaults = {
-    'etapa': 'Login', 'usuario': '', 'api_key': '', 'pagina': 'Home',
-    'historico': [], 'biblioteca': [], 'resumo_semanal': '',
-    'plano_conquista': '', 'plano_pessoa': '',
-    'conversas_analisadas': 0, 'mensagens_aprimoradas': 0,
-    'analises_realizadas': 0, 'cartas_usadas': 0,
-    'treinos_realizados': 0, 'favoritos_total': 0,
-    'clareza': 0, 'naturalidade': 0, 'reciprocidade': 0,
-    'confianca': 0, 'escuta': 0,
-    'conquistas': [], 'faixa_atual': 1,
-    'historico_personagens': [],
-    'labia_nivel': 1, 'labia_chat': [], 'labia_personagem': None,
-    'labia_falha_anterior': None, 'objetivos_usuario': [],
-    'labia_inicio': 0, 'labia_duracao': 180, 'labia_encerrado': False,
-    # Mestre da Lábia
-    'lj_fase': 1, 'lj_personagem_sel': 'Rafaela',
-    'lj_ativo': False, 'lj_chat': [], 'lj_conexo': 100,
-    'lj_atributos': {'interesse':50,'atracao':50,'conexao':50,'confianca':50,'naturalidade':50,'curiosidade':50,'tensao':20},
-    'lj_inicio': 0, 'lj_duracao': 300,
-    'lj_missao': '', 'lj_missao_cumprida': False,
-    'lj_aval': None, 'lj_arranques': [],
-    'lj_historico_cenarios': [], 'lj_historico_aberturas': [],
-    'lj_ts_persona': 0, 'lj_ts_usuario': 0, 'lj_silencio_total': 0,
-    'lj_combo': 0,
-    'lj_fases_concluidas': 0,
-    'lj_titulo': 'Paquerador',
-    'lj_personagens_desbloqueadas': ['Rafaela'],
-    'lj_perfil_estilo': None,
-    'lj_historico_partidas': [],
-    'lj_desbloqueado': False,
-    'lj_ficha': {}, 'lj_ficha_resumo': '',
-    'lj_nome_persona': '', 'lj_dados_persona': {},
-    'lj_cenario': '', 'lj_cenario_label': '',
-
-    'lj_fases_ok': '',
-    'lj_hist_partidas': [],
-    'lj_personagens_ok': None,
-    'ml_aberturas_usadas': None,
-    'ml_cenario': '',
-    'ml_character': None,
-    'ml_connexometer': None,
-    'ml_current_rank': None,
-    'ml_estagio': None,
-    'ml_historico': [],
-    'ml_interaction_scores': None,
-    'ml_last_result': None,
-    'ml_messages': None,
-    'ml_phase_coachings': None,
-    'ml_phase_index': None,
-    'ml_phase_message_start': None,
-    'ml_phase_results': None,
-    'ml_phase_start': None,
-    'ml_response_since': None,
-    'roleplay_cenario': '',
-    'roleplay_system': None,
-}
-for k, v in defaults.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
-
-# ─── IA ───
-def conexa_ia(prompt, system_extra=""):
-    try:
-        client = Groq(api_key=st.session_state.api_key)
-        system = (
-            "Você é o Conexão Magnética 2026 — sistema de inteligência para comunicação e conexões humanas.  REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais. "
-            "Você ajuda pessoas a entender conversas, melhorar mensagens e desenvolver habilidades sociais. "
-            "NUNCA afirme intenções ou sentimentos que não podem ser conhecidos. "
-            "Trabalhe apenas com padrões observáveis. "
-            "Seja direto, prático e baseado no contexto fornecido. "
-            "Português do Brasil. " + system_extra
-        )
-        resp = client.chat.completions.create(
-            messages=[{"role":"system","content":system},{"role":"user","content":prompt}],
-            model="openai/gpt-oss-120b",
-        )
-        return resp.choices[0].message.content
-    except Exception as e:
-        return f"⚠️ Erro na API: {e}"
-
-# ============================================================
-# LOGIN
-# ============================================================
-# ── CONSTANTES GLOBAIS ──
-FASES_DEF_G = [
-    # (num, nome,             mins, titulo,          min_conexao, min_natural, min_interesse)
-    (1, "ATRACAO",           5,  "Paquerador",      70, 60, 65),
-    (2, "CONEXAO EMOCIONAL", 7,  "Galanteador",     75, 70, 65),
-    (3, "SEDUCAO",           10, "Mestre da Labia", 80, 75, 70),
-]
-# Índices: [0]=num [1]=nome [2]=mins [3]=titulo [4]=min_conexao [5]=min_natural [6]=min_interesse
-
-def estado_conexo_g(val):
-    if val >= 80: return "CONEXAO FORTE", "#DC2626"
-    if val >= 60: return "BOA QUIMICA", "#F59E0B"
-    if val >= 40: return "NEUTRO", "#64748B"
-    if val >= 20: return "INTERESSE CAINDO", "#EA580C"
-    if val >= 1:  return "ULTIMA CHANCE", "#7F1D1D"
-    return "ELIMINADA", "#000000"
-
-PERSONAGENS = {
-    "Rafaela": {
-        "emoji": "😊", "dificuldade": 2, "estrelas": "⭐⭐",
-        "desc": "Simpática, inteligente, bem-humorada. Conversa naturalmente mas não demonstra interesse imediatamente.",
-        "personalidade": "simpatica, inteligente, bem-humorada, curiosa, fala de forma leve e natural",
-        "humor": 80, "receptividade": 70, "provocacao": 30, "exigencia": 40, "bloqueada": False,
-    },
-    "Camila": {
-        "emoji": "😏", "dificuldade": 4, "estrelas": "⭐⭐⭐⭐",
-        "desc": "Segura, provocadora, responde com ironia e testa a confiança do usuário.",
-        "personalidade": "segura, ironica, provocadora, testa confianca, nao facilita",
-        "humor": 70, "receptividade": 45, "provocacao": 80, "exigencia": 70, "bloqueada": True,
-    },
-    "Helena": {
-        "emoji": "🧐", "dificuldade": 5, "estrelas": "⭐⭐⭐⭐⭐",
-        "desc": "Sofisticada, seletiva, difícil de impressionar. Exige conversa mais inteligente.",
-        "personalidade": "sofisticada, seletiva, intelectual, dificil de impressionar, exige profundidade",
-        "humor": 55, "receptividade": 30, "provocacao": 60, "exigencia": 90, "bloqueada": True,
-    },
-}
-
-MISSOES_POR_FASE = {
-    1: ["Fazer ela fazer uma pergunta espontânea sobre você","Conseguir que ela demonstre curiosidade","Criar um momento de humor","Fazer ela contar algo pessoal"],
-    2: ["Fazer ela lembrar algo que você disse antes","Conseguir que ela compartilhe um sonho","Criar um momento de empatia genuína","Fazer ela admitir algo que normalmente não diria"],
-    3: ["Criar um momento de flerte natural","Fazer ela brincar com você","Criar uma brincadeira interna entre vocês","Fazer ela perguntar algo pessoal espontaneamente"],
-}
-
-CENARIOS_TODOS = [
-    "cafeteria","parque","livraria","fila de evento","shopping","feira",
-    "exposicao de arte","aeroporto","praca","academia","show de musica",
-    "festa de aniversario","mercado","galeria","coworking","food court",
-    "banca de jornal","pet shop","sebo de livros","farmacia","bancada de bar",
-    "fila de banco","salao de beleza","loja de discos","jardim botanico",
-    "estacao de metro","calcadao","praia","aluguel de bicicletas","museu"
-]
-
-PERFIS_ESTILO = {
-    "O Confiante":     "Fala com segurança, mas às vezes avança rápido demais.",
-    "O Estrategista":  "Faz boas perguntas e lê bem os sinais.",
-    "O Divertido":     "Usa humor para criar conexão.",
-    "O Conquistador":  "Cria conexão emocional rapidamente.",
-    "O Reservado":     "Tem boas respostas, mas demonstra pouco interesse.",
-}
 
 def carregar_json_sessao(dados):
     _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
@@ -10725,1329 +10517,944 @@ def carregar_json_sessao(dados):
         if _re.match(r'.+_\\d+$', k): continue
         st.session_state[k] = v
 
-if 'lj_arranques' not in st.session_state: st.session_state['lj_arranques'] = []
-if 'lj_cenario' not in st.session_state: st.session_state['lj_cenario'] = None
-if 'lj_dados_persona' not in st.session_state: st.session_state['lj_dados_persona'] = {}
-if 'lj_ficha' not in st.session_state: st.session_state['lj_ficha'] = {}
-if 'lj_hist_partidas' not in st.session_state: st.session_state['lj_hist_partidas'] = []
-if 'lj_inicio' not in st.session_state: st.session_state['lj_inicio'] = None
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
 
-if 'lj_missao' not in st.session_state: st.session_state['lj_missao'] = ''
-if 'lj_nome_persona' not in st.session_state: st.session_state['lj_nome_persona'] = ''
-if 'lj_personagens_ok' not in st.session_state: st.session_state['lj_personagens_ok'] = []
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_consulta(modulo: str, tema: str, conteudo: str):
+    st.session_state.historico_consultas.append({
+        'data': datetime.now().strftime('%d/%m %H:%M'), 'modulo': modulo, 'tema': tema, 'conteudo': conteudo,
+    })
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+NIVEIS = ["Iniciante", "Aprendiz", "Praticante", "Habilidoso", "Magnético", "Lendário"]
+
+defaults = {
+    'etapa': "Login", 'usuario': "", 'api_key': "", 'pagina': "Home",
+    'historico_consultas': [], 'consultas_salvas': [],
+    'nivel_atual': "Iniciante", 'pontuacao_total': 0, 'treinos_completos': 0,
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- PRINCÍPIO DO APP ---
+PRINCIPIO = '''
+IDENTIDADE E PRINCÍPIO — siga isso em TODA resposta:
+- Você é um mentor de presença, charme, confiança e comunicação — especializado em ajudar homens a desenvolverem
+  carisma genuíno, oratória de impacto e a capacidade de criar atração através de quem realmente são, não de quem fingem ser
+- Seu modelo é o protagonista de Hollywood: confiante sem arrogância, bem-humorado sem ser palhaço, direto sem ser
+  grosseiro, presente sem ser ansioso — um homem que entra num ambiente e as pessoas percebem
+- Você NUNCA ensina técnicas de manipulação, scripts de sedução mecânicos, ou táticas que funcionam ignorando
+  a consciência da outra pessoa. Você ensina presença real, expressão autêntica e habilidades de comunicação genuínas
+- Toda sugestão de abordagem ou diálogo deve respeitar o consentimento da outra pessoa. Se alguém demonstrar
+  desinteresse, a resposta certa sempre é agradecer a interação e seguir em frente com elegância — nunca insistir
+- Tom: direto, confiante, sem rodeios, com um leve toque de humor quando cabe — como um mentor que já passou pelo
+  que o aluno está passando e fala de igual para igual, não um professor de palco
+- Português do Brasil
+'''
+
+DISCLAIMER_PADRAO = '''
+<div class="disclaimer">
+⚡ Lembre: nenhuma técnica substitui presença real. O objetivo é você se tornar genuinamente mais interessante
+e confiante — não fingir ser alguém que não é.
+</div>
+'''
+
+# --- MOTOR DE IA ---
+def presenca_ia(prompt: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        system = f'''Você é um mentor de presença, charme e oratória — o coach que o protagonista de Hollywood teria.
+Usuário: {st.session_state.usuario}. Nível atual: {st.session_state.nivel_atual}.
+{PRINCIPIO}
+{system_extra}'''
+        response = client.chat.completions.create(
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+def calcular_nivel(pontos: int) -> str:
+    if pontos >= 500: return "Lendário"
+    elif pontos >= 300: return "Magnético"
+    elif pontos >= 150: return "Habilidoso"
+    elif pontos >= 60: return "Praticante"
+    elif pontos >= 20: return "Aprendiz"
+    return "Iniciante"
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total = len(st.session_state.historico_consultas)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#1E1E2E;border:1px solid #6D28D9;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#CBD5E1;line-height:1.6;'>"
+            f"💾 <strong style='color:#F1F5F9'>Salve seus dados antes de sair.</strong><br>"
+            f"<span style='color:#6D28D9;font-size:0.88em;'>{total} sessões · {st.session_state.treinos_completos} treinos completos · {st.session_state.pontuacao_total} pontos</span>"
+            f"</div>", unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button("💾 SALVAR MEUS DADOS (.json)", data=gerar_json_sessao(),
+            file_name=f"presenca_ia_{nome_usuario}.json", mime="application/json", use_container_width=True, key="seducaoi3")
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'consultas_salvas' not in st.session_state: st.session_state['consultas_salvas'] = []
+if 'historico_consultas' not in st.session_state: st.session_state['historico_consultas'] = []
+if 'nivel_atual' not in st.session_state: st.session_state['nivel_atual'] = None
+if 'pontuacao_total' not in st.session_state: st.session_state['pontuacao_total'] = 0
+if 'treinos_completos' not in st.session_state: st.session_state['treinos_completos'] = None
 
 if st.session_state.etapa == "Login":
-    st.markdown("# 🧠 Conexão Magnética 2026")
+    st.markdown("# 🤖 PRESENÇA IA")
     st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
     st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
     with st.container():
         nome  = st.text_input("Seu Nome:", key="nome_login")
         chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
         if st.button("✨ ENTRAR", key="btn_entrar_login"):
             if len(nome.strip()) < 2:
                 st.warning("Digite um nome com pelo menos 2 caracteres.")
             elif chave.strip():
                 st.session_state.usuario = nome.strip()
                 st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
                 st.session_state.etapa = "App"
                 st.rerun()
             else:
                 st.warning("Preencha nome e chave API.")
 
 elif st.session_state.etapa == "App":
-    faixa = FAIXAS[min(st.session_state.faixa_atual-1, 6)]
-    em_partida = st.session_state.get('pagina') == 'Dialogo'
-
-    if not em_partida:
-        pass
-        # ── NAVBAR ──
-        # NAVBAR
-    _nav_pgs = ['Home', 'Rapida', 'Carta', 'Turbinar', 'Analisar', 'Roleplay', 'Labia', 'Biblioteca', 'Perfil', 'Comparar', 'Plano', 'Progresso', 'Resumo', 'Conquistas']
-    _nav_ics = ['🏠', '⚡', '🃏', '💬', '🧠', '🎭', '💋', '📚', '📸', '⚔️', '🗓️', '📈', '📋', '🏆']
-    _nav_lbs = ['Dashboard', 'Resposta Rápida', 'Carta na Manga', 'Turbinar Mensagem', 'Raio-X da Conversa', 'Simulador de Conversa', '💋 Mestre da Lábia ⭐', 'Biblioteca Inteligente', 'Leitor de Perfil', 'Comparar Conversas', 'Plano 7 Dias', 'Minha Evolução', 'Relatório Semanal', 'Conquistas']
-    _nav_idx = _nav_pgs.index(st.session_state.pagina) if st.session_state.pagina in _nav_pgs else 0
-
-    # ── NAVEGAÇÃO: selectbox limpo ──
-    _opcoes_nav = [f"{ic} {lb}" for ic, lb in zip(_nav_ics, _nav_lbs)]
-    _sel_nav = st.selectbox("📍 Navegar para:", _opcoes_nav,
-        index=_nav_idx, key="nav_select", label_visibility="collapsed")
-    _pg_escolhida = _nav_pgs[_opcoes_nav.index(_sel_nav)]
-    if _pg_escolhida != st.session_state.pagina:
-        st.session_state.pagina = _pg_escolhida; st.rerun()
-
-    st.markdown(f"<div style='text-align:center;font-weight:700;font-size:1.1em;color:#1A1A2E;padding:4px 0;'>{_nav_ics[_nav_idx]} {_nav_lbs[_nav_idx]}</div>", unsafe_allow_html=True)
-    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 
 
 
-    if st.session_state.pagina == "Dialogo":
-        import time as _t, json as _j, re as _r
+    # TABS — navegação nativa
+    (_tab_Home, _tab_Confianca, _tab_Charme, _tab_Oratoria, _tab_Atracao, _tab_Conversa, _tab_Simulador, _tab_Linguagem, _tab_Situacoes, _tab_Mentalidade, _tab_Historias, _tab_Academia, _tab_Desafio, _tab_Mentor) = st.tabs(['🏠 Painel', '💪 Confiança', '✨ Charme', '🎤 Oratória', '💘 Atração', '📱 Conversa', '🎭 Simulador', '👁️ Linguagem', '🔥 Situações', '🧠 Mentalidade', '📖 Histórias', '🎓 Academia', '🏆 Desafio', '🤖 Mentor 24h'])
 
-        # Esconde TUDO do Streamlit — só o diálogo
-        st.markdown(\"\"\"
-        <style>
-        header[data-testid="stHeader"]{display:none!important;}
-        #MainMenu{display:none!important;}
-        [data-testid="stToolbar"]{display:none!important;}
-        footer{display:none!important;}
-        .block-container{padding:0.5rem 1rem!important;}
-        [data-testid="stSidebar"]{display:none!important;}
-
-        .chat-wrap{
-            display:flex;flex-direction:column;
-            height:calc(100vh - 180px);
-            min-height:300px;
-        }
-        .chat-msgs{
-            flex:1;overflow-y:auto;
-            padding:10px 4px;
-            display:flex;flex-direction:column;
-            scroll-behavior:smooth;
-        }
-        .msg-p{
-            background:#FFF0F5;border:1px solid #FFB6C1;
-            border-radius:4px 16px 16px 16px;
-            padding:10px 14px;margin:6px 0;
-            font-size:0.95em;color:#1A1A2E;
-            max-width:80%;align-self:flex-start;
-        }
-        .msg-u{
-            background:#F0F4FF;border:1px solid #C7D2FE;
-            border-radius:16px 16px 4px 16px;
-            padding:10px 14px;margin:6px 0;
-            font-size:0.95em;color:#1A1A2E;
-            max-width:80%;align-self:flex-end;
-        }
-        .msg-arr{
-            font-size:0.72em;color:#22C55E;font-weight:700;
-            text-align:right;margin-bottom:2px;
-        }
-        .bar-wrap{
-            background:#fff;border:2px solid #22C55E;
-            border-radius:10px;padding:6px 12px;
-            display:flex;align-items:center;gap:8px;
-            margin-bottom:6px;
-        }
-        .input-wrap{
-            display:flex;gap:8px;align-items:center;
-            padding:6px 0;
-        }
-        </style>\"\"\", unsafe_allow_html=True)
-
-        # Redireciona se não há partida
-        if not st.session_state.get('lj_ativo') or not st.session_state.get('lj_nome_persona') or st.session_state.get('lj_inicio',0)==0:
-            st.session_state.pagina="Labia"; st.rerun()
-
-        chat     = st.session_state.lj_chat
-        conexo   = st.session_state.lj_conexo
-        fase_n   = st.session_state.lj_fase
-        nome_p   = st.session_state.lj_nome_persona
-        dados_p  = st.session_state.lj_dados_persona
-        cenario  = st.session_state.lj_cenario
-        ficha    = st.session_state.lj_ficha
-        atribs   = st.session_state.lj_atributos
-
-        FASES_D  = {1:(5,70,60,65,"🥉 Paquerador"),2:(7,75,70,65,"🥈 Galanteador"),3:(10,80,75,70,"👑 Mestre da Lábia")}
-        fi       = FASES_D[fase_n]
-        duracao  = fi[0]*60
-        inicio   = st.session_state.lj_inicio
-        decorrido= _t.time() - inicio
-        restante = max(0, duracao - decorrido)
-        mins_r   = int(restante//60); segs_r = int(restante%60)
-        pct_t    = max(0.0, 1-decorrido/duracao)
-        cor_c    = "#22C55E" if conexo>70 else ("#84CC16" if conexo>50 else ("#F59E0B" if conexo>30 else ("#EF4444" if conexo>10 else "#7F1D1D")))
-        pulso    = "animation:pulso 0.8s ease-in-out infinite;" if conexo<=20 else ""
-        cor_t    = "#22C55E" if pct_t>0.5 else ("#F59E0B" if pct_t>0.2 else "#EF4444")
-
-        def estado(v):
-            if v>=80: return "🔥 CONEXÃO FORTE"
-            if v>=60: return "❤️ BOA QUÍMICA"
-            if v>=40: return "😐 NEUTRO"
-            if v>=20: return "⚠️ CAINDO"
-            return "🚨 ÚLTIMA CHANCE"
-
-        # ── CENÁRIO ──
-        st.markdown(
-            f"<div style='background:#FFF0F5;border:1px solid #FFB6C1;border-radius:8px;"
-            f"padding:4px 14px;margin-bottom:4px;font-size:0.82em;color:#5C0F30;'>"
-            f"📍 <b>{cenario.capitalize()}</b> — Você acaba de conhecer alguém.</div>",
-            unsafe_allow_html=True)
-
-        # ── CONEXÔMETRO + TIMER (numa linha) ──
-        st.markdown(
-            f"<style>@keyframes pulso{{0%,100%{{opacity:1}}50%{{opacity:.4}}}}</style>"
-            f"<div class='bar-wrap'>"
-            f"<span style='font-size:0.7em;color:#64748B;font-weight:600;white-space:nowrap;'>❤️ CONEXÔMETRO</span>"
-            f"<div style='flex:1;background:#F1F5F9;border-radius:999px;height:10px;overflow:hidden;'>"
-            f"<div style='height:100%;border-radius:999px;background:{cor_c};width:{conexo}%;transition:width 0.4s;{pulso}'></div></div>"
-            f"<span style='font-size:0.9em;font-weight:700;color:{cor_c};white-space:nowrap;'>{conexo} {estado(conexo)}</span>"
-            f"<span style='border-left:1px solid #E2E8F0;padding-left:10px;font-size:0.7em;color:#94A3B8;'>⏱️</span>"
-            f"<span style='font-size:1em;font-weight:700;color:{cor_t};'>{mins_r:02d}:{segs_r:02d}</span>"
-            f"</div>", unsafe_allow_html=True)
-
-        # ── ALERTAS ──
-        if 0 < conexo <= 20:
-            st.markdown("<div style='color:#B91C1C;font-weight:700;font-size:0.85em;text-align:center;'>🚨 ÚLTIMA CHANCE</div>", unsafe_allow_html=True)
-        if st.session_state.lj_missao_cumprida:
-            st.markdown("<div style='color:#22C55E;font-weight:700;font-size:0.8em;text-align:center;'>🎯 MISSÃO CUMPRIDA!</div>", unsafe_allow_html=True)
-        # Alerta de silêncio
-        if ts_p > 0 and ts_u < ts_p:
-            inat_alerta = _t.time() - ts_p
-            if inat_alerta > 25:
-                emoji_alerta = "🔴" if inat_alerta > 45 else "🟡"
-                st.markdown(f"<div style='color:#B45309;font-weight:700;font-size:0.82em;text-align:center;'>{emoji_alerta} {'RESPONDA AGORA — conexômetro caindo!' if inat_alerta>45 else 'Silêncio detectado — responda logo!'}</div>", unsafe_allow_html=True)
-
-        # ── CHAT (ocupa toda a altura disponível) ──
-        msgs_html = ""
-        for msg in chat:
-            if msg['role']=='user':
-                msgs_html += f"<div class='msg-u'><b style='color:#7C3AED;'>Você:</b> {msg['content']}</div>"
-            else:
-                arr = msg.get('arranque','')
-                if arr: msgs_html += f"<div class='msg-arr'>{arr}</div>"
-                msgs_html += f"<div class='msg-p'><b style='color:#C2185B;'>😊 {nome_p}:</b> {msg['content']}</div>"
-
-        turno_u = sum(1 for m in chat if m['role']=='user')
-        if fase_n==1 and turno_u==0:
-            msgs_html += f"<div style='font-size:0.75em;color:#94A3B8;border-left:2px solid #FFB6C1;padding:4px 10px;margin:4px 0;'>💡 Comente o que {nome_p} disse.</div>"
-
-        st.markdown(
-            f"<div class='chat-msgs' id='chat-c'>{msgs_html}<div id='cb'></div></div>"
-            f"<script>setTimeout(()=>{{var c=document.getElementById('chat-c');if(c)c.scrollTop=c.scrollHeight;}},80);</script>",
-            unsafe_allow_html=True)
-
-        # ── INATIVIDADE — 25s calado = -25% fixo ──
-        ts_p = st.session_state.lj_ts_persona; ts_u = st.session_state.lj_ts_usuario
-        if ts_p > 0 and ts_u < ts_p:
-            inat = _t.time() - ts_p
-            # A cada 25s completos de silêncio, aplica -25%
-            blocos = int(inat // 25)
-            if blocos > st.session_state.get('lj_blocos_silencio', 0):
-                st.session_state['lj_blocos_silencio'] = blocos
-                novo_c = max(0, conexo - 25)
-                st.session_state.lj_conexo = novo_c
-                if novo_c!=conexo: st.session_state.lj_conexo=novo_c
-
-        # ── FIM DE PARTIDA ──
-        if restante<=0 or conexo<=0:
-            hist_txt = "\\n".join(f"{'Você' if m['role']=='user' else nome_p}: {m['content']}" for m in chat)
-            n_arr = len(st.session_state.lj_arranques)
-            mc,mn,mi,_,titulo_fase = fi[1],fi[2],fi[3],fi[0],fi[4]
-            passou = (conexo>=mc and atribs.get('naturalidade',0)>=mn and atribs.get('interesse',0)>=mi and turno_u>=4 and restante<=0)
-            prompt_av = (
-                f"Avalie conversa — Fase {fase_n}.\\n"
-                f"Personagem:{nome_p}. Conexao:{conexo}. Arranques:{n_arr}. Turnos:{turno_u}.\\n"
-                f"Missao:'{st.session_state.lj_missao}' — cumprida:{st.session_state.lj_missao_cumprida}\\n"
-                f"Conversa:\\n{hist_txt}\\n\\n"
-                f"JSON sem markdown:\\n"
-                + '{"aprovado":false,"ponto_forte":"1 frase","melhorar":"1 frase","perfil":"O Confiante","missao_ok":false}'
-            )
-            with st.spinner("Avaliando..."):
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_seducaoi")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_seducaoi", label_visibility="collapsed")
+            if _fupsv:
                 try:
-                    from groq import Groq as _Groq
-                    _cl = _Groq(api_key=st.session_state.api_key)
-                    _r2 = _cl.chat.completions.create(messages=[{"role":"user","content":prompt_av}],model="openai/gpt-oss-120b",max_tokens=200)
-                    jm = _r.search(r'\\{.*\\}',_r2.choices[0].message.content,_r.DOTALL)
-                    av_d = _j.loads(jm.group(0)) if jm else {}
-                except: av_d = {}
-            aprovado = passou and av_d.get('aprovado',passou)
-            if aprovado:
-                st.session_state.lj_fases_ok = max(st.session_state.lj_fases_ok, fase_n)
-                nomes_pers = ["Rafaela","Camila","Helena"]
-                for i2 in range(min(fase_n,3)):
-                    if nomes_pers[i2] not in st.session_state.lj_personagens_ok:
-                        st.session_state.lj_personagens_ok.append(nomes_pers[i2])
-                TITULOS = {1:"🥉 Paquerador",2:"🥈 Galanteador",3:"👑 Mestre da Lábia"}
-                st.session_state.lj_titulo = TITULOS[fase_n]
-            st.session_state.lj_aval = {
-                'aprovado':aprovado,
-                'titulo': f"FASE {fase_n} CONCLUÍDA! 🎉" if aprovado else "CONEXÃO PERDIDA 💥",
-                'conexo_final':conexo,'n_arranques':n_arr,
-                'missao_cumprida':av_d.get('missao_ok',False),
-                'ponto_forte':av_d.get('ponto_forte','—'),
-                'melhorar':av_d.get('melhorar','—'),
-            }
-            st.session_state.lj_hist_partidas.append({
-                'fase':fase_n,'personagem':nome_p,'conexo_final':conexo,
-                'aprovado':aprovado,'data':datetime.now().strftime('%d/%m %H:%M'),
-                'ficha_resumo':st.session_state.get('lj_ficha_resumo',''),
-            })
-            st.session_state.lj_ativo=False; st.session_state.lj_chat=[]
-            st.session_state.pagina="Labia"; st.rerun()
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
 
-        else:
-            # ── INPUT + BOTÕES ──
-            msg_in = st.text_input("",key=f"lj_in_{len(chat)}",
-                placeholder="O que você diz?",label_visibility="collapsed")
-            col_e, col_s = st.columns([4,1])
-            with col_e:
-                if st.button("📤 ENVIAR",key="lj_env",use_container_width=True):
-                    if msg_in.strip():
-                        st.session_state.lj_ts_usuario = _t.time()
-                        st.session_state['lj_blocos_silencio'] = 0  # reset silêncio
-                        f2 = ficha
-                        aviso_pes = ""
-                        kws = ['aniversario','cidade','mora','trabalha','profissao','musica','hobby','medo','sonho']
-                        if any(k in msg_in.lower() for k in kws):
-                            aviso_pes = f"\\nAVISO: Aniversario={f2.get('aniversario','?')}, Cidade={f2.get('cidade','?')}, Profissao={f2.get('profissao','?')}."
-                        ultima = chat[-1]['content'] if chat else ''
-                        sys_p = (
-                            f"Você é {nome_p}, {f2.get('profissao','')}, {f2.get('cidade','')}.\\n"
-                            f"Personalidade: {dados_p.get('personalidade','')}.\\n"
-                            f"Cenário: {cenario}. Hoje: {f2.get('hoje','')}.\\n"
-                            f"Você disse '{ultima}', pessoa respondeu '{msg_in}'.\\n"
-                            f"Reaja a ISSO. Máximo 10 palavras. Estilo WhatsApp.\\n"
-                            f"Zero filosofia. Só reaja. NUNCA revele que é IA."
-                            + aviso_pes
-                        )
-                        hist = [{"role":m["role"],"content":m["content"]} for m in chat[-6:]]
-                        with st.spinner(""):
-                            try:
-                                from groq import Groq as _Groq2
-                                _cl2 = _Groq2(api_key=st.session_state.api_key)
-                                msgs_l = [{"role":"system","content":sys_p.encode("utf-8","ignore").decode("utf-8")}]+hist+[{"role":"user","content":msg_in}]
-                                resp_l = _cl2.chat.completions.create(messages=msgs_l,model="openai/gpt-oss-120b",max_tokens=40)
-                                resp_bruto = resp_l.choices[0].message.content.strip().split('\\n')[0]
-                                mc2 = _r.search(r'[.!?]',resp_bruto)
-                                resp_txt = resp_bruto[:mc2.end()].strip() if mc2 else ' '.join(resp_bruto.split()[:10])
-                                if not resp_txt.strip():
-                                    resp_txt = "Interessante..."
-                            except Exception as e:
-                                resp_txt = "Hm, é mesmo?"
-                        CRIT = {
-                            1:"Fase 1: avalie curiosidade,humor,originalidade. Generoso. delta -15 a +20",
-                            2:"Fase 2: avalie escuta,empatia,profundidade. Moderado. delta -15 a +18",
-                            3:"Fase 3: avalie timing,tensao,confianca. Exigente. delta -15 a +20",
-                        }
-                        prompt_ev = (
-                            f"Avaliador. Fase {fase_n}.\\n"
-                            f"Ela:'{ultima}' Usuario:'{msg_in}'\\n"
-                            f"{CRIT.get(fase_n,CRIT[1])}\\n"
-                            f"Missao:'{st.session_state.lj_missao}'\\n"
-                            f"JSON: {{\\"delta\\":0,\\"interesse\\":50,\\"atracao\\":50,\\"conexao\\":50,\\"confianca\\":50,\\"naturalidade\\":50,\\"arranque\\":\\"\\",\\"missao_cumprida\\":false}}"
-                        )
-                        with st.spinner(""):
-                            try:
-                                from groq import Groq as _Groq3
-                                _cl3 = _Groq3(api_key=st.session_state.api_key)
-                                ev_txt = _cl3.chat.completions.create(messages=[{"role":"user","content":prompt_ev.encode("utf-8","ignore").decode("utf-8")}],model="openai/gpt-oss-120b",max_tokens=150).choices[0].message.content
-                                jm2 = _r.search(r'\\{.*\\}',ev_txt,_r.DOTALL)
-                                ev_d = _j.loads(jm2.group(0)) if jm2 else {}
-                            except: ev_d = {}
-                        delta = ev_d.get('delta',0)
-                        arranque = f"🚀 {ev_d.get('arranque', '')}" if ev_d.get('arranque') else ""
-                        for k in ['interesse','atracao','conexao','confianca','naturalidade']:
-                            if k in ev_d: atribs[k]=max(0,min(100,ev_d[k]))
-                        st.session_state.lj_atributos = atribs
-                        st.session_state.lj_conexo = max(0,min(100,conexo+delta))
-                        if ev_d.get('missao_cumprida'): st.session_state.lj_missao_cumprida=True
-                        st.session_state.lj_combo = st.session_state.lj_combo+1 if delta>5 else 0
-                        if arranque: st.session_state.lj_arranques.append(arranque)
-                        ph = st.empty()
-                        palavras = resp_txt.split()
-                        txt_ac = ""
-                        for p_w in palavras:
-                            txt_ac += ("" if txt_ac=="" else " ")+p_w
-                            ph.markdown(f"<div class='msg-p'><b style='color:#C2185B;'>😊 {nome_p}:</b> {txt_ac}▌</div>",unsafe_allow_html=True)
-                            _t.sleep(0.07)
-                        ph.empty()
-                        chat.append({"role":"user","content":msg_in,"ts":_t.time()})
-                        chat.append({"role":"assistant","content":resp_txt,"ts":_t.time(),"arranque":arranque})
-                        st.session_state.lj_chat=chat
-                        st.session_state.lj_ts_persona=_t.time()
-                        st.rerun()
-            with col_s:
-                if st.button("🚩 Sair",key="lj_sair",use_container_width=True):
-                    st.session_state.lj_ativo=False; st.session_state.lj_chat=[]
-                    st.session_state.pagina="Labia"; st.rerun()
-            _t.sleep(0.8); st.rerun()
 
-    # Bloco abaixo só executa quando NÃO está no Dialogo
-    if em_partida:
-        st.stop()
+    with _tab_Home:
+        col_u, col_r = st.columns([3, 1])
+        with col_u:
+            st.title(f"⚡ Bem-vindo, {st.session_state.usuario}")
+        with col_r:
+            if st.button("🚪 Sair", key="seducaoi3_d2"):
+                for k in list(st.session_state.keys()):
+                    del st.session_state[k]
+                st.rerun()
 
-    if not em_partida:
-        if st.session_state.pagina == "Home":
-            col_u, col_r = st.columns([3,1])
-            with col_u:
-                st.title(f"💋 Olá, {st.session_state.usuario}!")
-                st.markdown(f"<span class='badge-roxo'>{faixa[0]} {faixa[2]}</span>", unsafe_allow_html=True)
-            with col_r:
-                if st.button("🚪 Sair", key="conexaom3"):
-                    for k in list(st.session_state.keys()): del st.session_state[k]
+        if len(st.session_state.historico_consultas) == 0:
+            st.markdown('''<div style="background:#1E1E2E;border:2px solid #F59E0B;border-radius:12px;
+            padding:12px 18px;margin-bottom:4px;font-size:0.9em;font-weight:600;">
+            ⚠️ <span style='color:#FDE68A'>Seus dados não estão mais no servidor. Recupere seu .json abaixo.</span>
+            </div>''', unsafe_allow_html=True)
+            arq_home = st.file_uploader("Recuperar dados (.json):", type=["json"], key="upload_home")
+            if arq_home is not None:
+                try:
+                    dados_home = json.load(arq_home)
+                    carregar_json_sessao(dados_home)
+                    salvar_perfil_cache(st.session_state.usuario)
+                    st.success("✅ Dados recuperados!")
                     st.rerun()
+                except Exception:
+                    st.error("Arquivo inválido.")
 
-        # PAINEL PRINCIPAL
-        st.markdown(f\"\"\"
-        <div class='painel-conexa'>
-            <div style='font-size:0.82em;opacity:0.7;letter-spacing:2px;margin-bottom:12px;'>🧠 Conexão Magnética 2026 — PAINEL DE INTELIGÊNCIA</div>
-            <div style='font-size:1.1em;opacity:0.6;margin-bottom:16px;'>A IA que ajuda você a entender a conversa — e saber o próximo passo.</div>
-            <div style='display:grid;grid-template-columns:repeat(3,1fr);gap:14px;'>
-                <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                    <div style='font-size:0.7em;opacity:0.6;'>⚡ NÍVEL ATUAL</div>
-                    <div style='font-size:1.3em;font-weight:700;'>{faixa[2]}</div>
-                </div>
-                <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                    <div style='font-size:0.7em;opacity:0.6;'>💬 CONVERSAS</div>
-                    <div style='font-size:1.6em;font-weight:700;'>{st.session_state.conversas_analisadas}</div>
-                </div>
-                <div style='text-align:center;background:rgba(255,255,255,0.06);border-radius:12px;padding:14px;'>
-                    <div style='font-size:0.7em;opacity:0.6;'>🃏 CARTAS USADAS</div>
-                    <div style='font-size:1.6em;font-weight:700;'>{st.session_state.cartas_usadas}</div>
-                </div>
-            </div>
+        # --- PAINEL DE NÍVEL ---
+        nivel = st.session_state.nivel_atual
+        pts = st.session_state.pontuacao_total
+        treinos = st.session_state.treinos_completos
+
+        st.markdown(f'''
+        <div class="nivel-box">
+            <div style="font-size:0.85em;opacity:0.8;">SEU NÍVEL ATUAL</div>
+            <div class="nivel-titulo">⚡ {nivel}</div>
+            <div style="font-size:0.9em;margin-top:4px;">{pts} pontos · {treinos} treinos completos</div>
         </div>
-        \"\"\", unsafe_allow_html=True)
+        ''', unsafe_allow_html=True)
 
-        # DASHBOARD MÉTRICAS
-        st.markdown("### 📊 Seu Desempenho")
-        c1,c2,c3,c4,c5,c6 = st.columns(6)
-        c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.conversas_analisadas}</div><div>Conversas</div></div>", unsafe_allow_html=True)
-        c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.mensagens_aprimoradas}</div><div>Turbinadas</div></div>", unsafe_allow_html=True)
-        c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.analises_realizadas}</div><div>Análises</div></div>", unsafe_allow_html=True)
-        c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.cartas_usadas}</div><div>Cartas</div></div>", unsafe_allow_html=True)
-        c5.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.treinos_realizados}</div><div>Treinos</div></div>", unsafe_allow_html=True)
-        c6.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.favoritos_total}</div><div>Favoritos</div></div>", unsafe_allow_html=True)
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_consultas)}</div><div style='color:#CBD5E1'>Sessões</div></div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{treinos}</div><div style='color:#CBD5E1'>Treinos</div></div>", unsafe_allow_html=True)
+        c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{pts}</div><div style='color:#CBD5E1'>Pontos</div></div>", unsafe_allow_html=True)
+        c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.consultas_salvas)}</div><div style='color:#CBD5E1'>Salvos</div></div>", unsafe_allow_html=True)
 
-        # EVOLUÇÃO
-        st.markdown("### 📈 Evolução")
-        metricas = [
-            ("Clareza", st.session_state.clareza),
-            ("Naturalidade", st.session_state.naturalidade),
-            ("Reciprocidade", st.session_state.reciprocidade),
-            ("Confiança", st.session_state.confianca),
-            ("Escuta", st.session_state.escuta),
-        ]
-        for nome_m, val in metricas:
-            cor = "#22C55E" if val >= 7 else ("#B45309" if val >= 4 else "#B91C1C")
-            st.markdown(f\"\"\"
-            <div style='margin-bottom:10px;'>
-                <div style='display:flex;justify-content:space-between;font-size:0.88em;font-weight:600;color:#1A1A2E;'>
-                    <span>{nome_m}</span><span style='color:{cor};'>{val}/10</span>
-                </div>
-                <div style='background:#F1F5F9;border-radius:999px;height:8px;overflow:hidden;margin-top:4px;'>
-                    <div style='height:100%;border-radius:999px;background:{cor};width:{val*10}%;'></div>
-                </div>
-            </div>
-            \"\"\", unsafe_allow_html=True)
+        st.markdown("<div class='card'>⚡ <em>'Um homem magnético não age para impressionar. Ele age — e impressiona sem perceber.'</em></div>", unsafe_allow_html=True)
 
-        # GUIA DE ABAS
-        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-        st.markdown("### 🗺️ O que cada aba faz")
+        st.markdown("### 🗺️ Módulos")
         guia = {
-            "⚡ Resposta Rápida": "Cole uma mensagem e receba 3 opções de resposta com estratégia",
-            "🃏 Carta na Manga": "Quando você não sabe o que dizer — a IA encontra uma nova possibilidade",
-            "💬 Turbinar": "Melhore qualquer mensagem — clareza, tom e naturalidade",
-            "🧠 Raio-X": "Análise completa de uma conversa — fluidez, reciprocidade e oportunidades",
-            "🎭 Roleplay": "Simule conversas e receba avaliação detalhada",
-            "🎭 Arte da Lábia": "Treinamento adaptativo em 7 faixas — do iniciante ao Don Juan",
-            "📚 Biblioteca": "Suas melhores respostas organizadas por categoria",
-            "📸 Leitor de Perfil": "Analisa informações públicas e sugere assuntos de conversa",
-            "⚔️ Comparar": "Compare duas conversas e descubra qual tem melhor dinâmica",
-            "🗓️ Plano 7 Dias": "Plano de desenvolvimento de comunicação personalizado",
-            "📈 Progresso": "Sua evolução ao longo do tempo em todas as métricas",
-            "📋 Relatório": "Resumo semanal gerado automaticamente pela IA",
+            "💪 Confiança e Presença": "Linguagem corporal, postura, como entrar num ambiente e ser notado",
+            "✨ Charme e Humor": "Como ser naturalmente engraçado, leve e agradável de estar por perto",
+            "🎤 Oratória e Voz": "Dicção, ritmo, pausa, tom — como falar de forma que as pessoas ouçam",
+            "💘 Atração e Sedução": "Como criar tensão, interesse e atração de forma autêntica",
+            "📱 A Conversa Perfeita": "Como iniciar, manter e conduzir conversas que criam conexão",
+            "🎭 Simulador de Abordagem": "Treine abordagens antes de executar na vida real",
+            "👁️ Linguagem Corporal": "O que seu corpo comunica e como calibrar isso",
+            "🔥 Situações Reais": "Situações específicas — bar, academia, app, trabalho — como agir em cada uma",
+            "🧠 Mentalidade do Protagonista": "Como um homem confiante pensa — e como você pode pensar assim",
+            "📖 A Arte de Contar Histórias": "Como narrar sua vida de forma que as pessoas se conectem",
+            "🎓 Academia de Presença": "Aulas aprofundadas sobre cada pilar do magnetismo pessoal",
+            "🏆 Desafio Semanal": "Desafio prático para executar essa semana e ganhar pontos",
+            "🤖 Mentor 24h": "Converse sobre qualquer situação e receba orientação personalizada",
         }
         for aba, desc in guia.items():
-            st.markdown(f"**{aba}** — <span style='color:#4B5563;'>{desc}</span>", unsafe_allow_html=True)
+            st.markdown(f"**{aba}** — <span style='color:#475569'>{desc}</span>", unsafe_allow_html=True)
 
-        if st.session_state.historico:
-            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            st.markdown("### 🕐 Últimas Atividades")
-            for item in reversed(st.session_state.historico[-4:]):
-                st.markdown(f"<div class='hist-item'><span class='badge'>{item['tipo']}</span> <small style='color:#888'>{item['data']}</small><br><small>{item.get('tema', '')[:80]}</small></div>", unsafe_allow_html=True)
+        # ========================
+        # CONFIANÇA E PRESENÇA
+        # ========================
 
-        # ──────────────────────────────────────────
-        # RESPOSTA RÁPIDA
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Rapida":
-            st.header("⚡ Resposta Inteligente")
-            st.markdown("Cole a mensagem recebida e receba 3 opções estratégicas de resposta.")
-
-            msg_recebida = st.text_area("💬 Mensagem recebida:", height=100, placeholder="Cole a mensagem aqui...", key="conexaom4")
-            col1, col2 = st.columns(2)
-            with col1:
-                quem = st.selectbox("Quem é essa pessoa?", ["Colega","Amigo","Pessoa nova","Interesse romântico","Familiar","Outro"], key="conexaom5")
-            with col2:
-                objetivo = st.selectbox("O que você quer fazer?", ["Continuar a conversa","Responder de forma natural","Esclarecer algo","Iniciar um assunto novo","Dar um passo à frente"], key="conexaom6")
-
-        contexto_extra = st.text_input("Contexto adicional (opcional):", placeholder="ex: acabamos de nos conhecer, faz 2 dias que não falamos...", key="conexaom7")
-
-        if st.button("⚡ ANALISAR E RESPONDER", key="conexaom8"):
-            if msg_recebida.strip():
-                with st.spinner("Analisando o contexto..."):
-                    prompt = (
-                        f"Analise esta mensagem e gere 3 opções estratégicas de resposta.\\n"
-                        f"Mensagem recebida: '{msg_recebida}'\\n"
-                        f"Quem enviou: {quem}. Objetivo: {objetivo}. Contexto: {contexto_extra or 'não informado'}.\\n\\n"
-                        f"REGRAS:\\n"
-                        f"- NÃO afirme intenções ou sentimentos que não podem ser conhecidos\\n"
-                        f"- Trabalhe apenas com padrões observáveis na mensagem\\n"
-                        f"- Respostas devem soar naturais, não robóticas\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"📊 LEITURA DO CONTEXTO:\\n[O que é observável nessa mensagem — tom, abertura, oportunidades]\\n\\n"
-                        f"💬 OPÇÃO 1 — NATURAL\\n[resposta]\\nPor quê: [explicação curta]\\n\\n"
-                        f"💡 OPÇÃO 2 — INTERESSANTE\\n[resposta]\\nPor quê: [explicação curta]\\n\\n"
-                        f"🎯 OPÇÃO 3 — DIRETA\\n[resposta]\\nPor quê: [explicação curta]\\n\\n"
-                        f"⭐ RECOMENDAÇÃO:\\n[qual das 3 é mais adequada para esse contexto e por quê]"
-                    )
-                    res = conexa_ia(prompt)
-                    st.session_state.analises_realizadas += 1
-                    st.session_state.conversas_analisadas += 1
-                    verificar_conquistas()
-                    salvar_historico("Resposta Rápida", msg_recebida[:60], res)
-                    st.session_state['rapida_temp'] = res
-            else:
-                st.warning("Cole a mensagem antes de analisar.")
-
-        if st.session_state.get('rapida_temp'):
-            st.markdown(f"<div class='card'>{st.session_state['rapida_temp']}</div>", unsafe_allow_html=True)
-            col_cp, col_fv, col_sv = st.columns(3)
-            with col_cp:
-                st.download_button("📋 Copiar (.txt)", data=st.session_state['rapida_temp'], file_name="resposta.txt", mime="text/plain", use_container_width=True, key="dl_conexa_3")
-            with col_fv:
-                if st.button("⭐ Favoritar", key="fav_rapida", use_container_width=True):
-                    st.session_state.biblioteca.append({'categoria':'Respostas','conteudo':st.session_state['rapida_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
-                    st.session_state.favoritos_total += 1
-                    st.success("⭐ Salvo na biblioteca!")
-            with col_sv:
-                if st.button("🃏 Carta na Manga", key="carta_rapida", use_container_width=True):
-                    st.session_state.pagina = "Carta"; st.rerun()
-
-        # ──────────────────────────────────────────
-        # CARTA NA MANGA
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Carta":
-            st.header("🃏 Carta na Manga")
-            st.markdown("Quando você não sabe mais o que dizer — a IA encontra uma nova possibilidade.")
-
-            conversa_carta = st.text_area("💬 Cole a conversa completa:", height=180, placeholder="Cole aqui toda a conversa...", key="conexaom9")
-            contexto_carta = st.text_input("Contexto (opcional):", placeholder="ex: amigo, interesse romântico, colega de trabalho...", key="conexaom10")
-
-            if st.button("🃏 GERAR CARTAS NA MANGA", key="conexaom11"):
-                if conversa_carta.strip():
-                    with st.spinner("A IA está procurando novas possibilidades..."):
-                        prompt = (
-                        f"Analise esta conversa e gere 5 cartas na manga — novas possibilidades de interação.\\n"
-                        f"Conversa:\\n{conversa_carta}\\n"
-                        f"Contexto: {contexto_carta or 'não informado'}\\n\\n"
-                        f"REGRAS:\\n"
-                        f"- Trabalhe APENAS com o que está na conversa\\n"
-                        f"- NÃO fabrique fatos, interesses ou sentimentos\\n"
-                        f"- Cada carta deve ser genuinamente diferente das outras\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"🃏 CARTA #01 — RESGATAR UM ASSUNTO\\n"
-                        f"[mensagem sugerida]\\n"
-                        f"Por que essa carta: [explicação]\\n\\n"
-                        f"🃏 CARTA #02 — MUDAR O RUMO\\n"
-                        f"[mensagem sugerida]\\n"
-                        f"Por que essa carta: [explicação]\\n\\n"
-                        f"🃏 CARTA #03 — PERGUNTA-CHAVE\\n"
-                        f"[pergunta aberta]\\n"
-                        f"Por que essa carta: [explicação]\\n\\n"
-                        f"🃏 CARTA #04 — LEVEZA\\n"
-                        f"[abordagem descontraída]\\n"
-                        f"Por que essa carta: [explicação]\\n\\n"
-                        f"🛡️ CARTA #05 — DAR ESPAÇO\\n"
-                        f"[avaliação de quando não insistir é o melhor caminho]\\n\\n"
-                        f"⭐ CARTA RECOMENDADA: [número e por quê é a melhor agora]"
-                    )
-                    res = conexa_ia(prompt)
-                    st.session_state.cartas_usadas += 1
-                    verificar_conquistas()
-                    salvar_historico("Carta na Manga", conversa_carta[:60], res)
-                    st.session_state['carta_temp'] = res
-            else:
-                st.warning("Cole a conversa antes de gerar.")
-
-        if st.session_state.get('carta_temp'):
-            st.markdown(f"<div class='carta-box'>{st.session_state['carta_temp']}</div>", unsafe_allow_html=True)
-            col_cp, col_fv = st.columns(2)
-            with col_cp:
-                st.download_button("📋 Baixar (.txt)", data=st.session_state['carta_temp'], file_name="carta_manga.txt", mime="text/plain", use_container_width=True, key="dl_conexa_4")
-            with col_fv:
-                if st.button("⭐ Favoritar cartas", key="fav_carta", use_container_width=True):
-                    st.session_state.biblioteca.append({'categoria':'Cartas na Manga','conteudo':st.session_state['carta_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
-                    st.session_state.favoritos_total += 1
-                    st.success("⭐ Salvo!")
-
-        # ──────────────────────────────────────────
-        # TURBINAR
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Turbinar":
-            st.header("💬 Turbinar Mensagem")
-            st.markdown("Cole sua mensagem e a IA a aprimora — clareza, tom e naturalidade.")
-
-            msg_orig = st.text_area("✍️ Sua mensagem:", height=100, placeholder="Cole sua mensagem aqui...", key="conexaom12")
-            col1, col2 = st.columns(2)
-            with col1:
-                estilo = st.selectbox("Estilo desejado:", ["Natural","Leve","Confiante","Divertido","Direto","Empático"], key="conexaom13")
-            with col2:
-                contexto_turb = st.text_input("Contexto:", placeholder="ex: primeira mensagem, resposta após sumiço...", key="conexaom14")
-
-        if st.button("💬 TURBINAR MENSAGEM", key="conexaom15"):
-            if msg_orig.strip():
-                with st.spinner("Aprimorando..."):
-                    prompt = (
-                        f"Avalie e melhore esta mensagem.\\n"
-                        f"Mensagem original: '{msg_orig}'\\n"
-                        f"Estilo desejado: {estilo}. Contexto: {contexto_turb or 'não informado'}.\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"📊 AVALIAÇÃO DA MENSAGEM ORIGINAL:\\n"
-                        f"• Clareza: [nota]/10\\n"
-                        f"• Naturalidade: [nota]/10\\n"
-                        f"• Tom: [análise]\\n"
-                        f"• Reciprocidade: [abre espaço para o outro?]\\n"
-                        f"• Pressão: [há pressão excessiva?]\\n\\n"
-                        f"❌ ANTES:\\n{msg_orig}\\n\\n"
-                        f"✅ DEPOIS — ESTILO {estilo.upper()}:\\n[mensagem aprimorada]\\n\\n"
-                        f"🧠 POR QUE MELHOROU:\\n[explicação objetiva das mudanças]\\n\\n"
-                        f"💡 VARIAÇÃO ALTERNATIVA:\\n[outra versão em estilo diferente]"
-                    )
-                    res = conexa_ia(prompt)
-                    st.session_state.mensagens_aprimoradas += 1
-                    verificar_conquistas()
-                    salvar_historico("Turbinar", msg_orig[:60], res)
-                    st.session_state['turb_temp'] = res
-            else:
-                st.warning("Cole a mensagem antes de turbinar.")
-
-        if st.session_state.get('turb_temp'):
-            st.markdown(f"<div class='card'>{st.session_state['turb_temp']}</div>", unsafe_allow_html=True)
-            if st.button("⭐ Favoritar", key="fav_turb"):
-                st.session_state.biblioteca.append({'categoria':'Mensagens Turbinadas','conteudo':st.session_state['turb_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
-                st.session_state.favoritos_total += 1
-                st.success("⭐ Salvo!")
-
-        # ──────────────────────────────────────────
-        # RAIO-X DA CONVERSA
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Analisar":
-            st.header("🧠 Raio-X da Conversa")
-            st.markdown("Análise completa — fluidez, reciprocidade, qualidade e oportunidades.")
-
-            conversa_rx = st.text_area("💬 Cole a conversa completa:", height=200, placeholder="Cole a conversa aqui...", key="conexaom16")
-
-            if st.button("🧠 ANALISAR CONVERSA", key="conexaom17"):
-                if conversa_rx.strip():
-                    with st.spinner("Fazendo o raio-X..."):
-                        prompt = (
-                        f"Faça uma análise completa desta conversa.\\n\\n"
-                        f"IMPORTANTE: NÃO afirme sentimentos ou intenções. Apresente APENAS padrões observáveis.\\n\\n"
-                        f"Conversa:\\n{conversa_rx}\\n\\n"
-                        f"FORMATO:\\n\\n"
-                        f"📊 01 — FLUIDEZ\\n"
-                        f"Status: [🟢 Fluindo / 🟡 Perdendo ritmo / 🔴 Travada]\\n"
-                        f"[análise observável]\\n\\n"
-                        f"🤝 02 — RECIPROCIDADE\\n"
-                        f"[Quem inicia, tamanho das respostas, perguntas feitas, equilíbrio — sem afirmar sentimentos]\\n\\n"
-                        f"💬 03 — QUALIDADE DA COMUNICAÇÃO\\n"
-                        f"• Clareza: [nota]/10\\n• Naturalidade: [nota]/10\\n• Escuta: [nota]/10\\n"
-                        f"• Perguntas: [quantidade e qualidade]\\n• Pressão: [há?]\\n\\n"
-                        f"🎯 04 — ASSUNTOS\\n"
-                        f"✅ Que funcionaram: [lista]\\n"
-                        f"💡 Que podem ser explorados: [lista]\\n"
-                        f"📉 Que perderam força: [lista]\\n\\n"
-                        f"🚦 05 — RADAR\\n"
-                        f"[🟢 / 🟡 / 🔴 com justificativa baseada em padrões observáveis]\\n\\n"
-                        f"🎯 06 — PRÓXIMO PASSO RECOMENDADO:\\n[ação concreta]"
-                    )
-                    res = conexa_ia(prompt)
-                    st.session_state.analises_realizadas += 1
-                    st.session_state.conversas_analisadas += 1
-                    verificar_conquistas()
-                    salvar_historico("Raio-X", conversa_rx[:60], res)
-                    st.session_state['rx_temp'] = res
-            else:
-                st.warning("Cole a conversa antes de analisar.")
-
-        if st.session_state.get('rx_temp'):
-            st.markdown(f"<div class='card'>{st.session_state['rx_temp']}</div>", unsafe_allow_html=True)
-            col_dl, col_fv = st.columns(2)
-            with col_dl:
-                st.download_button("📋 Baixar (.txt)", data=st.session_state['rx_temp'], file_name="raio_x.txt", mime="text/plain", use_container_width=True, key="dl_conexa_5")
-            with col_fv:
-                if st.button("⭐ Favoritar", key="fav_rx", use_container_width=True):
-                    st.session_state.biblioteca.append({'categoria':'Análises','conteudo':st.session_state['rx_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
-                    st.session_state.favoritos_total += 1; st.success("⭐ Salvo!")
-
-        # ──────────────────────────────────────────
-        # ROLEPLAY
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Roleplay":
-            st.header("🎭 Simulador de Conversa")
-            st.markdown("Treine antes de enviar. A IA simula uma pessoa real em um cenário.")
-
-            if 'roleplay_chat' not in st.session_state:
-                st.session_state.roleplay_chat = []
-        if 'roleplay_ativo' not in st.session_state:
-            st.session_state.roleplay_ativo = False
-        if 'roleplay_key' not in st.session_state:
-            st.session_state.roleplay_key = 0
-
-        if not st.session_state.roleplay_ativo:
-            cenario = st.selectbox("Escolha o cenário:", [
-                "🤝 Conhecer alguém novo","👥 Fazer amizade","🏫 Conversar com colega",
-                "💼 Networking","🗣️ Conversa difícil","😬 Situação que causa nervosismo"])
-            nivel_role = st.selectbox("Dificuldade:", ["Fácil — pessoa receptiva","Médio — pessoa neutra","Difícil — pessoa reservada"], key="conexaom18")
-
-            if st.button("🎭 INICIAR SIMULAÇÃO", key="conexaom19"):
-                with st.spinner("Criando o cenário..."):
-                    system_role = (
-                        f"Você é uma pessoa num simulador de conversa para treino de comunicação. "
-                        f"Cenário: {cenario}. Dificuldade: {nivel_role}. "
-                        f"Seja realista — não force perguntas, não salve a conversa artificialmente. "
-                        f"Mantenha personalidade consistente. Responda como essa pessoa responderia, "
-                        f"não como um assistente. Primeira mensagem: apresente o cenário brevemente e comece a interação."
-                    )
-                    resp = conexa_ia("Inicie o cenário com uma fala natural da personagem.", system_role)
-                    st.session_state.roleplay_chat = [{"role":"assistant","content":resp,"system":system_role}]
-                    st.session_state.roleplay_ativo = True
-                    st.session_state.roleplay_cenario = cenario
-                    st.session_state.roleplay_system = system_role
-                    st.rerun()
-        else:
-            st.markdown(f"**Cenário:** {st.session_state.get('roleplay_cenario','')}")
-            for msg in st.session_state.roleplay_chat:
-                if msg['role'] == 'user':
-                    st.markdown(f"<div class='chat-user'><b style='color:#C2185B;'>Você:</b> {msg['content']}</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"<div class='chat-persona'><b style='color:#1D4ED8;'>🎭 Personagem:</b> {msg['content']}</div>", unsafe_allow_html=True)
-
-            msg_role = st.text_input("Sua resposta:", key=f"role_input_{st.session_state.roleplay_key}", placeholder="O que você diria?")
-
-            col_e, col_f = st.columns([4,1])
-            with col_e:
-                if st.button("📤 ENVIAR", key="conexaom20"):
-                    if msg_role.strip():
-                        historico_msgs = [{"role":m["role"],"content":m["content"]} for m in st.session_state.roleplay_chat]
-                        with st.spinner("..."):
-                            try:
-                                client = Groq(api_key=st.session_state.api_key)
-                                msgs = [{"role":"system","content":st.session_state.roleplay_system}] + historico_msgs + [{"role":"user","content":msg_role}]
-                                resp = client.chat.completions.create(messages=msgs, model="openai/gpt-oss-120b")
-                                resp_txt = resp.choices[0].message.content
-                                if resp_txt: st.session_state['res_cm_conexa1'] = str(resp_txt)
-                            except Exception as e:
-                                resp_txt = f"⚠️ Erro: {e}"
-                        st.session_state.roleplay_chat.append({"role":"user","content":msg_role})
-                        st.session_state.roleplay_chat.append({"role":"assistant","content":resp_txt})
-                        st.session_state.roleplay_key += 1
-                        st.rerun()
-            with col_f:
-                if st.button("🏁 Finalizar", key="conexaom21"):
-                    with st.spinner("Avaliando sua performance..."):
-                        hist_txt = "\\n".join(f"{'Usuário' if m['role']=='user' else 'Personagem'}: {m['content']}" for m in st.session_state.roleplay_chat)
-                        prompt_aval = (
-                            f"Avalie a performance deste usuário na simulação de conversa.\\n"
-                            f"Cenário: {st.session_state.get('roleplay_cenario','')}\\n\\n"
-                            f"Conversa:\\n{hist_txt}\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"🏆 AVALIAÇÃO DA SIMULAÇÃO\\n\\n"
-                            f"| Competência | Nota |\\n|---|---|\\n"
-                            f"| 🗣️ Naturalidade | [X]/10 |\\n"
-                            f"| 👂 Escuta | [X]/10 |\\n"
-                            f"| ❓ Qualidade das perguntas | [X]/10 |\\n"
-                            f"| 🔄 Adaptação | [X]/10 |\\n"
-                            f"| 🤝 Reciprocidade | [X]/10 |\\n\\n"
-                            f"⭐ NOTA GERAL: [X]/10\\n\\n"
-                            f"🟢 O QUE VOCÊ FEZ BEM:\\n[feedback específico]\\n\\n"
-                            f"🟡 O QUE PODE MELHORAR:\\n[feedback específico]\\n\\n"
-                            f"🎯 PRÓXIMO DESAFIO:\\n[o que trabalhar na próxima simulação]"
-                        )
-                        aval = conexa_ia(prompt_aval)
-                        st.session_state.treinos_realizados += 1
-                        verificar_conquistas()
-                        salvar_historico("Roleplay", st.session_state.get('roleplay_cenario',''), aval)
-                        st.session_state['role_aval'] = aval
-                        st.session_state.roleplay_ativo = False
-                        st.session_state.roleplay_chat = []
-                        st.rerun()
-
-        if st.session_state.get('role_aval'):
-            st.markdown(f"<div class='avaliacao-box'>{st.session_state['role_aval']}</div>", unsafe_allow_html=True)
-            st.download_button("📋 Baixar avaliação (.txt)", data=st.session_state['role_aval'], file_name="avaliacao_roleplay.txt", mime="text/plain", key="dl_conexa_6")
-
-
-        # ──────────────────────────────────────────
-        # A ARTE DA LÁBIA — SISTEMA COMPLETO
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Labia":
-            import time as _t, random as _rand, re as _re2
-
-            PHASES_L = ["Atração", "Conexão", "Sedução"]
-            PHASE_EMOJI_L = {"Atração":"🔥","Conexão":"💫","Sedução":"❤️"}
-            PHASE_DIFFICULTY_L = {"Atração":"Paquerador","Conexão":"Galanteador","Sedução":"Mestre da Lábia"}
-            RANK_ORDER_L = ["Aspirante","Paquerador","Galanteador","Mestre da Lábia"]
-            RANK_AFTER_L = {"Atração":"Paquerador","Conexão":"Galanteador","Sedução":"Mestre da Lábia"}
-            PASS_THRESHOLD_L = 60
-            PHASE_SECONDS_L = 300
-            CRITERIA_W = {"naturalidade":0.20,"confianca":0.20,"criatividade":0.15,"conexao":0.20,"humor":0.10,"conducao":0.15}
-            CRITERIA_LBL = {"naturalidade":"🗣️ Naturalidade","confianca":"😎 Confiança","criatividade":"🎯 Criatividade","conexao":"🧲 Conexão","humor":"😂 Humor","conducao":"🧭 Condução"}
-
-            CHARACTERS_L = {
-                "Rafaela":{"emoji":"👩","estrelas":2,"unlock_rank":None,"pronome":"ela","descricao":"Inteligente, espontânea e seletiva.","bio":"31 anos, designer. Curte cerâmica, filme de terror e café coado. Irônica, direta."},
-                "Camila":{"emoji":"👩‍🦰","estrelas":3,"unlock_rank":"Paquerador","pronome":"ela","descricao":"Segura, provocadora, testa confiança.","bio":"27 anos, advogada. Corre 10km, joga xadrez. Detecta puxa-saquismo na hora."},
-                "Helena":{"emoji":"👩‍💼","estrelas":5,"unlock_rank":"Galanteador","pronome":"ela","descricao":"Sofisticada, só se abre com quem conquista.","bio":"34 anos, sommelier. Fala 3 idiomas. Fecha se sentir técnica de paquera."},
-                "André":{"emoji":"👨","estrelas":2,"unlock_rank":None,"pronome":"ele","descricao":"Comunicativo, reage bem ao humor.","bio":"29 anos, fisioterapeuta. Nota quando alguém é forçado e esfria."},
-                "Lucas":{"emoji":"🧑‍🎤","estrelas":3,"unlock_rank":"Paquerador","pronome":"ele","descricao":"Confiante, sarcástico — testa se aguenta provocação.","bio":"26 anos, baixista. Faz cara de tédio se sentir cantada decorada."},
-                "Diego":{"emoji":"🕴️","estrelas":5,"unlock_rank":"Galanteador","pronome":"ele","descricao":"Extremamente seletivo, fala pouco mas repara em tudo.","bio":"33 anos, chef. Só reage a quem traz algo genuíno."},
-            }
-
-            CENARIOS_L = ["fila de um café badalado","festa de aniversário","sala de espera de workshop","parque","corredor de livraria","show ao ar livre","loja de discos","cozinha de workshop","elevador","mesa comunitária de bar"]
-
-            RANK_STYLE_L = {"Aspirante":{"emoji":"⚪","badge":"badge"},"Paquerador":{"emoji":"🟢","badge":"badge-verde"},"Galanteador":{"emoji":"🟡","badge":"badge-amarelo"},"Mestre da Lábia":{"emoji":"🔴","badge":"badge-roxo"}}
-
-            for k,v in [
-                ('ml_estagio','home'),('ml_character',None),('ml_phase_index',0),
-                ('ml_phase_start',None),('ml_connexometer',100),('ml_messages',[]),
-                ('ml_interaction_scores',[]),('ml_phase_results',{}),
-                ('ml_phase_message_start',0),('ml_phase_coachings',{}),
-                ('ml_current_rank',"Aspirante"),('ml_cenario',None),
-                ('ml_aberturas_usadas',[]),('ml_historico',[]),('ml_last_result',None),
-                ('ml_response_since',None),
-            ]:
-                if k not in st.session_state: st.session_state[k] = v
-
-            def ml_reset(keep_char=False):
-                for k in ['ml_phase_index','ml_phase_start','ml_connexometer','ml_messages',
-                          'ml_interaction_scores','ml_phase_results','ml_phase_message_start',
-                          'ml_phase_coachings','ml_cenario','ml_last_result','ml_response_since']:
-                    st.session_state[k] = {'ml_phase_index':0,'ml_phase_start':None,'ml_connexometer':100,
-                        'ml_messages':[],'ml_interaction_scores':[],'ml_phase_results':{},
-                        'ml_phase_message_start':0,'ml_phase_coachings':{},'ml_cenario':None,
-                        'ml_last_result':None,'ml_response_since':None}[k]
-                st.session_state.ml_current_rank = "Aspirante"
-                if not keep_char: st.session_state.ml_character = None
-                st.session_state.ml_estagio = "home"
-
-            def ml_maior_rank():
-                melhor = 0
-                for h in st.session_state.ml_historico:
-                    rk = h.get("rank_final","Aspirante")
-                    if rk in RANK_ORDER_L: melhor = max(melhor, RANK_ORDER_L.index(rk))
-                return RANK_ORDER_L[melhor]
-
-            def ml_desbloqueado(nome):
-                info = CHARACTERS_L[nome]
-                if info["unlock_rank"] is None: return True
-                return RANK_ORDER_L.index(ml_maior_rank()) >= RANK_ORDER_L.index(info["unlock_rank"])
-
-            def ml_weighted(av):
-                return sum(av[k]*CRITERIA_W[k] for k in CRITERIA_W)
-
-            def ml_avg(lista):
-                if not lista: return {k:60 for k in CRITERIA_W}
-                return {k: sum(a[k] for a in lista)/len(lista) for k in CRITERIA_W}
-
-            def ml_build_system(character, difficulty, phase):
-                char = CHARACTERS_L[character]
-                cenario = st.session_state.ml_cenario or "situação social casual"
-                phase_ctx = {"Atração":f"FASE 1 — ATRAÇÃO. Vocês se conheceram em: {cenario}. Desperte interesse com leveza.","Conexão":"FASE 2 — CONEXÃO. Aprofunde: histórias, valores, personalidade.","Sedução":"FASE 3 — SEDUÇÃO. Tensão romântica sutil. Se grosseiro, recue."}[phase]
-                diff_ctx = {"Paquerador":"Nível fácil: seja receptivo, ajude a conversa.","Galanteador":"Nível médio: seja seletivo, responda curto às vezes.","Mestre da Lábia":"Nível difícil: não facilite, teste a confiança."}[difficulty]
-                return f\"\"\"Você é {character}. {char['descricao']}
-BIOGRAFIA: {char['bio']}
-{phase_ctx}
-{diff_ctx}
-REGRAS: Respostas CURTAS (1 frase). Use detalhes específicos da bio. NUNCA revele que é IA.
-Após sua fala, avalie 0-100: naturalidade, confianca, criatividade, conexao, humor, conducao. Delta -15 a 15.
-JSON: {{"resposta":"fala","avaliacao":{{"naturalidade":0,"confianca":0,"criatividade":0,"conexao":0,"humor":0,"conducao":0}},"delta_conexometro":0}}\"\"\"
-
-            def ml_call_ai(character, difficulty, phase, history, user_msg=None, opening=False):
-                from groq import Groq as _GrML
-                client = _GrML(api_key=st.session_state.api_key)
-                system = ml_build_system(character, difficulty, phase)
-                cenario = st.session_state.ml_cenario or "situação social casual"
-                bloq = ""
-                if opening and st.session_state.ml_aberturas_usadas:
-                    lista = " | ".join(f'"{a}"' for a in st.session_state.ml_aberturas_usadas[-5:])
-                    bloq = f"NÃO repita: {lista}."
-                opening_prompt = f"Gere sua fala de abertura no cenário: {cenario}. Curta, com personalidade. {bloq} JSON de sempre com zeros."
-                msgs = [{"role":"system","content":system}]
-                for m in history:
-                    msgs.append({"role":"assistant" if m["role"]=="assistant" else "user","content":m["content"]})
-                msgs.append({"role":"user","content":opening_prompt if opening else user_msg})
-                for attempt in range(3):
-                    try:
-                        kwargs = dict(model="openai/gpt-oss-120b",messages=msgs,temperature=0.9,max_tokens=350)
-                        if attempt==0: kwargs["response_format"]={"type":"json_object"}
-                        resp = client.chat.completions.create(**kwargs)
-                        raw = resp.choices[0].message.content
-                        if raw: st.session_state['res_cm_conexa2'] = str(raw)
-                        try: data = import_json_ml(raw)
-                        except:
-                            s,e2 = raw.find("{"),raw.rfind("}")
-                            data = import_json_ml(raw[s:e2+1]) if s!=-1 and e2>s else {}
-                        resposta = (data.get("resposta") or "").strip()
-                        av = data.get("avaliacao",{})
-                        for k in CRITERIA_W: av[k] = max(0,min(100,int(av.get(k,50))))
-                        delta = max(-15,min(15,int(data.get("delta_conexometro",0))))
-                        if len(resposta.strip(".\\n"))<2: raise ValueError("vazia")
-                        return resposta, av, delta
-                    except: continue
-                return "Opa, o que você ia dizer?", {k:50 for k in CRITERIA_W}, 0
-
-            import json as import_json_ml_mod
-            def import_json_ml(s): return import_json_ml_mod.loads(s)
-
-            def ml_coaching(character, phase, phase_msgs, scores):
-                if not phase_msgs: return "Você não respondeu nesta fase."
-                conv = "\\n".join(f"{'Você' if m['role']=='user' else character}: {m['content']}" for m in phase_msgs)
-                fracos = ", ".join(f"{CRITERIA_LBL[k]} ({int(v)}/100)" for k,v in sorted(scores.items(),key=lambda x:x[1])[:3] if v<70)
-                fortes = ", ".join(f"{CRITERIA_LBL[k]} ({int(v)}/100)" for k,v in sorted(scores.items(),key=lambda x:x[1],reverse=True)[:2])
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### 💾 Salvar e Carregar Dados")
+        _csl1, _csl2 = st.columns(2)
+        with _csl1:
+            import json as _json_sv
+            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
+            st.download_button("💾 Salvar dados (.json)",
+                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_sv_seducaoi")
+        with _csl2:
+            _arq_sv = st.file_uploader("📂 Carregar dados:", type=["json"], key="ul_sv_seducaoi")
+            if _arq_sv:
                 try:
-                    from groq import Groq as _GrCo
-                    client = _GrCo(api_key=st.session_state.api_key)
-                    prompt = (f"Coach — fase '{phase}' com {character}.\\nConversa:\\n{conv}\\n\\nFracos:{fracos or 'nenhum'}\\nFortes:{fortes}\\n\\n"
-                             f"Feedback direto citando exemplos REAIS. Máx 180 palavras.\\n🔴 O QUE NÃO FUNCIONOU:\\n🟢 O QUE FUNCIONOU:\\n💡 PARA SUBIR DE NÍVEL:")
-                    r = client.chat.completions.create(model="openai/gpt-oss-120b",messages=[{"role":"user","content":prompt}],temperature=0.6,max_tokens=600)
-                    return r.choices[0].message.content.strip()
-                except: return "Não foi possível gerar feedback."
+                    import json as _json_ld
+                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
+                        st.session_state[_k] = _v
+                    st.success("✅ Dados carregados!")
+                    st.rerun()
+                except: st.error("Arquivo inválido.")
 
-            estagio_l = st.session_state.ml_estagio
+    with _tab_Confianca:
+        st.header("💪 Confiança e Presença")
 
-            # ── HOME ──
-            if estagio_l == "home":
-                st.markdown("## 👑 Mestre da Lábia")
-                st.markdown("*Você não vai aprender o que dizer — vai aprender a conversar.*")
-                st.markdown(\"\"\"<div class='card'>
-                🔥 <strong>Fase 1 — Atração</strong> → <span class='badge-verde'>🟢 Paquerador</span><br>
-                💫 <strong>Fase 2 — Conexão</strong> → <span class='badge-amarelo'>🟡 Galanteador</span><br>
-                ❤️ <strong>Fase 3 — Sedução</strong> → <span class='badge-roxo'>🔴 Mestre da Lábia</span>
-                </div>\"\"\", unsafe_allow_html=True)
-                if st.session_state.ml_historico:
-                    st.markdown("### 🕐 Últimos treinos")
-                    for item in reversed(st.session_state.ml_historico[-4:]):
-                        rk2 = RANK_STYLE_L.get(item.get("rank_final","Aspirante"),RANK_STYLE_L["Aspirante"])
-                        _rk2b = rk2["badge"]; _rk2e = rk2['emoji']
-                        st.markdown(f"<div class='card'><span class='badge'>{item['personagem']}</span> <span class='{_rk2b}'>{_rk2e} {item.get('rank_final','Aspirante')}</span> <small style='color:#888'>{item['data']}</small> — <strong>{item.get('overall', 0)}/100</strong></div>",unsafe_allow_html=True)
-                col_c = st.columns([1,2,1])[1]
-                with col_c:
-                    if st.button("🔥 COMEÇAR TREINAMENTO", use_container_width=True, key="ml_iniciar"):
-                        ml_reset(); st.session_state.ml_estagio="character"; st.rerun()
+        area_conf = st.selectbox("Área:", [
+            "Como entrar num ambiente e ser notado", "Como ficar à vontade em grupos",
+            "Como lidar com nervosismo antes de uma situação importante", "Como ter postura de presença",
+            "Como reagir quando te ignoram ou desrespeitam", "Como parar de precisar de aprovação",
+            "Como ser confiante sem parecer arrogante",
+        ], key="select_area_conf")
 
-            # ── ESCOLHA DE PERSONAGEM ──
-            elif estagio_l == "character":
-                st.markdown("### 🎭 Escolha sua personagem")
-                rank_at = ml_maior_rank()
-                rk_at = RANK_STYLE_L[rank_at]
-                _rkat_b = rk_at["badge"]; _rkat_e = rk_at['emoji']
-                st.markdown(f"Seu maior rank: <span class='{_rkat_b}'>{_rkat_e} {rank_at}</span>",unsafe_allow_html=True)
-                cols_p = st.columns(3)
-                for i,(nome_p2,info_p) in enumerate(CHARACTERS_L.items()):
-                    col_p = cols_p[i%3]
-                    desbloq = ml_desbloqueado(nome_p2)
-                    estrelas = "⭐"*info_p["estrelas"]+"☆"*(5-info_p["estrelas"])
-                    with col_p:
-                        if desbloq:
-                            st.markdown(f"<div class='card' style='text-align:center;'><div style='font-size:2em;'>{info_p['emoji']}</div><div style='font-weight:700;'>{nome_p2}</div><div style='color:#F5C542;'>{estrelas}</div><div style='font-size:0.8em;'>{info_p['descricao']}</div></div>",unsafe_allow_html=True)
-                            if st.button(f"Escolher {nome_p2}", key=f"ml_char_{nome_p2}", use_container_width=True):
-                                st.session_state.ml_character = nome_p2
-                                ml_reset(keep_char=True)
-                                st.session_state.ml_cenario = _rand.choice(CENARIOS_L)
-                                st.session_state.ml_estagio = "training"
-                                st.rerun()
-                        else:
-                            unlock_rk2 = RANK_STYLE_L[info_p["unlock_rank"]]
-                            _urk2b = unlock_rk2["badge"]; _urk2e = unlock_rk2['emoji']
-                            st.markdown(f"<div class='card' style='text-align:center;opacity:.5;'><div style='font-size:2em;'>🔒</div><div style='font-weight:700;'>{nome_p2}</div><div style='color:#F5C542;'>{estrelas}</div><div style='font-size:0.8em;'>{info_p['descricao']}</div><div style='font-size:0.75em;'>Desbloqueia com <span class='{_urk2b}'>{_urk2e} {info_p['unlock_rank']}</span></div></div>",unsafe_allow_html=True)
-                            st.button("🔒 Bloqueada", key=f"ml_locked_{nome_p2}", use_container_width=True, disabled=True)
+        if st.button("💪 TREINAR CONFIANÇA", key="seducaoi4"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Crie um guia prático e profundo sobre: {area_conf}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"💪 {area_conf.upper()}\\n\\n"
+                    f"🎬 A CENA:\\n[descreva como um homem sem esse skill age vs como um homem com esse skill age — seja específico e visual]\\n\\n"
+                    f"🧠 O MECANISMO:\\n[por que isso acontece — psicologia e comportamento por trás]\\n\\n"
+                    f"⚙️ COMO DESENVOLVER — PASSO A PASSO:\\n[instruções concretas, não conselhos vagos]\\n\\n"
+                    f"💬 O QUE DIZER/FAZER NA PRÁTICA:\\n[exemplos de falas, postura, reações específicas]\\n\\n"
+                    f"🏋️ TREINO DESTA SEMANA:\\n[1 exercício real para praticar essa habilidade em situações do dia a dia]\\n\\n"
+                    f"⚡ A MENTALIDADE POR TRÁS:\\n[o frame mental que um homem confiante carrega sobre essa situação]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_confianca_seduca1'] = str(res)
+                salvar_consulta("Confianca", area_conf, res)
+                st.session_state['conf_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
 
-            # ── TREINAMENTO ──
-            elif estagio_l == "training":
-                phase = PHASES_L[st.session_state.ml_phase_index]
-                character = st.session_state.ml_character
-                difficulty = PHASE_DIFFICULTY_L[phase]
+        if st.session_state.get('conf_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['conf_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['conf_temp'], file_name="confianca.txt", mime="text/plain", use_container_width=True, key="seducaoi5")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_conf", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Confianca','tema':area_conf if 'area_conf' in dir() else '','conteudo':st.session_state['conf_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
 
-                if st.session_state.ml_phase_start is None:
-                    st.session_state.ml_phase_start = _t.time()
-                    if phase=="Atração" and not st.session_state.ml_messages:
-                        with st.spinner(f"{character} está chegando..."):
-                            resp_op,_av_op,_d_op = ml_call_ai(character,difficulty,phase,[],opening=True)
-                        st.session_state.ml_messages.append({"role":"assistant","content":resp_op})
-                        st.session_state.ml_aberturas_usadas = (st.session_state.ml_aberturas_usadas+[resp_op])[-10:]
-                        st.session_state.ml_response_since = _t.time()
+        # ========================
+        # CHARME E HUMOR
+        # ========================
 
-                elapsed  = _t.time()-st.session_state.ml_phase_start
-                remaining= max(0,PHASE_SECONDS_L-elapsed)
-                mins_r   = int(remaining//60); segs_r=int(remaining%60)
-                rk2 = RANK_STYLE_L[st.session_state.ml_current_rank]
-                st.markdown(f"<h4>{PHASE_EMOJI_L[phase]} FASE {st.session_state.ml_phase_index+1} — {phase.upper()}</h4>",unsafe_allow_html=True)
-                _rk2b2 = rk2["badge"]; _rk2e2 = rk2['emoji']
-                st.markdown(f"<span class='{_rk2b2}'>{_rk2e2} {st.session_state.ml_current_rank}</span> <span class='badge'>{CHARACTERS_L[character]['emoji']} {character}</span>",unsafe_allow_html=True)
+    with _tab_Charme:
+        st.header("✨ Charme e Humor")
 
-                cx = st.session_state.ml_connexometer
-                cor_cx = "#22C55E" if cx>70 else ("#84CC16" if cx>50 else ("#F59E0B" if cx>30 else "#EF4444"))
-                pulso = "animation:pulso 0.8s ease-in-out infinite;" if cx<=20 else ""
-                cor_t2 = "#22C55E" if remaining>60 else ("#F59E0B" if remaining>20 else "#EF4444")
-                st.markdown(f"<style>@keyframes pulso{{0%,100%{{opacity:1}}50%{{opacity:.4}}}}</style><div style='display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border:2px solid #22C55E;border-radius:10px;margin-bottom:8px;'><span style='font-size:0.7em;color:#64748B;font-weight:600;'>❤️ CONEXÔMETRO</span><div style='flex:1;background:#F1F5F9;border-radius:999px;height:10px;'><div style='height:100%;border-radius:999px;background:{cor_cx};width:{cx}%;{pulso}'></div></div><span style='font-weight:700;color:{cor_cx};'>{cx}%</span><span style='border-left:1px solid #E2E8F0;padding-left:10px;font-weight:700;color:{cor_t2};'>⏱️ {mins_r:02d}:{segs_r:02d}</span></div>",unsafe_allow_html=True)
+        area_charme = st.selectbox("Área:", [
+            "Como ser naturalmente engraçado", "Como usar humor sem forçar",
+            "Como fazer elogios que realmente funcionam", "Como ser leve e descontraído",
+            "Como criar um apelido ou momento especial", "Como usar ironia sem ofender",
+            "Como rir de si mesmo sem se diminuir",
+        ], key="select_area_charme")
 
-                for m in st.session_state.ml_messages:
-                    css = "chat-persona" if m["role"]=="assistant" else "chat-user"
-                    autor = f"{CHARACTERS_L[character]['emoji']} {character}" if m["role"]=="assistant" else "🙂 Você"
-                    st.markdown(f"<div class='{css}'><strong>{autor}:</strong><br>{m['content']}</div>",unsafe_allow_html=True)
+        if st.button("✨ APRENDER CHARME", key="seducaoi6"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Ensine de forma prática e com exemplos reais: {area_charme}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"✨ {area_charme.upper()}\\n\\n"
+                    f"🎬 EXEMPLO REAL — A DIFERENÇA:\\n[mini-cena mostrando quem tenta forçar vs quem tem charme genuíno — específico e visual]\\n\\n"
+                    f"🧠 O PRINCÍPIO:\\n[por que isso funciona psicologicamente]\\n\\n"
+                    f"💬 EXEMPLOS DE FALAS E REAÇÕES:\\n[pelo menos 4 exemplos concretos de como isso soa na prática]\\n\\n"
+                    f"⚠️ O QUE ESTRAGA O CHARME:\\n[os erros que tiram o efeito]\\n\\n"
+                    f"🏋️ PRÁTICA:\\n[exercício para treinar essa habilidade essa semana]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_charme_seduca2'] = str(res)
+                salvar_consulta("Charme", area_charme, res)
+                st.session_state['charme_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
 
-                if remaining<=0:
-                    scores = st.session_state.ml_interaction_scores
-                    avg = ml_avg(scores)
-                    score = round(ml_weighted(avg))
-                    passou = score>=PASS_THRESHOLD_L
-                    st.session_state.ml_phase_results[phase]={"score":score,"scores":avg,"passou":passou}
-                    phase_msgs = st.session_state.ml_messages[st.session_state.ml_phase_message_start:]
+        if st.session_state.get('charme_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['charme_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['charme_temp'], file_name="charme.txt", mime="text/plain", use_container_width=True, key="seducaoi7")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_charme", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Charme','tema':area_charme if 'area_charme' in dir() else '','conteudo':st.session_state['charme_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # ORATÓRIA E VOZ
+        # ========================
+
+    with _tab_Oratoria:
+        st.header("🎤 Oratória e Voz")
+
+        area_orat = st.selectbox("Área:", [
+            "Como projetar a voz com autoridade", "Como usar pausas para criar impacto",
+            "Como contar algo e prender a atenção", "Como falar mais devagar sem parecer lento",
+            "Como estruturar o que você vai dizer antes de falar", "Como se expressar sem travamentos",
+            "Como dar uma opinião de forma que as pessoas ouçam", "Como falar em público com confiança",
+        ], key="select_area_orat")
+
+        if st.button("🎤 TREINAR ORATÓRIA", key="seducaoi8"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Ensine de forma prática e detalhada: {area_orat}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🎤 {area_orat.upper()}\\n\\n"
+                    f"🎬 A DIFERENÇA NA PRÁTICA:\\n[como soa quem não tem essa habilidade vs quem tem — use exemplos de frases]\\n\\n"
+                    f"⚙️ TÉCNICA — PASSO A PASSO:\\n[instruções concretas: respiração, ritmo, pausa, tom — o que fazer fisicamente]\\n\\n"
+                    f"💬 EXEMPLOS DE FALAS:\\n[mesma ideia, dita de duas formas — a fraca e a poderosa — para cada técnica ensinada]\\n\\n"
+                    f"🏋️ EXERCÍCIO DE VOZ:\\n[exercício físico/prático para treinar essa habilidade, que pode ser feito sozinho]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_oratoria_seduca3'] = str(res)
+                salvar_consulta("Oratoria", area_orat, res)
+                st.session_state['orat_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+
+        if st.session_state.get('orat_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['orat_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['orat_temp'], file_name="oratoria.txt", mime="text/plain", use_container_width=True, key="seducaoi9")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_orat", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Oratoria','tema':area_orat if 'area_orat' in dir() else '','conteudo':st.session_state['orat_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # ATRAÇÃO E SEDUÇÃO
+        # ========================
+
+    with _tab_Atracao:
+        st.header("💘 Atração e Sedução")
+
+        area_atr = st.selectbox("Área:", [
+            "Como criar tensão de forma natural", "Como demonstrar interesse sem parecer desesperado",
+            "Como ser direto e demonstrar intenção com elegância", "Como criar mistério sem ser frio",
+            "Como lidar com rejeição com classe", "Como criar uma segunda conversa após o primeiro encontro",
+            "Como convidar alguém de forma natural",
+        ], key="select_area_atr")
+
+        if st.button("💘 APRENDER", key="seducaoi10"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Ensine de forma prática, direta e com exemplos: {area_atr}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"💘 {area_atr.upper()}\\n\\n"
+                    f"🎬 COMO PARECE NA REALIDADE:\\n[cena específica com diálogo mostrando como isso se manifesta — inclua um exemplo que funciona e um que não funciona]\\n\\n"
+                    f"⚙️ O MECANISMO:\\n[por que essa dinâmica funciona — psicologia da atração por trás]\\n\\n"
+                    f"💬 O QUE DIZER:\\n[3-4 exemplos de falas/abordagens que aplicam isso — adaptáveis, não scripts robóticos]\\n\\n"
+                    f"⚠️ ONDE A MAIORIA ERRA:\\n[o erro mais comum que destrói esse efeito]\\n\\n"
+                    f"✅ A LINHA QUE NÃO SE CRUZA:\\n[como garantir que a abordagem respeita a outra pessoa — incluindo como reconhecer e aceitar desinteresse com elegância]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_atracao_seduca4'] = str(res)
+                salvar_consulta("Atracao", area_atr, res)
+                st.session_state['atr_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+
+        if st.session_state.get('atr_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['atr_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['atr_temp'], file_name="atracao.txt", mime="text/plain", use_container_width=True, key="seducaoi11")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_atr", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Atracao','tema':area_atr if 'area_atr' in dir() else '','conteudo':st.session_state['atr_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # A CONVERSA PERFEITA
+        # ========================
+
+    with _tab_Conversa:
+        st.header("📱 A Conversa Perfeita")
+
+        tab1, tab2 = st.tabs(["🎯 Aprender a Técnica", "💬 Me Ajuda com Esta Conversa"])
+
+        with tab1:
+            tecnica_conv = st.selectbox("Técnica:", [
+                "Como abrir uma conversa presencialmente", "Como não deixar a conversa morrer",
+                "Como fazer perguntas que aprofundam", "Como usar silêncios de forma poderosa",
+                "Como criar uma conversa via mensagem que leva ao encontro",
+                "Como responder de forma que mantém o interesse", "Como sair da friendzone conversacional",
+            ], key="select_tecnica_conv")
+
+            if st.button("🎯 APRENDER", key="seducaoi12"):
+                with st.spinner("Preparando..."):
+                    prompt = (
+                        f"Ensine: {tecnica_conv}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🎯 {tecnica_conv.upper()}\\n\\n"
+                        f"🎬 EXEMPLO COMPLETO — COMO FICA NA PRÁTICA:\\n[diálogo real mostrando a técnica aplicada do início ao fim]\\n\\n"
+                        f"⚙️ OS PRINCÍPIOS:\\n[o que está por trás dessa técnica]\\n\\n"
+                        f"💬 VARIAÇÕES E ADAPTAÇÕES:\\n[como adaptar para diferentes contextos: presencial, mensagem, grupo...]\\n\\n"
+                        f"⚠️ ERRO MAIS COMUM:\\n[o que a maioria faz de errado nessa situação]"
+                    )
+                    res = presenca_ia(prompt)
+                    if res: st.session_state['res_conversa_seduca5'] = str(res)
+                    salvar_consulta("Conversa", tecnica_conv, res)
+                    st.session_state['conv_tec_temp'] = res
+                    st.session_state.pontuacao_total += 5
+                    st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+
+            if st.session_state.get('conv_tec_temp'):
+                st.markdown(f"<div class='card'>{st.session_state['conv_tec_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['conv_tec_temp'], file_name="tecnica_conversa.txt", mime="text/plain", key="dl_conv_tec")
+
+        with tab2:
+            minha_conversa = st.text_area("Cole a conversa que está emperrada ou que você quer continuar:", height=150,
+                placeholder="ex: Ela: 'kk foi boa a reunião' / Eu: 'Foi sim rs' / Ela: 🙂", key="seducaoi2")
+
+            if st.button("💬 COMO RESPONDER ISSO?", key="seducaoi13"):
+                if minha_conversa.strip():
                     with st.spinner("Analisando..."):
-                        coaching = ml_coaching(character,phase,phase_msgs,avg)
-                    st.session_state.ml_phase_coachings[phase]=coaching
-                    st.session_state.ml_interaction_scores=[]
-                    st.session_state.ml_estagio="phase_end"; st.rerun()
+                        prompt = (
+                            f"Analise esta conversa e ajude com a próxima jogada.\\n"
+                            f"Conversa: {minha_conversa}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📊 DIAGNÓSTICO:\\n[como está a dinâmica desta conversa — curto e direto]\\n\\n"
+                            f"💬 3 OPÇÕES DE RESPOSTA:\\n\\n"
+                            f"🔥 DIRETA E INTENCIONAL:\\n[demonstra interesse claro com confiança]\\n\\n"
+                            f"😄 LEVE E DIVERTIDA:\\n[cria leveza e humor]\\n\\n"
+                            f"🎯 QUE AVANÇA:\\n[leva a conversa para algum lugar — encontro, plano, tema novo]\\n\\n"
+                            f"💡 QUAL USAR E POR QUÊ:\\n[recomendação baseada no tom da conversa]"
+                        )
+                        res = presenca_ia(prompt)
+                        if res: st.session_state['res_conversa_seduca6'] = str(res)
+                        salvar_consulta("Conversa", minha_conversa[:60], res)
+                        st.session_state['conv_resp_temp'] = res
                 else:
-                    msg_in = st.text_input("",key=f"ml_in_{len(st.session_state.ml_messages)}",placeholder="Digite sua resposta...",label_visibility="collapsed")
-                    col_env2,col_sair2 = st.columns([4,1])
-                    with col_env2:
-                        if st.button("📤 ENVIAR", key="ml_env", use_container_width=True):
-                            if msg_in.strip():
-                                st.session_state.ml_messages.append({"role":"user","content":msg_in})
-                                with st.spinner(f"{character} está digitando..."):
-                                    resp2,av2,delta2 = ml_call_ai(character,difficulty,phase,st.session_state.ml_messages[:-1],user_msg=msg_in)
-                                st.session_state.ml_messages.append({"role":"assistant","content":resp2})
-                                st.session_state.ml_interaction_scores.append(av2)
-                                resp_t = (_t.time()-st.session_state.ml_response_since) if st.session_state.ml_response_since else 0
-                                pen = 12 if resp_t>45 else (8 if resp_t>30 else (4 if resp_t>15 else 0))
-                                st.session_state.ml_connexometer = max(0,min(100,cx+delta2-pen))
-                                # Penalidade de silêncio
-                                blocos = int(resp_t//25) if resp_t else 0
-                                if blocos>0:
-                                    queda_sil = blocos*25
-                                    st.session_state.ml_connexometer = max(0,st.session_state.ml_connexometer-queda_sil)
-                                st.session_state.ml_response_since = _t.time()
-                                st.rerun()
-                    with col_sair2:
-                        if st.button("🚩 Sair",key="ml_sair",use_container_width=True):
-                            ml_reset(); st.rerun()
-                    _t.sleep(1); st.rerun()
+                    st.warning("Cole a conversa.")
 
-            # ── FIM DE FASE ──
-            elif estagio_l == "phase_end":
-                phase = PHASES_L[st.session_state.ml_phase_index]
-                result = st.session_state.ml_phase_results.get(phase,{"score":0,"scores":{},"passou":False})
-                score2,scores2,passou2 = result["score"],result["scores"],result["passou"]
-                coaching2 = st.session_state.ml_phase_coachings.get(phase,"")
-                st.markdown(f"<h3 style='text-align:center;'>{PHASE_EMOJI_L[phase]} {phase.upper()} — CONCLUÍDA</h3>",unsafe_allow_html=True)
-                st.markdown(f"<h1 style='text-align:center;'>{score2}/100</h1>",unsafe_allow_html=True)
-                st.caption(f"Nota de corte: {PASS_THRESHOLD_L}/100")
-                if passou2:
-                    novo_rank2 = RANK_AFTER_L[phase]
-                    st.session_state.ml_current_rank = novo_rank2
-                    rk3 = RANK_STYLE_L[novo_rank2]
-                    _rk3b = rk3["badge"]; _rk3e = rk3['emoji']
-                    st.markdown(f"<div class='card' style='text-align:center;'><h3>🎉 VOCÊ PASSOU!</h3><h2><span class='{_rk3b}'>{_rk3e} {novo_rank2.upper()}</span></h2></div>",unsafe_allow_html=True)
+            if st.session_state.get('conv_resp_temp'):
+                st.markdown(f"<div class='card-gold'>{st.session_state['conv_resp_temp']}</div>", unsafe_allow_html=True)
+
+        # ========================
+        # SIMULADOR DE ABORDAGEM
+        # ========================
+
+    with _tab_Simulador:
+        st.header("🎭 Simulador de Abordagem")
+        st.markdown("A IA interpreta a pessoa. Você treina antes de executar na vida real.")
+
+        if 'chat_simulador' not in st.session_state:
+            st.session_state.chat_simulador = []
+        if 'sim_key' not in st.session_state:
+            st.session_state.sim_key = 0
+        if 'sim_perfil_config' not in st.session_state:
+            st.session_state.sim_perfil_config = ""
+
+        if not st.session_state.chat_simulador:
+            st.markdown("#### Configure o cenário:")
+            col1, col2 = st.columns(2)
+            with col1:
+                contexto_sim = st.selectbox("Contexto:", ["Bar/balada","Academia","Trabalho/networking","App de relacionamento","Café/restaurante","Via amigos em comum"], key="seducaoi14")
+                perfil_sim = st.selectbox("Perfil da pessoa:", ["Expansiva e animada","Reservada e séria","Intelectual e curiosa","Bem-humorada e irônica","Ocupada e distraída"], key="seducaoi15")
+            with col2:
+                nivel_sim = st.selectbox("Dificuldade:", ["Receptiva (fácil)","Neutra (médio)","Difícil de conquistar","Ocupada e sem interesse inicial"], key="seducaoi16")
+
+            if st.button("🎭 INICIAR SIMULAÇÃO", key="seducaoi17"):
+                st.session_state.sim_perfil_config = f"Contexto: {contexto_sim}. Perfil: {perfil_sim}. Dificuldade: {nivel_sim}"
+                st.rerun()
+        else:
+            st.markdown(f"<div class='disclaimer'>🎭 Cenário: {st.session_state.sim_perfil_config}</div>", unsafe_allow_html=True)
+
+            for msg in st.session_state.chat_simulador:
+                if msg['role'] == 'user':
+                    st.markdown(f"<div style='background:#2D1B4E;border:1px solid #7C3AED;border-radius:12px 12px 4px 12px;padding:12px 16px;margin:8px 0;'><b style='color:#DDD6FE'>Você:</b> <span style='color:#F1F5F9'>{msg['content']}</span></div>", unsafe_allow_html=True)
                 else:
-                    rk_at2 = RANK_STYLE_L[st.session_state.ml_current_rank]
-                    _rkat2b = rk_at2["badge"]; _rkat2e = rk_at2['emoji']
-                    st.markdown(f"<div class='card' style='text-align:center;'><h3>❌ NÃO PASSOU DESTA VEZ</h3><p>Você continua <span class='{_rkat2b}'>{_rkat2e} {st.session_state.ml_current_rank}</span></p></div>",unsafe_allow_html=True)
-                if coaching2:
-                    st.markdown(f"<div class='card'>{coaching2}</div>",unsafe_allow_html=True)
-                st.markdown("<hr class='divider'>",unsafe_allow_html=True)
-                is_last = st.session_state.ml_phase_index>=len(PHASES_L)-1
-                encerrar = (not passou2) or is_last
-                label_btn = "🏆 VER RESULTADO FINAL" if encerrar else f"{PHASE_EMOJI_L[PHASES_L[st.session_state.ml_phase_index+1]]} PRÓXIMA FASE"
-                if st.button(label_btn, use_container_width=True, key="ml_prox"):
-                    if encerrar:
-                        all_scores2 = [r["scores"] for r in st.session_state.ml_phase_results.values()]
-                        avg2 = ml_avg(all_scores2)
-                        overall2 = round(ml_weighted(avg2))
-                        entry2 = {"data":datetime.now().strftime("%d/%m/%Y %H:%M"),"personagem":st.session_state.ml_character,"rank_final":st.session_state.ml_current_rank,"treino_completo":passou2 and is_last,"overall":overall2,"fases":{p2:r2["score"] for p2,r2 in st.session_state.ml_phase_results.items()},"criterios":avg2}
-                        st.session_state.ml_historico.append(entry2)
-                        st.session_state.ml_last_result = entry2
-                        st.session_state.ml_estagio = "final"
-                    else:
-                        st.session_state.ml_phase_index += 1
-                        st.session_state.ml_phase_start = None
-                        st.session_state.ml_phase_message_start = len(st.session_state.ml_messages)
-                        st.session_state.ml_estagio = "training"
+                    st.markdown(f"<div class='treino-box' style='margin:8px 0;'><b>🎭 {st.session_state.sim_perfil_config.split('.')[1].replace('Perfil:','').strip() if '.' in st.session_state.sim_perfil_config else 'Pessoa'}:</b><br>{msg['content']}</div>", unsafe_allow_html=True)
+
+            msg_sim = st.text_input("O que você diz:", key=f"sim_input_{st.session_state.sim_key}")
+
+            col_env, col_feed, col_reset = st.columns([3, 2, 1])
+            with col_env:
+                if st.button("📤 ENVIAR", key="seducaoi18"):
+                    if msg_sim.strip():
+                        with st.spinner("..."):
+                            resp = presenca_ia(
+                                msg_sim,
+                                f"MODO SIMULAÇÃO. Perfil: {st.session_state.sim_perfil_config}. "
+                                f"Responda como essa pessoa responderia de forma realista e consistente com o perfil e dificuldade. "
+                                f"Não saia do personagem. Seja natural, não exagerado. Se a abordagem for boa, mostre interesse gradual. "
+                                f"Se for fraca, mostre frieza ou desvio do assunto."
+                            )
+                        st.session_state.chat_simulador.append({"role": "user", "content": msg_sim})
+                        st.session_state.chat_simulador.append({"role": "assistant", "content": resp})
+                        st.session_state.sim_key += 1
+                        st.rerun()
+            with col_feed:
+                if st.button("📊 ANÁLISE DO TREINO", key="seducaoi19"):
+                    with st.spinner("Analisando..."):
+                        historico = "\\n".join([f"{'Você' if m['role']=='user' else 'Pessoa'}: {m['content']}" for m in st.session_state.chat_simulador])
+                        prompt = (
+                            f"Analise esta abordagem simulada.\\nSimulação: {historico}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📊 ANÁLISE DO TREINO\\n\\n"
+                            f"⭐ NOTA GERAL: [X]/10\\n\\n"
+                            f"✅ O QUE FUNCIONOU BEM:\\n[pontos fortes específicos]\\n\\n"
+                            f"⚠️ O QUE PODERIA SER MELHOR:\\n[erros ou oportunidades perdidas]\\n\\n"
+                            f"💬 COMO PODERIA TER DITO MELHOR:\\n[reescreva 1-2 falas que poderiam ter mais impacto]\\n\\n"
+                            f"🎯 PARA A PRÓXIMA VEZ:\\n[1 coisa principal para melhorar]"
+                        )
+                        res = presenca_ia(prompt)
+                        if res: st.session_state['res_simulador_seduca7'] = str(res)
+                        st.session_state['sim_analise_temp'] = res
+                        st.session_state.pontuacao_total += 10
+                        st.session_state.treinos_completos += 1
+                        st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+                        salvar_consulta("Simulador", "Simulação de abordagem", res)
+            with col_reset:
+                if st.button("🔄", key="seducaoi20"):
+                    for k in ['chat_simulador','sim_perfil_config','sim_analise_temp']:
+                        st.session_state.pop(k, None)
                     st.rerun()
 
-            # ── RESULTADO FINAL ──
-            elif estagio_l == "final":
-                entry3 = st.session_state.ml_last_result
-                if not entry3:
-                    st.session_state.ml_estagio="home"; st.rerun()
-                else:
-                    rk4 = RANK_STYLE_L.get(entry3.get("rank_final","Aspirante"),RANK_STYLE_L["Aspirante"])
-                    st.markdown(f"<h2 style='text-align:center;'>{'🏆 TREINO COMPLETO!' if entry3.get('treino_completo') else 'Resultado'}</h2>",unsafe_allow_html=True)
-                    st.markdown(f"<h1 style='text-align:center;font-size:4em;'>{entry3['overall']}</h1>",unsafe_allow_html=True)
-                    _rk4b = rk4["badge"]; _rk4e = rk4['emoji']
-                    st.markdown(f"<h3 style='text-align:center;'><span class='{_rk4b}'>{_rk4e} {entry3['rank_final'].upper()}</span></h3>",unsafe_allow_html=True)
-                    st.markdown("<hr class='divider'>",unsafe_allow_html=True)
-                    c1f,c2f,c3f = st.columns(3)
-                    c1f.metric("🔥 Atração",entry3["fases"].get("Atração","—"))
-                    c2f.metric("💫 Conexão",entry3["fases"].get("Conexão","—"))
-                    c3f.metric("❤️ Sedução",entry3["fases"].get("Sedução","—"))
-                    col_r1,col_r2 = st.columns(2)
-                    with col_r1:
-                        if st.button("🔄 Jogar Novamente",use_container_width=True,key="ml_replay"):
-                            ml_reset(); st.session_state.ml_estagio="character"; st.rerun()
-                    with col_r2:
-                        if st.button("🏠 Voltar",use_container_width=True,key="ml_home_final"):
-                            ml_reset(); st.rerun()
+            if st.session_state.get('sim_analise_temp'):
+                st.markdown(f"<div class='card-gold'>{st.session_state['sim_analise_temp']}</div>", unsafe_allow_html=True)
 
-        elif st.session_state.pagina == "Biblioteca":
-            st.header("📚 Biblioteca Inteligente")
-            categorias = ["Todas","Respostas","Cartas na Manga","Mensagens Turbinadas","Análises","Primeiras conversas","Amizade","Networking","Perguntas"]
-            filtro = st.selectbox("Filtrar:", categorias, key="filtro_bib")
-            bib = st.session_state.biblioteca
-            if filtro != "Todas":
-                bib = [b for b in bib if b.get('categoria','') == filtro]
-            if not bib:
-                st.info("Nenhum item salvo nesta categoria ainda.")
-            else:
-                st.markdown(f"**{len(bib)} item(ns) encontrado(s)**")
-                for i, item in enumerate(reversed(bib)):
-                    idx = len(st.session_state.biblioteca) - 1 - i
-                    with st.expander(f"[{item.get('categoria','')}] {item['conteudo'][:60]}... — {item['data']}"):
-                        st.markdown(f"<div class='card'>{item['conteudo']}</div>", unsafe_allow_html=True)
-                        col_dl, col_del = st.columns([3,1])
-                        with col_dl:
-                            st.download_button("📋 Baixar", data=item['conteudo'], file_name="item_biblioteca.txt", mime="text/plain", key=f"dl_bib_{i}")
-                        with col_del:
-                            if st.button("🗑️", key=f"del_bib_{i}"):
-                                st.session_state.biblioteca.pop(idx); st.rerun()
+        # ========================
+        # LINGUAGEM CORPORAL
+        # ========================
 
-        # ──────────────────────────────────────────
-        # LEITOR DE PERFIL
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Perfil":
-            st.header("📸 Leitor de Perfil")
-            st.markdown("*Analisa informações públicas e sugere assuntos de conversa.*")
-            st.markdown(\"\"\"<div class='card-yellow'>⚠️ <strong>Limite ético:</strong> A IA trabalha APENAS com informações fornecidas por você.
-            Não determina personalidade por aparência. Não afirma intenções. Não diagnostica.
-            Use apenas informações públicas.</div>\"\"\", unsafe_allow_html=True)
+    with _tab_Linguagem:
+        st.header("👁️ Linguagem Corporal")
 
-            bio_perfil = st.text_area("📋 Informações do perfil (bio, posts, interesses):", height=150, placeholder="ex: 'Viajante apaixonada. Fotógrafa nas horas vagas. Amo trilhas e café ☕'", key="conexaom22")
-            nome_perfil = st.text_input("Nome (opcional):", placeholder="ex: Marina", key="conexaom23")
-            contexto_perfil = st.text_input("Como vocês se conheceram:", placeholder="ex: seguimos um ao outro, colega de trabalho, amigo em comum...", key="conexaom24")
+        area_ling = st.selectbox("Área:", [
+            "Postura que transmite confiança", "Como usar o olhar de forma poderosa",
+            "Como usar o espaço ao seu redor", "Como gesticular de forma natural e impactante",
+            "Como controlar o sorriso (quando e como usar)", "Como aproximar-se fisicamente sem invadir",
+            "Como identificar sinais de interesse ou desconforto na outra pessoa",
+        ], key="select_area_ling")
 
-            if st.button("📸 ANALISAR PERFIL", key="conexaom25"):
-                if bio_perfil.strip():
-                    with st.spinner("Analisando..."):
-                        prompt = (
-                            f"Analise as informações públicas deste perfil e sugira assuntos para conversa.\\n"
-                            f"Nome: {nome_perfil or 'não informado'}. Bio/informações: {bio_perfil}. Contexto: {contexto_perfil or 'não informado'}.\\n\\n"
-                            f"REGRAS ABSOLUTAS:\\n"
-                            f"- NÃO determine personalidade por aparência\\n- NÃO afirme intenções ou sentimentos\\n"
-                            f"- Trabalhe APENAS com informações fornecidas\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"🎯 INTERESSES IDENTIFICADOS:\\n[o que é explicitamente visível nas informações]\\n\\n"
-                            f"💬 ASSUNTOS PARA CONVERSA:\\n[lista de 5-7 assuntos com base nos interesses]\\n\\n"
-                            f"❓ PERGUNTAS NATURAIS:\\n[3-5 perguntas abertas relacionadas aos interesses]\\n\\n"
-                            f"🧩 ELEMENTOS DA BIO QUE PODEM GERAR ASSUNTO:\\n[análise dos elementos específicos]\\n\\n"
-                            f"💡 COMO INICIAR A CONVERSA:\\n[2-3 aberturas naturais baseadas no perfil]"
-                        )
-                        res = conexa_ia(prompt)
-                        salvar_historico("Leitor de Perfil", bio_perfil[:60], res)
-                        st.session_state['perfil_temp'] = res
-                else:
-                    st.warning("Cole as informações do perfil.")
+        if st.button("👁️ APRENDER", key="seducaoi21"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Ensine de forma visual e prática: {area_ling}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"👁️ {area_ling.upper()}\\n\\n"
+                    f"🎬 COMO PARECE NA PRÁTICA:\\n[descreva visualmente — como o corpo, o olhar, a posição mudam entre quem tem e quem não tem essa habilidade]\\n\\n"
+                    f"⚙️ AS TÉCNICAS ESPECÍFICAS:\\n[instruções físicas concretas — onde colocar as mãos, como posicionar os ombros, etc]\\n\\n"
+                    f"🔄 OS ERROS MAIS COMUNS:\\n[o que a maioria faz que passa a mensagem errada]\\n\\n"
+                    f"🏋️ EXERCÍCIO:\\n[como treinar isso — um exercício físico real, não só teoria]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_linguagem_seduca8'] = str(res)
+                salvar_consulta("Linguagem", area_ling, res)
+                st.session_state['ling_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
 
-            if st.session_state.get('perfil_temp'):
-                st.markdown(f"<div class='card'>{st.session_state['perfil_temp']}</div>", unsafe_allow_html=True)
+        if st.session_state.get('ling_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['ling_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['ling_temp'], file_name="linguagem_corporal.txt", mime="text/plain", key="seducaoi22")
 
-        # ──────────────────────────────────────────
-        # COMPARAR CONVERSAS
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Comparar":
-            st.header("⚔️ Comparar Duas Conversas")
-            col1, col2 = st.columns(2)
-            with col1:
-                conv_a = st.text_area("💬 Conversa A:", height=180, placeholder="Cole a primeira conversa...", key="conexaom26")
-            with col2:
-                conv_b = st.text_area("💬 Conversa B:", height=180, placeholder="Cole a segunda conversa...", key="conexaom27")
+        # ========================
+        # SITUAÇÕES REAIS
+        # ========================
 
-            if st.button("⚔️ COMPARAR", key="conexaom28"):
-                if conv_a.strip() and conv_b.strip():
-                    with st.spinner("Comparando..."):
-                        prompt = (
-                            f"Compare estas duas conversas.\\n\\nConversa A:\\n{conv_a}\\n\\nConversa B:\\n{conv_b}\\n\\n"
-                            f"FORMATO:\\n\\n"
-                            f"🧠 COMPARAÇÃO\\n\\n"
-                            f"| Critério | A | B |\\n|---|---|---|\\n"
-                            f"| Clareza | [nota] | [nota] |\\n"
-                            f"| Naturalidade | [nota] | [nota] |\\n"
-                            f"| Reciprocidade | [nota] | [nota] |\\n"
-                            f"| Fluidez | [nota] | [nota] |\\n"
-                            f"| Qualidade das perguntas | [nota] | [nota] |\\n\\n"
-                            f"🏆 MELHOR DINÂMICA:\\n[qual e por quê — baseado em padrões observáveis]\\n\\n"
-                            f"💡 O QUE A MELHOR CONVERSA FEZ DIFERENTE:\\n[lições práticas]"
-                        )
-                        res = conexa_ia(prompt)
-                        salvar_historico("Comparação", "Conversa A vs B", res)
-                        st.session_state['comp_temp'] = res
-                else:
-                    st.warning("Cole as duas conversas.")
+    with _tab_Situacoes:
+        st.header("🔥 Situações Reais")
+        st.markdown("Como agir em situações específicas do dia a dia.")
 
-            if st.session_state.get('comp_temp'):
-                st.markdown(st.session_state['comp_temp'])
+        situacao_real = st.selectbox("Situação:", [
+            "Abordagem no bar/balada", "Abordagem na academia", "Colega de trabalho",
+            "Primeira mensagem no app", "Após pegar o número", "Primeiro encontro — presencialmente",
+            "Ela ficou fria de repente", "Ela demorou a responder", "Voltando após sumir",
+            "Como pedir o número de forma natural",
+        ], key="select_situacao_real")
 
-        # ──────────────────────────────────────────
-        # PLANO 7 DIAS
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Plano":
-            st.header("🗓️ Plano de Evolução — 7 Dias")
+        if st.button("🔥 COMO AGIR", key="seducaoi23"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Dê um guia completo e direto para esta situação: {situacao_real}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🔥 {situacao_real.upper()}\\n\\n"
+                    f"📌 O CONTEXTO:\\n[o que torna essa situação específica — seus desafios e oportunidades únicos]\\n\\n"
+                    f"🎬 COMO UM HOMEM MAGNÉTICO AGE NESSA SITUAÇÃO:\\n[cena detalhada — o que ele diz, como ele age, qual é o frame mental]\\n\\n"
+                    f"💬 EXEMPLOS DE FALAS REAIS:\\n[3-4 exemplos adaptáveis para essa situação específica]\\n\\n"
+                    f"⚠️ O MAIOR ERRO:\\n[o que destrói as chances nessa situação]\\n\\n"
+                    f"✅ COMO SABER SE ESTÁ INDO BEM:\\n[sinais de que a situação está evoluindo na direção certa]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_situacoes_seduca9'] = str(res)
+                salvar_consulta("Situacoes", situacao_real, res)
+                st.session_state['sit_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
 
-            foco_plano = st.text_input("Qual aspecto da comunicação você mais quer desenvolver?",
-                placeholder="ex: fazer perguntas melhores, não travar no início da conversa, lidar com silêncio...")
+        if st.session_state.get('sit_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['sit_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['sit_temp'], file_name="situacao_real.txt", mime="text/plain", use_container_width=True, key="seducaoi24")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_sit", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Situacoes','tema':situacao_real if 'situacao_real' in dir() else '','conteudo':st.session_state['sit_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
 
-            if st.button("🗓️ GERAR MEU PLANO", key="conexaom29"):
-                with st.spinner("Criando seu plano personalizado..."):
+        # ========================
+        # MENTALIDADE DO PROTAGONISTA
+        # ========================
+
+    with _tab_Mentalidade:
+        st.header("🧠 Mentalidade do Protagonista")
+
+        tema_ment = st.selectbox("Tema:", [
+            "Como um homem confiante pensa sobre si mesmo", "Como lidar com rejeição sem ser abalado",
+            "Como parar de dar valor demais antes de ganhar a pessoa", "Como ter vida própria que te torna mais atraente",
+            "Como sair do modo ansioso para o modo presente", "Como pensar em abundância em vez de escassez",
+            "Como ser o protagonista da sua própria vida",
+        ], key="select_tema_ment")
+
+        if st.button("🧠 TRANSFORMAR A MENTALIDADE", key="seducaoi25"):
+            with st.spinner("Preparando..."):
+                prompt = (
+                    f"Fale sobre a mentalidade de um homem realmente confiante em relação a: {tema_ment}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🧠 {tema_ment.upper()}\\n\\n"
+                    f"🔴 A MENTALIDADE LIMITANTE (como a maioria pensa):\\n[o frame mental que sabota — seja específico, não genérico]\\n\\n"
+                    f"🟢 A MENTALIDADE DO PROTAGONISTA (como um homem de presença pensa):\\n[o frame mental correto — com exemplos de como esse pensamento muda o comportamento na prática]\\n\\n"
+                    f"🔄 COMO FAZER A TRANSIÇÃO:\\n[o que fazer quando pegar o pensamento limitante acontecendo — específico e prático]\\n\\n"
+                    f"💬 O QUE UM HOMEM COM ESSA MENTALIDADE DIRIA/FARIA:\\n[exemplos concretos de comportamento e fala que demonstram essa mentalidade]\\n\\n"
+                    f"⚡ A FRASE QUE RESUME:\\n[1 frase curta e poderosa para fixar essa mentalidade]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_mentalidade_seduca10'] = str(res)
+                salvar_consulta("Mentalidade", tema_ment, res)
+                st.session_state['ment_temp'] = res
+                st.session_state.pontuacao_total += 5
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+
+        if st.session_state.get('ment_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['ment_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['ment_temp'], file_name="mentalidade.txt", mime="text/plain", use_container_width=True, key="seducaoi26")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_ment", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Mentalidade','tema':tema_ment if 'tema_ment' in dir() else '','conteudo':st.session_state['ment_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # A ARTE DE CONTAR HISTÓRIAS
+        # ========================
+
+    with _tab_Historias:
+        st.header("📖 A Arte de Contar Histórias")
+
+        tab_aprender, tab_praticar = st.tabs(["📖 Aprender a Técnica", "✍️ Transforme Sua História"])
+
+        with tab_aprender:
+            tecnica_hist = st.selectbox("Técnica:", [
+                "Como estruturar uma história que prende atenção", "Como usar emoção na narrativa",
+                "Como contar sobre si mesmo sem parecer que está se exibindo", "Como fazer as pessoas rirem contando algo que aconteceu",
+                "Como criar suspense em histórias do dia a dia", "Como terminar uma história com impacto",
+            ], key="select_tecnica_hist")
+
+            if st.button("📖 APRENDER", key="seducaoi27"):
+                with st.spinner("Preparando..."):
                     prompt = (
-                        f"Crie um plano de desenvolvimento de comunicação de 7 dias.\\n"
-                        f"Foco principal: {foco_plano or 'desenvolvimento geral'}.\\n\\n"
-                        f"Para cada dia:\\n\\n"
-                        f"📅 DIA [N] — [TEMA]\\n"
-                        f"🎯 Objetivo do dia: [o que desenvolver]\\n"
-                        f"📖 Conceito: [explicação simples]\\n"
-                        f"💪 Exercício prático: [tarefa concreta que pode ser feita hoje]\\n"
-                        f"⭐ Critério de sucesso: [como saber se conseguiu]\\n\\n"
-                        f"[repita para 7 dias]\\n\\n"
-                        f"🏆 DIA 7 — DESAFIO FINAL:\\n[simulação completa integrando tudo]"
-                    )
-                    res = conexa_ia(prompt)
-                    st.session_state.plano_conquista = res
-                    salvar_historico("Plano 7 Dias", foco_plano[:60] if foco_plano else "Geral", res)
-                    st.session_state['plano_temp'] = res
-
-            if st.session_state.get('plano_temp'):
-                st.markdown(f"<div class='card'>{st.session_state['plano_temp']}</div>", unsafe_allow_html=True)
-                st.download_button("📋 Baixar plano (.txt)", data=st.session_state['plano_temp'], file_name="plano_7dias.txt", mime="text/plain", key="dl_conexa_7")
-
-        # ──────────────────────────────────────────
-        # PROGRESSO
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Progresso":
-            st.header("📈 Minha Evolução")
-
-            # Atualizar métricas manualmente
-            st.markdown("### 📊 Atualizar Evolução")
-            st.markdown("*Após cada sessão de treino, atualize suas métricas.*")
-            col1, col2 = st.columns(2)
-            with col1:
-                nova_clareza = st.slider("Clareza:", 0, 10, st.session_state.clareza)
-                nova_naturalidade = st.slider("Naturalidade:", 0, 10, st.session_state.naturalidade)
-                nova_reciprocidade = st.slider("Reciprocidade:", 0, 10, st.session_state.reciprocidade)
-            with col2:
-                nova_confianca = st.slider("Confiança:", 0, 10, st.session_state.confianca)
-                nova_escuta = st.slider("Escuta:", 0, 10, st.session_state.escuta)
-
-            if st.button("💾 SALVAR EVOLUÇÃO", key="conexaom30"):
-                st.session_state.clareza = nova_clareza
-                st.session_state.naturalidade = nova_naturalidade
-                st.session_state.reciprocidade = nova_reciprocidade
-                st.session_state.confianca = nova_confianca
-                st.session_state.escuta = nova_escuta
-                salvar_cache(st.session_state.usuario)
-                st.success("✅ Evolução salva!")
-
-            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            st.markdown("### 📊 Desempenho Geral")
-            c1,c2,c3,c4,c5 = st.columns(5)
-            for col, nome_m, val in [(c1,"Clareza",st.session_state.clareza),(c2,"Naturalidade",st.session_state.naturalidade),(c3,"Reciprocidade",st.session_state.reciprocidade),(c4,"Confiança",st.session_state.confianca),(c5,"Escuta",st.session_state.escuta)]:
-                col.markdown(f"<div class='stat-box'><div class='stat-numero'>{val}</div><div>{nome_m}</div></div>", unsafe_allow_html=True)
-
-            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
-            col_a, col_b, col_c = st.columns(3)
-            col_a.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.conversas_analisadas}</div><div>Conversas analisadas</div></div>", unsafe_allow_html=True)
-            col_b.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.treinos_realizados}</div><div>Treinos realizados</div></div>", unsafe_allow_html=True)
-            col_c.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.labia_nivel}</div><div>Nível Arte da Lábia</div></div>", unsafe_allow_html=True)
-
-        # ──────────────────────────────────────────
-        # RESUMO SEMANAL
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Resumo":
-            st.header("📋 Relatório Semanal")
-
-            if st.button("📋 GERAR RELATÓRIO", key="conexaom31"):
-                with st.spinner("Gerando relatório..."):
-                    prompt = (
-                        f"Crie um relatório semanal de evolução em comunicação.\\n"
-                        f"Dados: {st.session_state.conversas_analisadas} conversas analisadas, "
-                        f"{st.session_state.mensagens_aprimoradas} mensagens turbinadas, "
-                        f"{st.session_state.treinos_realizados} treinos, "
-                        f"{st.session_state.cartas_usadas} cartas usadas.\\n"
-                        f"Métricas: Clareza {st.session_state.clareza}/10, Naturalidade {st.session_state.naturalidade}/10, "
-                        f"Reciprocidade {st.session_state.reciprocidade}/10, Confiança {st.session_state.confianca}/10, Escuta {st.session_state.escuta}/10.\\n"
-                        f"Nível Arte da Lábia: {st.session_state.labia_nivel}/7.\\n\\n"
+                        f"Ensine: {tecnica_hist}\\n\\n"
                         f"FORMATO:\\n\\n"
-                        f"📋 RELATÓRIO SEMANAL — {st.session_state.usuario.upper()}\\n\\n"
-                        f"🧠 O QUE A IA PERCEBEU:\\n"
-                        f"Maior avanço: [gerado automaticamente]\\n"
-                        f"Ponto de atenção: [gerado automaticamente]\\n"
-                        f"Comportamento funcionando: [gerado automaticamente]\\n"
-                        f"Próximo desafio: [gerado automaticamente]\\n\\n"
-                        f"💡 INSIGHT DA SEMANA:\\n[frase personalizada baseada nos dados]\\n\\n"
-                        f"🎯 OBJETIVOS PARA A PRÓXIMA SEMANA:\\n[3 metas específicas]"
+                        f"📖 {tecnica_hist.upper()}\\n\\n"
+                        f"🎬 A DIFERENÇA:\\n[mesma história contada de forma fraca vs contada com essa técnica — mostre ambas em detalhes]\\n\\n"
+                        f"⚙️ A ESTRUTURA:\\n[os elementos técnicos que criam o efeito]\\n\\n"
+                        f"💬 EXEMPLO COMPLETO:\\n[uma história curta usando exatamente essa técnica]\\n\\n"
+                        f"🏋️ PRATIQUE:\\n[exercício para aplicar isso com histórias da sua própria vida]"
                     )
-                    res = conexa_ia(prompt)
-                    st.session_state.resumo_semanal = res
-                    salvar_historico("Resumo Semanal", "Relatório automático", res)
-                    st.session_state['resumo_temp'] = res
+                    res = presenca_ia(prompt)
+                    if res: st.session_state['res_historias_seduca11'] = str(res)
+                    salvar_consulta("Historias", tecnica_hist, res)
+                    st.session_state['hist_tec_temp'] = res
+                    st.session_state.pontuacao_total += 5
+                    st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
 
-            if st.session_state.get('resumo_temp') or st.session_state.resumo_semanal:
-                txt = st.session_state.get('resumo_temp') or st.session_state.resumo_semanal
-                st.markdown(f"<div class='card'>{txt}</div>", unsafe_allow_html=True)
-                st.download_button("📋 Baixar relatório (.txt)", data=txt, file_name="relatorio_semanal.txt", mime="text/plain", key="dl_conexa_10")
+            if st.session_state.get('hist_tec_temp'):
+                st.markdown(f"<div class='card'>{st.session_state['hist_tec_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['hist_tec_temp'], file_name="tecnica_historias.txt", mime="text/plain", key="dl_hist_tec")
 
-        # ──────────────────────────────────────────
-        # CONQUISTAS
-        # ──────────────────────────────────────────
-        elif st.session_state.pagina == "Conquistas":
-            st.header("🏆 Conquistas")
-            conquistadas = st.session_state.get('conquistas', [], key="dl_conexa_12")
-            total = len(CONQUISTAS_DEF, key="dl_conexa_13")
-            obtidas = len(conquistadas, key="dl_conexa_14")
-            st.markdown(f"**{obtidas} de {total} conquistas desbloqueadas**")
-            st.progress(obtidas / total if total > 0 else 0)
+        with tab_praticar:
+            st.markdown("Cole uma história que você quer contar melhor — a IA reescreve com mais impacto.")
+            minha_historia = st.text_area("Sua história (como você contaria hoje):", height=150,
+                placeholder="ex: No final de semana passado fui numa festa e aconteceu uma coisa engraçada...", key="seducaoi1")
 
-            novas = verificar_conquistas()
-            if novas:
-                for nc in novas:
-                    nome_c = next((n for ch,n,_ in CONQUISTAS_DEF if ch==nc), nc)
-                    st.success(f"🏆 Nova conquista: {nome_c}!")
+            if st.button("✍️ REESCREVER COM IMPACTO", key="seducaoi28"):
+                if minha_historia.strip():
+                    with st.spinner("Reescrevendo..."):
+                        prompt = (
+                            f"Reescreva esta história com muito mais impacto, emoção e magnetismo narrativo.\\n"
+                            f"História original: {minha_historia}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📝 VERSÃO ORIGINAL (diagnóstico):\\n[o que está fraco ou pode ser melhorado]\\n\\n"
+                            f"⚡ VERSÃO COM IMPACTO:\\n[a história reescrita com tensão, ritmo e emoção — mantenha os fatos reais, só melhore a narrativa]\\n\\n"
+                            f"📚 O QUE MUDOU:\\n[explique as escolhas narrativas feitas]"
+                        )
+                        res = presenca_ia(prompt)
+                        if res: st.session_state['res_historias_seduca12'] = str(res)
+                        salvar_consulta("Historias", minha_historia[:60], res)
+                        st.session_state['hist_reesc_temp'] = res
+                else:
+                    st.warning("Cole sua história.")
 
-            cols_c = st.columns(3)
-            for i, (chave, nome, desc) in enumerate(CONQUISTAS_DEF):
-                obtida = chave in conquistadas
-                estilo = "border:2px solid #FF69B4;" if obtida else "opacity:0.4;border:1px solid #E2E8F0;"
-                icon = "🏆" if obtida else "🔒"
-                with cols_c[i % 3]:
-                    st.markdown(f"<div class='conquista-item' style='{estilo}'>"
-                        f"<div style='font-size:1.3em;'>{icon}</div>"
-                        f"<div style='font-weight:700;font-size:0.88em;color:#1A1A2E;'>{nome}</div>"
-                        f"<div style='font-size:0.75em;color:#6B7280;'>{desc}</div>"
-                        f"</div>", unsafe_allow_html=True)
+            if st.session_state.get('hist_reesc_temp'):
+                st.markdown(f"<div class='card-gold'>{st.session_state['hist_reesc_temp']}</div>", unsafe_allow_html=True)
+
+        # ========================
+        # ACADEMIA DE PRESENÇA
+        # ========================
+
+    with _tab_Academia:
+        st.header("🎓 Academia de Presença")
+        st.markdown("Aulas aprofundadas sobre os pilares do magnetismo pessoal.")
+
+        aulas_presenca = [
+            "Aula 1 — O que é Presença e por que poucas pessoas têm",
+            "Aula 2 — A Psicologia da Primeira Impressão",
+            "Aula 3 — Confiança vs Arrogância — a linha que separa os dois",
+            "Aula 4 — Como Desenvolver Carisma de Forma Sistemática",
+            "Aula 5 — A Ciência da Atração — o que realmente funciona",
+            "Aula 6 — Humor como Ferramenta Social",
+            "Aula 7 — Oratória para Sedução — como sua voz te vende",
+            "Aula 8 — O Poder do Mistério — como ser interessante sem se expor demais",
+            "Aula 9 — Como Liderar uma Interação com Naturalidade",
+            "Aula 10 — A Arte da Tensão — quando e como criar",
+            "Aula 11 — Rejeição Elegante — como transformar um não em respeito",
+            "Aula 12 — Como Construir uma Vida que te Torna Mais Atraente",
+            "Aula 13 — Status Social — como ele funciona e como construir o seu",
+            "Aula 14 — Vulnerabilidade Estratégica — como abrir-se sem perder o charme",
+            "Aula 15 — O Homem Magnético — síntese de todos os princípios",
+        ]
+
+        col_aula_p, col_nivel_p = st.columns([3, 1])
+        with col_aula_p:
+            aula_presenca = st.selectbox("Escolha a aula:", aulas_presenca, key="select_aula_presenca")
+        with col_nivel_p:
+            prof_aula = st.selectbox("Profundidade:", ["Padrão","Aprofundada"], key="select_prof_aula")
+
+        if st.button("🎓 INICIAR AULA", key="seducaoi29"):
+            with st.spinner("Preparando uma aula de verdade..."):
+                nivel_instrucao = ("Esta deve ser uma aula extensa e densa, no nível de um seminário avançado."
+                    if prof_aula == "Aprofundada" else "Esta deve ser uma aula completa e prática.")
+                prompt = (
+                    f"Você está escrevendo a melhor aula possível sobre: {aula_presenca}\\n"
+                    f"{nivel_instrucao} Proibido ser superficial, genérico ou usar clichês vazios. "
+                    f"Cada ponto deve ter exemplo concreto, mecanismo explicado e aplicação real.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🎓 {aula_presenca.upper()}\\n\\n"
+                    f"📖 POR QUE ISSO IMPORTA — A REALIDADE CRUA:\\n"
+                    f"[abra com uma verdade sobre como a maioria dos homens age e por que eles não têm os resultados que querem — sem julgamento, com clareza]\\n\\n"
+                    f"💡 OS PRINCÍPIOS FUNDAMENTAIS:\\n"
+                    f"[3-4 princípios centrais, cada um com exemplo específico e mecanismo explicado]\\n\\n"
+                    f"🎬 ESTUDO DE CASO 1 — CENA DETALHADA:\\n"
+                    f"[uma situação narrada em detalhe mostrando o princípio funcionando — com diálogo real, linguagem corporal, contexto]\\n\\n"
+                    f"🎬 ESTUDO DE CASO 2 — O CONTRASTE:\\n"
+                    f"[a mesma situação, mas sem o princípio — mostrando a diferença de resultado]\\n\\n"
+                    f"⚙️ COMO DESENVOLVER — PASSO A PASSO:\\n"
+                    f"[instruções concretas e replicáveis, sem vagueza]\\n\\n"
+                    f"⚠️ OS ERROS QUE SABOTAM:\\n"
+                    f"[o que a maioria faz que destrói o efeito]\\n\\n"
+                    f"🏋️ MISSÃO DESTA SEMANA:\\n"
+                    f"[1 exercício real e específico para aplicar essa semana]\\n\\n"
+                    f"⚡ A FRASE QUE RESUME:\\n"
+                    f"[1 frase poderosa e memorável que cristaliza a essência da aula]"
+                )
+                res = presenca_ia(prompt, "Escreva para um homem inteligente que já tentou muita coisa e não quer mais teoria vaga — ele quer o mecanismo real e como aplicar.")
+                if res: st.session_state['res_academia_seduca13'] = str(res)
+                salvar_consulta("Academia", aula_presenca, res)
+                st.session_state['aula_temp'] = res
+                st.session_state.pontuacao_total += 15
+                st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+
+        if st.session_state.get('aula_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['aula_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar aula (.txt)", data=st.session_state['aula_temp'], file_name="aula_presenca.txt", mime="text/plain", use_container_width=True, key="seducaoi30")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_aula", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Academia','tema':aula_presenca if 'aula_presenca' in dir() else '','conteudo':st.session_state['aula_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # DESAFIO SEMANAL
+        # ========================
+
+    with _tab_Desafio:
+        st.header("🏆 Desafio Semanal")
+        st.markdown(f"Pontuação atual: **{st.session_state.pontuacao_total} pontos** · Nível: **{st.session_state.nivel_atual}**")
+
+        area_desafio = st.selectbox("Área do desafio:", [
+            "Confiança e presença", "Conversa e abordagem", "Linguagem corporal", "Humor e charme", "Atração e tensão",
+        ], key="select_area_desafio")
+
+        nivel_desafio = st.selectbox("Dificuldade:", ["Fácil (sai da zona de conforto um pouco)","Médio (exige coragem real)","Difícil (faz agora ou nunca)"], key="select_nivel_desafio")
+
+        if st.button("🏆 GERAR DESAFIO DA SEMANA", key="seducaoi31"):
+            with st.spinner("Criando desafio..."):
+                prompt = (
+                    f"Crie um desafio prático semanal.\\nÁrea: {area_desafio}. Nível: {nivel_desafio}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🏆 DESAFIO DA SEMANA — {area_desafio.upper()}\\n\\n"
+                    f"🎯 O DESAFIO:\\n[descrição clara e específica do que fazer — não vago]\\n\\n"
+                    f"📅 QUANDO E COMO FAZER:\\n[instrução de execução — dia, contexto, duração]\\n\\n"
+                    f"🧠 POR QUE ISSO FUNCIONA:\\n[o que esse desafio vai desenvolver em você]\\n\\n"
+                    f"⚠️ A REGRA PRINCIPAL:\\n[o que não pode acontecer — o que tornaria o desafio inválido]\\n\\n"
+                    f"✅ COMO SABER SE COMPLETOU:\\n[critério de sucesso claro]\\n\\n"
+                    f"⚡ BÔNUS:\\n[variação mais difícil para quem quiser ir além]"
+                )
+                res = presenca_ia(prompt)
+                if res: st.session_state['res_desafio_seduca14'] = str(res)
+                salvar_consulta("Desafio", area_desafio, res)
+                st.session_state['desafio_temp'] = res
+                st.session_state['desafio_completo'] = False
+
+        if st.session_state.get('desafio_temp'):
+            st.markdown(f"<div class='treino-box'>{st.session_state['desafio_temp']}</div>", unsafe_allow_html=True)
+
+            if not st.session_state.get('desafio_completo'):
+                if st.button("✅ COMPLETEI O DESAFIO", key="seducaoi32"):
+                    pontos_ganhos = {"Fácil (sai da zona de conforto um pouco)": 15, "Médio (exige coragem real)": 25, "Difícil (faz agora ou nunca)": 40}
+                    pts = pontos_ganhos.get(nivel_desafio if 'nivel_desafio' in dir() else "Médio (exige coragem real)", 20)
+                    st.session_state.pontuacao_total += pts
+                    st.session_state.treinos_completos += 1
+                    st.session_state.nivel_atual = calcular_nivel(st.session_state.pontuacao_total)
+                    st.session_state['desafio_completo'] = True
+                    st.success(f"🔥 +{pts} pontos! Nível atual: {st.session_state.nivel_atual}")
+                    st.rerun()
+            else:
+                st.success(f"✅ Desafio completo! Nível atual: **{st.session_state.nivel_atual}** · {st.session_state.pontuacao_total} pontos")
+
+        # ========================
+        # MENTOR 24H
+        # ========================
+
+    with _tab_Mentor:
+        st.header("🤖 Mentor 24h")
+        st.markdown("Converse sobre qualquer situação — o mentor fala direto ao ponto.")
+
+        if 'chat_mentor' not in st.session_state:
+            st.session_state.chat_mentor = []
+        if 'mentor_key' not in st.session_state:
+            st.session_state.mentor_key = 0
+
+        if st.session_state.chat_mentor:
+            for msg in st.session_state.chat_mentor:
+                if msg['role'] == 'user':
+                    st.markdown(f"<div style='background:#2D1B4E;border:1px solid #7C3AED;border-radius:12px 12px 4px 12px;padding:12px 16px;margin:8px 0;'><b style='color:#DDD6FE'>Você:</b> <span style='color:#F1F5F9'>{msg['content']}</span></div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='card' style='margin:8px 0;'><b>⚡ Mentor:</b><br>{msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown('''<div class='treino-box' style='text-align:center;'>
+            ⚡ <strong>Fala. O que aconteceu?</strong><br>
+            <span style='font-size:0.9em;color:#6D28D9'>Situação específica, dúvida sobre o que fazer, como responder, o que está travando você...</span>
+            </div>''', unsafe_allow_html=True)
+
+        pergunta_mentor = st.text_input("Mensagem:", key=f"mentor_input_{st.session_state.mentor_key}", placeholder="Conta o que está rolando...", label_visibility="collapsed")
+
+        col_env, col_limpar = st.columns([4, 1])
+        with col_env:
+            if st.button("📤 ENVIAR", key="seducaoi33"):
+                if pergunta_mentor.strip():
+                    with st.spinner("..."):
+                        resp = presenca_ia(pergunta_mentor, "Responda como um mentor que já passou por isso — direto, sem enrolação, com conselho real. Se a situação pedir honestidade dura, dê. Se precisar de encorajamento, dê. Fale de igual para igual.")
+                        if resp: st.session_state['res_mentor_seduca15'] = str(resp)
+                    st.session_state.chat_mentor.append({"role": "user", "content": pergunta_mentor})
+                    st.session_state.chat_mentor.append({"role": "assistant", "content": resp})
+                    st.session_state.mentor_key += 1
+                    salvar_consulta("Mentor", pergunta_mentor[:60], resp)
+                    st.rerun()
+        with col_limpar:
+            if st.button("🗑️", key="seducaoi34"):
+                st.session_state.chat_mentor = []
+                st.rerun()
+
+        # ========================
+        # BIBLIOTECA
+        # ========================
 
 # --- RODAPÉ ---
 st.markdown(
-    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
-    "© 2026 Conexão Magnética 2026 — Inteligência para Conversas · MeusAgentesIA.com.br"
+    "<div style='text-align:center;color:#4C1D95;font-size:0.8em;margin-top:60px;'>"
+    "© 2026 Presença IA — Confiança, Charme e Oratória · MeusAgentesIA.com.br"
     "</div>", unsafe_allow_html=True
 )
 
-# --- RODAPÉ ---
-st.markdown(
-    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
-    "</div>", unsafe_allow_html=True
-)
-
-# --- RODAPÉ ---
-st.markdown(
-    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
-    "</div>", unsafe_allow_html=True
-)
-
-# --- RODAPÉ ---
-st.markdown(
-    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
-    "</div>", unsafe_allow_html=True
-)
 """,
     "invencoes_ia": """# [hub] import streamlit as st
 # [hub] from groq import Groq
@@ -15631,6 +15038,9159 @@ FECHAMENTO\\n{'-'*40}\\n{limpar_html(d.get('v_fechamento',''))}\"\"\"
 # --- RODAPÉ ---
 st.markdown("<div class='footer'>© 2026 Nexus Launcher – Lançamento digital inteligente</div>", unsafe_allow_html=True)
 """,
+    "consultor_juridico": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+import re
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="CONSULTOR JURÍDICO", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+# --- ESTILO CSS ---
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F6FBF4; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#16A34A,#15803D) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#15803D,#166534) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#14532D !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#14532D !important; }
+
+    .card-dark { background:linear-gradient(135deg,#DCFCE7,#D1FAE5); padding:20px; border-radius:14px; border:1px solid #6EE7B7; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#14532D !important; }
+
+    .card-green { background:linear-gradient(135deg,#DCFCE7,#BBF7D0); padding:20px; border-radius:14px; border:1px solid #4ADE80; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#14532D !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#14532D !important; }
+
+    .badge { background:#166534; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#14532D !important; }
+
+    .chat-persona { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#14532D !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#14532D !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#14532D !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#14532D !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
+@st.cache_resource
+def get_cache_juridico():
+    return {"perfis": {}}
+
+_cache = get_cache_juridico()
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+CHAVES_SALVAR = [
+    'usuario', 'historico_consultas', 'consultas_salvas', 'estado_padrao',
+]
+
+def gerar_json_sessao() -> str:
+    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
+
+def carregar_json_sessao(dados):
+    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
+    _pref = (
+        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
+        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
+    )
+    import re as _re
+    for k, v in dados.items():
+        if k in _bloq: continue
+        if any(k.startswith(p) for p in _pref): continue
+        if _re.match(r'.+_\\d+$', k): continue
+        st.session_state[k] = v
+
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_consulta(modulo: str, pergunta: str, conteudo: str):
+    st.session_state.historico_consultas.append({
+        'data':     datetime.now().strftime('%d/%m %H:%M'),
+        'modulo':   modulo,
+        'pergunta': pergunta,
+        'conteudo': conteudo,
+    })
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+defaults = {
+    'etapa':              "Login",
+    'usuario':            "",
+    'api_key':            "",
+    'pagina':              "Home",
+    'historico_consultas': [],
+    'consultas_salvas':    [],
+    'estado_padrao':       "",
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- PRINCÍPIO ÉTICO COMPARTILHADO ---
+PRINCIPIO_JURIDICO = '''
+PRINCÍPIO OBRIGATÓRIO — siga isso em TODA resposta:
+- Você fornece ORIENTAÇÃO JURÍDICA GERAL E EDUCATIVA baseada na legislação brasileira — você NÃO é advogado e isso NÃO é
+  aconselhamento jurídico definitivo para o caso específico da pessoa
+- NUNCA afirme com certeza absoluta o resultado de um caso ("você vai ganhar", "isso é ilegal com certeza") —
+  use linguagem como "em geral, a legislação prevê...", "esse tipo de situação costuma se enquadrar em...", "isso pode configurar..."
+- Sempre cite a lei/norma relevante de forma geral (ex: Código de Defesa do Consumidor, CLT, Código Civil) quando souber,
+  mas deixe claro que a aplicação exata depende dos detalhes do caso
+- SEMPRE recomende buscar um advogado, a Defensoria Pública (gratuita) ou o órgão competente para casos que precisem de
+  ação judicial, são complexos, ou envolvam valores/riscos altos
+- Para crimes contra a honra e discriminação (racismo, injúria racial, difamação, calúnia, ameaças), seja especialmente
+  cuidadoso: explique a diferença entre os conceitos de forma clara, mas sempre oriente a registrar Boletim de Ocorrência
+  e buscar a Defensoria Pública ou Ministério Público — nunca minimize a gravidade nem garanta desfecho
+- Tom: didático, acolhedor e claro — sem jargão jurídico excessivo, traduza termos técnicos quando usá-los
+- Português do Brasil
+'''
+
+DISCLAIMER_PADRAO = '''
+<div class="disclaimer">
+⚠️ <strong>Importante:</strong> esta é uma orientação jurídica geral e educativa gerada por IA, baseada na legislação brasileira —
+não substitui a consulta com um advogado, que pode analisar as particularidades do seu caso. Para casos que envolvam valores
+altos, urgência ou processo judicial, busque um advogado ou a Defensoria Pública (gratuita, para quem não pode pagar).
+</div>
+'''
+
+# --- MOTOR DE IA ---
+def juridico_ia(prompt: str, modulo: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        contexto_estado = f"\\nEstado/região do usuário (se relevante para legislação local): {st.session_state.estado_padrao}." if st.session_state.estado_padrao else ""
+        system = f'''Você é um consultor de orientação jurídica geral, especialista em {modulo}, com conhecimento da legislação brasileira.
+Usuário: {st.session_state.usuario}.{contexto_estado}
+{PRINCIPIO_JURIDICO}
+{system_extra}'''
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": prompt},
+            ],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total  = len(st.session_state.historico_consultas)
+    salvos = len(st.session_state.consultas_salvas)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#F5F3FF;border:1px solid #7C3AED;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
+            f"💾 <strong>Antes de sair, salve seus dados no computador.</strong><br>"
+            f"<span style='color:#888;font-size:0.88em;'>{total} consultas geradas · {salvos} salvas</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button(
+            label="💾 SALVAR MEUS DADOS (.json)",
+            data=gerar_json_sessao(),
+            file_name=f"consultor_juridico_{nome_usuario}.json",
+            mime="application/json",
+            use_container_width=True,
+            key="consulto9"
+        )
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+# Estrutura dos módulos
+MODULOS = {
+    "Consumidor":      {"emoji": "⚖️", "titulo": "Direito do Consumidor", "cor": "card"},
+    "Trabalho":        {"emoji": "💼", "titulo": "Direito do Trabalho", "cor": "card-blue"},
+    "Moradia":         {"emoji": "🏠", "titulo": "Moradia e Aluguel", "cor": "card-orange"},
+    "Contratos":       {"emoji": "📜", "titulo": "Contratos em Geral", "cor": "card"},
+    "Transito":        {"emoji": "🚗", "titulo": "Trânsito", "cor": "card-blue"},
+    "Familia":         {"emoji": "👨‍👩‍👧", "titulo": "Direito de Família", "cor": "card-orange"},
+    "GolpesDigitais":  {"emoji": "📱", "titulo": "Golpes e Fraudes Digitais", "cor": "card-red"},
+    "Crimes":          {"emoji": "👮", "titulo": "Crimes em Geral", "cor": "card-red"},
+    "Condominio":      {"emoji": "🏢", "titulo": "Condomínio", "cor": "card"},
+    "MEI":             {"emoji": "📄", "titulo": "MEI e Pequenos Negócios", "cor": "card-green"},
+    "CrimesHonra":      {"emoji": "🛡️", "titulo": "Racismo, Injúria, Difamação, Calúnia e Ameaças", "cor": "card-red"},
+}
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'consultas_salvas' not in st.session_state: st.session_state['consultas_salvas'] = []
+if 'estado_padrao' not in st.session_state: st.session_state['estado_padrao'] = None
+if 'historico_consultas' not in st.session_state: st.session_state['historico_consultas'] = []
+
+if st.session_state.etapa == "Login":
+    st.markdown("# 🤖 CONSULTOR JURÍDICO")
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+
+    st.markdown('''<div class="disclaimer-topo">
+    ⚖️ <strong>Este consultor oferece orientação jurídica geral e educativa</strong> — não substitui um advogado.
+    Para casos urgentes, com valores altos ou que exijam ação judicial, consulte um advogado ou a <strong>Defensoria Pública</strong> (gratuita).
+    </div>''', unsafe_allow_html=True)
+
+
+    # TABS — navegação nativa
+    (_tab_Home, _tab_Consumidor, _tab_Trabalho, _tab_Moradia, _tab_Contratos, _tab_Transito, _tab_Familia, _tab_GolpesDigitais, _tab_Crimes, _tab_Condominio, _tab_MEI, _tab_CrimesHonra, _tab_Provas, _tab_Ajuda, _tab_Biblioteca) = st.tabs(['🏠 Painel', '⚖️ Consumidor', '💼 Trabalho', '🏠 Moradia', '📜 Contratos', '🚗 Trânsito', '👨\\u200d👩\\u200d👧 Família', '📱 Golpes Digitais', '👮 Crimes', '🏢 Condomínio', '🏪 MEI', '😤 Crimes Honra', '📂 Provas', '❓ Ajuda', '📚 Biblioteca'])
+
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_consulto")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_consulto", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_Home:
+        col_u, col_r = st.columns([3, 1])
+        with col_u:
+            st.title(f"Olá, {st.session_state.usuario}! ⚖️")
+            st.markdown("<span class='badge'>Orientação Jurídica</span>", unsafe_allow_html=True)
+        with col_r:
+            if st.button("🚪 Sair", key="consulto3"):
+                for k in list(st.session_state.keys()):
+                    del st.session_state[k]
+                st.rerun()
+
+        if len(st.session_state.historico_consultas) == 0:
+            st.markdown('''<div style="background:#FEF3C7;border:2px solid #F59E0B;border-radius:12px;
+            padding:12px 18px;margin-bottom:4px;color:#000;font-size:0.9em;font-weight:600;">
+            ⚠️ Seus dados não estão mais no servidor.
+            </div>''', unsafe_allow_html=True)
+            arq_home = st.file_uploader("Carregar meus dados salvos (.json):", type=["json"], key="upload_home")
+            if arq_home is not None:
+                try:
+                    dados_home = json.load(arq_home)
+                    carregar_json_sessao(dados_home)
+                    salvar_perfil_cache(st.session_state.usuario)
+                    st.success("✅ Dados recuperados!")
+                    st.rerun()
+                except Exception:
+                    st.error("Arquivo inválido.")
+
+        st.session_state.estado_padrao = st.text_input("📍 Seu estado (opcional, ajuda em questões regionais):", value=st.session_state.estado_padrao, placeholder="ex: São Paulo, Minas Gerais...", key="consulto4")
+
+
+        modulos_count = {}
+        for c in st.session_state.historico_consultas:
+            modulos_count[c['modulo']] = modulos_count.get(c['modulo'], 0) + 1
+
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_consultas)}</div><div>Consultas geradas</div></div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.consultas_salvas)}</div><div>Salvas</div></div>", unsafe_allow_html=True)
+        c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(modulos_count)}</div><div>Áreas consultadas</div></div>", unsafe_allow_html=True)
+        c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{modulos_count.get('Consumidor',0)}</div><div>Direito do Consumidor</div></div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='card'>💡 <em>'Conhecer seus direitos é o primeiro passo para exercê-los. O segundo é saber quando buscar ajuda profissional.'</em></div>", unsafe_allow_html=True)
+
+        st.markdown("### 🗺️ Módulos disponíveis")
+        st.markdown("Clique nos ícones acima para acessar cada área:")
+        guia = {
+            "⚖️ Consumidor":        "Trocas, devoluções, garantia, propaganda enganosa, cobrança indevida",
+            "💼 Trabalho":          "Demissão, horas extras, férias, rescisão, assédio, carteira assinada",
+            "🏠 Moradia":           "Aluguel, despejo, condições do imóvel, fiador, depósito caução",
+            "📜 Contratos":         "Cláusulas abusivas, rescisão, multas, o que verificar antes de assinar",
+            "🚗 Trânsito":          "Multas, acidentes, CNH, seguro, direitos em caso de colisão",
+            "👨‍👩‍👧 Família":           "Pensão alimentícia, guarda, divórcio, herança, união estável",
+            "📱 Golpes Digitais":   "Pix, cartão clonado, compras online, como agir e se proteger",
+            "👮 Crimes":            "Furto, roubo, estelionato, o que fazer e como denunciar",
+            "🏢 Condomínio":        "Taxa condominial, regras, animais, barulho, vagas de garagem",
+            "📄 MEI":               "Abertura, obrigações, impostos, direitos do microempreendedor",
+            "🛡️ Crimes contra Honra":"Racismo, injúria racial, difamação, calúnia, ameaças — diferenças e como agir",
+            "📂 Provas":            "O que reunir e como documentar qualquer situação jurídica",
+            "🏛️ Onde Buscar Ajuda": "Defensoria, Procon, sindicatos, delegacias — endereços e como acessar",
+        }
+        for aba, desc in guia.items():
+            st.markdown(f"**{aba}** — {desc}")
+
+    with _tab_Consumidor:
+        st.header("⚖️ Direito do Consumidor")
+        st.markdown("*Tire suas dúvidas sobre direitos do consumidor.*")
+        _prompt_consumidor = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_consumidor_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_consumidor_btn", use_container_width=True):
+            if _prompt_consumidor.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_consumidor}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Trabalho:
+        st.header("💼 Direito do Trabalho")
+        st.markdown("*Entenda seus direitos trabalhistas.*")
+        _prompt_trabalho = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_trabalho_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_trabalho_btn", use_container_width=True):
+            if _prompt_trabalho.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_trabalho}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Moradia:
+        st.header("🏠 Moradia e Aluguel")
+        st.markdown("*Dúvidas sobre contratos de locação e moradia.*")
+        _prompt_moradia = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_moradia_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_moradia_btn", use_container_width=True):
+            if _prompt_moradia.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_moradia}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Contratos:
+        st.header("📜 Contratos em Geral")
+        st.markdown("*Análise e dúvidas sobre contratos.*")
+        _prompt_contratos = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_contratos_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_contratos_btn", use_container_width=True):
+            if _prompt_contratos.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_contratos}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Transito:
+        st.header("🚗 Direito de Trânsito")
+        st.markdown("*Multas, acidentes e questões de trânsito.*")
+        _prompt_transito = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_transito_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_transito_btn", use_container_width=True):
+            if _prompt_transito.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_transito}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Familia:
+        st.header("👨‍👩‍👧 Direito de Família")
+        st.markdown("*Divórcio, guarda, pensão e família.*")
+        _prompt_familia = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_familia_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_familia_btn", use_container_width=True):
+            if _prompt_familia.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_familia}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_GolpesDigitais:
+        m = MODULOS["GolpesDigitais"]
+        st.header(f"{m['emoji']} {m['titulo']}")
+        st.markdown("Caiu em um golpe ou suspeita de fraude? Veja seus direitos e o que fazer.")
+
+        tipo_golpe = st.selectbox("Tipo de situação:", key="select_tipo_golpe", options=[
+            "Pix enviado por engano ou golpe", "Compra online que não chegou", "Cartão de crédito clonado",
+            "Cobrança que não reconheço na fatura", "Conta bancária invadida", "Golpe do falso boleto",
+            "Compra com produto não entregue/diferente", "Outro tipo de fraude digital",
+        ])
+        detalhes_golpe = st.text_area("Detalhes da situação:", height=100,
+            placeholder="ex: Transferi R$500 via Pix para uma pessoa que se identificou como funcionário do banco...", key="consulto8")
+
+        if st.button("⚖️ OBTER ORIENTAÇÃO", key="consulto5"):
+            if detalhes_golpe.strip():
+                with st.spinner("Analisando..."):
+                    prompt = (
+                        f"Situação: {tipo_golpe}. Detalhes: {detalhes_golpe}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📋 RESUMO DA SITUAÇÃO:\\n[confirmação do entendimento]\\n\\n"
+                        f"⚖️ SEUS DIREITOS NESTE CASO:\\n[o que a legislação (CDC, normas do Banco Central) prevê para esse tipo de fraude]\\n\\n"
+                        f"⚡ AÇÕES IMEDIATAS (faça AGORA):\\n"
+                        f"1. [ação mais urgente — geralmente contatar o banco]\\n2. [ação 2]\\n3. [ação 3]\\n\\n"
+                        f"📂 PROVAS A REUNIR:\\n[prints, comprovantes, registros de conversa, etc]\\n\\n"
+                        f"🏛️ ONDE REGISTRAR:\\n[Boletim de Ocorrência online, Banco Central via SR, Procon, etc]\\n\\n"
+                        f"💰 CHANCE DE REAVER O VALOR:\\n[explicação geral e honesta sobre o que costuma ser possível ou não nesse tipo de caso]"
+                    )
+                    res = juridico_ia(prompt, "Golpes Digitais")
+                    if res: st.session_state['res_golpesdigita_consul2'] = str(res)
+                    salvar_consulta("GolpesDigitais", f"{tipo_golpe}: {detalhes_golpe[:60]}", res)
+                    st.session_state['resposta_golpes'] = res
+            else:
+                st.warning("Descreva os detalhes da situação.")
+
+        if st.session_state.get('resposta_golpes'):
+            st.markdown(f"<div class='card-red'>{st.session_state['resposta_golpes']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['resposta_golpes'],
+                    file_name="orientacao_golpe.txt", mime="text/plain", use_container_width=True, key="consulto7")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_golpes", use_container_width=True):
+                    st.session_state.consultas_salvas.append({
+                        'modulo': 'GolpesDigitais', 'pergunta': tipo_golpe,
+                        'conteudo': st.session_state['resposta_golpes'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # CRIMES EM GERAL
+        # ========================
+
+    with _tab_Crimes:
+        m = MODULOS["Crimes"]
+        st.header(f"{m['emoji']} {m['titulo']}")
+        st.markdown("Foi vítima de um crime? Entenda seus direitos e os próximos passos.")
+
+        tipo_crime = st.selectbox("Tipo de situação:", key="select_tipo_crime", options=[
+            "Furto (sem violência)", "Roubo (com violência ou ameaça)", "Estelionato/fraude",
+            "Invasão de domicílio", "Dano ao patrimônio", "Perda de documentos",
+            "Vizinho/conhecido cometeu um crime contra mim", "Outra situação",
+        ])
+        detalhes_crime = st.text_area("Descreva o que aconteceu:", height=100,
+            placeholder="ex: Meu celular foi furtado dentro do ônibus, sem que eu percebesse...", key="consulto6")
+
+        if st.button("⚖️ OBTER ORIENTAÇÃO", key="consulto6_d2"):
+            if detalhes_crime.strip():
+                with st.spinner("Analisando..."):
+                    prompt = (
+                        f"Tipo de situação: {tipo_crime}. Detalhes: {detalhes_crime}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📋 RESUMO E CLASSIFICAÇÃO GERAL:\\n[explique de forma geral em qual tipo de situação isso se enquadra no Código Penal, sem certeza absoluta]\\n\\n"
+                        f"⚡ O QUE FAZER IMEDIATAMENTE:\\n[passos práticos — segurança pessoal primeiro, depois burocrático]\\n\\n"
+                        f"📝 COMO REGISTRAR O BOLETIM DE OCORRÊNCIA:\\n[onde e como — presencial ou online, dependendo do tipo]\\n\\n"
+                        f"📂 PROVAS E INFORMAÇÕES A REUNIR:\\n[o que documentar para esse caso]\\n\\n"
+                        f"🏛️ PRÓXIMOS PASSOS APÓS O BO:\\n[o que normalmente acontece depois — investigação, possível indenização civil, etc]"
+                    )
+                    res = juridico_ia(prompt, "Crimes")
+                    if res: st.session_state['res_crimes_consul3'] = str(res)
+                    salvar_consulta("Crimes", f"{tipo_crime}: {detalhes_crime[:60]}", res)
+                    st.session_state['resposta_crimes'] = res
+            else:
+                st.warning("Descreva o que aconteceu.")
+
+        if st.session_state.get('resposta_crimes'):
+            st.markdown(f"<div class='card-red'>{st.session_state['resposta_crimes']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['resposta_crimes'],
+                    file_name="orientacao_crime.txt", mime="text/plain", use_container_width=True, key="consulto5_d2")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_crimes", use_container_width=True):
+                    st.session_state.consultas_salvas.append({
+                        'modulo': 'Crimes', 'pergunta': tipo_crime,
+                        'conteudo': st.session_state['resposta_crimes'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # CRIMES CONTRA A HONRA / DISCRIMINAÇÃO
+        # ========================
+
+    with _tab_Condominio:
+        st.header("🏢 Condomínio")
+        st.markdown("*Regras, conflitos e direitos em condomínio.*")
+        _prompt_condominio = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_condominio_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_condominio_btn", use_container_width=True):
+            if _prompt_condominio.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_condominio}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_MEI:
+        st.header("🏪 MEI e Microempresa")
+        st.markdown("*Questões jurídicas para pequenos empreendedores.*")
+        _prompt_mei = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_mei_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_mei_btn", use_container_width=True):
+            if _prompt_mei.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_mei}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_CrimesHonra:
+        m = MODULOS["CrimesHonra"]
+        st.header(f"{m['emoji']} {m['titulo']}")
+
+        st.markdown('''<div class="disclaimer-topo">
+        Estes são crimes previstos em lei e levados muito a sério pelo sistema de justiça brasileiro.
+        Esta seção explica as diferenças entre os conceitos para te ajudar a entender e documentar a situação —
+        mas a orientação mais importante em todos os casos é: <strong>registre Boletim de Ocorrência e busque a
+        Defensoria Pública ou o Ministério Público</strong>.
+        </div>''', unsafe_allow_html=True)
+
+        tab1, tab2 = st.tabs(["📖 Entenda as Diferenças", "📝 Descrever Minha Situação"])
+
+        with tab1:
+            st.markdown("#### Entendendo cada conceito:")
+            conceitos = {
+                "🛡️ Racismo": "Discriminação ou preconceito em razão de raça, cor, etnia, religião ou procedência nacional. É crime previsto na Lei 7.716/1989 (Lei do Racismo) e considerado **inafiançável e imprescritível** pela Constituição Federal.",
+                "🛡️ Injúria Racial": "Ofender a honra de alguém usando elementos raciais/étnicos como insulto direcionado à pessoa (diferente do racismo, que é mais genérico). Prevista no Código Penal, art. 140, §3º.",
+                "🛡️ Difamação": "Atribuir a alguém um fato ofensivo à sua reputação, mesmo que verdadeiro, perante terceiros. Código Penal, art. 139.",
+                "🛡️ Calúnia": "Atribuir falsamente a alguém um fato definido como crime, sabendo que é falso. Código Penal, art. 138.",
+                "🛡️ Ameaça": "Prometer causar mal injusto e grave a alguém, por palavra, escrito, gesto ou outro meio simbólico. Código Penal, art. 147.",
+            }
+            for nome, desc in conceitos.items():
+                st.markdown(f"<div class='card'><strong>{nome}</strong><br><br>{desc}</div>", unsafe_allow_html=True)
+
+        with tab2:
+            situacao_honra = st.text_area("📝 Descreva o que aconteceu:", height=140,
+                placeholder="ex: Um colega de trabalho me chamou de um nome racista na frente de outras pessoas...", key="consulto4_d2")
+            onde_aconteceu = st.selectbox("Onde aconteceu:", ["Presencialmente", "Redes sociais", "WhatsApp/mensagem", "Por telefone", "E-mail", "Outro"], key="consulto7_d2")
+            tem_testemunhas = st.radio("Havia testemunhas?", ["Sim", "Não", "Não tenho certeza"], horizontal=True, key="consulto8_d2")
+
+            if st.button("⚖️ OBTER ORIENTAÇÃO SOBRE ESTA SITUAÇÃO", key="consulto9_d2"):
+                if situacao_honra.strip():
+                    with st.spinner("Analisando..."):
+                        prompt = (
+                            f"Situação relatada: {situacao_honra}\\n"
+                            f"Onde aconteceu: {onde_aconteceu}. Testemunhas: {tem_testemunhas}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📋 RESUMO DA SITUAÇÃO:\\n[confirmação do entendimento]\\n\\n"
+                            f"⚖️ EM QUAL CONCEITO ISSO PODE SE ENQUADRAR:\\n"
+                            f"[Explique, com cautela, se isso parece se aproximar de racismo, injúria racial, difamação, calúnia e/ou ameaça —"
+                            f" SEMPRE deixando claro que a classificação exata depende de análise do Ministério Público/juiz]\\n\\n"
+                            f"📂 PROVAS ESSENCIAIS PARA ESTE CASO:\\n"
+                            f"[específico para o canal informado: {onde_aconteceu} — prints, gravações, testemunhas, etc]\\n\\n"
+                            f"📝 COMO REGISTRAR O BOLETIM DE OCORRÊNCIA:\\n[orientação prática]\\n\\n"
+                            f"🏛️ ONDE BUSCAR APOIO ESPECÍFICO:\\n"
+                            f"[Defensoria Pública, Ministério Público, Disque 100/Disque Direitos Humanos, "
+                            f"delegacias especializadas em crimes raciais se aplicável]\\n\\n"
+                            f"💪 VOCÊ NÃO ESTÁ SOZINHO(A):\\n[1-2 frases de acolhimento — sem minimizar a gravidade da situação]"
+                        )
+                        res = juridico_ia(prompt, "Crimes contra a Honra e Discriminação",
+                            "Trate com máxima seriedade e acolhimento. Nunca minimize. Nunca garanta desfecho judicial.")
+                        salvar_consulta("CrimesHonra", situacao_honra[:60], res)
+                        st.session_state['resposta_honra'] = res
+                else:
+                    st.warning("Descreva a situação.")
+
+            if st.session_state.get('resposta_honra'):
+                st.markdown(f"<div class='card-red'>{st.session_state['resposta_honra']}</div>", unsafe_allow_html=True)
+                st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+                col_dl, col_sv = st.columns(2)
+                with col_dl:
+                    st.download_button("📋 Baixar (.txt)", data=st.session_state['resposta_honra'],
+                        file_name="orientacao_crimes_honra.txt", mime="text/plain", use_container_width=True, key="consulto3_d2")
+                with col_sv:
+                    if st.button("❤️ Salvar", key="sv_honra", use_container_width=True):
+                        st.session_state.consultas_salvas.append({
+                            'modulo': 'CrimesHonra', 'pergunta': situacao_honra[:60],
+                            'conteudo': st.session_state['resposta_honra'],
+                            'data': datetime.now().strftime('%d/%m %H:%M'),
+                        })
+                        st.success("❤️ Salvo!")
+
+        # ========================
+        # QUAIS PROVAS REUNIR
+        # ========================
+
+    with _tab_Provas:
+        st.header("📂 Quais Provas Reunir")
+        st.markdown("Cada tipo de situação exige provas diferentes. Selecione o caso para saber o que documentar.")
+
+        area_provas = st.selectbox("Tipo de situação:", key="select_area_provas", options=[
+            "Problema com produto/loja (consumidor)", "Problema no trabalho/demissão",
+            "Problema com aluguel/moradia", "Contrato descumprido", "Acidente de trânsito",
+            "Disputa de família/pensão", "Golpe digital/fraude", "Crime contra a honra (racismo, injúria, etc)",
+            "Conflito com vizinho/condomínio", "Outra situação",
+        ])
+
+        if st.button("📂 VER LISTA DE PROVAS NECESSÁRIAS", key="consulto10"):
+            with st.spinner("Preparando lista..."):
+                prompt = (
+                    f"Para a situação: {area_provas}\\n\\n"
+                    f"Liste de forma prática e organizada quais provas e documentos a pessoa deveria reunir.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"📂 PROVAS PARA: {area_provas.upper()}\\n\\n"
+                    f"📄 DOCUMENTOS ESSENCIAIS:\\n[lista]\\n\\n"
+                    f"📸 REGISTROS VISUAIS:\\n[fotos, prints, vídeos relevantes para esse caso]\\n\\n"
+                    f"💬 COMUNICAÇÕES:\\n[mensagens, e-mails, gravações de chamada que podem ajudar]\\n\\n"
+                    f"👥 TESTEMUNHAS:\\n[que tipo de testemunha é relevante e como documentar o relato dela]\\n\\n"
+                    f"⏰ PRAZO PARA AGIR:\\n[se há urgência ou prazo legal típico para esse tipo de caso]\\n\\n"
+                    f"💡 DICA PRÁTICA:\\n[1 dica específica de como organizar essas provas para não perder nada]"
+                )
+                res = juridico_ia(prompt, "Provas")
+                if res: st.session_state['res_provas_consul4'] = str(res)
+                salvar_consulta("Provas", area_provas, res)
+                st.session_state['resposta_provas'] = res
+
+        if st.session_state.get('resposta_provas'):
+            st.markdown(f"<div class='card-green'>{st.session_state['resposta_provas']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['resposta_provas'],
+                    file_name="lista_provas.txt", mime="text/plain", use_container_width=True, key="consulto2")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_provas", use_container_width=True):
+                    st.session_state.consultas_salvas.append({
+                        'modulo': 'Provas', 'pergunta': area_provas,
+                        'conteudo': st.session_state['resposta_provas'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # ONDE BUSCAR AJUDA
+        # ========================
+
+    with _tab_Ajuda:
+        st.header("❓ Ajuda Rápida")
+        st.markdown("*Qual é sua dúvida jurídica hoje?*")
+        _prompt_ajuda = st.text_area("Descreva sua situação ou dúvida:", height=120, key="consul_ajuda_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="consul_ajuda_btn", use_container_width=True):
+            if _prompt_ajuda.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_ajuda}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Biblioteca:
+        st.header("📚 Biblioteca de Consultas")
+        st.markdown("Todas as suas consultas salvas, organizadas por área.")
+
+        if not st.session_state.consultas_salvas:
+            st.info("Biblioteca vazia. Gere consultas nos módulos e salve as importantes aqui!")
+        else:
+            modulos_bib = list(set(c['modulo'] for c in st.session_state.consultas_salvas))
+            filtro = st.selectbox("Filtrar por módulo:", ["Todos"] + modulos_bib, key="consulto11")
+
+            consultas_f = [
+                c for c in st.session_state.consultas_salvas
+                if filtro == "Todos" or c['modulo'] == filtro
+            ]
+
+            st.markdown(f"**{len(consultas_f)} consulta(s) encontrada(s)**")
+
+            for i, item in enumerate(reversed(consultas_f)):
+                idx_real = len(st.session_state.consultas_salvas) - 1 - i
+                emoji_mod = MODULOS.get(item.get('modulo', ''), {}).get('emoji', '📋')
+                with st.expander(f"{emoji_mod} [{item.get('modulo', '')}] {item.get('pergunta', '')[:60]} — {item['data']}"):
+                    st.markdown(f"<div class='card'>{item['conteudo']}</div>", unsafe_allow_html=True)
+                    col_dl, col_del = st.columns([3, 1])
+                    with col_dl:
+                        st.download_button("📋 Baixar", data=item['conteudo'],
+                            file_name=f"{item.get('modulo', '').lower()}.txt", mime="text/plain", key=f"dl_bib_{i}")
+                    with col_del:
+                        if st.button("🗑️ Remover", key=f"del_bib_{i}"):
+                            st.session_state.consultas_salvas.pop(idx_real)
+                            st.rerun()
+
+        if st.session_state.historico_consultas:
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            historico_txt = "\\n\\n".join(
+                f"[{c['data']}] {c['modulo']} — {c['pergunta']}\\n{c['conteudo']}\\n{'─'*40}"
+                for c in st.session_state.historico_consultas
+            )
+            st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt,
+                file_name="historico_juridico.txt", mime="text/plain", key="consulto1")
+
+            if st.button("🗑️ Limpar Todo o Histórico", key="consulto12"):
+                st.session_state.historico_consultas = []
+                st.rerun()
+
+        # --- RODAPÉ ---
+        st.markdown(
+        "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+        "© 2026 Consultor Jurídico — Orientação Jurídica Geral com IA · MeusAgentesIA.com.br"
+        "</div>", unsafe_allow_html=True
+        )
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+    "© 2026 Consultor Jurídico — Orientação Jurídica Geral com IA · MeusAgentesIA.com.br"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
+    "mente_poderosa": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="MENTE PODEROSA", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+# --- ESTILO CSS ---
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F6FBF4; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#16A34A,#15803D) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#15803D,#166534) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#14532D !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#14532D !important; }
+
+    .card-dark { background:linear-gradient(135deg,#DCFCE7,#D1FAE5); padding:20px; border-radius:14px; border:1px solid #6EE7B7; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#14532D !important; }
+
+    .card-green { background:linear-gradient(135deg,#DCFCE7,#BBF7D0); padding:20px; border-radius:14px; border:1px solid #4ADE80; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#14532D !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#14532D !important; }
+
+    .badge { background:#166534; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#14532D !important; }
+
+    .chat-persona { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#14532D !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#14532D !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#14532D !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#14532D !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
+@st.cache_resource
+def get_cache_mente():
+    return {"perfis": {}}
+
+_cache = get_cache_mente()
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+CHAVES_SALVAR = [
+    'usuario', 'historico_sessoes', 'conteudos_salvos',
+    'maior_bloqueio', 'objetivo_mental', 'estado_emocional',
+    'crencas_limitantes', 'sessoes_meditacao', 'diario_entradas',
+]
+
+def gerar_json_sessao() -> str:
+    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
+
+def carregar_json_sessao(dados):
+    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
+    _pref = (
+        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
+        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
+    )
+    import re as _re
+    for k, v in dados.items():
+        if k in _bloq: continue
+        if any(k.startswith(p) for p in _pref): continue
+        if _re.match(r'.+_\\d+$', k): continue
+        st.session_state[k] = v
+
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_sessao(tipo: str, tema: str, conteudo: str):
+    st.session_state.historico_sessoes.append({
+        'data':    datetime.now().strftime('%d/%m %H:%M'),
+        'tipo':    tipo,
+        'tema':    tema,
+        'conteudo': conteudo,
+    })
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+defaults = {
+    'etapa':             "Login",
+    'usuario':           "",
+    'api_key':           "",
+    'pagina':            "Home",
+    'historico_sessoes': [],
+    'conteudos_salvos':  [],
+    'maior_bloqueio':    "",
+    'objetivo_mental':   "",
+    'estado_emocional':  "Neutro",
+    'crencas_limitantes':"",
+    'sessoes_meditacao': 0,
+    'diario_entradas':   [],
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- MOTOR DE IA ---
+def mente_ia(prompt: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        system = f'''Você é um especialista em neurolinguística (PNL), meditação e reprogramação mental.
+Usuário: {st.session_state.usuario}.
+Maior bloqueio atual: {st.session_state.maior_bloqueio or 'não informado'}.
+Objetivo mental: {st.session_state.objetivo_mental or 'não informado'}.
+Estado emocional: {st.session_state.estado_emocional}.
+{system_extra}
+PRINCÍPIOS:
+- Baseie-se em PNL, Mindfulness, Terapia Cognitivo-Comportamental e Neurociência
+- Tom acolhedor, seguro e transformador — nunca julgue
+- Linguagem acessível, sem jargões técnicos desnecessários
+- Sempre oriente a buscar ajuda profissional para casos clínicos sérios
+- Escreva em português brasileiro natural e humanizado'''
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user",   "content": prompt},
+            ],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total   = len(st.session_state.historico_sessoes)
+    salvos  = len(st.session_state.conteudos_salvos)
+    medit   = st.session_state.sessoes_meditacao
+    diario  = len(st.session_state.diario_entradas)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#F5F3FF;border:1px solid #C4B5FD;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
+            f"💾 <strong>Antes de sair, salve seus dados no computador.</strong><br>"
+            f"<span style='color:#888;font-size:0.88em;'>{total} sessões · "
+            f"{medit} meditações · {diario} entradas no diário · {salvos} salvos</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button(
+            label="💾 SALVAR MEUS DADOS (.json)",
+            data=gerar_json_sessao(),
+            file_name=f"mente_poderosa_{nome_usuario}.json",
+            mime="application/json",
+            use_container_width=True,
+            key="mentepod44"
+        )
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'conteudos_salvos' not in st.session_state: st.session_state['conteudos_salvos'] = None
+if 'crencas_limitantes' not in st.session_state: st.session_state['crencas_limitantes'] = None
+if 'diario_entradas' not in st.session_state: st.session_state['diario_entradas'] = None
+if 'estado_emocional' not in st.session_state: st.session_state['estado_emocional'] = None
+if 'historico_sessoes' not in st.session_state: st.session_state['historico_sessoes'] = []
+if 'maior_bloqueio' not in st.session_state: st.session_state['maior_bloqueio'] = None
+if 'objetivo_mental' not in st.session_state: st.session_state['objetivo_mental'] = None
+if 'sessoes_meditacao' not in st.session_state: st.session_state['sessoes_meditacao'] = None
+
+if st.session_state.etapa == "Login":
+    st.markdown("# 🤖 MENTE PODEROSA")
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+
+
+    # TABS — navegação nativa
+    (_tab_Home, _tab_Ansiedade, _tab_Autoestima, _tab_Proposito, _tab_Emocoes, _tab_Crencas, _tab_Meditacao, _tab_Diario, _tab_Progresso) = st.tabs(['🏠 Painel', '😰 Ansiedade', '💪 Autoestima', '🌟 Propósito', '❤️ Emoções', '🧠 Crenças', '🧘 Meditação', '📓 Diário', '📈 Progresso'])
+
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_mentepod")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_mentepod", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_Home:
+        col_u, col_r = st.columns([3, 1])
+        with col_u:
+            st.title(f"Bem-vindo, {st.session_state.usuario} 🧠✨")
+            st.markdown("<span class='badge'>Jornada Mental</span>", unsafe_allow_html=True)
+        with col_r:
+            if st.button("🚪 Sair", key="mentepod3"):
+                for k in list(st.session_state.keys()):
+                    del st.session_state[k]
+                st.rerun()
+
+        # AVISO SE DADOS SUMIRAM
+        total_h = len(st.session_state.historico_sessoes)
+        if total_h == 0 and st.session_state.sessoes_meditacao == 0:
+            st.markdown('''<div style="background:#FEF3C7;border:2px solid #F59E0B;border-radius:12px;
+            padding:12px 18px;margin-bottom:4px;color:#000;font-size:0.9em;font-weight:600;">
+            ⚠️ Seus dados não estão mais no servidor.
+            </div>''', unsafe_allow_html=True)
+            arq_home = st.file_uploader("Carregar meus dados salvos (.json):", type=["json"], key="upload_home")
+            if arq_home is not None:
+                try:
+                    dados_home = json.load(arq_home)
+                    carregar_json_sessao(dados_home)
+                    salvar_perfil_cache(st.session_state.usuario)
+                    st.success("✅ Dados recuperados!")
+                    st.rerun()
+                except Exception:
+                    st.error("Arquivo inválido.")
+
+        # PERFIL MENTAL
+        st.markdown("#### 🌱 Seu perfil mental")
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.session_state.maior_bloqueio   = st.text_input(
+                "Seu maior bloqueio mental hoje:", value=st.session_state.maior_bloqueio,
+                placeholder="ex: ansiedade, baixa autoestima, procrastinação, medo de falhar...", key="mentepod43")
+            st.session_state.objetivo_mental  = st.text_input(
+                "O que você quer transformar na sua mente:", value=st.session_state.objetivo_mental,
+                placeholder="ex: ter mais confiança, parar de me sabotar, dormir melhor...", key="mentepod42")
+        with col_b:
+            st.session_state.estado_emocional = st.select_slider(
+                "Como você está agora:", options=[
+                    "Muito mal 😔","Mal 😟","Neutro 😐","Bem 🙂","Muito bem 😁"
+                ], value=st.session_state.estado_emocional if st.session_state.estado_emocional in
+                ["Muito mal 😔","Mal 😟","Neutro 😐","Bem 🙂","Muito bem 😁"] else "Neutro 😐", key="mentepod41")
+            st.session_state.crencas_limitantes = st.text_area(
+                "Crenças que te limitam (opcional):", value=st.session_state.crencas_limitantes,
+                height=80,
+                placeholder="ex: não sou inteligente o suficiente, não mereço ser feliz, sempre falho...", key="mentepod40")
+
+
+        # MÉTRICAS
+        tipos = {}
+        for s in st.session_state.historico_sessoes:
+            tipos[s['tipo']] = tipos.get(s['tipo'], 0) + 1
+
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_h}</div><div>Sessões realizadas</div></div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.sessoes_meditacao}</div><div>Meditações 🧘</div></div>", unsafe_allow_html=True)
+        c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.diario_entradas)}</div><div>Entradas no diário</div></div>", unsafe_allow_html=True)
+        c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.conteudos_salvos)}</div><div>Conteúdos salvos</div></div>", unsafe_allow_html=True)
+        c5.markdown(f"<div class='stat-box'><div class='stat-numero'>{tipos.get('PNL',0)}</div><div>Sessões de PNL</div></div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='card'>💡 <em>'A mente que se abre a uma nova ideia jamais volta ao seu tamanho original.'</em> — Albert Einstein</div>", unsafe_allow_html=True)
+
+        st.markdown("### 🗺️ O que cada aba faz")
+        guia = {
+            "🧘 Meditação":          "Scripts de meditação guiada personalizados para o seu momento",
+            "🗣️ PNL":               "Técnicas de reprogramação: ancoragem, reframing, linha do tempo",
+            "💬 Afirmações":         "Afirmações criadas para o SEU problema real — não as genéricas",
+            "😴 Sono":               "Protocolo completo para dormir melhor e acordar descansado",
+            "😰 Ansiedade":          "Técnicas de respiração, grounding e protocolo de crise",
+            "🎯 Visualização":       "Script de visualização criativa do futuro que você quer construir",
+            "📖 Diário Mental":      "Prompts de reflexão diária para autoconhecimento profundo",
+            "❤️ Salvos":             "Seus conteúdos favoritos e histórico completo",
+        }
+        for aba, desc in guia.items():
+            st.markdown(f"**{aba}** — {desc}")
+
+        if st.session_state.historico_sessoes:
+            st.markdown("### 🕐 Últimas Sessões")
+            for item in reversed(st.session_state.historico_sessoes[-4:]):
+                st.markdown(
+                    f"<div class='hist-item'>"
+                    f"<span class='badge'>{item['tipo']}</span> "
+                    f"<span class='badge-teal'>{item.get('tema', '')[:30]}</span> "
+                    f"<small style='color:#888'>{item['data']}</small></div>",
+                    unsafe_allow_html=True
+                )
+
+        # ========================
+        # MEDITAÇÃO GUIADA
+        # ========================
+
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### 💾 Salvar e Carregar Dados")
+        _csl1, _csl2 = st.columns(2)
+        with _csl1:
+            import json as _json_sv
+            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
+            st.download_button("💾 Salvar dados (.json)",
+                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_sv_mentepod")
+        with _csl2:
+            _arq_sv = st.file_uploader("📂 Carregar dados:", type=["json"], key="ul_sv_mentepod")
+            if _arq_sv:
+                try:
+                    import json as _json_ld
+                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
+                        st.session_state[_k] = _v
+                    st.success("✅ Dados carregados!")
+                    st.rerun()
+                except: st.error("Arquivo inválido.")
+
+    with _tab_Ansiedade:
+        st.header("😰 Gestão de Ansiedade")
+        st.markdown("Técnicas de respiração, grounding e protocolos para momentos de crise.")
+
+        st.markdown('''<div style="background:#FFF1F2;border:1px solid #FDA4AF;border-radius:10px;
+        padding:10px 14px;margin-bottom:16px;font-size:0.85em;color:#1A1A2E;">
+        ⚠️ <strong>Importante:</strong> Este conteúdo é para bem-estar geral. Em casos de ansiedade severa,
+        transtorno de pânico ou crises frequentes, procure um psicólogo ou psiquiatra.
+        </div>''', unsafe_allow_html=True)
+
+        tab1, tab2 = st.tabs(["🌬️ Técnicas de Respiração","🌍 Grounding e Protocolo de Crise"])
+
+        with tab1:
+            col1, col2 = st.columns(2)
+            with col1:
+                nivel_ans = st.select_slider("Nível de ansiedade agora:", options=[
+                    "Leve (1-3)","Moderada (4-6)","Intensa (7-8)","Muito intensa (9-10)"
+                ], key="mentepod15_d2")
+                tipo_resp = st.selectbox("Técnica de respiração:", [
+                    "Respiração 4-7-8 (para dormir e acalmar)","Respiração diafragmática (base)",
+                    "Respiração quadrada (box breathing)","Respiração coerente (5-5)",
+                    "Respiração alternada (ioga)","Técnica mais indicada para meu caso",
+                ], key="mentepod14_d2")
+            with col2:
+                contexto_ans = st.text_input("Em que situação costuma sentir ansiedade:",
+                    placeholder="ex: antes de reuniões, em locais cheios, ao receber críticas...", key="mentepod13_d2")
+                duracao_resp = st.selectbox("Tempo disponível:", ["2 minutos","5 minutos","10 minutos","15 minutos"], key="mentepod17_d2")
+
+            if st.button("🌬️ GERAR PROTOCOLO DE RESPIRAÇÃO", key="mentepod18_d2"):
+                with st.spinner("Criando seu protocolo de respiração..."):
+                    prompt = (
+                        f"Crie um protocolo completo de respiração para ansiedade.\\n"
+                        f"Nível atual: {nivel_ans}. Técnica: {tipo_resp}.\\n"
+                        f"Contexto de ansiedade: {contexto_ans}. Tempo: {duracao_resp}.\\n\\n"
+                        f"ESTRUTURA:\\n\\n"
+                        f"🌬️ PROTOCOLO DE RESPIRAÇÃO\\n"
+                        f"Técnica: {tipo_resp} | Para: {nivel_ans}\\n\\n"
+                        f"🧠 COMO ESSA TÉCNICA FUNCIONA NO CÉREBRO:\\n"
+                        f"[Neurociência simples — como a respiração acalma o sistema nervoso]\\n\\n"
+                        f"📋 PROTOCOLO PASSO A PASSO:\\n\\n"
+                        f"ANTES DE COMEÇAR:\\n[Posição, olhos, onde fazer]\\n\\n"
+                        f"A TÉCNICA (com timer):\\n"
+                        f"[Instruções detalhadas — inspire por X, segure por X, expire por X]\\n"
+                        f"[Quantas rodadas fazer em {duracao_resp}]\\n"
+                        f"[O que visualizar ou focar durante]\\n\\n"
+                        f"APÓS A TÉCNICA:\\n[O que fazer nos 2 minutos seguintes]\\n\\n"
+                        f"⚡ VERSÃO DE EMERGÊNCIA (30 segundos):\\n"
+                        f"[Para quando a ansiedade pega de surpresa no contexto '{contexto_ans}']\\n\\n"
+                        f"📅 PRÁTICA PREVENTIVA:\\n"
+                        f"[Como usar essa técnica antes que a ansiedade apareça]"
+                    )
+                    res = mente_ia(prompt)
+                    if res: st.session_state['res_ansiedade_mentep1'] = str(res)
+                    salvar_sessao("Ansiedade", f"Respiração: {tipo_resp[:30]}", res)
+                    st.session_state['resp_temp'] = res
+                    st.markdown(f"<div class='card-teal'>{res}</div>", unsafe_allow_html=True)
+
+            if st.session_state.get('resp_temp'):
+                col_dl, col_sv = st.columns(2)
+                with col_dl:
+                    st.download_button("📋 Baixar protocolo (.txt)", data=st.session_state['resp_temp'],
+                        file_name="respiracao_ansiedade.txt", mime="text/plain", use_container_width=True, key="mentepod12_d2")
+                with col_sv:
+                    if st.button("❤️ Salvar", key="sv_resp", use_container_width=True):
+                        st.session_state.conteudos_salvos.append({
+                            'tipo': 'Respiração', 'tema': tipo_resp[:40] if 'tipo_resp' in dir() else '',
+                            'conteudo': st.session_state['resp_temp'],
+                            'data': datetime.now().strftime('%d/%m %H:%M'),
+                        })
+                        st.success("❤️ Salvo!")
+
+        with tab2:
+            col1, col2 = st.columns(2)
+            with col1:
+                tipo_crise = st.selectbox("Tipo de crise mais frequente:", [
+                    "Ansiedade generalizada","Ataque de pânico","Overthinking (pensamentos acelerados)",
+                    "Crise de choro","Paralisia por medo","Dissociação (se sentir fora do corpo)",
+                ], key="mentepod11_d2")
+                gatilho    = st.text_input("Principal gatilho:", placeholder="ex: conflito com alguém, notícias ruins, solidão...", key="mentepod19_d2")
+            with col2:
+                suporte    = st.text_input("O que já ajudou você antes:", placeholder="ex: música, ligar para alguém, caminhar...", key="mentepod20_d2")
+
+            if st.button("🌍 GERAR PROTOCOLO DE CRISE", key="mentepod21_d2"):
+                with st.spinner("Criando seu protocolo de emergência..."):
+                    prompt = (
+                        f"Crie um protocolo de grounding e gestão de crise.\\n"
+                        f"Tipo de crise: {tipo_crise}. Gatilho: {gatilho}.\\n"
+                        f"O que já ajudou: {suporte or 'não informado'}.\\n\\n"
+                        f"ESTRUTURA:\\n\\n"
+                        f"🌍 PROTOCOLO DE EMERGÊNCIA — {tipo_crise.upper()}\\n\\n"
+                        f"⚡ TÉCNICA DOS 5-4-3-2-1 (GROUNDING IMEDIATO):\\n"
+                        f"[Adaptada especificamente para {tipo_crise}]\\n"
+                        f"5 coisas que você VÊ: [exemplos contextualizados]\\n"
+                        f"4 coisas que você pode TOCAR: [exemplos]\\n"
+                        f"3 coisas que você OUVE: [exemplos]\\n"
+                        f"2 coisas que você CHEIRA: [exemplos]\\n"
+                        f"1 coisa que você SENTE no paladar: [exemplos]\\n\\n"
+                        f"🚨 PROTOCOLO DOS PRIMEIROS 10 MINUTOS DE CRISE:\\n"
+                        f"Minuto 1-2: [ação imediata]\\n"
+                        f"Minuto 3-5: [técnica de respiração específica]\\n"
+                        f"Minuto 6-10: [grounding e ancoragem]\\n\\n"
+                        f"💬 O QUE DIZER PARA SI MESMO (diálogo interno de crise):\\n"
+                        f"[Frases específicas para {tipo_crise} — que realmente acalmam]\\n\\n"
+                        f"📲 PLANO DE AÇÃO PÓS-CRISE:\\n"
+                        f"[O que fazer nas horas seguintes para se recuperar]\\n\\n"
+                        f"🛡️ PREVENÇÃO — IDENTIFICAR O GATILHO '{gatilho}':\\n"
+                        f"[Como perceber que a crise está chegando antes de começar]\\n\\n"
+                        f"📞 QUANDO BUSCAR AJUDA PROFISSIONAL:\\n"
+                        f"[Sinais claros de que precisa de apoio especializado]"
+                    )
+                    res = mente_ia(prompt)
+                    if res: st.session_state['res_ansiedade_mentep2'] = str(res)
+                    salvar_sessao("Ansiedade", f"Protocolo de crise: {tipo_crise}", res)
+                    st.session_state['crise_temp'] = res
+                    st.markdown(f"<div class='card-orange'>{res}</div>", unsafe_allow_html=True)
+
+            if st.session_state.get('crise_temp'):
+                col_dl, col_sv = st.columns(2)
+                with col_dl:
+                    st.download_button("📋 Baixar protocolo (.txt)", data=st.session_state['crise_temp'],
+                        file_name="protocolo_crise.txt", mime="text/plain", use_container_width=True, key="mentepod10_d2")
+                with col_sv:
+                    if st.button("❤️ Salvar", key="sv_crise", use_container_width=True):
+                        st.session_state.conteudos_salvos.append({
+                            'tipo': 'Protocolo de Crise', 'tema': tipo_crise if 'tipo_crise' in dir() else '',
+                            'conteudo': st.session_state['crise_temp'],
+                            'data': datetime.now().strftime('%d/%m %H:%M'),
+                        })
+                        st.success("❤️ Salvo!")
+
+        # ========================
+        # VISUALIZAÇÃO CRIATIVA
+        # ========================
+
+    with _tab_Autoestima:
+        st.header("💪 Autoestima e Autoconfiança")
+        st.markdown("*Fortaleça sua autoestima com apoio da IA.*")
+        _prompt_autoestima = st.text_area("Descreva sua situação ou dúvida:", height=120, key="mentep_autoestima_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="mentep_autoestima_btn", use_container_width=True):
+            if _prompt_autoestima.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_autoestima}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Proposito:
+        st.header("🌟 Propósito de Vida")
+        st.markdown("*Descubra e alinhe seu propósito de vida.*")
+        _prompt_proposito = st.text_area("Descreva sua situação ou dúvida:", height=120, key="mentep_proposito_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="mentep_proposito_btn", use_container_width=True):
+            if _prompt_proposito.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_proposito}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Emocoes:
+        st.header("❤️ Regulação Emocional")
+        st.markdown("*Aprenda a reconhecer e regular suas emoções.*")
+        _prompt_emocoes = st.text_area("Descreva sua situação ou dúvida:", height=120, key="mentep_emocoes_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="mentep_emocoes_btn", use_container_width=True):
+            if _prompt_emocoes.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_emocoes}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Crencas:
+        st.header("🧠 Crenças Limitantes")
+        st.markdown("*Identifique e transforme crenças que te travam.*")
+        _prompt_crencas = st.text_area("Descreva sua situação ou dúvida:", height=120, key="mentep_crencas_in", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="mentep_crencas_btn", use_container_width=True):
+            if _prompt_crencas.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        from groq import Groq as _GrT
+                        _cli = _GrT(api_key=st.session_state.api_key)
+                        _r = _cli.chat.completions.create(
+                            model="openai/gpt-oss-120b",
+                            messages=[{"role":"user","content":_prompt_crencas}],
+                            max_tokens=2048
+                        )
+                        st.markdown(f"<div class='card'>{_r.choices[0].message.content}</div>", unsafe_allow_html=True)
+                    except Exception as _e:
+                        st.error(f"Erro: {_e}")
+            else:
+                st.warning("Preencha o campo acima.")
+
+
+    with _tab_Meditacao:
+        st.header("🧘 Meditação Guiada")
+        st.markdown("Scripts de meditação personalizados — para o seu momento e o que você precisa agora.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            objetivo_med = st.selectbox("O que você quer trabalhar:", [
+                "Ansiedade e tensão","Foco e clareza mental","Autoestima e autoconfiança",
+                "Sono e relaxamento profundo","Gratidão e paz interior",
+                "Cura emocional","Energia e motivação","Presença e mindfulness",
+            ], key="mentepod39")
+            tempo_med    = st.selectbox("Tempo disponível:", [
+                "5 minutos (meditação rápida)","10 minutos","15 minutos",
+                "20 minutos","30 minutos (meditação profunda)",
+            ], key="mentepod38")
+        with col2:
+            estilo_med   = st.selectbox("Estilo de meditação:", [
+                "Respiração consciente","Body scan (varredura corporal)",
+                "Visualização guiada","Mantra e repetição",
+                "Mindfulness (atenção plena)","Meditação transcendental (adaptada)",
+            ], key="mentepod37")
+            experiencia  = st.radio("Experiência com meditação:", ["Nunca meditei","Já meditei algumas vezes","Medito com frequência"], horizontal=True, key="mentepod4")
+
+        if st.button("🧘 GERAR MEDITAÇÃO GUIADA", key="mentepod5"):
+            with st.spinner("Preparando sua meditação personalizada..."):
+                prompt = (
+                    f"Crie um script completo de meditação guiada.\\n"
+                    f"Objetivo: {objetivo_med}. Tempo: {tempo_med}.\\n"
+                    f"Estilo: {estilo_med}. Experiência: {experiencia}.\\n"
+                    f"Estado emocional atual: {st.session_state.estado_emocional}.\\n"
+                    f"Maior bloqueio: {st.session_state.maior_bloqueio or 'não informado'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🧘 MEDITAÇÃO: {objetivo_med.upper()}\\n"
+                    f"Duração: {tempo_med} | Estilo: {estilo_med}\\n\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\n"
+                    f"PREPARAÇÃO (antes de começar):\\n"
+                    f"[Como se posicionar, ambiente ideal, o que desligar]\\n\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\n"
+                    f"INÍCIO — ÂNCORA (2 min):\\n"
+                    f"[Script palavra por palavra — voz suave, pausas indicadas com '...']]\\n"
+                    f"[Use '(pausa de X segundos)' para indicar silêncios]\\n\\n"
+                    f"DESENVOLVIMENTO — NÚCLEO ({tempo_med} principal):\\n"
+                    f"[Script completo da meditação — específico para {objetivo_med}]\\n"
+                    f"[Inclua respiração, visualizações ou mantras conforme o estilo]\\n\\n"
+                    f"ENCERRAMENTO — RETORNO (2 min):\\n"
+                    f"[Como sair gentilmente da meditação]\\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━\\n\\n"
+                    f"💡 DICA PÓS-MEDITAÇÃO:\\n"
+                    f"[O que fazer nos 5 minutos após a meditação para fixar o estado]\\n\\n"
+                    f"📅 FREQUÊNCIA RECOMENDADA:\\n"
+                    f"[Quantas vezes por semana e quando é o melhor horário]\\n\\n"
+                    f"🌱 PRÓXIMO PASSO:\\n"
+                    f"[Como evoluir essa prática ao longo do tempo]"
+                )
+                res = mente_ia(prompt)
+                if res: st.session_state['res_meditacao_mentep3'] = str(res)
+                salvar_sessao("Meditação", objetivo_med, res)
+                st.session_state.sessoes_meditacao += 1
+                st.session_state['med_temp'] = res
+                st.markdown(f"<div class='card-dark'>{res}</div>", unsafe_allow_html=True)
+                st.success(f"🎉 Meditação {st.session_state.sessoes_meditacao} concluída!")
+
+        if st.session_state.get('med_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar meditação (.txt)",
+                    data=st.session_state['med_temp'],
+                    file_name=f"meditacao_{objetivo_med.replace(' ','_') if 'objetivo_med' in dir() else 'guiada'}.txt",
+                    mime="text/plain", use_container_width=True, key="mentepod36")
+            with col_sv:
+                if st.button("❤️ Salvar meditação", use_container_width=True, key="mentepod6"):
+                    st.session_state.conteudos_salvos.append({
+                        'tipo': 'Meditação', 'tema': objetivo_med if 'objetivo_med' in dir() else '',
+                        'conteudo': st.session_state['med_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # REPROGRAMAÇÃO COM PNL
+        # ========================
+
+    with _tab_Diario:
+        st.header("📖 Diário Mental")
+        st.markdown("Reflexões guiadas para autoconhecimento profundo — com prompts personalizados pela IA.")
+
+        tab1, tab2 = st.tabs(["✍️ Escrever Hoje","📚 Entradas Anteriores"])
+
+        with tab1:
+            col1, col2 = st.columns(2)
+            with col1:
+                tipo_diario = st.selectbox("Tipo de reflexão de hoje:", [
+                    "Reflexão do dia (como foi meu dia)","Gratidão profunda","Autoconhecimento",
+                    "Processamento emocional","Planejamento do eu futuro",
+                    "Perdão e cura","Crenças e padrões","Livre (IA escolhe pelo meu perfil)",
+                ], key="mentepod6_d2")
+                estado_hoje = st.select_slider("Como você está agora:", options=[
+                    "Muito mal 😔","Mal 😟","Neutro 😐","Bem 🙂","Muito bem 😁"
+                ], key="mentepod5_d2")
+            with col2:
+                evento_hoje = st.text_area("O que aconteceu de significativo hoje:", height=80,
+                    placeholder="ex: tive uma briga, recebi uma notícia boa, me senti inseguro em algo...", key="mentepod4_d2")
+
+            if st.button("📖 GERAR PROMPTS DO DIÁRIO", key="mentepod26_d2"):
+                with st.spinner("Criando seus prompts personalizados..."):
+                    prompt = (
+                        f"Crie prompts de diário mental personalizados.\\n"
+                        f"Tipo: {tipo_diario}. Estado: {estado_hoje}.\\n"
+                        f"Evento do dia: {evento_hoje or 'não informado'}.\\n"
+                        f"Maior bloqueio: {st.session_state.maior_bloqueio or 'não informado'}.\\n\\n"
+                        f"ESTRUTURA:\\n\\n"
+                        f"📖 DIÁRIO MENTAL — {tipo_diario.upper()}\\n"
+                        f"Data: {datetime.now().strftime('%d/%m/%Y')} | Estado: {estado_hoje}\\n\\n"
+                        f"✍️ SEUS PROMPTS DE HOJE (responda com calma, sem julgamento):\\n\\n"
+                        f"[Crie 7-10 prompts profundos e específicos para {tipo_diario}]\\n"
+                        f"[Cada prompt deve ser uma pergunta aberta que leva à introspecção]\\n"
+                        f"[Adapte ao estado '{estado_hoje}' e ao evento '{evento_hoje}']\\n"
+                        f"[Progressão: do mais fácil ao mais profundo]\\n\\n"
+                        f"💡 DICA DE ESCRITA:\\n"
+                        f"[Como escrever sem censura — técnica do fluxo de consciência]\\n\\n"
+                        f"🌱 INSIGHT PARA FECHAR:\\n"
+                        f"[Uma reflexão ou perspectiva para encerrar a sessão do diário]\\n\\n"
+                        f"⏰ TEMPO SUGERIDO: [quanto tempo dedicar a esse diário hoje]"
+                    )
+                    res = mente_ia(prompt)
+                    if res: st.session_state['res_diario_mentep4'] = str(res)
+                    st.session_state['diario_prompts'] = res
+                    st.markdown(f"<div class='card-pink'>{res}</div>", unsafe_allow_html=True)
+
+            if st.session_state.get('diario_prompts'):
+                st.markdown("#### ✍️ Escreva aqui sua reflexão:")
+                reflexao = st.text_area("Sua reflexão de hoje:", height=200,
+                    placeholder="Escreva livremente, sem julgamento. Isso é só seu...", key="mentepod3_d2")
+
+                col_sv, col_dl = st.columns(2)
+                with col_sv:
+                    if st.button("💾 Salvar entrada no diário", use_container_width=True, key="mentepod27_d2"):
+                        if reflexao.strip():
+                            st.session_state.diario_entradas.append({
+                                'data':     datetime.now().strftime('%d/%m/%Y %H:%M'),
+                                'tipo':     tipo_diario if 'tipo_diario' in dir() else '',
+                                'estado':   estado_hoje if 'estado_hoje' in dir() else '',
+                                'prompts':  st.session_state.get('diario_prompts', ''),
+                                'reflexao': reflexao,
+                            })
+                            salvar_sessao("Diário", tipo_diario if 'tipo_diario' in dir() else 'Reflexão', reflexao[:60])
+                            st.success("📖 Entrada salva no seu diário!")
+                            st.rerun()
+                        else:
+                            st.warning("Escreva sua reflexão antes de salvar.")
+                with col_dl:
+                    if reflexao.strip():
+                        entrada_txt = f"DIÁRIO MENTAL — {datetime.now().strftime('%d/%m/%Y')}\\n\\nPROMPTS:\\n{st.session_state.get('diario_prompts','')}\\n\\nMINHA REFLEXÃO:\\n{reflexao}"
+                        st.download_button("📋 Baixar entrada (.txt)", data=entrada_txt,
+                            file_name=f"diario_{datetime.now().strftime('%d%m%Y')}.txt",
+                            mime="text/plain", use_container_width=True, key="mentepod2")
+
+        with tab2:
+            if not st.session_state.diario_entradas:
+                st.info("Nenhuma entrada no diário ainda. Comece escrevendo sua primeira reflexão!")
+            else:
+                st.markdown(f"**{len(st.session_state.diario_entradas)} entrada(s) no seu diário**")
+                for i, entrada in enumerate(reversed(st.session_state.diario_entradas)):
+                    idx_real = len(st.session_state.diario_entradas) - 1 - i
+                    with st.expander(f"📖 {entrada['data']} — {entrada['tipo']} — {entrada.get('estado', '')}"):
+                        st.markdown("**Prompts:**")
+                        st.markdown(f"<div class='card-pink' style='font-size:0.85em;'>{entrada.get('prompts', '')[:500]}...</div>", unsafe_allow_html=True)
+                        st.markdown("**Sua reflexão:**")
+                        st.markdown(f"<div class='card'>{entrada.get('reflexao', '')}</div>", unsafe_allow_html=True)
+                        if st.button("🗑️ Remover", key=f"del_diario_{i}"):
+                            st.session_state.diario_entradas.pop(idx_real)
+                            st.rerun()
+
+        # ========================
+        # SALVOS E PROGRESSO
+        # ========================
+
+    with _tab_Progresso:
+        pass
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+    "© 2026 Mente Poderosa — Neurolinguística, Meditação e Reprogramação Mental com IA · MeusAgentesIA.com.br"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
+    "pet_inteligente": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+
+st.set_page_config(page_title="Pet Inteligente", page_icon="🐾", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    .stApp { background-color:#F0FDF4; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#065F46,#059669) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#059669,#065F46) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+    .stApp h1, .stApp h2, .stApp h3 { color:#065F46 !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong { color:#065F46 !important; }
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red div { color:#7F1D1D !important; }
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow div { color:#78350F !important; }
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue div { color:#1E3A8A !important; }
+    .badge { background:#065F46; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-red { background:#DC2626; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-yellow { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item div { color:#065F46 !important; }
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
+    .stApp .stat-box div, .stApp .stat-box span { color:#065F46 !important; }
+    .pet-card { background:#FFFFFF; border-radius:14px; padding:16px; border:2px solid #86EFAC; margin-bottom:12px; }
+    .stApp .pet-card, .stApp .pet-card p, .stApp .pet-card div, .stApp .pet-card span { color:#065F46 !important; }
+    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user div { color:#065F46 !important; }
+    .chat-ia { background:#DCFCE7; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-ia, .stApp .chat-ia p, .stApp .chat-ia div { color:#065F46 !important; }
+    .urgente { background:#FEE2E2; border:2px solid #EF4444; border-radius:12px; padding:16px; margin-bottom:12px; }
+    .stApp .urgente, .stApp .urgente p, .stApp .urgente div { color:#7F1D1D !important; }
+    </style>
+''', unsafe_allow_html=True)
+
+SYSTEM_BASE = '''Você é o Pet Inteligente — assistente pessoal especializado em cuidados com animais de estimação.
+REGRA FUNDAMENTAL: SEMPRE adapte suas respostas à espécie do animal. Um cachorro, gato, coelho, ave e peixe têm necessidades COMPLETAMENTE diferentes.
+Antes de responder qualquer pergunta, considere a espécie, idade, peso e características do animal.
+NUNCA substitua avaliação veterinária presencial. Para situações de saúde, sempre recomende consulta profissional.
+Português do Brasil. Seja prático, empático e claro.'''
+
+ESPECIES = ["🐶 Cachorro","🐱 Gato","🐰 Coelho","🐹 Hamster","🐦 Ave doméstica",
+            "🐢 Tartaruga","🦎 Réptil","🐠 Peixe","🐴 Cavalo","🐔 Animal de criação","🐾 Outro"]
+
+def ia(prompt, sistema_extra="", historico_msgs=None):
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        msgs = [{"role":"system","content": SYSTEM_BASE + "\\n" + sistema_extra}]
+        if historico_msgs:
+            msgs.extend(historico_msgs[-10:])
+        msgs.append({"role":"user","content": prompt})
+        r = client.chat.completions.create(model="openai/gpt-oss-120b", messages=msgs, max_tokens=2048)
+        return r.choices[0].message.content
+    except Exception as e:
+        return f"Erro na IA: {e}"
+
+def perfil_pet_txt():
+    pets = st.session_state.get('pets', [])
+    idx = st.session_state.get('pet_ativo', 0)
+    if not pets: return "Nenhum pet cadastrado."
+    pet = pets[idx] if idx < len(pets) else pets[0]
+    return (f"Pet: {pet.get('nome','?')} | Espécie: {pet.get('especie','?')} | "
+            f"Raça: {pet.get('raca','?')} | Idade: {pet.get('idade','?')} | "
+            f"Peso: {pet.get('peso','?')}kg | Sexo: {pet.get('sexo','?')} | "
+            f"Castrado: {pet.get('castrado','?')} | Saúde: {pet.get('saude','?')} | "
+            f"Alimentação: {pet.get('alimentacao','?')}")
+
+def get_pet_ativo():
+    pets = st.session_state.get('pets', [])
+    idx = st.session_state.get('pet_ativo', 0)
+    if not pets: return None
+    return pets[idx] if idx < len(pets) else pets[0]
+
+def carregar_json_sessao(dados):
+    # Chaves que NÃO devem ser restauradas
+    bloqueadas = {'api_key','etapa','pet_cadastrado_ok','pet_cadastrado_nome'}
+    # Prefixos de widgets dinâmicos (chaves geradas com f-string)
+    prefixos_widget = (
+        'cad_','btn_','sel_','ul_','dl_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','_sm_','_pr',
+    )
+    # Também bloqueia qualquer chave que termine com número (widget dinâmico)
+    import re as _re
+    for k, v in dados.items():
+        if k in bloqueadas: continue
+        if any(k.startswith(p) for p in prefixos_widget): continue
+        if _re.match(r'.+_\\d+$', k): continue  # ex: ativo_0, rem_1, sel_pet_2
+        st.session_state[k] = v
+
+# ── DEFAULTS ──
+defaults = {
+    "etapa": "Login", "usuario": "", "api_key": "",
+    "pets": [], "pet_ativo": 0,
+    "hist_saude": [], "hist_vacinas": [], "hist_prevencao": [],
+    "hist_peso": [], "hist_higiene": [], "hist_agenda": [],
+    "hist_chat": [], "diario_pet": [], "profissionais": [],
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# ── LOGIN ──
+if st.session_state.etapa == "Login":
+    st.markdown("# 🐾 Pet Inteligente")
+    st.markdown("*Seu assistente pessoal para cuidar de qualquer animal de estimação.*")
+    st.markdown("<div class='card'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+    # TABS
+    
+    (_tab_home, _tab_pets, _tab_saude, _tab_alimentacao, _tab_comportamento, _tab_emergencia, _tab_agenda, _tab_peso, _tab_chat, _tab_higiene, _tab_Mais) = st.tabs(['🏠 Home', '🐾 Meus Pets', '🩺 Saúde', '🍖 Alimentação', '🧠 Comportamento', '🚨 Emergência', '📅 Agenda', '⚖️ Peso', '🤖 Converse com IA', '🧼 Higiene', '➕ Mais'])
+
+    # ── BARRA SALVAR — visível em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k != 'api_key'}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=json.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"pet_inteligente_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_pet")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_pet", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    _dados_car = json.loads(_fupsv.read().decode())
+                    carregar_json_sessao(_dados_car)
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_home:
+        st.title(f"🐾 Olá, {st.session_state.usuario}!")
+        st.markdown("*Seu assistente pessoal para cuidar de qualquer animal de estimação.*")
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+
+        pets = st.session_state.get('pets', [])
+        if pets:
+            st.markdown(f"### Você tem **{len(pets)}** pet(s) cadastrado(s):")
+            for i, pet in enumerate(pets):
+                col_p1, col_p2 = st.columns([4,1])
+                with col_p1:
+                    st.markdown(f"<div class='pet-card'><b>{pet.get('especie','🐾')} {pet.get('nome','?')}</b><br><small>{pet.get('raca','')} | {pet.get('idade','')} | {pet.get('peso','')}kg</small></div>", unsafe_allow_html=True)
+                with col_p2:
+                    if st.button("Selecionar", key=f"sel_pet_{i}"):
+                        st.session_state.pet_ativo = i
+                        st.success(f"Pet ativo: {pet.get('nome','?')}")
+                        st.rerun()
+            pet_atual = get_pet_ativo()
+            if pet_atual:
+                st.markdown(f"<div class='card'>🎯 <b>Pet ativo:</b> {pet_atual.get('especie','')} {pet_atual.get('nome','?')}</div>", unsafe_allow_html=True)
+        else:
+            st.info("Você ainda não cadastrou nenhum pet. Vá para a aba **🐾 Meus Pets** para começar!")
+
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### 🗺️ O que cada aba faz")
+        guia = [
+            ("🐾","Meus Pets","Cadastre e gerencie todos os seus animais"),
+            ("🩺","Saúde","Diário de saúde, análise de sintomas e histórico"),
+            ("💉","Vacinas","Calendário, registros e lembretes de vacinação"),
+            ("🪱","Prevenção","Vermifugação, pulgas, carrapatos e parasitas"),
+            ("🍖","Alimentação","Nutrição, alimentos seguros e rotina alimentar"),
+            ("🐾","Comportamento","Interpretação e orientação comportamental"),
+            ("🏃","Atividades","Exercícios e enriquecimento por espécie"),
+            ("🧼","Higiene","Banho, unhas, pelos e cuidados ambientais"),
+            ("⚖️","Peso","Controle de peso e desenvolvimento"),
+            ("📅","Agenda","Calendário de consultas, vacinas e cuidados"),
+            ("🚨","Emergência","Primeiros cuidados em situações urgentes"),
+            ("🏡","Ambiente Seguro","Checklist de segurança para seu pet"),
+            ("🧳","Viagens","Planejamento de viagens com animais"),
+            ("🤖","Converse com a IA","Chat personalizado com perfil do seu pet"),
+            ("🏥","Profissionais","Cadastro de vets, pet shops e especialistas"),
+        ]
+        for ic, nm, desc in guia:
+            st.markdown(f"**{ic} {nm}** — {desc}")
+
+        # ══════════════════════════════════════════════
+        # 🐾 MEUS PETS
+        # ══════════════════════════════════════════════
+
+    with _tab_pets:
+        st.header("🐾 Meus Pets")
+        pets = st.session_state.get('pets', [])
+
+        _sub_lista, _sub_cadastro = st.tabs(["📋 Meus Animais", "➕ Cadastrar Novo"])
+
+        with _sub_lista:
+            if not pets:
+                st.info("Nenhum pet cadastrado ainda. Use a aba **➕ Cadastrar Novo** para adicionar.")
+            else:
+                for i, pet in enumerate(pets):
+                    with st.expander(f"{pet.get('especie','🐾')} {pet.get('nome','?')} — {pet.get('raca','')} | {pet.get('idade','')}"):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.markdown(f"**Espécie:** {pet.get('especie','?')}")
+                            st.markdown(f"**Raça/Variedade:** {pet.get('raca','?')}")
+                            st.markdown(f"**Idade:** {pet.get('idade','?')}")
+                            st.markdown(f"**Peso:** {pet.get('peso','?')} kg")
+                            st.markdown(f"**Sexo:** {pet.get('sexo','?')}")
+                        with col2:
+                            st.markdown(f"**Castrado:** {pet.get('castrado','?')}")
+                            st.markdown(f"**Saúde:** {pet.get('saude','Não informado')}")
+                            st.markdown(f"**Alergias:** {pet.get('alergias','Nenhuma')}")
+                            st.markdown(f"**Alimentação:** {pet.get('alimentacao','?')}")
+                        col_a, col_b = st.columns(2)
+                        with col_a:
+                            if st.button(f"✅ Tornar ativo", key=f"ativo_{i}"):
+                                st.session_state.pet_ativo = i
+                                st.success(f"{pet.get('nome')} é agora o pet ativo!"); st.rerun()
+                        with col_b:
+                            if st.button(f"🗑️ Remover", key=f"rem_{i}"):
+                                st.session_state.pets.pop(i); st.rerun()
+
+        with _sub_cadastro:
+            # Tela de sucesso após cadastro
+            if st.session_state.get('pet_cadastrado_ok'):
+                pet_nome_ok = st.session_state.get('pet_cadastrado_nome','')
+                st.markdown(f'''
+                <div style='text-align:center;padding:40px 20px;'>
+                    <div style='font-size:4em;'>🐾</div>
+                    <h2 style='color:#065F46;'>Cadastro realizado!</h2>
+                    <p style='font-size:1.1em;color:#065F46;'><b>{pet_nome_ok}</b> foi cadastrado com sucesso.</p>
+                    <p style='color:#6B7280;'>Agora você pode usar todas as funcionalidades personalizadas para o seu pet.</p>
+                </div>
+                ''', unsafe_allow_html=True)
+                if st.button("➕ Cadastrar outro pet", key="btn_cad_outro", use_container_width=True):
+                    st.session_state['pet_cadastrado_ok'] = False
+                    st.rerun()
+            else:
+                st.markdown("### ➕ Cadastrar Novo Animal")
+                st.markdown("*Preencha os dados do seu pet. Quanto mais informações, mais personalizada será a IA.*")
+
+                # CSS para labels importantes
+                st.markdown('''
+                <style>
+                .label-imp { color:#DC2626; font-size:0.75em; font-weight:600; margin-top:-8px; margin-bottom:4px; }
+                .label-aviso { color:#B45309; font-size:0.75em; font-weight:600; margin-top:-8px; margin-bottom:4px; }
+                </style>
+                ''', unsafe_allow_html=True)
+
+                c1, c2 = st.columns(2)
+                with c1:
+                    nome_pet = st.text_input("🏷️ Nome do pet:", key="cad_nome", placeholder="Ex: Thor, Mimi, Lola...")
+                    especie_pet = st.selectbox("🐾 Espécie:", ESPECIES, key="cad_especie")
+                    raca_pet = st.text_input("🔬 Raça/Variedade:", key="cad_raca", placeholder="Ex: Golden Retriever, SRD, Anão Holandês...")
+                    sexo_pet = st.selectbox("⚥ Sexo:", ["Macho","Fêmea","Não identificado"], key="cad_sexo")
+                    idade_pet = st.text_input("📅 Idade:", key="cad_idade", placeholder="Ex: 2 anos, 6 meses, filhote...")
+                with c2:
+                    peso_pet = st.text_input("⚖️ Peso (kg):", key="cad_peso", placeholder="Ex: 5.2")
+                    castrado_pet = st.selectbox("✂️ Castrado(a):", ["Sim","Não","Não aplicável","Não sei"], key="cad_castrado")
+                    cor_pet = st.text_input("🎨 Cor/Pelagem:", key="cad_cor", placeholder="Ex: Caramelo, preto e branco...")
+                    identificacao_pet = st.text_input("🔖 Identificação:", key="cad_id", placeholder="Ex: Microchip, coleira, tatuagem...")
+
+                st.markdown("<div class='label-imp'>⚠️ Campo importante — preencha com atenção:</div>", unsafe_allow_html=True)
+                alergias_pet = st.text_area("⚠️ Alergias:", key="cad_alergias", height=60, placeholder="Ex: Alergia a frango, sem alergias conhecidas... (impacta todas as recomendações da IA)")
+
+                st.markdown("<div class='label-imp'>⚠️ Campo importante — preencha com atenção:</div>", unsafe_allow_html=True)
+                saude_pet = st.text_area("🩺 Condições de saúde conhecidas:", key="cad_saude", height=80, placeholder="Ex: Displasia quadril, diabetes, saudável... (a IA adapta orientações conforme este campo)")
+
+                st.markdown("<div class='label-imp'>⚠️ Campo importante — preencha com atenção:</div>", unsafe_allow_html=True)
+                medicamentos_pet = st.text_input("💊 Medicamentos prescritos:", key="cad_meds", placeholder="Ex: Nenhum, Thyrozol 5mg/dia... (essencial para recomendações seguras)")
+
+                st.markdown("<div class='label-aviso'>💡 Recomendado — ajuda a IA a personalizar melhor:</div>", unsafe_allow_html=True)
+                alimentacao_pet = st.text_area("🍖 Alimentação atual:", key="cad_alim", height=60, placeholder="Ex: Ração premium adulto, ração + vegetais frescos...")
+
+                st.markdown("<div class='label-aviso'>💡 Recomendado — ajuda a IA a personalizar melhor:</div>", unsafe_allow_html=True)
+                comportamento_pet = st.text_area("🧠 Características comportamentais:", key="cad_comp", height=60, placeholder="Ex: Dócil, ansioso, sociável com outros animais...")
+
+                obs_pet = st.text_area("📝 Observações adicionais:", key="cad_obs", height=60, placeholder="Outras informações importantes...")
+
+                if st.button("✅ CADASTRAR PET", key="btn_cadastrar_pet", use_container_width=True):
+                    if nome_pet.strip():
+                        with st.spinner(f"Cadastrando {nome_pet.strip()}..."):
+                            import time as _t
+                            _t.sleep(0.8)
+                            novo_pet = {
+                                "nome": nome_pet.strip(), "especie": especie_pet,
+                                "raca": raca_pet, "sexo": sexo_pet, "idade": idade_pet,
+                                "peso": peso_pet, "castrado": castrado_pet, "cor": cor_pet,
+                                "identificacao": identificacao_pet, "saude": saude_pet,
+                                "alergias": alergias_pet, "alimentacao": alimentacao_pet,
+                                "medicamentos": medicamentos_pet, "comportamento": comportamento_pet,
+                                "obs": obs_pet, "cadastrado_em": datetime.now().strftime("%d/%m/%Y")
+                            }
+                            if 'pets' not in st.session_state: st.session_state.pets = []
+                            st.session_state.pets.append(novo_pet)
+                            st.session_state.pet_ativo = len(st.session_state.pets) - 1
+                            st.session_state['pet_cadastrado_ok'] = True
+                            st.session_state['pet_cadastrado_nome'] = nome_pet.strip()
+                        st.rerun()
+                    else:
+                        st.warning("Digite o nome do pet.")
+
+        # ══════════════════════════════════════════════
+        # 🩺 SAÚDE
+        # ══════════════════════════════════════════════
+
+    with _tab_saude:
+        st.header("🩺 Central de Saúde Animal")
+        pet = get_pet_ativo()
+        if not pet:
+            st.warning("Cadastre e selecione um pet primeiro na aba 🐾 Meus Pets.")
+        else:
+            st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+            st.markdown("")
+
+            _s1, _s2, _s3 = st.tabs(["🔍 Analisar Sintomas","📓 Diário de Saúde","📋 Histórico"])
+
+            with _s1:
+                st.markdown("### 🔍 Analisador de Sintomas")
+                st.markdown("Descreva o que está observando — a IA considera a espécie do seu pet antes de responder.")
+                sint = st.text_area("O que você está observando?", height=120, key="sint_input",
+                    placeholder=f"Ex: Meu {pet.get('nome','pet')} parou de comer hoje, está letárgico e com a barriga inchada...")
+                if st.button("🔍 ANALISAR SINTOMAS", key="btn_sint", use_container_width=True):
+                    if sint.strip():
+                        with st.spinner("Analisando com base na espécie do seu pet..."):
+                            resp = ia(f"SINTOMAS RELATADOS: {sint}",
+                                     f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nAnalise os sintomas considerando ESPECIFICAMENTE a espécie {pet.get('especie','')}. Apresente: 1) Possíveis causas 2) Perguntas importantes a observar 3) Sinais de alerta 4) Classificação: 🟢 Acompanhar / 🟡 Avaliação recomendada / 🔴 Urgente. Sempre recomende veterinário quando necessário.")
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                        st.session_state.hist_saude.append({"data": datetime.now().strftime("%d/%m %H:%M"), "pet": pet.get('nome'), "tipo": "Sintomas", "desc": sint[:100], "resp": resp})
+                    else:
+                        st.warning("Descreva os sintomas.")
+
+            with _s2:
+                st.markdown("### 📓 Registrar no Diário de Saúde")
+                c1, c2 = st.columns(2)
+                with c1:
+                    tipo_reg = st.selectbox("Tipo de registro:", ["Consulta veterinária","Exame","Diagnóstico","Medicamento","Peso","Sintoma observado","Cirurgia","Outro"], key="tipo_saude_reg")
+                    data_reg = st.text_input("Data:", value=datetime.now().strftime("%d/%m/%Y"), key="data_saude_reg")
+                with c2:
+                    veterinario_reg = st.text_input("Veterinário/Clínica (opcional):", key="vet_saude_reg")
+                desc_reg = st.text_area("Descrição:", height=100, key="desc_saude_reg", placeholder="Descreva o registro...")
+                if st.button("💾 SALVAR REGISTRO", key="btn_saude_reg", use_container_width=True):
+                    if desc_reg.strip():
+                        st.session_state.hist_saude.append({"data": data_reg, "pet": pet.get('nome'), "tipo": tipo_reg, "desc": desc_reg, "vet": veterinario_reg, "resp": ""})
+                        st.success("✅ Registro salvo!"); st.rerun()
+                    else:
+                        st.warning("Preencha a descrição.")
+
+            with _s3:
+                st.markdown("### 📋 Histórico de Saúde")
+                registros = [r for r in st.session_state.hist_saude if r.get('pet') == pet.get('nome')]
+                if registros:
+                    for r in reversed(registros[-15:]):
+                        with st.expander(f"📋 {r.get('data','')} — {r.get('tipo','')}"):
+                            st.markdown(f"**Descrição:** {r.get('desc','')}")
+                            if r.get('vet'): st.markdown(f"**Veterinário:** {r.get('vet','')}")
+                            if r.get('resp'): st.markdown(f"**Análise da IA:** {r.get('resp','')}")
+                else:
+                    st.info("Nenhum registro de saúde ainda.")
+
+        # ══════════════════════════════════════════════
+        # 💉 VACINAS
+        # ══════════════════════════════════════════════
+
+    with _tab_alimentacao:
+        st.header("🍖 Alimentação Inteligente")
+        pet = get_pet_ativo()
+        if not pet:
+            st.warning("Cadastre e selecione um pet primeiro.")
+        else:
+            st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+            st.markdown("")
+            _a1, _a2, _a3 = st.tabs(["🥗 Orientação Nutricional","🔍 Posso dar esse alimento?","☠️ Alimentos Perigosos"])
+
+            with _a1:
+                duvida_alim = st.text_area("Sua dúvida sobre alimentação:", height=100, key="duvida_alim",
+                    placeholder="Ex: Quantas vezes devo alimentar por dia? Posso misturar ração com comida natural?")
+                if st.button("🥗 CONSULTAR IA", key="btn_ia_alim", use_container_width=True):
+                    if duvida_alim.strip():
+                        with st.spinner("Consultando..."):
+                            resp = ia(duvida_alim, f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nOriente sobre alimentação ESPECIFICAMENTE para {pet.get('especie','')}. A dieta varia muito entre espécies — adapte completamente.")
+                            if resp: st.session_state['res_a1_petint1'] = str(resp)
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Digite sua dúvida.")
+
+            with _a2:
+                st.markdown("### 🔍 Posso oferecer esse alimento?")
+                st.markdown(f"*A IA verifica se o alimento é seguro para **{pet.get('especie','')}***")
+                alimento = st.text_input("Digite o alimento:", key="alimento_check", placeholder="Ex: Cenoura, Chocolate, Abacate, Frango cru...")
+                if st.button("🔍 VERIFICAR", key="btn_check_alim", use_container_width=True):
+                    if alimento.strip():
+                        with st.spinner("Verificando..."):
+                            resp = ia(f"O alimento '{alimento}' é seguro para meu animal?",
+                                     f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nAvalie se '{alimento}' é SEGURO para {pet.get('especie','')}. Considere: 1) É seguro? 2) Em que quantidade? 3) Como preparar? 4) Riscos específicos para esta espécie. Seja muito claro sobre perigos.")
+                        cor_card = 'card-red' if any(p in resp.lower() for p in ['perigoso','tóxico','evitar','não deve','nunca']) else 'card'
+                        st.markdown(f"<div class='{cor_card}'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Digite o alimento.")
+
+            with _a3:
+                st.markdown("### ☠️ Banco de Alimentos e Substâncias Perigosas")
+                subs = st.text_input("Buscar substância:", key="subs_perig", placeholder="Ex: Chocolate, Uva, Cebola, Xilitol...")
+                if st.button("☠️ VERIFICAR PERIGO", key="btn_perigo", use_container_width=True):
+                    if subs.strip():
+                        with st.spinner("Verificando..."):
+                            resp = ia(f"A substância '{subs}' é perigosa para animais?",
+                                     f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nExplique os riscos de '{subs}' para {pet.get('especie','')}. Se for perigoso: sintomas de intoxicação, o que fazer, quando ir ao veterinário. Se for seguro: confirme e dê orientações de uso.")
+                        st.markdown(f"<div class='card-red'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Digite a substância.")
+
+        # ══════════════════════════════════════════════
+        # 🐾 COMPORTAMENTO
+        # ══════════════════════════════════════════════
+
+    with _tab_comportamento:
+        st.header("🐾 Comportamento Animal")
+        pet = get_pet_ativo()
+        if not pet:
+            st.warning("Cadastre e selecione um pet primeiro.")
+        else:
+            st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+            st.markdown("")
+            _c1, _c2 = st.tabs(["🧠 Analisar Comportamento","🔍 Tradutor de Comportamento"])
+
+            with _c1:
+                comp_desc = st.text_area("Descreva o comportamento:", height=120, key="comp_desc",
+                    placeholder="Ex: Está se escondendo mais que o normal, parou de brincar, está roendo objetos...")
+                c1, c2 = st.columns(2)
+                with c1: comp_duracao = st.text_input("Há quanto tempo?", key="comp_dur", placeholder="Ex: 2 dias, 1 semana...")
+                with c2: comp_gatilho = st.text_input("Alguma mudança recente?", key="comp_gat", placeholder="Ex: Mudança, novo pet, obra...")
+                if st.button("🧠 ANALISAR COMPORTAMENTO", key="btn_comp", use_container_width=True):
+                    if comp_desc.strip():
+                        with st.spinner("Analisando..."):
+                            resp = ia(f"Comportamento observado: {comp_desc}. Duração: {comp_duracao}. Mudanças recentes: {comp_gatilho}",
+                                     f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nInterprete o comportamento considerando ESPECIFICAMENTE {pet.get('especie','')}. Apresente: possíveis causas, se é normal para a espécie, o que fazer, quando procurar especialista.")
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Descreva o comportamento.")
+
+            with _c2:
+                st.markdown("### 🔍 Tradutor de Comportamento")
+                st.markdown("Pergunte sobre qualquer comportamento específico:")
+                trad_pergunta = st.text_area("Sua pergunta:", height=100, key="trad_perg",
+                    placeholder="Ex: Por que meu gato inclina a cabeça? Por que meu coelho bate com as patas?")
+                if st.button("🔍 TRADUZIR", key="btn_trad", use_container_width=True):
+                    if trad_pergunta.strip():
+                        with st.spinner("Traduzindo..."):
+                            resp = ia(trad_pergunta, f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nExplique este comportamento de {pet.get('especie','')} de forma clara e detalhada. Considere causas naturais, instintivas e possíveis problemas.")
+                            if resp: st.session_state['res_c2_petint2'] = str(resp)
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Digite sua pergunta.")
+
+        # ══════════════════════════════════════════════
+        # 🏃 ATIVIDADES
+        # ══════════════════════════════════════════════
+
+    with _tab_emergencia:
+        st.markdown("<div class='urgente'><h2>🚨 MEU ANIMAL ESTÁ EM PERIGO?</h2><p>Use esta área para situações urgentes. A IA fornece orientação inicial — mas em casos graves, procure atendimento veterinário IMEDIATAMENTE.</p></div>", unsafe_allow_html=True)
+
+        pet = get_pet_ativo()
+        especie_emerg = pet.get('especie', ESPECIES[0]) if pet else st.selectbox("Espécie:", ESPECIES, key="esp_emerg")
+
+        emerg_desc = st.text_area("🚨 Descreva a emergência:", height=120, key="emerg_desc",
+            placeholder="Ex: Meu pet ingeriu chocolate, está convulsionando, caiu de altura, está engasgado...")
+
+        col_e1, col_e2 = st.columns(2)
+        with col_e1:
+            emerg_sintomas = st.text_input("Sintomas visíveis:", key="emerg_sint", placeholder="Ex: Vômito, tremores, sangramento...")
+        with col_e2:
+            emerg_tempo = st.text_input("Há quanto tempo?", key="emerg_tempo", placeholder="Ex: 30 minutos, acabou de acontecer...")
+
+        if st.button("🚨 ORIENTAÇÃO DE EMERGÊNCIA", key="btn_emerg", use_container_width=True):
+            if emerg_desc.strip():
+                with st.spinner("Avaliando urgência..."):
+                    perf = perfil_pet_txt() if pet else f"Espécie: {especie_emerg}"
+                    resp = ia(f"EMERGÊNCIA: {emerg_desc}. Sintomas: {emerg_sintomas}. Tempo: {emerg_tempo}",
+                             f"PERFIL DO PET: {perf}\\n\\nResponda com urgência. Avalie: 1) Nível de urgência (CRÍTICO/GRAVE/MODERADO) 2) Primeiros cuidados imediatos SEGUROS para esta espécie 3) Sinais que indicam necessidade de atendimento IMEDIATO 4) O que NÃO fazer. SEMPRE recomende atendimento veterinário em casos graves.")
+                if any(p in resp.lower() for p in ['crítico','grave','imediato','urgente','veterinário agora']):
+                    st.markdown(f"<div class='urgente'>{resp}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+            else:
+                st.warning("Descreva a situação de emergência.")
+
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### ⚡ Situações comuns — clique para orientação rápida")
+        situacoes = ["Intoxicação/envenenamento","Engasgo","Sangramento","Convulsão","Queda de altura","Picada de inseto","Dificuldade respiratória","Trauma/atropelamento"]
+        cols = st.columns(4)
+        for i, sit in enumerate(situacoes):
+            with cols[i % 4]:
+                if st.button(sit, key=f"sit_emerg_{i}", use_container_width=True):
+                    with st.spinner(f"Carregando orientação para {sit}..."):
+                        perf = perfil_pet_txt() if pet else f"Espécie: {especie_emerg}"
+                        resp = ia(f"Como agir em caso de {sit} no meu animal?",
+                                 f"PERFIL DO PET: {perf}\\n\\nOriente sobre {sit} de forma prática e segura para esta espécie. Primeiros cuidados, o que não fazer e quando ir ao veterinário.")
+                    st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+
+        # ══════════════════════════════════════════════
+        # 🏡 AMBIENTE SEGURO
+        # ══════════════════════════════════════════════
+
+    with _tab_agenda:
+        st.header("📅 Agenda Inteligente")
+        pet = get_pet_ativo()
+
+        _ag1, _ag2 = st.tabs(["📋 Minha Agenda","➕ Adicionar Evento"])
+
+        with _ag1:
+            agenda = st.session_state.get('hist_agenda', [])
+            if agenda:
+                st.markdown("### 📅 Próximos compromissos")
+                for ev in agenda:
+                    emoji_ev = {"Vacina":"💉","Consulta":"🏥","Exame":"🧪","Higiene":"🧼","Medicamento":"💊","Higiene":"🧼","Pesagem":"⚖️","Limpeza":"🧹","Aniversário":"🎂"}.get(ev.get('tipo',''),"📅")
+                    st.markdown(f"<div class='hist-item'>{emoji_ev} <b>{ev.get('data','?')}</b> — {ev.get('tipo','?')}: {ev.get('desc','?')} <span class='badge'>{ev.get('pet','?')}</span></div>", unsafe_allow_html=True)
+            else:
+                st.info("Nenhum evento na agenda. Adicione na aba ➕ Adicionar Evento.")
+
+        with _ag2:
+            st.markdown("### ➕ Adicionar Evento")
+            pets_nomes = [p.get('nome','?') for p in st.session_state.get('pets',[])]
+            c1, c2 = st.columns(2)
+            with c1:
+                ev_pet = st.selectbox("Pet:", pets_nomes if pets_nomes else ["Sem pets"], key="ev_pet")
+                ev_tipo = st.selectbox("Tipo:", ["Consulta","Vacina","Exame","Higiene","Medicamento","Pesagem","Limpeza","Aniversário","Outro"], key="ev_tipo")
+            with c2:
+                ev_data = st.text_input("Data:", key="ev_data", placeholder="Ex: 15/02/2026")
+                ev_hora = st.text_input("Hora (opcional):", key="ev_hora", placeholder="Ex: 14:00")
+            ev_desc = st.text_input("Descrição:", key="ev_desc", placeholder="Ex: Consulta de rotina com Dra. Ana")
+            if st.button("📅 ADICIONAR À AGENDA", key="btn_agenda_add", use_container_width=True):
+                if ev_data.strip() and ev_desc.strip():
+                    st.session_state.hist_agenda.append({"pet": ev_pet, "tipo": ev_tipo, "data": ev_data, "hora": ev_hora, "desc": ev_desc})
+                    st.success("✅ Evento adicionado!"); st.rerun()
+                else:
+                    st.warning("Preencha data e descrição.")
+
+        # ══════════════════════════════════════════════
+        # 🚨 EMERGÊNCIA
+        # ══════════════════════════════════════════════
+
+    with _tab_peso:
+        st.header("⚖️ Controle de Peso e Desenvolvimento")
+        pet = get_pet_ativo()
+        if not pet:
+            st.warning("Cadastre e selecione um pet primeiro.")
+        else:
+            st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+            st.markdown("")
+            c1, c2, c3 = st.columns(3)
+            with c1: peso_novo = st.text_input("Peso atual (kg):", key="peso_novo", placeholder="Ex: 5.2")
+            with c2: data_peso = st.text_input("Data:", value=datetime.now().strftime("%d/%m/%Y"), key="data_peso")
+            with c3: obs_peso = st.text_input("Observação:", key="obs_peso", placeholder="Ex: Pós-castração")
+            if st.button("💾 REGISTRAR PESO", key="btn_peso_reg", use_container_width=True):
+                if peso_novo.strip():
+                    st.session_state.hist_peso.append({"pet": pet.get('nome'), "peso": peso_novo, "data": data_peso, "obs": obs_peso})
+                    # Atualizar peso no cadastro
+                    idx = st.session_state.get('pet_ativo', 0)
+                    if idx < len(st.session_state.pets):
+                        st.session_state.pets[idx]['peso'] = peso_novo
+                    st.success("✅ Peso registrado!"); st.rerun()
+
+            pesos_pet = [p for p in st.session_state.hist_peso if p.get('pet') == pet.get('nome')]
+            if pesos_pet:
+                st.markdown("### 📊 Evolução de Peso")
+                for p in reversed(pesos_pet[-10:]):
+                    st.markdown(f"<div class='hist-item'>📅 {p.get('data','?')} — <b>{p.get('peso','?')} kg</b> {' — '+p.get('obs','') if p.get('obs') else ''}</div>", unsafe_allow_html=True)
+
+                st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+                duvida_peso = st.text_area("Dúvida sobre peso ou desenvolvimento:", height=80, key="duvida_peso",
+                    placeholder="Ex: Meu pet está no peso ideal? Está crescendo adequadamente?")
+                if st.button("🤖 CONSULTAR IA", key="btn_ia_peso", use_container_width=True):
+                    if duvida_peso.strip():
+                        hist_str = " | ".join(f"{p['data']}: {p['peso']}kg" for p in pesos_pet[-5:])
+                        with st.spinner("Analisando..."):
+                            resp = ia(f"{duvida_peso}. Histórico de peso: {hist_str}",
+                                     f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nAnalise o desenvolvimento e peso considerando {pet.get('especie','')}. Padrões de peso variam enormemente entre espécies.")
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Digite sua dúvida.")
+
+        # ══════════════════════════════════════════════
+        # 📅 AGENDA
+        # ══════════════════════════════════════════════
+
+    with _tab_chat:
+        st.header("🤖 Converse com o Pet Inteligente")
+        pet = get_pet_ativo()
+        if pet:
+            st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div> A IA conhece o perfil do seu pet!", unsafe_allow_html=True)
+        else:
+            st.info("Cadastre um pet para respostas mais personalizadas.")
+        st.markdown("")
+
+        hist_chat = st.session_state.get('hist_chat', [])
+        for msg in hist_chat[-20:]:
+            css = "chat-user" if msg['role'] == 'user' else "chat-ia"
+            autor = f"👤 {st.session_state.usuario}" if msg['role'] == 'user' else "🤖 Pet Inteligente"
+            st.markdown(f"<div class='{css}'><b>{autor}:</b> {msg['content']}</div>", unsafe_allow_html=True)
+
+        msg_input = st.text_input("💬 Sua mensagem:", key="chat_msg_pet", placeholder="Pergunte qualquer coisa sobre seu pet...")
+        col_c1, col_c2 = st.columns([4,1])
+        with col_c1:
+            if st.button("📤 ENVIAR", key="btn_chat_pet", use_container_width=True):
+                if msg_input.strip():
+                    hist_chat.append({"role":"user","content": msg_input})
+                    with st.spinner("Respondendo..."):
+                        perf = perfil_pet_txt() if pet else "Nenhum pet cadastrado."
+                        resp = ia(msg_input, f"PERFIL DO PET ATIVO: {perf}", historico_msgs=hist_chat[:-1])
+                        if resp: st.session_state['res_chat_petint3'] = str(resp)
+                    hist_chat.append({"role":"assistant","content": resp})
+                    st.session_state.hist_chat = hist_chat
+                    st.rerun()
+                else:
+                    st.warning("Digite uma mensagem.")
+        with col_c2:
+            if st.button("🗑️ Limpar", key="btn_chat_clear_pet"):
+                st.session_state.hist_chat = []; st.rerun()
+
+        # ══════════════════════════════════════════════
+        # 🏥 PROFISSIONAIS
+        # ══════════════════════════════════════════════
+
+    with _tab_higiene:
+        st.header("🧼 Higiene e Cuidados")
+        pet = get_pet_ativo()
+        if not pet:
+            st.warning("Cadastre e selecione um pet primeiro.")
+        else:
+            st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+            st.markdown("")
+            _h1, _h2 = st.tabs(["📋 Registrar Cuidado","🤖 Orientação IA"])
+
+            with _h1:
+                c1, c2 = st.columns(2)
+                with c1:
+                    hig_tipo = st.selectbox("Tipo de cuidado:", ["Banho","Escovação","Corte de unhas","Higiene bucal","Limpeza de orelhas","Cuidados com pelos","Limpeza de gaiola/aquário","Higienização do ambiente","Outro"], key="hig_tipo")
+                    hig_data = st.text_input("Data:", value=datetime.now().strftime("%d/%m/%Y"), key="hig_data")
+                with c2:
+                    hig_prox = st.text_input("Próximo cuidado:", key="hig_prox", placeholder="Ex: Em 15 dias, 30/01/2026...")
+                    hig_local = st.text_input("Local (pet shop, em casa):", key="hig_local")
+                hig_obs = st.text_area("Observações:", height=60, key="hig_obs")
+                if st.button("💾 REGISTRAR", key="btn_hig_reg", use_container_width=True):
+                    st.session_state.hist_higiene.append({"pet": pet.get('nome'), "tipo": hig_tipo, "data": hig_data, "proxima": hig_prox, "local": hig_local, "obs": hig_obs})
+                    st.success("✅ Registrado!"); st.rerun()
+
+                registros_hig = [h for h in st.session_state.hist_higiene if h.get('pet') == pet.get('nome')]
+                if registros_hig:
+                    st.markdown("### 📋 Últimos registros")
+                    for h in reversed(registros_hig[-8:]):
+                        st.markdown(f"<div class='hist-item'><b>🧼 {h.get('tipo','?')}</b> — {h.get('data','?')}<br><small>Próximo: {h.get('proxima','?')} | {h.get('local','')}</small></div>", unsafe_allow_html=True)
+
+            with _h2:
+                duvida_hig = st.text_area("Sua dúvida sobre higiene:", height=100, key="duvida_hig",
+                    placeholder="Ex: Com que frequência devo dar banho? Como limpar os dentes do meu gato?")
+                if st.button("🤖 CONSULTAR IA", key="btn_ia_hig", use_container_width=True):
+                    if duvida_hig.strip():
+                        with st.spinner("Consultando..."):
+                            resp = ia(duvida_hig, f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nOriente sobre higiene ESPECIFICAMENTE para {pet.get('especie','')}. As rotinas de higiene variam muito entre espécies.")
+                            if resp: st.session_state['res_h2_petint4'] = str(resp)
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Digite sua dúvida.")
+
+        # ══════════════════════════════════════════════
+        # ⚖️ PESO E DESENVOLVIMENTO
+        # ══════════════════════════════════════════════
+
+    with _tab_Mais:
+        (_sm_vacinas, _sm_prevencao, _sm_atividades, _sm_ambiente, _sm_viagem, _sm_profissionais) = st.tabs(['💉 Vacinas', '🪱 Prevenção', '🏃 Atividades', '🏡 Ambiente', '🧳 Viagens', '🏥 Profissionais'])
+
+        with _sm_vacinas:
+            st.header("💉 Vacinas e Prevenção")
+            pet = get_pet_ativo()
+            if not pet:
+                st.warning("Cadastre e selecione um pet primeiro.")
+            else:
+                st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+                st.markdown("")
+                _v1, _v2, _v3 = st.tabs(["📅 Calendário","💉 Registrar Vacina","🤖 Orientação IA"])
+
+                with _v1:
+                    st.markdown("### 📅 Calendário de Vacinação")
+                    vacinas = [v for v in st.session_state.hist_vacinas if v.get('pet') == pet.get('nome')]
+                    if vacinas:
+                        for v in reversed(vacinas):
+                            st.markdown(f"<div class='hist-item'><b>💉 {v.get('vacina','?')}</b> — {v.get('data','?')}<br><small>Próxima: {v.get('proxima','?')} | Vet: {v.get('vet','?')}</small></div>", unsafe_allow_html=True)
+                    else:
+                        st.info("Nenhuma vacina registrada ainda.")
+
+                with _v2:
+                    st.markdown("### 💉 Registrar Nova Vacina")
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        vac_nome = st.text_input("Nome da vacina:", key="vac_nome", placeholder="Ex: V10, Antirrábica, Gripe felina...")
+                        vac_data = st.text_input("Data de aplicação:", value=datetime.now().strftime("%d/%m/%Y"), key="vac_data")
+                    with c2:
+                        vac_prox = st.text_input("Próxima dose (data):", key="vac_prox", placeholder="Ex: 10/01/2026")
+                        vac_vet = st.text_input("Veterinário/Clínica:", key="vac_vet")
+                    vac_obs = st.text_input("Observações:", key="vac_obs", placeholder="Ex: Sem reações adversas")
+                    if st.button("💾 REGISTRAR VACINA", key="btn_reg_vac", use_container_width=True):
+                        if vac_nome.strip():
+                            st.session_state.hist_vacinas.append({"pet": pet.get('nome'), "vacina": vac_nome, "data": vac_data, "proxima": vac_prox, "vet": vac_vet, "obs": vac_obs})
+                            st.success("✅ Vacina registrada!"); st.rerun()
+                        else:
+                            st.warning("Informe o nome da vacina.")
+
+                with _v3:
+                    st.markdown("### 🤖 Orientação sobre Vacinação")
+                    duvida_vac = st.text_area("Sua dúvida sobre vacinação:", height=100, key="duvida_vac",
+                        placeholder="Ex: Quais vacinas são necessárias para meu pet? Já está atrasada?")
+                    if st.button("🤖 CONSULTAR IA", key="btn_ia_vac", use_container_width=True):
+                        if duvida_vac.strip():
+                            with st.spinner("Consultando..."):
+                                resp = ia(duvida_vac, f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nOriente sobre vacinação para esta espécie específica. Lembre que protocolos variam conforme espécie, local e estilo de vida. Sempre recomende orientação veterinária.")
+                                if resp: st.session_state['res_v3_petint5'] = str(resp)
+                            st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                        else:
+                            st.warning("Digite sua dúvida.")
+
+            # ══════════════════════════════════════════════
+            # 🪱 PREVENÇÃO
+            # ══════════════════════════════════════════════
+
+        with _sm_prevencao:
+            st.header("🪱 Parasitas e Controle Preventivo")
+            pet = get_pet_ativo()
+            if not pet:
+                st.warning("Cadastre e selecione um pet primeiro.")
+            else:
+                st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+                st.markdown("")
+                _p1, _p2 = st.tabs(["📋 Registros","🤖 Orientação IA"])
+
+                with _p1:
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        prev_tipo = st.selectbox("Tipo:", ["Vermifugação","Antipulgas","Anticarrapatos","Parasita interno","Parasita externo","Cuidado ambiental","Outro"], key="prev_tipo")
+                        prev_data = st.text_input("Data:", value=datetime.now().strftime("%d/%m/%Y"), key="prev_data")
+                    with c2:
+                        prev_prod = st.text_input("Produto utilizado:", key="prev_prod", placeholder="Ex: Bravecto, Milbemax...")
+                        prev_prox = st.text_input("Próxima aplicação:", key="prev_prox")
+                    prev_obs = st.text_input("Observações:", key="prev_obs")
+                    if st.button("💾 REGISTRAR", key="btn_prev_reg", use_container_width=True):
+                        if prev_prod.strip():
+                            st.session_state.hist_prevencao.append({"pet": pet.get('nome'), "tipo": prev_tipo, "data": prev_data, "produto": prev_prod, "proxima": prev_prox, "obs": prev_obs})
+                            st.success("✅ Registrado!"); st.rerun()
+                    prev_list = [p for p in st.session_state.hist_prevencao if p.get('pet') == pet.get('nome')]
+                    if prev_list:
+                        st.markdown("### 📋 Histórico")
+                        for p in reversed(prev_list[-10:]):
+                            st.markdown(f"<div class='hist-item'><b>🪱 {p.get('tipo','?')}</b> — {p.get('data','?')}<br><small>{p.get('produto','?')} | Próxima: {p.get('proxima','?')}</small></div>", unsafe_allow_html=True)
+
+                with _p2:
+                    duvida_prev = st.text_area("Sua dúvida sobre prevenção:", height=100, key="duvida_prev",
+                        placeholder="Ex: Com que frequência devo vermifugar? Qual produto usar para pulgas?")
+                    if st.button("🤖 CONSULTAR IA", key="btn_ia_prev", use_container_width=True):
+                        if duvida_prev.strip():
+                            with st.spinner("Consultando..."):
+                                resp = ia(duvida_prev, f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nOriente sobre controle preventivo de parasitas para esta espécie. Adapte as recomendações conforme o tipo de animal.")
+                                if resp: st.session_state['res_p2_petint6'] = str(resp)
+                            st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                        else:
+                            st.warning("Digite sua dúvida.")
+
+            # ══════════════════════════════════════════════
+            # 🍖 ALIMENTAÇÃO
+            # ══════════════════════════════════════════════
+
+        with _sm_atividades:
+            st.header("🏃 Atividades e Enriquecimento")
+            pet = get_pet_ativo()
+            if not pet:
+                st.warning("Cadastre e selecione um pet primeiro.")
+            else:
+                st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+                st.markdown("")
+                ativ_ctx = st.text_area("Contexto atual (opcional):", height=80, key="ativ_ctx",
+                    placeholder="Ex: Vive em apartamento, fica sozinho 8h por dia, tem quintal...")
+                ativ_objetivo = st.selectbox("Objetivo:", ["Sugestão de atividades diárias","Enriquecimento ambiental","Reduzir ansiedade","Estimular inteligência","Socialização","Atividade física","Outro"], key="ativ_obj")
+                if st.button("🏃 GERAR SUGESTÕES", key="btn_ativ", use_container_width=True):
+                    with st.spinner("Gerando sugestões..."):
+                        resp = ia(f"Objetivo: {ativ_objetivo}. Contexto: {ativ_ctx}",
+                                 f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nSugira atividades e enriquecimento ambiental ESPECÍFICOS para {pet.get('especie','')}. Não sugira caminhada para peixe ou gaiola para cachorro — adapte completamente à espécie. Seja prático e detalhado.")
+                    st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+
+            # ══════════════════════════════════════════════
+            # 🧼 HIGIENE
+            # ══════════════════════════════════════════════
+
+        with _sm_ambiente:
+            st.header("🏡 Ambiente Seguro")
+            pet = get_pet_ativo()
+            if not pet:
+                st.warning("Cadastre e selecione um pet primeiro.")
+            else:
+                st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+                st.markdown("")
+                amb_ctx = st.text_area("Descreva seu ambiente:", height=80, key="amb_ctx",
+                    placeholder="Ex: Apartamento no 5º andar, varanda sem grade, plantas em casa, quintal aberto...")
+                if st.button("🏡 GERAR CHECKLIST DE SEGURANÇA", key="btn_amb", use_container_width=True):
+                    if amb_ctx.strip():
+                        with st.spinner("Gerando checklist..."):
+                            resp = ia(f"Ambiente: {amb_ctx}",
+                                     f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nCrie um checklist de segurança ambiental ESPECÍFICO para {pet.get('especie','')} neste ambiente. Inclua riscos, plantas tóxicas para esta espécie, objetos perigosos e adaptações recomendadas.")
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    else:
+                        st.warning("Descreva seu ambiente.")
+
+            # ══════════════════════════════════════════════
+            # 🧳 VIAGENS
+            # ══════════════════════════════════════════════
+
+        with _sm_viagem:
+            st.header("🧳 Viagens com Animais")
+            pet = get_pet_ativo()
+            if not pet:
+                st.warning("Cadastre e selecione um pet primeiro.")
+            else:
+                st.markdown(f"<div class='badge'>{pet.get('especie','')} {pet.get('nome','?')}</div>", unsafe_allow_html=True)
+                st.markdown("")
+                c1, c2 = st.columns(2)
+                with c1:
+                    viag_tipo = st.selectbox("Tipo de viagem:", ["Carro","Avião","Ônibus","Navio","Camping","Hotel","Curta (até 2h)","Longa (mais de 2h)"], key="viag_tipo")
+                    viag_destino = st.text_input("Destino:", key="viag_dest", placeholder="Ex: Praia, interior, exterior...")
+                with c2:
+                    viag_duracao = st.text_input("Duração:", key="viag_dur", placeholder="Ex: 3 dias, 1 semana...")
+                    viag_ctx = st.text_input("Contexto adicional:", key="viag_ctx", placeholder="Ex: Primeiro voo, pet ansioso...")
+                if st.button("🧳 GERAR GUIA DE VIAGEM", key="btn_viag", use_container_width=True):
+                    with st.spinner("Preparando guia..."):
+                        resp = ia(f"Viagem de {viag_tipo} para {viag_destino}, duração {viag_duracao}. {viag_ctx}",
+                                 f"PERFIL DO PET: {perfil_pet_txt()}\\n\\nCrie um guia completo de viagem para {pet.get('especie','')}. Inclua: checklist, transporte, documentação, alimentação, saúde, segurança e dicas específicas para esta espécie.")
+                    st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+
+            # ══════════════════════════════════════════════
+            # 🤖 CHAT COM IA
+            # ══════════════════════════════════════════════
+
+        with _sm_profissionais:
+            st.header("🏥 Cadastro de Profissionais")
+            _pr1, _pr2 = st.tabs(["📋 Meus Profissionais","➕ Cadastrar"])
+
+            with _pr1:
+                profs = st.session_state.get('profissionais', [])
+                if profs:
+                    for p in profs:
+                        emoji_p = {"Veterinário":"🩺","Clínica":"🏥","Especialista":"👨‍⚕️","Adestrador":"🎓","Pet Shop":"🛍️","Banho e Tosa":"🧼","Hotel para animais":"🏨"}.get(p.get('tipo',''),"📋")
+                        st.markdown(f"<div class='pet-card'>{emoji_p} <b>{p.get('nome','?')}</b> <span class='badge'>{p.get('tipo','?')}</span><br><small>📞 {p.get('telefone','?')} | 📍 {p.get('endereco','?')}</small><br><small>🐾 Especialidade: {p.get('especialidade','?')}</small></div>", unsafe_allow_html=True)
+                else:
+                    st.info("Nenhum profissional cadastrado ainda.")
+
+            with _pr2:
+                st.markdown("### ➕ Cadastrar Profissional")
+                c1, c2 = st.columns(2)
+                with c1:
+                    prof_nome = st.text_input("Nome:", key="prof_nome", placeholder="Ex: Dr. Carlos Silva")
+                    prof_tipo = st.selectbox("Tipo:", ["Veterinário","Clínica","Especialista","Adestrador","Pet Shop","Banho e Tosa","Hotel para animais","Outro"], key="prof_tipo")
+                    prof_tel = st.text_input("Telefone:", key="prof_tel", placeholder="Ex: (11) 99999-9999")
+                with c2:
+                    prof_end = st.text_input("Endereço:", key="prof_end")
+                    prof_esp = st.text_input("Especialidade:", key="prof_esp", placeholder="Ex: Dermatologia felina, Animais exóticos...")
+                    prof_obs = st.text_input("Observações:", key="prof_obs")
+                if st.button("💾 CADASTRAR PROFISSIONAL", key="btn_prof_cad", use_container_width=True):
+                    if prof_nome.strip():
+                        st.session_state.profissionais.append({"nome": prof_nome, "tipo": prof_tipo, "telefone": prof_tel, "endereco": prof_end, "especialidade": prof_esp, "obs": prof_obs})
+                        st.success("✅ Profissional cadastrado!"); st.rerun()
+                    else:
+                        st.warning("Informe o nome.")
+
+            # ── RODAPÉ ──
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+
+# ── RODAPÉ ──
+st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+
+""",
+    "classicas_motos_ia": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+import re
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="CLÁSSICAS MOTOS IA", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+# --- ESTILO CSS ---
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F8F9FA; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#495057,#343A40) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#343A40,#212529) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#1A1A2E !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F1F3F5,#E9ECEF); padding:20px; border-radius:14px; border:1px solid #CED4DA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#1A1A2E !important; }
+
+    .card-dark { background:linear-gradient(135deg,#E9ECEF,#DEE2E6); padding:20px; border-radius:14px; border:1px solid #ADB5BD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#1A1A2E !important; }
+
+    .card-green { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #CED4DA; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#1A1A2E !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#495057 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #CED4DA; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#1A1A2E !important; }
+
+    .badge { background:#495057; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#CED4DA,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #CED4DA; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#1A1A2E !important; }
+
+    .chat-persona { background:#F8F9FA; border:1px solid #CED4DA; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#1A1A2E !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#1A1A2E !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#1A1A2E !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#1A1A2E !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#495057 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
+@st.cache_resource
+def get_cache_motos():
+    return {"perfis": {}}
+
+_cache = get_cache_motos()
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+CHAVES_SALVAR = [
+    'usuario', 'historico_consultas', 'consultas_salvas',
+    'moto_padrao', 'diario_restauracao', 'quiz_pontuacao', 'quiz_nivel_atual',
+]
+
+def gerar_json_sessao() -> str:
+    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
+
+def carregar_json_sessao(dados):
+    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
+    _pref = (
+        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
+        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
+    )
+    import re as _re
+    for k, v in dados.items():
+        if k in _bloq: continue
+        if any(k.startswith(p) for p in _pref): continue
+        if _re.match(r'.+_\\d+$', k): continue
+        st.session_state[k] = v
+
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_consulta(modulo: str, tema: str, conteudo: str):
+    st.session_state.historico_consultas.append({
+        'data': datetime.now().strftime('%d/%m %H:%M'), 'modulo': modulo, 'tema': tema, 'conteudo': conteudo,
+    })
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+defaults = {
+    'etapa': "Login", 'usuario': "", 'api_key': "", 'pagina': "Home",
+    'historico_consultas': [], 'consultas_salvas': [],
+    'moto_padrao': "", 'diario_restauracao': [], 'quiz_pontuacao': 0, 'quiz_nivel_atual': "Iniciante",
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- PRINCÍPIO DE HONESTIDADE TÉCNICA — compartilhado ---
+PRINCIPIO_HONESTIDADE = '''
+PRINCÍPIO OBRIGATÓRIO DE HONESTIDADE TÉCNICA — siga isso em TODA resposta:
+- Você é um especialista em motocicletas clássicas, mas trabalha apenas com DESCRIÇÕES EM TEXTO fornecidas pela pessoa —
+  você não recebe fotos reais nem tem acesso a bancos de dados de chassi, leilões ou cotações em tempo real
+- Para análises de originalidade, peças e autenticidade: baseie-se no que foi DESCRITO pela pessoa, sempre deixando claro
+  que é uma orientação educativa, e que avaliação presencial por especialista é necessária para decisões de compra,
+  venda ou certificação
+- Para certificação de coleção: explique os critérios GERAIS normalmente considerados, mas seja claro que a certificação
+  oficial é feita por entidades específicas (clubes de marca, federações de veículos antigos) com vistoria presencial —
+  sua análise é apenas uma pré-avaliação educativa, nunca uma garantia de aprovação
+- Para valores e valorização de mercado: você NÃO tem acesso a cotações atuais nem dados de leilões em tempo real.
+  Baseie-se em padrões históricos conhecidos do mercado de motos clássicas e tendências gerais, sempre recomendando
+  confirmar valores com tabelas especializadas, avaliadores profissionais e anúncios reais do mercado antes de
+  qualquer decisão financeira
+- Nunca afirme um valor exato de mercado como fato — sempre apresente faixas e como estimativas
+- Para diagnóstico mecânico: sempre recomende confirmação com mecânico especializado em motos clássicas antes de
+  intervenções, especialmente em itens de segurança (freios, suspensão, pneus)
+- Para roteiros de viagem: você não tem dados em tempo real sobre condições de estradas, postos ou hospedagens —
+  recomende sempre confirmar informações atualizadas antes de viajar
+- Seja apaixonado e didático — você é um conhecedor que genuinamente ama motocicletas clássicas, não um robô burocrático
+- Português do Brasil
+'''
+
+DISCLAIMER_PADRAO = '''
+<div class="disclaimer">
+⚠️ <strong>Importante:</strong> esta análise é educativa, baseada na descrição fornecida — não substitui avaliação
+presencial por especialista, perito ou avaliador profissional. Para decisões de compra, venda, restauração ou
+certificação, sempre confirme com profissionais qualificados.
+</div>
+'''
+
+DISCLAIMER_AVALIACAO = '''
+<div class="disclaimer-avaliacao">
+💰 <strong>Sobre valores de mercado:</strong> esta é uma estimativa educativa baseada em padrões históricos gerais —
+não reflete cotações em tempo real. Antes de comprar, vender ou negociar, consulte tabelas especializadas,
+avaliadores e anúncios reais de motos similares no mercado atual.
+</div>
+'''
+
+# --- MOTOR DE IA ---
+def motos_ia(prompt: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        system = f'''Você é o maior especialista em motocicletas clássicas do Brasil — um misto de restaurador
+experiente, historiador, mecânico especializado em motos antigas e avaliador de mercado.
+Usuário: {st.session_state.usuario}. Moto de interesse: {st.session_state.moto_padrao or 'não informada'}.
+{PRINCIPIO_HONESTIDADE}
+{system_extra}'''
+        response = client.chat.completions.create(
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
+    percentuais = re.findall(r'(\\d+)\\s*/\\s*100|(\\d+)%', texto)
+    valores = [int(a or b) for a, b in percentuais if a or b]
+    indice = valores[0] if valores else 50
+
+    if indice >= 70:
+        classe, emoji, label = "indice-alto", "🟢", "ALTO"
+    elif indice >= 40:
+        classe, emoji, label = "indice-medio", "🟡", "MÉDIO"
+    else:
+        classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
+
+    st.markdown(f'''
+    <div class="indice-box {classe}">
+        <div style="font-size:2.2em;">{emoji}</div>
+        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
+        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa educativa baseada na descrição fornecida</div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total = len(st.session_state.historico_consultas)
+    diario = len(st.session_state.diario_restauracao)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#FEF2F2;border:1px solid #B91C1C;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
+            f"💾 <strong>Antes de sair, salve seus dados no computador.</strong><br>"
+            f"<span style='color:#888;font-size:0.88em;'>{total} consultas geradas · {diario} entradas no diário de restauração</span>"
+            f"</div>", unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button("💾 SALVAR MEUS DADOS (.json)", data=gerar_json_sessao(),
+            file_name=f"classicas_motos_{nome_usuario}.json", mime="application/json", use_container_width=True,
+        key="dl_classica_1"
+    )
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'consultas_salvas' not in st.session_state: st.session_state['consultas_salvas'] = []
+if 'diario_restauracao' not in st.session_state: st.session_state['diario_restauracao'] = None
+if 'historico_consultas' not in st.session_state: st.session_state['historico_consultas'] = []
+if 'moto_padrao' not in st.session_state: st.session_state['moto_padrao'] = None
+if 'quiz_nivel_atual' not in st.session_state: st.session_state['quiz_nivel_atual'] = None
+if 'quiz_pontuacao' not in st.session_state: st.session_state['quiz_pontuacao'] = None
+
+def chamar_ia(prompt, sistema="Você é um assistente inteligente. Responda em português do Brasil."):
+    try:
+        from groq import Groq as _GrCI
+        client = _GrCI(api_key=st.session_state.api_key)
+        resp = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[{"role":"system","content":sistema},{"role":"user","content":prompt}],
+            max_tokens=2048
+        )
+        return resp.choices[0].message.content
+    except Exception as e:
+        return f"Erro na IA: {e}"
+
+if st.session_state.etapa == "Login":
+    st.markdown("# 🤖 CLÁSSICAS MOTOS IA")
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+
+
+    # TABS
+    _tab_Home, _tab_Identificacao, _tab_Originalidade, _tab_Detector, _tab_Cores, _tab_Indice, _tab_Avaliacao, _tab_Restauracao, _tab_Diagnostico, _tab_Pecas, _tab_Documentacao, _tab_Certificacao, _tab_Radar, _tab_Timeline, _tab_Historia, _tab_Diario, _tab_Som, _tab_Quiz, _tab_Engenharia, _tab_DNA, _tab_Competicoes, _tab_Viagens, _tab_Clube, _tab_Consultor, _tab_Biblioteca = st.tabs(['🏠 Painel Principal', '🏍️ Identificação Comp', '📸 Scanner de Origina', '🔎 Detector de Peças ', '🎨 Cores Originais', '📄 Indice', '📄 Avaliacao', '📄 Restauracao', '📄 Diagnostico', '📄 Pecas', '📄 Documentacao', '📄 Certificacao', '📄 Radar', '📄 Timeline', '📄 Historia', '📄 Diario', '📄 Som', '📄 Quiz', '📄 Engenharia', '📄 DNA', '📄 Competicoes', '📄 Viagens', '📄 Clube', '📄 Consultor', '📄 Biblioteca'])
+
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_classica")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_classica", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_Home:
+        col_u, col_r = st.columns([3, 1])
+        with col_u:
+            st.title(f"Olá, {st.session_state.usuario}! 🏍️")
+            st.markdown("<span class='badge'>Garagem Aberta</span>", unsafe_allow_html=True)
+        with col_r:
+            if st.button("🚪 Sair", key="classica3"):
+                for k in list(st.session_state.keys()):
+                    del st.session_state[k]
+                st.rerun()
+
+        if len(st.session_state.historico_consultas) == 0:
+            st.markdown('''<div style="background:#FEF3C7;border:2px solid #F59E0B;border-radius:12px;
+            padding:12px 18px;margin-bottom:4px;color:#000;font-size:0.9em;font-weight:600;">
+            ⚠️ Seus dados não estão mais no servidor.
+            </div>''', unsafe_allow_html=True)
+            arq_home = st.file_uploader("Carregar meus dados salvos (.json):", type=["json"], key="upload_home")
+            if arq_home is not None:
+                try:
+                    dados_home = json.load(arq_home)
+                    carregar_json_sessao(dados_home)
+                    salvar_perfil_cache(st.session_state.usuario)
+                    st.success("✅ Dados recuperados!")
+                    st.rerun()
+                except Exception:
+                    st.error("Arquivo inválido.")
+
+        st.session_state.moto_padrao = st.text_input("🏍️ Sua moto (modelo e ano):",
+            value=st.session_state.moto_padrao, placeholder="ex: Honda CB 450 1975, Yamaha RD 350 1980, Harley Shovelhead...", key="ti_classica_101")
+
+
+        modulos_count = {}
+        for c in st.session_state.historico_consultas:
+            modulos_count[c['modulo']] = modulos_count.get(c['modulo'], 0) + 1
+
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_consultas)}</div><div>Consultas geradas</div></div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.diario_restauracao)}</div><div>Registros de restauração</div></div>", unsafe_allow_html=True)
+        c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.consultas_salvas)}</div><div>Salvas</div></div>", unsafe_allow_html=True)
+        c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.quiz_pontuacao}</div><div>Pontos no Quiz</div></div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='card'>💡 <em>'Uma moto clássica não se guia apenas com as mãos — se guia com o coração.'</em></div>", unsafe_allow_html=True)
+
+        st.markdown("### 🗺️ O que cada módulo faz")
+        guia = {
+            "🏍️ Identificação": "História, especificações, motor e curiosidades de qualquer modelo/ano",
+            "📸 Scanner de Originalidade": "Descreva a moto e receba índice educativo de originalidade",
+            "🔎 Detector de Peças": "Identifica possíveis incompatibilidades com base na descrição",
+            "🎨 Cores Originais": "Cores de fábrica, códigos de tinta e combinações por ano",
+            "🏆 Índice do Colecionador": "Nota completa considerando originalidade, conservação e raridade",
+            "💰 Avaliação Inteligente": "Estimativa de valor considerando múltiplos fatores do mercado de clássicas",
+            "🛠️ Planejamento da Restauração": "Ordem ideal de serviços, tempo e custos estimados",
+            "🔧 Diagnóstico Mecânico": "Descreva um problema e receba possíveis causas",
+            "📦 Guia de Peças": "Originais vs reproduzidas, compatibilidade e onde procurar",
+            "🧾 Documentação": "Transferência, placa de coleção, regularização, importação",
+            "🏅 Simulador de Certificação": "Pré-avaliação educativa dos critérios de certificação para coleção",
+            "💎 Radar do Colecionador": "Tendências, valorização e oportunidades no mercado de clássicas",
+            "🏁 Linha do Tempo": "Evolução do modelo ano a ano",
+            "🌎 História da Motocicleta": "Origem, fabricante, designers e curiosidades",
+            "🏕️ Diário da Restauração": "Registre gastos, peças e etapas do seu projeto",
+            "🔊 Som Original": "Como era o ronco original do motor e escapamento de fábrica",
+            "🧠 Quiz do Motociclista": "Teste seu conhecimento em 5 níveis de dificuldade",
+            "🔬 Engenharia Explicada": "2 tempos, 4 tempos, carburador, embreagem — de forma simples",
+            "🧬 DNA da Motocicleta": "Viagem no tempo até a época em que a moto nasceu",
+            "🏁 Competições": "Motocross, Enduro, Rally, Dakar — participações e pilotos famosos",
+            "🌍 Viagens Clássicas": "Roteiros para rodar com sua moto antiga",
+            "🤝 Clube do Colecionador": "Encontros, feiras, clubes e museus",
+            "🤖 Consultor 24h": "Pergunte qualquer coisa sobre qualquer moto clássica",
+        }
+        for aba, desc in guia.items():
+            st.markdown(f"**{aba}** — {desc}")
+
+        st.header("🏍️ Identificação Completa")
+        st.markdown("Informe modelo e ano para uma análise histórica e técnica completa.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            modelo_id = st.text_input("🏍️ Modelo:", value=st.session_state.moto_padrao.split(' ')[0] if st.session_state.moto_padrao else "", placeholder="ex: CB 450, RD 350, Shovelhead...", key="input_modelo_id")
+        with col2:
+            ano_id = st.text_input("📅 Ano:", placeholder="ex: 1975", key="ti_classica_102")
+
+        if st.button("🏍️ IDENTIFICAR MOTOCICLETA", key="classica4"):
+            if modelo_id.strip():
+                with st.spinner("Buscando informações..."):
+                    prompt = (
+                        f"Crie uma identificação completa da motocicleta: {modelo_id} {ano_id}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏍️ {modelo_id.upper()} {ano_id}\\n\\n"
+                        f"📖 HISTÓRIA RESUMIDA:\\n[origem e contexto do modelo]\\n\\n"
+                        f"⚙️ ESPECIFICAÇÕES TÉCNICAS:\\n[motor, torque, potência, câmbio, peso, consumo — para esse ano específico]\\n\\n"
+                        f"🔧 VERSÕES E OPCIONAIS:\\n[versões disponíveis nesse ano e principais opcionais]\\n\\n"
+                        f"🏭 PRODUÇÃO:\\n[quantidade produzida aproximada, se conhecida, e países onde foi comercializada]\\n\\n"
+                        f"📈 EVOLUÇÃO:\\n[principais diferenças desse ano em relação aos anteriores/seguintes]\\n\\n"
+                        f"💡 CURIOSIDADES:\\n[2-3 curiosidades interessantes sobre esse modelo/ano]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Identificacao", f"{modelo_id} {ano_id}", res)
+                    st.session_state['ident_temp'] = res
+            else:
+                st.warning("Informe o modelo.")
+
+        if st.session_state.get('ident_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['ident_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['ident_temp'], file_name="identificacao.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_2"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_ident", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Identificacao','tema':f"{modelo_id} {ano_id}" if 'modelo_id' in dir() else '','conteudo':st.session_state['ident_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # SCANNER DE ORIGINALIDADE
+        # ========================
+
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### 💾 Salvar e Carregar Dados")
+        _csl1, _csl2 = st.columns(2)
+        with _csl1:
+            import json as _json_sv
+            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
+            st.download_button("💾 Salvar dados (.json)",
+                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_sv_classica")
+        with _csl2:
+            _arq_sv = st.file_uploader("📂 Carregar dados:", type=["json"], key="ul_sv_classica")
+            if _arq_sv:
+                try:
+                    import json as _json_ld
+                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
+                        st.session_state[_k] = _v
+                    st.success("✅ Dados carregados!")
+                    st.rerun()
+                except: st.error("Arquivo inválido.")
+
+    with _tab_Identificacao:
+        st.header("Identificacao")
+        st.markdown("Descreva o contexto para análise:")
+        prompt_identificacao = st.text_area("", height=150, key="ta_identificacao1", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="btn_identificacao1", use_container_width=True):
+            if prompt_identificacao.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        resp = chamar_ia(prompt_identificacao)
+                        if resp: st.session_state['res_identificaca_classi1'] = str(resp)
+                        if resp: st.session_state['res_identifica_classi1'] = resp
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    except Exception as e:
+                        st.error(f"Erro: {e}")
+            else:
+                st.warning("Preencha o campo.")
+
+    with _tab_Originalidade:
+        st.header("📸 Scanner de Originalidade")
+        st.markdown("Descreva a motocicleta em detalhes para uma análise educativa de originalidade.")
+
+        st.info("📝 Este app trabalha por descrição em texto. Quanto mais detalhes você der, melhor a análise.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            moto_orig = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="ti_classica_103")
+        with col2:
+            cor_orig = st.text_input("🎨 Cor atual:", placeholder="ex: vermelho original", key="ti_classica_104")
+
+        descricao_orig = st.text_area("📝 Descreva detalhadamente: pintura, tanque, banco, rodas, painel, guidão, escapamento, farol, lanterna, setas, motor:",
+            height=180, placeholder="ex: Pintura vermelha original com pequenos retoques no tanque. Banco original em bom estado. "
+                                     "Rodas raiadas originais. Escapamento parece reproduzido. Motor original funcionando...", key="classica8")
+
+        if st.button("📸 ANALISAR ORIGINALIDADE", key="classica5"):
+            if descricao_orig.strip():
+                with st.spinner("Analisando originalidade..."):
+                    prompt = (
+                        f"Analise a originalidade desta motocicleta com base na descrição.\\n"
+                        f"Moto: {moto_orig}. Cor: {cor_orig}.\\n"
+                        f"Descrição: {descricao_orig}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📸 ÍNDICE DE ORIGINALIDADE: [X]/100\\n"
+                        f"[1-2 linhas explicando a estimativa com base no que foi descrito]\\n\\n"
+                        f"✅ ITENS QUE PARECEM ORIGINAIS:\\n[com base na descrição]\\n\\n"
+                        f"⚠️ ITENS QUE MERECEM VERIFICAÇÃO:\\n[itens com descrição ambígua ou suspeita de não-originalidade]\\n\\n"
+                        f"🔍 O QUE VERIFICAR PRESENCIALMENTE:\\n[pontos que só um especialista presencial pode confirmar — números de chassi/motor, código de tinta, etc]\\n\\n"
+                        f"💡 DICA PARA PRÓXIMA ANÁLISE:\\n[que outras informações ajudariam a refinar essa análise]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Originalidade", moto_orig, res)
+                    st.session_state['orig_temp'] = res
+            else:
+                st.warning("Descreva a motocicleta.")
+
+        if st.session_state.get('orig_temp'):
+            renderizar_indice(st.session_state['orig_temp'], "ÍNDICE DE ORIGINALIDADE")
+            st.markdown(f"<div class='card'>{st.session_state['orig_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['orig_temp'], file_name="originalidade.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_3"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_orig", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Originalidade','tema':moto_orig if 'moto_orig' in dir() else '','conteudo':st.session_state['orig_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # DETECTOR DE PEÇAS NÃO ORIGINAIS
+        # ========================
+
+    with _tab_Detector:
+        st.header("🔎 Detector de Peças Não Originais")
+        st.markdown("Descreva peças específicas para identificar possíveis incompatibilidades.")
+
+        moto_det = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_det")
+        pecas_det = st.text_area("🔧 Descreva as peças que quer verificar:", height=150,
+            placeholder="ex: Escapamento esportivo cromado, guidão tipo dragbar, rodas de liga, banco solo personalizado, farol redondo menor...", key="classica7")
+
+        if st.button("🔎 VERIFICAR COMPATIBILIDADE", key="classica6"):
+            if pecas_det.strip() and moto_det.strip():
+                with st.spinner("Verificando..."):
+                    prompt = (
+                        f"Analise se estas peças são compatíveis com a originalidade da motocicleta.\\n"
+                        f"Moto: {moto_det}.\\nPeças descritas: {pecas_det}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔎 ANÁLISE DE COMPATIBILIDADE — {moto_det.upper()}\\n\\n"
+                        f"[Para cada peça descrita:]\\n"
+                        f"🔧 [NOME DA PEÇA]\\n"
+                        f"Status provável: [Original / Possivelmente não original / Não foi possível avaliar]\\n"
+                        f"Justificativa: [por que, com base no conhecimento sobre esse modelo/ano]\\n\\n"
+                        f"📋 RESUMO GERAL:\\n[conclusão geral sobre o conjunto de peças]\\n\\n"
+                        f"🔍 RECOMENDAÇÃO:\\n[o que fazer para confirmar com certeza — pesquisa de catálogo original, comparação com outros exemplares, etc]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Detector", moto_det, res)
+                    st.session_state['detector_temp'] = res
+            else:
+                st.warning("Informe a moto e as peças.")
+
+        if st.session_state.get('detector_temp'):
+            st.markdown(f"<div class='card-orange'>{st.session_state['detector_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['detector_temp'], file_name="deteccao_pecas.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_4"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_det", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Detector','tema':moto_det if 'moto_det' in dir() else '','conteudo':st.session_state['detector_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # CORES ORIGINAIS
+        # ========================
+
+    with _tab_Cores:
+        st.header("🎨 Cores Originais")
+        st.markdown("Descubra as cores de fábrica de qualquer modelo.")
+
+        moto_cor = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_cor")
+
+        if st.button("🎨 VER CORES ORIGINAIS", key="classica7_d2"):
+            if moto_cor.strip():
+                with st.spinner("Buscando cores..."):
+                    prompt = (
+                        f"Liste as cores originais de fábrica para: {moto_cor}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🎨 CORES ORIGINAIS — {moto_cor.upper()}\\n\\n"
+                        f"[Para cada cor:]\\n"
+                        f"🎨 [Nome da cor]\\n"
+                        f"Código de tinta: [se conhecido]\\n"
+                        f"Anos de utilização: [período]\\n"
+                        f"Onde aparecia: [tanque, carenagem, guarda-lamas, etc]\\n\\n"
+                        f"⭐ SÉRIES ESPECIAIS:\\n[cores exclusivas de versões especiais/edições limitadas, se houver]\\n\\n"
+                        f"💡 DICA:\\n[como verificar a cor original em uma moto restaurada — local da etiqueta/código]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Cores", moto_cor, res)
+                    st.session_state['cores_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('cores_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['cores_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['cores_temp'], file_name="cores_originais.txt", mime="text/plain",
+        key="dl_classica_5"
+    )
+
+        # ========================
+        # ÍNDICE DO COLECIONADOR
+        # ========================
+
+    with _tab_Indice:
+        st.header("🏆 Índice do Colecionador")
+        st.markdown("Avaliação completa considerando 7 critérios fundamentais.")
+
+        moto_idx = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_idx")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            originalidade_idx = st.slider("⭐ Originalidade (sua avaliação):", 0, 10, 5, key="classica1")
+            conservacao_idx = st.slider("⭐ Conservação:", 0, 10, 5, key="classica2")
+            raridade_idx = st.slider("⭐ Raridade (sua percepção):", 0, 10, 5, key="classica3_x2")
+            mecanica_idx = st.slider("⭐ Estado mecânico:", 0, 10, 5, key="classica4_x2")
+        with col2:
+            estetica_idx = st.slider("⭐ Estado estético:", 0, 10, 5, key="classica5_x2")
+            documentacao_idx = st.slider("⭐ Documentação:", 0, 10, 5, key="classica6_x2")
+            notas_idx = st.text_area("📝 Observações adicionais:", height=80, key="classica8_d2")
+
+        if st.button("🏆 CALCULAR ÍNDICE COMPLETO", key="classica9"):
+            if moto_idx.strip():
+                with st.spinner("Calculando..."):
+                    prompt = (
+                        f"Crie uma avaliação completa de colecionador para esta motocicleta.\\n"
+                        f"Moto: {moto_idx}.\\n"
+                        f"Autoavaliação do proprietário: Originalidade {originalidade_idx}/10, Conservação {conservacao_idx}/10, "
+                        f"Raridade {raridade_idx}/10, Mecânica {mecanica_idx}/10, Estética {estetica_idx}/10, Documentação {documentacao_idx}/10.\\n"
+                        f"Observações: {notas_idx or 'nenhuma'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏆 ÍNDICE DO COLECIONADOR: [X]/100\\n"
+                        f"[Calcule uma nota geral ponderada com base nos 6 critérios + conhecimento sobre raridade real desse modelo]\\n\\n"
+                        f"⭐ ORIGINALIDADE: {originalidade_idx}/10 — [comentário]\\n"
+                        f"⭐ CONSERVAÇÃO: {conservacao_idx}/10 — [comentário]\\n"
+                        f"⭐ RARIDADE: [sua avaliação real baseada no modelo]/10 — [comentário, considerando se a autoavaliação do dono está alinhada com a raridade real do modelo]\\n"
+                        f"⭐ ESTADO MECÂNICO: {mecanica_idx}/10 — [comentário]\\n"
+                        f"⭐ ESTADO ESTÉTICO: {estetica_idx}/10 — [comentário]\\n"
+                        f"⭐ DOCUMENTAÇÃO: {documentacao_idx}/10 — [comentário]\\n"
+                        f"⭐ POTENCIAL DE VALORIZAÇÃO: [X]/10 — [comentário baseado em tendências gerais do modelo]\\n\\n"
+                        f"🎯 O QUE MAIS AUMENTARIA O VALOR DESTA MOTOCICLETA:\\n[1-2 ações prioritárias]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Indice", moto_idx, res)
+                    st.session_state['indice_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('indice_temp'):
+            renderizar_indice(st.session_state['indice_temp'], "ÍNDICE DO COLECIONADOR")
+            st.markdown(f"<div class='card-gold'>{st.session_state['indice_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['indice_temp'], file_name="indice_colecionador.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_6"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_idx", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Indice','tema':moto_idx if 'moto_idx' in dir() else '','conteudo':st.session_state['indice_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # AVALIAÇÃO INTELIGENTE
+        # ========================
+
+    with _tab_Avaliacao:
+        st.header("💰 Avaliação Inteligente")
+        st.markdown(DISCLAIMER_AVALIACAO, unsafe_allow_html=True)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            moto_aval = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_aval")
+            estado_aval = st.selectbox("📊 Estado geral:", ["Original e impecável","Bem conservada","Restaurada","Em restauração","Sucata/projeto","Modificada (custom)"], key="classica10")
+        with col2:
+            documentacao_aval = st.selectbox("🧾 Documentação:", ["Em dia, placa de coleção","Em dia, comum","Pendências simples","Pendências complexas","Sem documentação"], key="classica11")
+            regiao_aval = st.text_input("📍 Região (opcional):", placeholder="ex: São Paulo, SP", key="ti_classica_105")
+
+        detalhes_aval = st.text_area("📝 Detalhes adicionais:", height=100,
+            placeholder="ex: Motor original, pintura refeita há 1 ano, banco original, escapamento não original...", key="classica6_d2")
+
+        if st.button("💰 GERAR ESTIMATIVA", key="classica12"):
+            if moto_aval.strip():
+                with st.spinner("Calculando estimativa..."):
+                    prompt = (
+                        f"Crie uma estimativa de valor para esta motocicleta clássica.\\n"
+                        f"Moto: {moto_aval}. Estado: {estado_aval}. Documentação: {documentacao_aval}.\\n"
+                        f"Região: {regiao_aval or 'não informada'}. Detalhes: {detalhes_aval or 'não informado'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💰 ESTIMATIVA DE VALOR — {moto_aval.upper()}\\n\\n"
+                        f"📊 FAIXA DE VALOR ESTIMADA: R$[X] a R$[X]\\n"
+                        f"[Baseado em padrões históricos do mercado de clássicas para esse modelo/estado]\\n\\n"
+                        f"📈 FATORES QUE AUMENTAM O VALOR:\\n[com base no estado e detalhes informados]\\n\\n"
+                        f"📉 FATORES QUE REDUZEM O VALOR:\\n[com base no estado e detalhes informados]\\n\\n"
+                        f"🎯 ONDE ESSA MOTO SE POSICIONA NO MERCADO:\\n[comparação geral com a faixa de exemplares desse modelo]\\n\\n"
+                        f"💡 COMO AUMENTAR O VALOR:\\n[2-3 ações com melhor custo-benefício]\\n\\n"
+                        f"🔍 ONDE CONFIRMAR ESSE VALOR:\\n[tabelas especializadas, anúncios reais, avaliadores especializados, clubes de marca]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Avaliacao", moto_aval, res)
+                    st.session_state['aval_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('aval_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['aval_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['aval_temp'], file_name="avaliacao.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_7"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_aval", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Avaliacao','tema':moto_aval if 'moto_aval' in dir() else '','conteudo':st.session_state['aval_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # PLANEJAMENTO DA RESTAURAÇÃO
+        # ========================
+
+    with _tab_Restauracao:
+        st.header("🛠️ Planejamento da Restauração")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            moto_rest = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_rest")
+            orcamento_rest = st.number_input("💰 Orçamento disponível (R$):", min_value=0.0, value=5000.0, step=500.0, key="classica13")
+        with col2:
+            estado_atual_rest = st.selectbox("📊 Estado atual:", ["Rodando, precisa de retoques","Parada, mecânica ok","Parada há anos","Apenas o chassi/carcaça","Projeto desde zero"], key="classica14")
+            prazo_rest = st.text_input("📅 Prazo desejado:", placeholder="ex: 6 meses, 1 ano, sem pressa...", key="ti_classica_106")
+
+        descricao_rest = st.text_area("📝 Descreva o estado e o que precisa ser feito:", height=120,
+            placeholder="ex: Motor funciona mas fumaça branca no escape, pintura descascando, banco rasgado, elétrica com problemas...", key="classica5_d2")
+
+        if st.button("🛠️ CRIAR PLANO DE RESTAURAÇÃO", key="classica15"):
+            if moto_rest.strip():
+                with st.spinner("Montando plano..."):
+                    prompt = (
+                        f"Crie um plano completo de restauração.\\n"
+                        f"Moto: {moto_rest}. Orçamento: R${orcamento_rest}. Estado atual: {estado_atual_rest}.\\n"
+                        f"Prazo: {prazo_rest or 'flexível'}. Descrição: {descricao_rest or 'não detalhada'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🛠️ PLANO DE RESTAURAÇÃO — {moto_rest.upper()}\\n"
+                        f"Orçamento: R${orcamento_rest} | Prazo: {prazo_rest or 'flexível'}\\n\\n"
+                        f"📋 ORDEM IDEAL DOS SERVIÇOS:\\n"
+                        f"1. [serviço] — Dificuldade: [X] — Tempo estimado: [X] — Custo aproximado: R$[X]\\n"
+                        f"[continue numerando todos os serviços necessários, na ordem lógica de execução]\\n\\n"
+                        f"🎯 PRIORIDADES (o que fazer primeiro mesmo com orçamento limitado):\\n[itens críticos de segurança/mecânica antes de estética]\\n\\n"
+                        f"📅 CRONOGRAMA SUGERIDO:\\n[divisão por fases/meses considerando o prazo informado]\\n\\n"
+                        f"💰 DISTRIBUIÇÃO DO ORÇAMENTO:\\n[como dividir os R${orcamento_rest} entre as categorias de serviço]\\n\\n"
+                        f"⚠️ RISCOS DESSE TIPO DE RESTAURAÇÃO:\\n[o que costuma sair do orçamento/prazo nesse tipo de projeto]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Restauracao", moto_rest, res)
+                    st.session_state['rest_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('rest_temp'):
+            st.markdown(f"<div class='card-purple'>{st.session_state['rest_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['rest_temp'], file_name="plano_restauracao.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_8"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_rest", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Restauracao','tema':moto_rest if 'moto_rest' in dir() else '','conteudo':st.session_state['rest_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # DIAGNÓSTICO MECÂNICO
+        # ========================
+
+    with _tab_Diagnostico:
+        st.header("🔧 Diagnóstico Mecânico")
+
+        moto_diag = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_diag")
+        problema_diag = st.text_area("📝 Descreva o problema:", height=120,
+            placeholder="ex: A moto está soltando fumaça branca pelo escape ao acelerar, principalmente quando fria...", key="classica4_d2")
+
+        if st.button("🔧 DIAGNOSTICAR", key="classica16"):
+            if problema_diag.strip():
+                with st.spinner("Analisando..."):
+                    prompt = (
+                        f"Faça um diagnóstico mecânico preliminar.\\n"
+                        f"Moto: {moto_diag}. Problema: {problema_diag}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔧 DIAGNÓSTICO — {moto_diag.upper()}\\n\\n"
+                        f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\n[liste com base no sintoma descrito e no conhecimento sobre esse modelo]\\n\\n"
+                        f"⚙️ COMPONENTES ENVOLVIDOS:\\n[peças que tipicamente causam esse sintoma]\\n\\n"
+                        f"🧪 TESTES RECOMENDADOS:\\n[testes simples que ajudam a confirmar a causa]\\n\\n"
+                        f"🚨 NÍVEL DE URGÊNCIA: [Baixo/Médio/Alto/Crítico]\\n[justificativa — é seguro continuar rodando?]\\n\\n"
+                        f"🔧 RECOMENDAÇÃO:\\n[orientação final, sempre recomendando confirmação com mecânico especializado em motos clássicas]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Diagnostico", problema_diag[:60], res)
+                    st.session_state['diag_temp'] = res
+            else:
+                st.warning("Descreva o problema.")
+
+        if st.session_state.get('diag_temp'):
+            st.markdown(f"<div class='card-orange'>{st.session_state['diag_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['diag_temp'], file_name="diagnostico.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_9"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_diag", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Diagnostico','tema':problema_diag[:60] if 'problema_diag' in dir() else '','conteudo':st.session_state['diag_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # GUIA DE PEÇAS
+        # ========================
+
+    with _tab_Pecas:
+        st.header("📦 Guia de Peças")
+
+        moto_pecas = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_pecas")
+        peca_busca = st.text_input("🔧 Peça que você procura:", placeholder="ex: tanque de combustível, carburador, lente do farol...", key="ti_classica_107")
+
+        if st.button("📦 BUSCAR INFORMAÇÕES DA PEÇA", key="classica17"):
+            if peca_busca.strip() and moto_pecas.strip():
+                with st.spinner("Buscando informações..."):
+                    prompt = (
+                        f"Forneça um guia completo sobre esta peça.\\n"
+                        f"Moto: {moto_pecas}. Peça: {peca_busca}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📦 {peca_busca.upper()} — {moto_pecas.upper()}\\n\\n"
+                        f"🏭 PEÇA ORIGINAL:\\n[características da peça original de fábrica]\\n\\n"
+                        f"🔄 PEÇAS REPRODUZIDAS:\\n[se existem reproduções no mercado e qualidade geral]\\n\\n"
+                        f"✅ COMPATIBILIDADE:\\n[outros modelos/anos que usam peça igual ou similar]\\n\\n"
+                        f"🔍 DIFICULDADE PARA ENCONTRAR:\\n[Fácil/Moderada/Difícil/Raríssima — e onde normalmente são encontradas: clubes, feiras, importação]\\n\\n"
+                        f"⚠️ CUIDADOS NA COMPRA:\\n[como verificar se é original, problemas comuns em peças usadas desse tipo]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Pecas", f"{moto_pecas} — {peca_busca}", res)
+                    st.session_state['pecas_temp'] = res
+            else:
+                st.warning("Informe a moto e a peça.")
+
+        if st.session_state.get('pecas_temp'):
+            st.markdown(f"<div class='card-green'>{st.session_state['pecas_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['pecas_temp'], file_name="guia_pecas.txt", mime="text/plain",
+        key="dl_classica_10"
+    )
+
+        # ========================
+        # DOCUMENTAÇÃO
+        # ========================
+
+    with _tab_Documentacao:
+        st.header("🧾 Documentação")
+
+        tema_doc = st.selectbox("Tema:", [
+            "Transferência de propriedade", "Placa de coleção — o que é e como solicitar",
+            "Regularização de moto sem documento", "Modificações permitidas — o que é legal alterar",
+            "Importação e nacionalização", "Compra em leilão — cuidados documentais",
+            "Licenciamento de moto antiga", "Outro (perguntar)",
+        ], key="classica3_d2")
+        pergunta_doc = ""
+        if tema_doc == "Outro (perguntar)":
+            pergunta_doc = st.text_input("Sua dúvida sobre documentação:", key="ti_classica_108")
+
+        if st.button("🧾 EXPLICAR", key="classica18"):
+            topico = pergunta_doc if tema_doc == "Outro (perguntar)" and pergunta_doc.strip() else tema_doc
+            if topico.strip():
+                with st.spinner("Preparando explicação..."):
+                    prompt = (
+                        f"Explique de forma clara e prática: {topico}, no contexto de motos clássicas no Brasil.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧾 {topico.upper()}\\n\\n"
+                        f"📖 O QUE É / COMO FUNCIONA:\\n[explicação clara]\\n\\n"
+                        f"📋 PASSO A PASSO GERAL:\\n[processo típico — sempre observando que procedimentos variam por estado/DETRAN]\\n\\n"
+                        f"📄 DOCUMENTOS GERALMENTE NECESSÁRIOS:\\n[lista]\\n\\n"
+                        f"⚠️ CUIDADOS E PEGADINHAS COMUNS:\\n[erros frequentes nesse processo]\\n\\n"
+                        f"💡 DICA:\\n[1 dica prática]\\n\\n"
+                        f"📍 IMPORTANTE: procedimentos de DETRAN variam por estado — confirme sempre no órgão local."
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Documentacao", topico, res)
+                    st.session_state['doc_temp'] = res
+            else:
+                st.warning("Escolha ou descreva o tema.")
+
+        if st.session_state.get('doc_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['doc_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['doc_temp'], file_name="documentacao.txt", mime="text/plain",
+        key="dl_classica_11"
+    )
+
+        # ========================
+        # SIMULADOR DE CERTIFICAÇÃO
+        # ========================
+
+    with _tab_Certificacao:
+        st.header("🏅 Simulador de Certificação")
+
+        st.markdown('''<div class="disclaimer-avaliacao">
+        🏅 <strong>Importante:</strong> a certificação oficial para coleção é feita por clubes de marca ou federações
+        de veículos antigos com vistoria presencial. Esta é apenas uma PRÉ-AVALIAÇÃO educativa — não garante
+        aprovação real.
+        </div>''', unsafe_allow_html=True)
+
+        moto_cert = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_cert")
+        idade_cert = st.text_input("📅 Idade da motocicleta (anos):", placeholder="ex: 35 anos", key="ti_classica_109")
+        descricao_cert = st.text_area("📝 Descreva o estado de originalidade e conservação:", height=150,
+            placeholder="ex: Moto com 35 anos, motor original, pintura original com pequenos retoques, banco original, documentação em dia...", key="classica2_d2")
+
+        if st.button("🏅 FAZER PRÉ-AVALIAÇÃO", key="classica19"):
+            if descricao_cert.strip() and moto_cert.strip():
+                with st.spinner("Avaliando critérios..."):
+                    prompt = (
+                        f"Faça uma pré-avaliação educativa para certificação de motocicleta de coleção.\\n"
+                        f"Moto: {moto_cert}. Idade: {idade_cert or 'não informada'}.\\n"
+                        f"Descrição: {descricao_cert}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏅 PRÉ-AVALIAÇÃO — {moto_cert.upper()}\\n\\n"
+                        f"📅 CRITÉRIO DE IDADE:\\n[geralmente exige-se 30+ anos — avalie se atende com base na idade informada]\\n\\n"
+                        f"✅ CRITÉRIOS QUE PARECEM ATENDIDOS:\\n[com base na descrição]\\n\\n"
+                        f"⚠️ CRITÉRIOS QUE MERECEM ATENÇÃO:\\n[pontos que costumam ser exigidos e podem não estar claros na descrição]\\n\\n"
+                        f"📊 ESTIMATIVA DE CHANCE DE APROVAÇÃO: [Baixa/Moderada/Alta]\\n"
+                        f"[IMPORTANTE: deixe claro que isso é uma estimativa educativa, não uma garantia]\\n\\n"
+                        f"📋 PRÓXIMOS PASSOS REAIS:\\n[como buscar a certificação oficial — clube de marca ou federação de veículos antigos]"
+                    )
+                    res = motos_ia(prompt, "Seja conservador nas estimativas de aprovação — sempre deixe claro que apenas a vistoria presencial oficial determina a certificação real.")
+                    salvar_consulta("Certificacao", moto_cert, res)
+                    st.session_state['cert_temp'] = res
+            else:
+                st.warning("Informe a moto e a descrição.")
+
+        if st.session_state.get('cert_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['cert_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['cert_temp'], file_name="certificacao.txt", mime="text/plain",
+        key="dl_classica_12"
+    )
+
+        # ========================
+        # RADAR DO COLECIONADOR
+        # ========================
+
+    with _tab_Radar:
+        st.header("💎 Radar do Colecionador")
+        st.markdown(DISCLAIMER_AVALIACAO, unsafe_allow_html=True)
+
+        tema_radar = st.selectbox("O que você quer explorar:", [
+            "As motos que mais se valorizaram (tendência histórica)", "Potencial de valorização futura",
+            "Melhores oportunidades (preço acessível + potencial)", "Modelos raros pouco conhecidos",
+            "Índice de raridade de um modelo específico", "Índice de desejo (mais procuradas)",
+            "Mercado nacional vs internacional", "Modelos possivelmente supervalorizados",
+            "Melhor momento para comprar/vender", "Futuras motos clássicas (modelos recentes com potencial)",
+        ], key="select_tema_radar")
+        categoria_radar = st.text_input("🎯 Categoria ou modelo específico (opcional):", placeholder="ex: nacionais dos anos 80, custom, esportivas japonesas...", key="ti_classica_110")
+
+        if st.button("💎 EXPLORAR TENDÊNCIAS", key="classica20"):
+            with st.spinner("Analisando tendências..."):
+                prompt = (
+                    f"Explore o tema: {tema_radar}, no contexto do mercado de motocicletas clássicas.\\n"
+                    f"Categoria/modelo de interesse: {categoria_radar or 'geral, sem foco específico'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"💎 {tema_radar.upper()}\\n\\n"
+                    f"📊 ANÁLISE:\\n[desenvolva o tema com base em padrões históricos conhecidos do mercado de motos clássicas]\\n\\n"
+                    f"🏍️ MODELOS/EXEMPLOS RELEVANTES:\\n[liste exemplos concretos relacionados ao tema, com explicação breve de cada]\\n\\n"
+                    f"💡 INSIGHT PARA O COLECIONADOR:\\n[1-2 conclusões práticas]\\n\\n"
+                    f"⚠️ LEMBRETE:\\n[reforçar que são tendências históricas gerais, não previsões garantidas, e recomendar pesquisa em anúncios reais e tabelas especializadas]"
+                )
+                res = motos_ia(prompt)
+                salvar_consulta("Radar", tema_radar, res)
+                st.session_state['radar_temp'] = res
+
+        if st.session_state.get('radar_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['radar_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['radar_temp'], file_name="radar_colecionador.txt", mime="text/plain",
+        key="dl_classica_13"
+    )
+
+        # ========================
+        # LINHA DO TEMPO
+        # ========================
+
+    with _tab_Timeline:
+        st.header("🏁 Linha do Tempo")
+
+        modelo_time = st.text_input("🏍️ Modelo (sem ano específico):", value=st.session_state.moto_padrao.split(' ')[0] if st.session_state.moto_padrao else "", placeholder="ex: CB 450, RD 350...", key="ti_classica_111")
+
+        if st.button("🏁 VER EVOLUÇÃO ANO A ANO", key="classica21"):
+            if modelo_time.strip():
+                with st.spinner("Montando linha do tempo..."):
+                    prompt = (
+                        f"Crie uma linha do tempo da evolução do modelo: {modelo_time}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏁 LINHA DO TEMPO — {modelo_time.upper()}\\n\\n"
+                        f"[Para cada geração/período importante de mudança:]\\n"
+                        f"📅 [PERÍODO/ANOS]\\n"
+                        f"Principais mudanças: [motor, chassi, suspensão, freios, painel, iluminação, banco, rodas, escapamento — "
+                        f"o que mudou especificamente nesse período]\\n\\n"
+                        f"[Repita para todos os períodos relevantes da produção do modelo]\\n\\n"
+                        f"🏆 GERAÇÃO MAIS DESEJADA PELOS COLECIONADORES:\\n[qual período/ano é mais procurado e por quê]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Timeline", modelo_time, res)
+                    st.session_state['timeline_temp'] = res
+            else:
+                st.warning("Informe o modelo.")
+
+        if st.session_state.get('timeline_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['timeline_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['timeline_temp'], file_name="linha_do_tempo.txt", mime="text/plain",
+        key="dl_classica_14"
+    )
+
+        # ========================
+        # HISTÓRIA DA MOTOCICLETA
+        # ========================
+
+    with _tab_Historia:
+        st.header("🌎 História da Motocicleta")
+
+        modelo_hist = st.text_input("🏍️ Modelo:", value=st.session_state.moto_padrao.split(' ')[0] if st.session_state.moto_padrao else "", placeholder="ex: CB 450, RD 350...", key="ti_classica_112")
+
+        if st.button("🌎 CONTAR A HISTÓRIA", key="classica22"):
+            if modelo_hist.strip():
+                with st.spinner("Reunindo a história..."):
+                    prompt = (
+                        f"Conte a história completa do modelo: {modelo_hist}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🌎 A HISTÓRIA DA {modelo_hist.upper()}\\n\\n"
+                        f"💡 ORIGEM DO PROJETO:\\n[por que e como a moto foi criada]\\n\\n"
+                        f"🏭 HISTÓRIA DA FABRICANTE:\\n[contexto da marca na época]\\n\\n"
+                        f"👨‍🔧 DESIGNERS E ENGENHEIROS:\\n[pessoas-chave por trás do projeto, se conhecidas]\\n\\n"
+                        f"🏆 PARTICIPAÇÕES EM COMPETIÇÕES:\\n[se aplicável, conquistas em corridas]\\n\\n"
+                        f"📺 COMERCIAIS DA ÉPOCA:\\n[como a moto era anunciada, slogans marcantes]\\n\\n"
+                        f"💡 CURIOSIDADES:\\n[2-3 fatos pouco conhecidos]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Historia", modelo_hist, res)
+                    st.session_state['hist_temp'] = res
+            else:
+                st.warning("Informe o modelo.")
+
+        if st.session_state.get('hist_temp'):
+            st.markdown(f"<div class='card-dark'>{st.session_state['hist_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['hist_temp'], file_name="historia_moto.txt", mime="text/plain",
+        key="dl_classica_15"
+    )
+
+        # ========================
+        # DIÁRIO DA RESTAURAÇÃO
+        # ========================
+
+    with _tab_Diario:
+        st.header("🏕️ Diário da Restauração")
+        st.markdown("Registre a evolução do seu projeto.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            etapa_diario = st.text_input("🔧 Etapa/serviço realizado:", placeholder="ex: Retífica do motor", key="ti_classica_113")
+            gasto_diario = st.number_input("💰 Gasto nesta etapa (R$):", min_value=0.0, value=0.0, step=50.0, key="classica23")
+        with col2:
+            fornecedor_diario = st.text_input("🏪 Fornecedor/mecânico (opcional):", placeholder="ex: Moto Peças Clássicas, Mecânico do Zé...", key="ti_classica_114")
+            horas_diario = st.number_input("⏱️ Horas trabalhadas:", min_value=0.0, value=0.0, step=0.5, key="classica24")
+
+        notas_diario = st.text_area("📝 Notas sobre essa etapa:", height=100, placeholder="ex: Encontrei peças originais NOS, processo mais difícil do que esperado...", key="classica25")
+
+        if st.button("📝 REGISTRAR NO DIÁRIO", key="classica26"):
+            if etapa_diario.strip():
+                st.session_state.diario_restauracao.append({
+                    'data': datetime.now().strftime('%d/%m/%Y'),
+                    'etapa': etapa_diario, 'gasto': gasto_diario, 'fornecedor': fornecedor_diario,
+                    'horas': horas_diario, 'notas': notas_diario,
+                })
+                st.success("✅ Registrado no diário!")
+                st.rerun()
+            else:
+                st.warning("Descreva a etapa.")
+
+        if st.session_state.diario_restauracao:
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            total_gasto = sum(e['gasto'] for e in st.session_state.diario_restauracao)
+            total_horas = sum(e['horas'] for e in st.session_state.diario_restauracao)
+
+            c1, c2, c3 = st.columns(3)
+            c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.diario_restauracao)}</div><div>Etapas registradas</div></div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='stat-box'><div class='stat-numero'>R${total_gasto:,.0f}</div><div>Gasto total</div></div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_horas:.0f}h</div><div>Horas trabalhadas</div></div>", unsafe_allow_html=True)
+
+            st.markdown("### 📖 Histórico de Etapas")
+            for i, etapa in enumerate(reversed(st.session_state.diario_restauracao)):
+                idx_real = len(st.session_state.diario_restauracao) - 1 - i
+                with st.expander(f"🔧 {etapa['etapa']} — {etapa['data']} — R${etapa['gasto']:,.0f}"):
+                    st.markdown(f"**Fornecedor:** {etapa.get('fornecedor','não informado')}")
+                    st.markdown(f"**Horas trabalhadas:** {etapa.get('horas',0)}h")
+                    if etapa.get('notas'):
+                        st.markdown(f"**Notas:** {etapa['notas']}")
+                    if st.button("🗑️ Remover", key=f"del_diario_{i}"):
+                        st.session_state.diario_restauracao.pop(idx_real)
+                        st.rerun()
+
+            if st.button("🤖 GERAR RESUMO COMPLETO DO PROJETO", key="classica27"):
+                with st.spinner("Gerando resumo..."):
+                    etapas_txt = "\\n".join([f"- {e['etapa']} ({e['data']}): R${e['gasto']:,.0f}, {e['horas']}h" for e in st.session_state.diario_restauracao])
+                    prompt = (
+                        f"Crie um resumo completo do projeto de restauração com base no histórico.\\n"
+                        f"Moto: {st.session_state.moto_padrao}.\\n"
+                        f"Etapas registradas:\\n{etapas_txt}\\n"
+                        f"Total gasto: R${total_gasto:,.2f}. Total horas: {total_horas}h.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏕️ RESUMO DO PROJETO DE RESTAURAÇÃO\\n\\n"
+                        f"📊 VISÃO GERAL:\\n[resumo do progresso até agora]\\n\\n"
+                        f"💰 ANÁLISE DE CUSTOS:\\n[comentário sobre o investimento até agora]\\n\\n"
+                        f"📋 PRÓXIMAS ETAPAS SUGERIDAS:\\n[com base no que já foi feito, o que tipicamente viria a seguir]\\n\\n"
+                        f"🏆 VALOR AGREGADO ESTIMADO:\\n[como esse investimento tende a impactar o valor da moto — estimativa educativa]"
+                    )
+                    res = motos_ia(prompt)
+                    st.session_state['resumo_diario_temp'] = res
+
+            if st.session_state.get('resumo_diario_temp'):
+                st.markdown(f"<div class='card-purple'>{st.session_state['resumo_diario_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar resumo (.txt)", data=st.session_state['resumo_diario_temp'], file_name="resumo_restauracao.txt", mime="text/plain",
+        key="dl_classica_16"
+    )
+
+        # ========================
+        # SOM ORIGINAL
+        # ========================
+
+    with _tab_Som:
+        st.header("🔊 Som Original")
+
+        moto_som = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_som")
+
+        if st.button("🔊 DESCREVER SOM ORIGINAL", key="classica28"):
+            if moto_som.strip():
+                with st.spinner("Descrevendo..."):
+                    prompt = (
+                        f"Descreva como era o som/ronco original desta motocicleta: {moto_som}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔊 SOM ORIGINAL — {moto_som.upper()}\\n\\n"
+                        f"🎵 CARACTERÍSTICA DO RONCO:\\n[descrição sonora detalhada — grave, agudo, rítmico, etc]\\n\\n"
+                        f"⚙️ CONFIGURAÇÃO DE FÁBRICA:\\n[motor, escapamento original que geravam esse som]\\n\\n"
+                        f"🔄 DIFERENÇAS ENTRE GERAÇÕES:\\n[se houver múltiplas versões, como o som varia]\\n\\n"
+                        f"🛠️ ESCAPAMENTOS ALTERNATIVOS DA ÉPOCA:\\n[opções de escape esportivo que existiam para esse modelo]\\n\\n"
+                        f"💡 CURIOSIDADE SONORA:\\n[algo interessante sobre o som desse modelo específico]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("Som", moto_som, res)
+                    st.session_state['som_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('som_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['som_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['som_temp'], file_name="som_original.txt", mime="text/plain",
+        key="dl_classica_17"
+    )
+
+        # ========================
+        # QUIZ DO MOTOCICLISTA
+        # ========================
+
+    with _tab_Quiz:
+        st.header("🧠 Quiz do Motociclista")
+        st.markdown(f"Pontuação atual: **{st.session_state.quiz_pontuacao} pontos** | Nível: **{st.session_state.quiz_nivel_atual}**")
+
+        nivel_quiz = st.selectbox("Escolha o nível:", ["Iniciante","Intermediário","Avançado","Especialista","Mestre das Clássicas"], key="select_nivel_quiz")
+        tema_quiz = st.text_input("Tema específico (opcional):", placeholder="ex: motos nacionais, motores 2 tempos, história geral...", key="ti_classica_115")
+
+        if st.button("🧠 GERAR PERGUNTA", key="classica29"):
+            with st.spinner("Preparando pergunta..."):
+                prompt = (
+                    f"Crie 1 pergunta de quiz sobre motocicletas clássicas, nível {nivel_quiz}.\\n"
+                    f"Tema: {tema_quiz or 'geral'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🧠 PERGUNTA ({nivel_quiz}):\\n[a pergunta]\\n\\n"
+                    f"A) [opção]\\nB) [opção]\\nC) [opção]\\nD) [opção]\\n\\n"
+                    f"✅ RESPOSTA CORRETA: [letra]\\n"
+                    f"📖 EXPLICAÇÃO: [por que essa é a resposta, com contexto interessante]"
+                )
+                res = motos_ia(prompt)
+                st.session_state['quiz_pergunta_temp'] = res
+                st.session_state['quiz_respondido'] = False
+
+        if st.session_state.get('quiz_pergunta_temp'):
+            partes = st.session_state['quiz_pergunta_temp'].split('✅ RESPOSTA CORRETA')
+            st.markdown(f"<div class='card'>{partes[0]}</div>", unsafe_allow_html=True)
+
+            if not st.session_state.get('quiz_respondido'):
+                if st.button("👁️ VER RESPOSTA", key="classica30"):
+                    st.session_state['quiz_respondido'] = True
+                    st.rerun()
+            else:
+                st.markdown(f"<div class='card-gold'>✅ RESPOSTA CORRETA{partes[1] if len(partes)>1 else ''}</div>", unsafe_allow_html=True)
+                col_acertei, col_errei = st.columns(2)
+                with col_acertei:
+                    if st.button("✅ Acertei!", key="classica31"):
+                        pontos = {"Iniciante":5,"Intermediário":10,"Avançado":15,"Especialista":20,"Mestre das Clássicas":30}
+                        st.session_state.quiz_pontuacao += pontos.get(nivel_quiz, 10)
+                        st.session_state.quiz_nivel_atual = nivel_quiz
+                        st.success(f"🎉 +{pontos.get(nivel_quiz,10)} pontos!")
+                with col_errei:
+                    if st.button("❌ Errei", key="classica32"):
+                        st.info("Sem problema, vamos para a próxima!")
+
+        # ========================
+        # ENGENHARIA EXPLICADA
+        # ========================
+
+    with _tab_Engenharia:
+        st.header("🔬 Engenharia Explicada")
+
+        tema_eng = st.selectbox("Componente:", [
+            "Motor 2 tempos", "Motor 4 tempos", "Sistema de alimentação", "Carburador",
+            "Injeção eletrônica (motos mais recentes)", "Suspensão (telescópica vs convencional)",
+            "Freios a tambor vs disco", "Embreagem", "Câmbio sequencial de época", "Sistema elétrico 6V vs 12V",
+        ], key="select_tema_eng")
+
+        if st.button("🔬 EXPLICAR", key="classica33"):
+            with st.spinner("Preparando explicação..."):
+                prompt = (
+                    f"Explique de forma simples e visual: {tema_eng}, no contexto de motocicletas clássicas.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🔬 {tema_eng.upper()}\\n\\n"
+                    f"📖 O QUE É E PARA QUE SERVE:\\n[explicação simples]\\n\\n"
+                    f"⚙️ COMO FUNCIONA:\\n[explicação do mecanismo, passo a passo]\\n\\n"
+                    f"🔧 PROBLEMAS COMUNS EM CLÁSSICAS:\\n[o que tipicamente dá problema nesse componente em motos antigas]\\n\\n"
+                    f"🛠️ MANUTENÇÃO BÁSICA:\\n[cuidados que o proprietário pode ter]\\n\\n"
+                    f"💡 CURIOSIDADE TÉCNICA:\\n[1 fato interessante sobre a evolução desse componente]"
+                )
+                res = motos_ia(prompt)
+                salvar_consulta("Engenharia", tema_eng, res)
+                st.session_state['eng_temp'] = res
+
+        if st.session_state.get('eng_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['eng_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['eng_temp'], file_name="engenharia.txt", mime="text/plain",
+        key="dl_classica_18"
+    )
+
+        # ========================
+        # DNA DA MOTOCICLETA
+        # ========================
+
+    with _tab_DNA:
+        st.header("🧬 DNA da Motocicleta")
+        st.markdown("Uma viagem no tempo até a época em que sua clássica nasceu.")
+
+        moto_dna = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_dna")
+
+        if st.button("🧬 VIAJAR NO TEMPO", key="classica34"):
+            if moto_dna.strip():
+                with st.spinner("Reconstruindo a época..."):
+                    prompt = (
+                        f"Reconstrua a época em que esta motocicleta nasceu: {moto_dna}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧬 DNA — {moto_dna.upper()}\\n\\n"
+                        f"📅 COMO ERA O BRASIL E O MUNDO NAQUELE ANO:\\n[contexto histórico geral]\\n\\n"
+                        f"💰 QUANTO CUSTAVA A MOTO NO LANÇAMENTO:\\n[valor aproximado na época, em moeda da época]\\n\\n"
+                        f"🏭 COMO FUNCIONAVA A FÁBRICA:\\n[contexto da produção na época]\\n\\n"
+                        f"📰 PRINCIPAIS ACONTECIMENTOS HISTÓRICOS DO ANO:\\n[2-3 eventos marcantes]\\n\\n"
+                        f"⛽ PREÇO DOS COMBUSTÍVEIS NA ÉPOCA:\\n[contexto aproximado]\\n\\n"
+                        f"🎵 MÚSICAS MAIS POPULARES DA ÉPOCA:\\n[2-3 exemplos]\\n\\n"
+                        f"🛣️ COMO ERAM AS ESTRADAS:\\n[contexto da infraestrutura da época]\\n\\n"
+                        f"🏍️ PRINCIPAIS CONCORRENTES:\\n[outros modelos que disputavam o mesmo mercado]\\n\\n"
+                        f"📈 SALÁRIO MÍNIMO DA ÉPOCA:\\n[contexto aproximado — quantos salários mínimos custava a moto]\\n\\n"
+                        f"👨 PERFIL TÍPICO DE QUEM COMPRAVA:\\n[quem comprava essa moto na época]"
+                    )
+                    res = motos_ia(prompt)
+                    salvar_consulta("DNA", moto_dna, res)
+                    st.session_state['dna_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('dna_temp'):
+            st.markdown(f"<div class='card-dark'>{st.session_state['dna_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['dna_temp'], file_name="dna_moto.txt", mime="text/plain", use_container_width=True,
+        key="dl_classica_19"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_dna", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'DNA','tema':moto_dna if 'moto_dna' in dir() else '','conteudo':st.session_state['dna_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # HISTÓRIA NAS COMPETIÇÕES
+        # ========================
+
+    with _tab_Competicoes:
+        st.header("🏁 História nas Competições")
+        st.markdown("Motocross, Enduro, Rally, Velocidade, Trial, Dakar.")
+
+        moto_comp = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_comp")
+        modalidade_comp = st.selectbox("🏆 Modalidade de interesse:", ["Todas as modalidades","Motocross","Enduro","Rally","Velocidade","Trial","Dakar"], key="classica35")
+
+        if st.button("🏁 VER HISTÓRICO NAS COMPETIÇÕES", key="classica36"):
+            if moto_comp.strip():
+                with st.spinner("Buscando histórico..."):
+                    prompt = (
+                        f"Pesquise e apresente o histórico de competições desta motocicleta/modelo.\\n"
+                        f"Moto: {moto_comp}. Modalidade de interesse: {modalidade_comp}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏁 HISTÓRICO NAS COMPETIÇÕES — {moto_comp.upper()}\\n\\n"
+                        f"🏆 MODALIDADES EM QUE PARTICIPOU/SE DESTACOU:\\n[se esse modelo (ou a marca/categoria) teve presença relevante em competições]\\n\\n"
+                        f"👨‍🏁 PILOTOS FAMOSOS ASSOCIADOS:\\n[pilotos conhecidos que usaram esse modelo ou modelos da mesma linhagem, se conhecidos]\\n\\n"
+                        f"🏆 CONQUISTAS E RESULTADOS:\\n[títulos, vitórias ou resultados notáveis, se houver]\\n\\n"
+                        f"💡 CURIOSIDADE COMPETITIVA:\\n[1 fato interessante sobre o histórico competitivo desse modelo/marca]\\n\\n"
+                        f"⚠️ NOTA:\\n[se o modelo não teve histórico relevante em competições, seja honesto sobre isso em vez de inventar]"
+                    )
+                    res = motos_ia(prompt, "Seja honesto se o modelo não teve participação relevante em competições — não invente histórico competitivo que não existiu.")
+                    salvar_consulta("Competicoes", moto_comp, res)
+                    st.session_state['comp_temp'] = res
+            else:
+                st.warning("Informe a moto.")
+
+        if st.session_state.get('comp_temp'):
+            st.markdown(f"<div class='card-orange'>{st.session_state['comp_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['comp_temp'], file_name="competicoes.txt", mime="text/plain",
+        key="dl_classica_20"
+    )
+
+        # ========================
+        # VIAGENS CLÁSSICAS
+        # ========================
+
+    with _tab_Viagens:
+        st.header("🌍 Viagens Clássicas")
+        st.markdown("Monte roteiros para rodar com sua moto antiga.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            moto_viagem = st.text_input("🏍️ Modelo e ano:", value=st.session_state.moto_padrao, key="moto_viagem")
+            origem_viagem = st.text_input("📍 Saindo de:", placeholder="ex: São Paulo, SP", key="ti_classica_116")
+            destino_viagem = st.text_input("📍 Indo para:", placeholder="ex: Serra da Mantiqueira, litoral...", key="ti_classica_117")
+        with col2:
+            duracao_viagem = st.selectbox("⏱️ Duração:", ["1 dia","Fim de semana","3-5 dias","1 semana ou mais"], key="classica37")
+            estilo_viagem = st.selectbox("🛣️ Estilo de estrada:", ["Estradas históricas/cênicas","Rodovias principais","Mix de asfalto e terra","Trilhas leves"], key="classica38")
+
+        if st.button("🌍 MONTAR ROTEIRO", key="classica39"):
+            if origem_viagem.strip() and destino_viagem.strip():
+                with st.spinner("Montando roteiro..."):
+                    prompt = (
+                        f"Monte um roteiro de viagem para motociclista de moto clássica.\\n"
+                        f"Moto: {moto_viagem}. Origem: {origem_viagem}. Destino: {destino_viagem}.\\n"
+                        f"Duração: {duracao_viagem}. Estilo: {estilo_viagem}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🌍 ROTEIRO — {origem_viagem.upper()} → {destino_viagem.upper()}\\n"
+                        f"Moto: {moto_viagem} | Duração: {duracao_viagem}\\n\\n"
+                        f"🛣️ TRAJETO SUGERIDO:\\n[descrição geral da rota, priorizando estradas históricas/cênicas quando possível]\\n\\n"
+                        f"⛽ PONTOS DE APOIO NO CAMINHO:\\n[tipos de parada recomendados — postos, oficinas — sem inventar nomes específicos não verificados]\\n\\n"
+                        f"🏨 ONDE FICAR:\\n[tipo de hospedagem recomendada para motociclistas na região]\\n\\n"
+                        f"🧰 KIT DE FERRAMENTAS PARA LEVAR:\\n[específico para esse tipo de moto em viagem]\\n\\n"
+                        f"🚨 RISCOS DO TRAJETO PARA UMA CLÁSSICA:\\n[atenção especial — moto antiga pode ter limitações de autonomia, refrigeração, etc]\\n\\n"
+                        f"💡 DICA DE QUEM RODA CLÁSSICA:\\n[1 dica prática de quem viaja com moto antiga]"
+                    )
+                    res = motos_ia(prompt, "Você não tem dados em tempo real sobre condições reais de estradas, postos específicos ou hospedagens — fale em termos gerais e sempre recomende confirmar informações atualizadas antes da viagem.")
+                    salvar_consulta("Viagens", f"{origem_viagem} → {destino_viagem}", res)
+                    st.session_state['viagem_temp'] = res
+            else:
+                st.warning("Informe origem e destino.")
+
+        if st.session_state.get('viagem_temp'):
+            st.markdown(f"<div class='card-teal'>{st.session_state['viagem_temp']}</div>", unsafe_allow_html=True)
+            st.markdown('''<div class="disclaimer">⚠️ Roteiro educativo geral — confirme sempre condições atuais de estradas, postos e hospedagens antes de viajar.</div>''', unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['viagem_temp'], file_name="roteiro_viagem.txt", mime="text/plain",
+        key="dl_classica_21"
+    )
+
+        # ========================
+        # CLUBE DO COLECIONADOR
+        # ========================
+
+    with _tab_Clube:
+        st.header("🤝 Clube do Colecionador")
+        st.markdown("Encontre encontros, feiras, clubes e museus de motos clássicas.")
+
+        regiao_clube = st.text_input("📍 Sua região:", placeholder="ex: São Paulo, SP", key="ti_classica_118")
+        interesse_clube = st.multiselect("🎯 O que você procura:", [
+            "Encontros de motos antigas","Eventos/exposições","Feiras de peças","Clubes de colecionadores","Museus",
+        ], default=["Clubes de colecionadores"], key="classica1_d2")
+
+        if st.button("🤝 BUSCAR INFORMAÇÕES", key="classica40"):
+            if regiao_clube.strip():
+                with st.spinner("Buscando..."):
+                    interesses_txt = ", ".join(interesse_clube) if interesse_clube else "informações gerais"
+                    prompt = (
+                        f"Forneça orientação sobre comunidade de colecionadores de motos clássicas.\\n"
+                        f"Região: {regiao_clube}. Interesse: {interesses_txt}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🤝 COMUNIDADE DO COLECIONADOR — {regiao_clube.upper()}\\n\\n"
+                        f"👥 COMO ENCONTRAR CLUBES NA SUA REGIÃO:\\n[orientação geral de como buscar — federações estaduais, redes sociais, etc]\\n\\n"
+                        f"🎪 TIPOS DE EVENTOS QUE COSTUMAM EXISTIR:\\n[encontros regionais, feiras de peças, exposições — padrões gerais do hobby]\\n\\n"
+                        f"🏛️ MUSEUS RELACIONADOS A VEÍCULOS ANTIGOS NO BRASIL:\\n[museus conhecidos e estabelecidos, se você tiver certeza da existência]\\n\\n"
+                        f"💡 COMO COMEÇAR A SE CONECTAR COM A COMUNIDADE:\\n[dicas práticas para quem está começando no hobby]\\n\\n"
+                        f"⚠️ IMPORTANTE:\\n[informações sobre eventos específicos mudam com frequência — recomende buscar grupos/páginas atualizadas de colecionadores na região]"
+                    )
+                    res = motos_ia(prompt, "Não invente nomes específicos de clubes, eventos ou museus que você não tem certeza que existem — prefira orientação geral de como buscar, e só cite instituições muito conhecidas e estabelecidas.")
+                    salvar_consulta("Clube", regiao_clube, res)
+                    st.session_state['clube_temp'] = res
+            else:
+                st.warning("Informe sua região.")
+
+        if st.session_state.get('clube_temp'):
+            st.markdown(f"<div class='card-green'>{st.session_state['clube_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['clube_temp'], file_name="clube_colecionador.txt", mime="text/plain",
+        key="dl_classica_22"
+    )
+
+        # ========================
+        # CONSULTOR 24 HORAS
+        # ========================
+
+    with _tab_Consultor:
+        st.header("🤖 Consultor 24 Horas")
+        st.markdown("Pergunte qualquer coisa sobre qualquer motocicleta clássica.")
+
+        if 'chat_consultor' not in st.session_state:
+            st.session_state.chat_consultor = []
+        if 'consultor_key' not in st.session_state:
+            st.session_state.consultor_key = 0
+
+        if st.session_state.chat_consultor:
+            for msg in st.session_state.chat_consultor:
+                if msg['role'] == 'user':
+                    st.markdown(f"<div style='background:#FEF2F2;border:1px solid #B91C1C;border-radius:12px 12px 4px 12px;padding:12px 16px;margin:8px 0;'><b>Você:</b> {msg['content']}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='card-dark' style='margin:8px 0;'><b>🏍️ Consultor:</b><br>{msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown('''<div style="background:#FEF2F2;border:1px dashed #B91C1C;border-radius:12px;padding:16px;text-align:center;">
+            🤖 <strong>Pergunte qualquer coisa!</strong> Ex: "Qual a diferença entre a CB 450 e a CB 500?",
+            "Vale a pena converter o carburador original para um mais moderno?"
+            </div>''', unsafe_allow_html=True)
+
+        pergunta_consultor = st.text_input("Sua pergunta:", key=f"consultor_input_{st.session_state.consultor_key}", placeholder="Pergunte qualquer coisa sobre motos clássicas...")
+
+        col_env, col_limpar = st.columns([3, 1])
+        with col_env:
+            if st.button("📤 PERGUNTAR", key="classica41"):
+                if pergunta_consultor.strip():
+                    with st.spinner("Consultando..."):
+                        historico_msgs = [{"role": m["role"], "content": m["content"]} for m in st.session_state.chat_consultor[-10:]]
+                        resp = motos_ia(pergunta_consultor, "Responda como um restaurador experiente, historiador e avaliador de mercado ao mesmo tempo. Seja didático e apaixonado.")
+                    st.session_state.chat_consultor.append({"role": "user", "content": pergunta_consultor})
+                    st.session_state.chat_consultor.append({"role": "assistant", "content": resp})
+                    st.session_state.consultor_key += 1
+                    salvar_consulta("Consultor", pergunta_consultor[:60], resp)
+                    st.rerun()
+                else:
+                    st.warning("Digite sua pergunta.")
+        with col_limpar:
+            if st.button("🗑️ Limpar", key="classica42"):
+                st.session_state.chat_consultor = []
+                st.rerun()
+
+        # ========================
+        # BIBLIOTECA
+        # ========================
+
+    with _tab_Biblioteca:
+        st.header("📚 Biblioteca de Consultas")
+
+        if not st.session_state.consultas_salvas:
+            st.info("Biblioteca vazia. Gere consultas nos módulos e salve as importantes aqui!")
+        else:
+            modulos_bib = list(set(c['modulo'] for c in st.session_state.consultas_salvas))
+            filtro = st.selectbox("Filtrar por módulo:", ["Todos"] + modulos_bib, key="select_filtro_bib")
+            consultas_f = [c for c in st.session_state.consultas_salvas if filtro == "Todos" or c['modulo'] == filtro]
+
+            st.markdown(f"**{len(consultas_f)} consulta(s) encontrada(s)**")
+            for i, item in enumerate(reversed(consultas_f)):
+                idx_real = len(st.session_state.consultas_salvas) - 1 - i
+                with st.expander(f"[{item.get('modulo', '')}] {item.get('tema', '')[:60]} — {item['data']}"):
+                    st.markdown(f"<div class='card'>{item['conteudo']}</div>", unsafe_allow_html=True)
+                    col_dl, col_del = st.columns([3, 1])
+                    with col_dl:
+                        st.download_button("📋 Baixar", data=item['conteudo'], file_name=f"{item.get('modulo', '').lower()}.txt", mime="text/plain", key=f"dl_bib_{i}")
+                    with col_del:
+                        if st.button("🗑️ Remover", key=f"del_bib_{i}"):
+                            st.session_state.consultas_salvas.pop(idx_real)
+                            st.rerun()
+
+        if st.session_state.historico_consultas:
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            historico_txt = "\\n\\n".join(f"[{c['data']}] {c['modulo']} — {c['tema']}\\n{c['conteudo']}\\n{'─'*40}" for c in st.session_state.historico_consultas)
+            st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt, file_name="historico_motos.txt", mime="text/plain",
+        key="dl_classica_23"
+    )
+            if st.button("🗑️ Limpar Todo o Histórico", key="classica43"):
+                st.session_state.historico_consultas = []
+                st.rerun()
+
+        # --- RODAPÉ ---
+        st.markdown(
+        "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+        "© 2026 Clássicas Motos IA — Especialista em Motocicletas Clássicas com IA · MeusAgentesIA.com.br"
+        "</div>", unsafe_allow_html=True
+        )
+
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
+    "classicos_ia": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+import re
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="CLÁSSICOS IA", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+# --- ESTILO CSS ---
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F6FBF4; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#16A34A,#15803D) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#15803D,#166534) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#14532D !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#14532D !important; }
+
+    .card-dark { background:linear-gradient(135deg,#DCFCE7,#D1FAE5); padding:20px; border-radius:14px; border:1px solid #6EE7B7; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#14532D !important; }
+
+    .card-green { background:linear-gradient(135deg,#DCFCE7,#BBF7D0); padding:20px; border-radius:14px; border:1px solid #4ADE80; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#14532D !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#14532D !important; }
+
+    .badge { background:#166534; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#14532D !important; }
+
+    .chat-persona { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#14532D !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#14532D !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#14532D !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#14532D !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
+@st.cache_resource
+def get_cache_classicos():
+    return {"perfis": {}}
+
+_cache = get_cache_classicos()
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+CHAVES_SALVAR = [
+    'usuario', 'historico_consultas', 'consultas_salvas',
+    'veiculo_padrao', 'diario_restauracao', 'quiz_pontuacao', 'quiz_nivel_atual',
+]
+
+def gerar_json_sessao() -> str:
+    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
+
+def carregar_json_sessao(dados):
+    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
+    _pref = (
+        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
+        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
+    )
+    import re as _re
+    for k, v in dados.items():
+        if k in _bloq: continue
+        if any(k.startswith(p) for p in _pref): continue
+        if _re.match(r'.+_\\d+$', k): continue
+        st.session_state[k] = v
+
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_consulta(modulo: str, tema: str, conteudo: str):
+    st.session_state.historico_consultas.append({
+        'data': datetime.now().strftime('%d/%m %H:%M'), 'modulo': modulo, 'tema': tema, 'conteudo': conteudo,
+    })
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+defaults = {
+    'etapa': "Login", 'usuario': "", 'api_key': "", 'pagina': "Home",
+    'historico_consultas': [], 'consultas_salvas': [],
+    'veiculo_padrao': "", 'diario_restauracao': [], 'quiz_pontuacao': 0, 'quiz_nivel_atual': "Iniciante",
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- PRINCÍPIO DE HONESTIDADE TÉCNICA — compartilhado ---
+PRINCIPIO_HONESTIDADE = '''
+PRINCÍPIO OBRIGATÓRIO DE HONESTIDADE TÉCNICA — siga isso em TODA resposta:
+- Você é um especialista em carros clássicos, mas trabalha apenas com DESCRIÇÕES EM TEXTO fornecidas pela pessoa —
+  você não recebe fotos reais nem tem acesso a bancos de dados de chassi, leilões ou cotações em tempo real
+- Para análises de originalidade, peças e autenticidade: baseie-se no que foi DESCRITO pela pessoa, sempre deixando claro
+  que é uma orientação educativa, e que avaliação presencial por especialista é necessária para decisões de compra,
+  venda ou certificação
+- Para Placa Preta: explique os critérios GERAIS normalmente considerados, mas seja claro que a certificação oficial
+  é feita por entidades específicas (como clubes de marca filiados à FBVA) com vistoria presencial — sua análise é
+  apenas uma pré-avaliação educativa, nunca uma garantia de aprovação
+- Para valores e valorização de mercado: você NÃO tem acesso a cotações atuais nem dados de leilões em tempo real.
+  Baseie-se em padrões históricos conhecidos do mercado de clássicos e tendências gerais, sempre recomendando
+  confirmar valores com tabelas especializadas (ex: Tabela FIPE Collection), avaliadores profissionais e anúncios reais
+  do mercado antes de qualquer decisão financeira
+- Nunca afirme um valor exato de mercado como fato — sempre apresente faixas e como estimativas
+- Para diagnóstico mecânico: sempre recomende confirmação com mecânico especializado em clássicos antes de intervenções,
+  especialmente em itens de segurança (freios, suspensão, direção)
+- Seja apaixonado e didático — você é um conhecedor que genuinamente ama carros clássicos, não um robô burocrático
+- Português do Brasil
+'''
+
+DISCLAIMER_PADRAO = '''
+<div class="disclaimer">
+⚠️ <strong>Importante:</strong> esta análise é educativa, baseada na descrição fornecida — não substitui avaliação
+presencial por especialista, perito ou avaliador profissional. Para decisões de compra, venda, restauração ou
+certificação, sempre confirme com profissionais qualificados.
+</div>
+'''
+
+DISCLAIMER_AVALIACAO = '''
+<div class="disclaimer-avaliacao">
+💰 <strong>Sobre valores de mercado:</strong> esta é uma estimativa educativa baseada em padrões históricos gerais —
+não reflete cotações em tempo real. Antes de comprar, vender ou negociar, consulte a Tabela FIPE Collection,
+avaliadores especializados e anúncios reais de veículos similares no mercado atual.
+</div>
+'''
+
+# --- MOTOR DE IA ---
+def classicos_ia(prompt: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        system = f'''Você é o maior especialista em carros antigos e clássicos do Brasil — um misto de restaurador
+experiente, historiador automotivo, mecânico especializado e avaliador de mercado.
+Usuário: {st.session_state.usuario}. Veículo de interesse: {st.session_state.veiculo_padrao or 'não informado'}.
+{PRINCIPIO_HONESTIDADE}
+{system_extra}'''
+        response = client.chat.completions.create(
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+def renderizar_indice(texto: str, titulo_indice: str = "ÍNDICE"):
+    percentuais = re.findall(r'(\\d+)\\s*/\\s*100|(\\d+)%', texto)
+    valores = [int(a or b) for a, b in percentuais if a or b]
+    indice = valores[0] if valores else 50
+
+    if indice >= 70:
+        classe, emoji, label = "indice-alto", "🟢", "ALTO"
+    elif indice >= 40:
+        classe, emoji, label = "indice-medio", "🟡", "MÉDIO"
+    else:
+        classe, emoji, label = "indice-baixo", "🔴", "BAIXO"
+
+    st.markdown(f'''
+    <div class="indice-box {classe}">
+        <div style="font-size:2.2em;">{emoji}</div>
+        <div class="indice-titulo">{titulo_indice}: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;font-weight:600;">Nível: {label}</div>
+        <div style="font-size:0.82em;color:#555;margin-top:6px;">Estimativa educativa baseada na descrição fornecida</div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total = len(st.session_state.historico_consultas)
+    diario = len(st.session_state.diario_restauracao)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#FEF3E2;border:1px solid #B45309;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
+            f"💾 <strong>Antes de sair, salve seus dados no computador.</strong><br>"
+            f"<span style='color:#888;font-size:0.88em;'>{total} consultas geradas · {diario} entradas no diário de restauração</span>"
+            f"</div>", unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button("💾 SALVAR MEUS DADOS (.json)", data=gerar_json_sessao(),
+            file_name=f"classicos_ia_{nome_usuario}.json", mime="application/json", use_container_width=True,
+        key="dl_classico_1"
+    )
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'consultas_salvas' not in st.session_state: st.session_state['consultas_salvas'] = []
+if 'diario_restauracao' not in st.session_state: st.session_state['diario_restauracao'] = None
+if 'historico_consultas' not in st.session_state: st.session_state['historico_consultas'] = []
+if 'quiz_nivel_atual' not in st.session_state: st.session_state['quiz_nivel_atual'] = None
+if 'quiz_pontuacao' not in st.session_state: st.session_state['quiz_pontuacao'] = None
+if 'veiculo_padrao' not in st.session_state: st.session_state['veiculo_padrao'] = None
+
+def chamar_ia(prompt, sistema="Você é um assistente inteligente. Responda em português do Brasil."):
+    try:
+        from groq import Groq as _GrCI
+        client = _GrCI(api_key=st.session_state.api_key)
+        resp = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[{"role":"system","content":sistema},{"role":"user","content":prompt}],
+            max_tokens=2048
+        )
+        return resp.choices[0].message.content
+    except Exception as e:
+        return f"Erro na IA: {e}"
+
+if st.session_state.etapa == "Login":
+    st.markdown("# 🤖 CLÁSSICOS IA")
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+
+
+    # TABS
+    _tab_Home, _tab_Identificacao, _tab_Originalidade, _tab_Detector, _tab_Cores, _tab_Indice, _tab_Avaliacao, _tab_Restauracao, _tab_Diagnostico, _tab_Pecas, _tab_Documentacao, _tab_PlacaPreta, _tab_Radar, _tab_Timeline, _tab_Historia, _tab_Diario, _tab_Som, _tab_Quiz, _tab_Engenharia, _tab_DNA, _tab_Consultor = st.tabs(['🏠 Painel Principal', '🚘 Identificação Comp', '📸 Scanner de Origina', '🔎 Detector de Peças ', '🎨 Cores Originais', '🏆 Índice do Colecion', '💰 Avaliação Intelige', '🛠️ Planejamento da Re', '🔧 Diagnóstico Mecâni', '📦 Guia de Peças', '🧾 Documentação', '🏅 Simulador de Placa', '💎 Radar do Coleciona', '🏁 Linha do Tempo', '🌎 História do Modelo', '🏕️ Diário da Restaura', '🔊 Som Original', '🧠 Quiz do Colecionad', '🔬 Engenharia Explica', '🧬 DNA do Automóvel', '🤖 Consultor 24 Horas'])
+
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_classico")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_classico", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_Home:
+        col_u, col_r = st.columns([3, 1])
+        with col_u:
+            st.title(f"Olá, {st.session_state.usuario}! 🚗")
+            st.markdown("<span class='badge'>Garagem Aberta</span>", unsafe_allow_html=True)
+        with col_r:
+            if st.button("🚪 Sair", key="classico3"):
+                for k in list(st.session_state.keys()):
+                    del st.session_state[k]
+                st.rerun()
+
+        if len(st.session_state.historico_consultas) == 0:
+            st.markdown('''<div style="background:#FEF3C7;border:2px solid #F59E0B;border-radius:12px;
+            padding:12px 18px;margin-bottom:4px;color:#000;font-size:0.9em;font-weight:600;">
+            ⚠️ Seus dados não estão mais no servidor.
+            </div>''', unsafe_allow_html=True)
+            arq_home = st.file_uploader("Carregar meus dados salvos (.json):", type=["json"], key="upload_home")
+            if arq_home is not None:
+                try:
+                    dados_home = json.load(arq_home)
+                    carregar_json_sessao(dados_home)
+                    salvar_perfil_cache(st.session_state.usuario)
+                    st.success("✅ Dados recuperados!")
+                    st.rerun()
+                except Exception:
+                    st.error("Arquivo inválido.")
+
+        st.session_state.veiculo_padrao = st.text_input("🚗 Seu veículo (modelo e ano):",
+            value=st.session_state.veiculo_padrao, placeholder="ex: Fusca 1974, Opala 1980, Maverick GT 1976...", key="ti_classico_101")
+
+
+        modulos_count = {}
+        for c in st.session_state.historico_consultas:
+            modulos_count[c['modulo']] = modulos_count.get(c['modulo'], 0) + 1
+
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_consultas)}</div><div>Consultas geradas</div></div>", unsafe_allow_html=True)
+        c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.diario_restauracao)}</div><div>Registros de restauração</div></div>", unsafe_allow_html=True)
+        c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.consultas_salvas)}</div><div>Salvas</div></div>", unsafe_allow_html=True)
+        c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{st.session_state.quiz_pontuacao}</div><div>Pontos no Quiz</div></div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='card'>💡 <em>'Um carro clássico não é apenas transporte do passado — é uma máquina do tempo que ainda funciona.'</em></div>", unsafe_allow_html=True)
+
+        st.markdown("### 🗺️ O que cada módulo faz")
+        guia = {
+            "🚘 Identificação": "História, especificações, motorização e curiosidades de qualquer modelo/ano",
+            "📸 Scanner de Originalidade": "Descreva o veículo e receba índice educativo de originalidade",
+            "🔎 Detector de Peças": "Identifica possíveis incompatibilidades com base na descrição",
+            "🎨 Cores Originais": "Cores de fábrica, códigos de tinta e combinações por ano",
+            "🏆 Índice do Colecionador": "Nota completa considerando originalidade, conservação e raridade",
+            "💰 Avaliação Inteligente": "Estimativa de valor considerando múltiplos fatores do mercado de clássicos",
+            "🛠️ Planejamento da Restauração": "Ordem ideal de serviços, tempo e custos estimados",
+            "🔧 Diagnóstico Mecânico": "Descreva um problema e receba possíveis causas",
+            "📦 Guia de Peças": "Originais vs reproduzidas, compatibilidade e onde procurar",
+            "🧾 Documentação": "Transferência, placa preta, regularização, importados",
+            "🏅 Simulador de Placa Preta": "Pré-avaliação educativa dos critérios de certificação",
+            "💎 Radar do Colecionador": "Tendências, valorização e oportunidades no mercado de clássicos",
+            "🏁 Linha do Tempo": "Evolução do modelo ano a ano",
+            "🌎 História do Modelo": "Origem, designers, contexto histórico e curiosidades",
+            "🏕️ Diário da Restauração": "Registre fotos, gastos e etapas do seu projeto",
+            "🔊 Som Original": "Como era o ronco original do motor de fábrica",
+            "🧠 Quiz do Colecionador": "Teste seu conhecimento em 5 níveis de dificuldade",
+            "🔬 Engenharia Explicada": "Carburador, distribuidor, suspensão e mais — de forma simples",
+            "🧬 DNA do Automóvel": "Viagem no tempo até a época em que o veículo nasceu",
+            "🤖 Consultor 24h": "Pergunte qualquer coisa sobre qualquer carro antigo",
+        }
+        for aba, desc in guia.items():
+            st.markdown(f"**{aba}** — {desc}")
+
+        st.header("🚘 Identificação Completa")
+        st.markdown("Informe modelo e ano para uma análise histórica e técnica completa.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            modelo_id = st.text_input("🚗 Modelo:", value=st.session_state.veiculo_padrao.split(' ')[0] if st.session_state.veiculo_padrao else "", placeholder="ex: Fusca, Opala, Maverick, Dodge Dart...", key="input_modelo_id")
+        with col2:
+            ano_id = st.text_input("📅 Ano:", placeholder="ex: 1974", key="ti_classico_102")
+
+        if st.button("🚘 IDENTIFICAR VEÍCULO", key="classico4"):
+            if modelo_id.strip():
+                with st.spinner("Buscando informações..."):
+                    prompt = (
+                        f"Crie uma identificação completa do veículo: {modelo_id} {ano_id}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🚘 {modelo_id.upper()} {ano_id}\\n\\n"
+                        f"📖 HISTÓRIA RESUMIDA:\\n[origem e contexto do modelo]\\n\\n"
+                        f"⚙️ ESPECIFICAÇÕES TÉCNICAS:\\n[motor, potência, transmissão, dimensões — para esse ano específico]\\n\\n"
+                        f"🔧 VERSÕES E OPCIONAIS:\\n[versões disponíveis nesse ano e principais opcionais]\\n\\n"
+                        f"🏭 PRODUÇÃO:\\n[quantidade produzida aproximada, se conhecida, e países onde foi vendido]\\n\\n"
+                        f"📈 EVOLUÇÃO:\\n[principais diferenças desse ano em relação aos anteriores/seguintes]\\n\\n"
+                        f"💡 CURIOSIDADES:\\n[2-3 curiosidades interessantes sobre esse modelo/ano]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Identificacao", f"{modelo_id} {ano_id}", res)
+                    st.session_state['ident_temp'] = res
+            else:
+                st.warning("Informe o modelo.")
+
+        if st.session_state.get('ident_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['ident_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['ident_temp'], file_name="identificacao.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_2"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_ident", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Identificacao','tema':f"{modelo_id} {ano_id}" if 'modelo_id' in dir() else '','conteudo':st.session_state['ident_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # SCANNER DE ORIGINALIDADE
+        # ========================
+
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### 💾 Salvar e Carregar Dados")
+        _csl1, _csl2 = st.columns(2)
+        with _csl1:
+            import json as _json_sv
+            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
+            st.download_button("💾 Salvar dados (.json)",
+                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_sv_classico")
+        with _csl2:
+            _arq_sv = st.file_uploader("📂 Carregar dados:", type=["json"], key="ul_sv_classico")
+            if _arq_sv:
+                try:
+                    import json as _json_ld
+                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
+                        st.session_state[_k] = _v
+                    st.success("✅ Dados carregados!")
+                    st.rerun()
+                except: st.error("Arquivo inválido.")
+
+    with _tab_Identificacao:
+        st.header("Identificacao")
+        st.markdown("Descreva o contexto para análise:")
+        prompt_identificacao = st.text_area("", height=150, key="ta_identificacao1", placeholder="Digite aqui...")
+        if st.button("🤖 GERAR COM IA", key="btn_identificacao1", use_container_width=True):
+            if prompt_identificacao.strip():
+                with st.spinner("Analisando..."):
+                    try:
+                        resp = chamar_ia(prompt_identificacao)
+                        if resp: st.session_state['res_identificaca_classi1'] = str(resp)
+                        if resp: st.session_state['res_identifica_classi1'] = resp
+                        st.markdown(f"<div class='card'>{resp}</div>", unsafe_allow_html=True)
+                    except Exception as e:
+                        st.error(f"Erro: {e}")
+            else:
+                st.warning("Preencha o campo.")
+
+    with _tab_Originalidade:
+        st.header("📸 Scanner de Originalidade")
+        st.markdown("Descreva o veículo em detalhes para uma análise educativa de originalidade.")
+
+        st.info("📝 Este app trabalha por descrição em texto. Quanto mais detalhes você der, melhor a análise.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            veiculo_orig = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="ti_classico_103")
+        with col2:
+            cor_orig = st.text_input("🎨 Cor atual:", placeholder="ex: azul metálico", key="ti_classico_104")
+
+        descricao_orig = st.text_area("📝 Descreva detalhadamente: pintura, rodas, bancos, painel, volante, lanternas, faróis, retrovisores, emblemas, motor:",
+            height=180, placeholder="ex: Pintura azul original com alguns retoques no para-choque. Rodas de liga leve (não tenho certeza se são originais). "
+                                     "Bancos em couro preto, parecem originais. Painel com instrumentos completos funcionando. Motor original 1.6...", key="classico7")
+
+        if st.button("📸 ANALISAR ORIGINALIDADE", key="classico5"):
+            if descricao_orig.strip():
+                with st.spinner("Analisando originalidade..."):
+                    prompt = (
+                        f"Analise a originalidade deste veículo com base na descrição.\\n"
+                        f"Veículo: {veiculo_orig}. Cor: {cor_orig}.\\n"
+                        f"Descrição: {descricao_orig}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📸 ÍNDICE DE ORIGINALIDADE: [X]/100\\n"
+                        f"[1-2 linhas explicando a estimativa com base no que foi descrito]\\n\\n"
+                        f"✅ ITENS QUE PARECEM ORIGINAIS:\\n[com base na descrição]\\n\\n"
+                        f"⚠️ ITENS QUE MERECEM VERIFICAÇÃO:\\n[itens com descrição ambígua ou suspeita de não-originalidade]\\n\\n"
+                        f"🔍 O QUE VERIFICAR PRESENCIALMENTE:\\n[pontos que só um especialista presencial pode confirmar — números de chassi/motor, código de tinta no local correto, etc]\\n\\n"
+                        f"💡 DICA PARA PRÓXIMA ANÁLISE:\\n[que outras informações ajudariam a refinar essa análise]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Originalidade", veiculo_orig, res)
+                    st.session_state['orig_temp'] = res
+            else:
+                st.warning("Descreva o veículo.")
+
+        if st.session_state.get('orig_temp'):
+            renderizar_indice(st.session_state['orig_temp'], "ÍNDICE DE ORIGINALIDADE")
+            st.markdown(f"<div class='card'>{st.session_state['orig_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['orig_temp'], file_name="originalidade.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_3"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_orig", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Originalidade','tema':veiculo_orig if 'veiculo_orig' in dir() else '','conteudo':st.session_state['orig_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # DETECTOR DE PEÇAS NÃO ORIGINAIS
+        # ========================
+
+    with _tab_Detector:
+        st.header("🔎 Detector de Peças Não Originais")
+        st.markdown("Descreva peças específicas para identificar possíveis incompatibilidades.")
+
+        veiculo_det = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_det")
+        pecas_det = st.text_area("🔧 Descreva as peças que quer verificar:", height=150,
+            placeholder="ex: Rodas aro 15 esportivas, lanternas traseiras com lente fumê, volante de 3 raios em alumínio, bancos de couro vermelho...", key="classico6")
+
+        if st.button("🔎 VERIFICAR COMPATIBILIDADE", key="classico6_d2"):
+            if pecas_det.strip() and veiculo_det.strip():
+                with st.spinner("Verificando..."):
+                    prompt = (
+                        f"Analise se estas peças são compatíveis com a originalidade do veículo.\\n"
+                        f"Veículo: {veiculo_det}.\\nPeças descritas: {pecas_det}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔎 ANÁLISE DE COMPATIBILIDADE — {veiculo_det.upper()}\\n\\n"
+                        f"[Para cada peça descrita:]\\n"
+                        f"🔧 [NOME DA PEÇA]\\n"
+                        f"Status provável: [Original / Possivelmente não original / Não foi possível avaliar]\\n"
+                        f"Justificativa: [por que, com base no conhecimento sobre esse modelo/ano]\\n\\n"
+                        f"📋 RESUMO GERAL:\\n[conclusão geral sobre o conjunto de peças]\\n\\n"
+                        f"🔍 RECOMENDAÇÃO:\\n[o que fazer para confirmar com certeza — pesquisa de catálogo original, comparação com outros exemplares, etc]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Detector", veiculo_det, res)
+                    st.session_state['detector_temp'] = res
+            else:
+                st.warning("Informe o veículo e as peças.")
+
+        if st.session_state.get('detector_temp'):
+            st.markdown(f"<div class='card-red'>{st.session_state['detector_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['detector_temp'], file_name="deteccao_pecas.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_4"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_det", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Detector','tema':veiculo_det if 'veiculo_det' in dir() else '','conteudo':st.session_state['detector_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # CORES ORIGINAIS
+        # ========================
+
+    with _tab_Cores:
+        st.header("🎨 Cores Originais")
+        st.markdown("Descubra as cores de fábrica de qualquer modelo.")
+
+        veiculo_cor = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_cor")
+
+        if st.button("🎨 VER CORES ORIGINAIS", key="classico7_d2"):
+            if veiculo_cor.strip():
+                with st.spinner("Buscando cores..."):
+                    prompt = (
+                        f"Liste as cores originais de fábrica para: {veiculo_cor}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🎨 CORES ORIGINAIS — {veiculo_cor.upper()}\\n\\n"
+                        f"[Para cada cor:]\\n"
+                        f"🎨 [Nome da cor]\\n"
+                        f"Código de tinta: [se conhecido]\\n"
+                        f"Anos de utilização: [período]\\n"
+                        f"Combinação interna usual: [cor do banco/painel que combinava]\\n\\n"
+                        f"⭐ SÉRIES ESPECIAIS:\\n[cores exclusivas de versões especiais, se houver]\\n\\n"
+                        f"💡 DICA:\\n[como verificar a cor original em um veículo restaurado — local da etiqueta/código]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Cores", veiculo_cor, res)
+                    st.session_state['cores_temp'] = res
+            else:
+                st.warning("Informe o veículo.")
+
+        if st.session_state.get('cores_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['cores_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['cores_temp'], file_name="cores_originais.txt", mime="text/plain",
+        key="dl_classico_5"
+    )
+
+        # ========================
+        # ÍNDICE DO COLECIONADOR
+        # ========================
+
+    with _tab_Indice:
+        st.header("🏆 Índice do Colecionador")
+        st.markdown("Avaliação completa considerando 7 critérios fundamentais.")
+
+        veiculo_idx = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_idx")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            originalidade_idx = st.slider("⭐ Originalidade (sua avaliação):", 0, 10, 5, key="classico1")
+            conservacao_idx = st.slider("⭐ Conservação:", 0, 10, 5, key="classico2")
+            raridade_idx = st.slider("⭐ Raridade (sua percepção):", 0, 10, 5, key="classico3_x2")
+            mecanica_idx = st.slider("⭐ Estado mecânico:", 0, 10, 5, key="classico4_x2")
+        with col2:
+            estetica_idx = st.slider("⭐ Estado estético:", 0, 10, 5, key="classico5_x2")
+            documentacao_idx = st.slider("⭐ Documentação:", 0, 10, 5, key="classico6_x2")
+            notas_idx = st.text_area("📝 Observações adicionais:", height=80, key="classico8")
+
+        if st.button("🏆 CALCULAR ÍNDICE COMPLETO", key="classico9"):
+            if veiculo_idx.strip():
+                with st.spinner("Calculando..."):
+                    prompt = (
+                        f"Crie uma avaliação completa de colecionador para este veículo.\\n"
+                        f"Veículo: {veiculo_idx}.\\n"
+                        f"Autoavaliação do proprietário: Originalidade {originalidade_idx}/10, Conservação {conservacao_idx}/10, "
+                        f"Raridade {raridade_idx}/10, Mecânica {mecanica_idx}/10, Estética {estetica_idx}/10, Documentação {documentacao_idx}/10.\\n"
+                        f"Observações: {notas_idx or 'nenhuma'}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏆 ÍNDICE DO COLECIONADOR: [X]/100\\n"
+                        f"[Calcule uma nota geral ponderada com base nos 6 critérios + conhecimento sobre raridade real desse modelo]\\n\\n"
+                        f"⭐ ORIGINALIDADE: {originalidade_idx}/10 — [comentário]\\n"
+                        f"⭐ CONSERVAÇÃO: {conservacao_idx}/10 — [comentário]\\n"
+                        f"⭐ RARIDADE: [sua avaliação real baseada no modelo]/10 — [comentário, considerando se a autoavaliação do dono está alinhada com a raridade real do modelo]\\n"
+                        f"⭐ ESTADO MECÂNICO: {mecanica_idx}/10 — [comentário]\\n"
+                        f"⭐ ESTADO ESTÉTICO: {estetica_idx}/10 — [comentário]\\n"
+                        f"⭐ DOCUMENTAÇÃO: {documentacao_idx}/10 — [comentário]\\n"
+                        f"⭐ POTENCIAL DE VALORIZAÇÃO: [X]/10 — [comentário baseado em tendências gerais do modelo]\\n\\n"
+                        f"🎯 O QUE MAIS AUMENTARIA O VALOR DESTE VEÍCULO:\\n[1-2 ações prioritárias]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Indice", veiculo_idx, res)
+                    st.session_state['indice_temp'] = res
+            else:
+                st.warning("Informe o veículo.")
+
+        if st.session_state.get('indice_temp'):
+            renderizar_indice(st.session_state['indice_temp'], "ÍNDICE DO COLECIONADOR")
+            st.markdown(f"<div class='card-gold'>{st.session_state['indice_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['indice_temp'], file_name="indice_colecionador.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_6"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_idx", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Indice','tema':veiculo_idx if 'veiculo_idx' in dir() else '','conteudo':st.session_state['indice_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # AVALIAÇÃO INTELIGENTE
+        # ========================
+
+    with _tab_Avaliacao:
+        st.header("💰 Avaliação Inteligente")
+        st.markdown(DISCLAIMER_AVALIACAO, unsafe_allow_html=True)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            veiculo_aval = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_aval")
+            estado_aval = st.selectbox("📊 Estado geral:", ["Original e impecável","Bem conservado","Restaurado","Em restauração","Sucata/projeto","Modificado"], key="classico10")
+        with col2:
+            documentacao_aval = st.selectbox("🧾 Documentação:", ["Em dia, placa preta","Em dia, comum","Pendências simples","Pendências complexas","Sem documentação"], key="classico11")
+            regiao_aval = st.text_input("📍 Região (opcional):", placeholder="ex: São Paulo, SP", key="ti_classico_105")
+
+        detalhes_aval = st.text_area("📝 Detalhes adicionais:", height=100,
+            placeholder="ex: Motor original, pintura refeita há 2 anos, interior original, rodas de liga não originais...", key="classico5_d2")
+
+        if st.button("💰 GERAR ESTIMATIVA", key="classico12"):
+            if veiculo_aval.strip():
+                with st.spinner("Calculando estimativa..."):
+                    prompt = (
+                        f"Crie uma estimativa de valor para este veículo clássico.\\n"
+                        f"Veículo: {veiculo_aval}. Estado: {estado_aval}. Documentação: {documentacao_aval}.\\n"
+                        f"Região: {regiao_aval or 'não informada'}. Detalhes: {detalhes_aval or 'não informado'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"💰 ESTIMATIVA DE VALOR — {veiculo_aval.upper()}\\n\\n"
+                        f"📊 FAIXA DE VALOR ESTIMADA: R$[X] a R$[X]\\n"
+                        f"[Baseado em padrões históricos do mercado de clássicos para esse modelo/estado]\\n\\n"
+                        f"📈 FATORES QUE AUMENTAM O VALOR:\\n[com base no estado e detalhes informados]\\n\\n"
+                        f"📉 FATORES QUE REDUZEM O VALOR:\\n[com base no estado e detalhes informados]\\n\\n"
+                        f"🎯 ONDE ESSE VEÍCULO SE POSICIONA NO MERCADO:\\n[comparação geral com a faixa de exemplares desse modelo]\\n\\n"
+                        f"💡 COMO AUMENTAR O VALOR:\\n[2-3 ações com melhor custo-benefício]\\n\\n"
+                        f"🔍 ONDE CONFIRMAR ESSE VALOR:\\n[Tabela FIPE Collection, anúncios reais, avaliadores especializados, clubes da marca]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Avaliacao", veiculo_aval, res)
+                    st.session_state['aval_temp'] = res
+            else:
+                st.warning("Informe o veículo.")
+
+        if st.session_state.get('aval_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['aval_temp']}</div>", unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['aval_temp'], file_name="avaliacao.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_7"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_aval", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Avaliacao','tema':veiculo_aval if 'veiculo_aval' in dir() else '','conteudo':st.session_state['aval_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # PLANEJAMENTO DA RESTAURAÇÃO
+        # ========================
+
+    with _tab_Restauracao:
+        st.header("🛠️ Planejamento da Restauração")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            veiculo_rest = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_rest")
+            orcamento_rest = st.number_input("💰 Orçamento disponível (R$):", min_value=0.0, value=10000.0, step=1000.0, key="classico13")
+        with col2:
+            estado_atual_rest = st.selectbox("📊 Estado atual:", ["Rodando, precisa de retoques","Parado, mecânica ok","Parado há anos","Apenas a carroceria/chassi","Projeto desde zero"], key="classico14")
+            prazo_rest = st.text_input("📅 Prazo desejado:", placeholder="ex: 6 meses, 1 ano, sem pressa...", key="ti_classico_106")
+
+        descricao_rest = st.text_area("📝 Descreva o estado e o que precisa ser feito:", height=120,
+            placeholder="ex: Motor funciona mas com barulho estranho, lataria com pontos de ferrugem, interior original mas gasto, pintura descascando...", key="classico4_d2")
+
+        if st.button("🛠️ CRIAR PLANO DE RESTAURAÇÃO", key="classico15"):
+            if veiculo_rest.strip():
+                with st.spinner("Montando plano..."):
+                    prompt = (
+                        f"Crie um plano completo de restauração.\\n"
+                        f"Veículo: {veiculo_rest}. Orçamento: R${orcamento_rest}. Estado atual: {estado_atual_rest}.\\n"
+                        f"Prazo: {prazo_rest or 'flexível'}. Descrição: {descricao_rest or 'não detalhada'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🛠️ PLANO DE RESTAURAÇÃO — {veiculo_rest.upper()}\\n"
+                        f"Orçamento: R${orcamento_rest} | Prazo: {prazo_rest or 'flexível'}\\n\\n"
+                        f"📋 ORDEM IDEAL DOS SERVIÇOS:\\n"
+                        f"1. [serviço] — Complexidade: [X] — Tempo estimado: [X] — Custo aproximado: R$[X]\\n"
+                        f"[continue numerando todos os serviços necessários, na ordem lógica de execução]\\n\\n"
+                        f"🎯 PRIORIDADES (o que fazer primeiro mesmo com orçamento limitado):\\n[itens críticos de segurança/mecânica antes de estética]\\n\\n"
+                        f"📅 CRONOGRAMA SUGERIDO:\\n[divisão por fases/meses considerando o prazo informado]\\n\\n"
+                        f"💰 DISTRIBUIÇÃO DO ORÇAMENTO:\\n[como dividir os R${orcamento_rest} entre as categorias de serviço]\\n\\n"
+                        f"⚠️ RISCOS DESSE TIPO DE RESTAURAÇÃO:\\n[o que costuma sair do orçamento/prazo nesse tipo de projeto]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Restauracao", veiculo_rest, res)
+                    st.session_state['rest_temp'] = res
+            else:
+                st.warning("Informe o veículo.")
+
+        if st.session_state.get('rest_temp'):
+            st.markdown(f"<div class='card-purple'>{st.session_state['rest_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['rest_temp'], file_name="plano_restauracao.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_8"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_rest", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Restauracao','tema':veiculo_rest if 'veiculo_rest' in dir() else '','conteudo':st.session_state['rest_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # DIAGNÓSTICO MECÂNICO
+        # ========================
+
+    with _tab_Diagnostico:
+        st.header("🔧 Diagnóstico Mecânico")
+
+        veiculo_diag = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_diag")
+        problema_diag = st.text_area("📝 Descreva o problema:", height=120,
+            placeholder="ex: O motor está fazendo um ruído metálico quando acelero, principalmente em baixa rotação...", key="classico3_d2")
+
+        if st.button("🔧 DIAGNOSTICAR", key="classico16"):
+            if problema_diag.strip():
+                with st.spinner("Analisando..."):
+                    prompt = (
+                        f"Faça um diagnóstico mecânico preliminar.\\n"
+                        f"Veículo: {veiculo_diag}. Problema: {problema_diag}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔧 DIAGNÓSTICO — {veiculo_diag.upper()}\\n\\n"
+                        f"🔍 POSSÍVEIS CAUSAS (da mais para a menos provável):\\n[liste com base no sintoma descrito e no conhecimento sobre esse modelo]\\n\\n"
+                        f"⚙️ COMPONENTES ENVOLVIDOS:\\n[peças que tipicamente causam esse sintoma]\\n\\n"
+                        f"🧪 TESTES RECOMENDADOS:\\n[testes simples que ajudam a confirmar a causa]\\n\\n"
+                        f"🚨 NÍVEL DE URGÊNCIA: [Baixo/Médio/Alto/Crítico]\\n[justificativa — é seguro continuar rodando?]\\n\\n"
+                        f"🔧 RECOMENDAÇÃO:\\n[orientação final, sempre recomendando confirmação com mecânico especializado em clássicos]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Diagnostico", problema_diag[:60], res)
+                    st.session_state['diag_temp'] = res
+            else:
+                st.warning("Descreva o problema.")
+
+        if st.session_state.get('diag_temp'):
+            st.markdown(f"<div class='card-red'>{st.session_state['diag_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['diag_temp'], file_name="diagnostico.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_9"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_diag", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'Diagnostico','tema':problema_diag[:60] if 'problema_diag' in dir() else '','conteudo':st.session_state['diag_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # GUIA DE PEÇAS
+        # ========================
+
+    with _tab_Pecas:
+        st.header("📦 Guia de Peças")
+
+        veiculo_pecas = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_pecas")
+        peca_busca = st.text_input("🔧 Peça que você procura:", placeholder="ex: lanterna traseira, carburador, friso lateral...", key="ti_classico_107")
+
+        if st.button("📦 BUSCAR INFORMAÇÕES DA PEÇA", key="classico17"):
+            if peca_busca.strip() and veiculo_pecas.strip():
+                with st.spinner("Buscando informações..."):
+                    prompt = (
+                        f"Forneça um guia completo sobre esta peça.\\n"
+                        f"Veículo: {veiculo_pecas}. Peça: {peca_busca}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📦 {peca_busca.upper()} — {veiculo_pecas.upper()}\\n\\n"
+                        f"🏭 PEÇA ORIGINAL:\\n[características da peça original de fábrica]\\n\\n"
+                        f"🔄 PEÇAS REPRODUZIDAS:\\n[se existem reproduções no mercado e qualidade geral]\\n\\n"
+                        f"✅ COMPATIBILIDADE:\\n[outros modelos/anos que usam peça igual ou similar]\\n\\n"
+                        f"🔍 DIFICULDADE PARA ENCONTRAR:\\n[Fácil/Moderada/Difícil/Raríssima — e onde costuma-se procurar: clubes, feiras, importação]\\n\\n"
+                        f"⚠️ CUIDADOS NA COMPRA:\\n[como verificar se é original, problemas comuns em peças usadas desse tipo]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Pecas", f"{veiculo_pecas} — {peca_busca}", res)
+                    st.session_state['pecas_temp'] = res
+            else:
+                st.warning("Informe o veículo e a peça.")
+
+        if st.session_state.get('pecas_temp'):
+            st.markdown(f"<div class='card-green'>{st.session_state['pecas_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['pecas_temp'], file_name="guia_pecas.txt", mime="text/plain",
+        key="dl_classico_10"
+    )
+
+        # ========================
+        # DOCUMENTAÇÃO
+        # ========================
+
+    with _tab_Documentacao:
+        st.header("🧾 Documentação")
+
+        tema_doc = st.selectbox("Tema:", [
+            "Transferência de propriedade", "Placa preta — o que é e como solicitar",
+            "Regularização de veículo sem documento", "Veículos modificados — documentação",
+            "Importados — nacionalização e documentação", "Compra em leilão — cuidados documentais",
+            "Licenciamento de veículo antigo", "Outro (perguntar)",
+        ], key="classico2_d2")
+        pergunta_doc = ""
+        if tema_doc == "Outro (perguntar)":
+            pergunta_doc = st.text_input("Sua dúvida sobre documentação:", key="ti_classico_108")
+
+        if st.button("🧾 EXPLICAR", key="classico18"):
+            topico = pergunta_doc if tema_doc == "Outro (perguntar)" and pergunta_doc.strip() else tema_doc
+            if topico.strip():
+                with st.spinner("Preparando explicação..."):
+                    prompt = (
+                        f"Explique de forma clara e prática: {topico}, no contexto de carros clássicos no Brasil.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧾 {topico.upper()}\\n\\n"
+                        f"📖 O QUE É / COMO FUNCIONA:\\n[explicação clara]\\n\\n"
+                        f"📋 PASSO A PASSO GERAL:\\n[processo típico — sempre observando que procedimentos variam por estado/DETRAN]\\n\\n"
+                        f"📄 DOCUMENTOS GERALMENTE NECESSÁRIOS:\\n[lista]\\n\\n"
+                        f"⚠️ CUIDADOS E PEGADINHAS COMUNS:\\n[erros frequentes nesse processo]\\n\\n"
+                        f"💡 DICA:\\n[1 dica prática]\\n\\n"
+                        f"📍 IMPORTANTE: procedimentos de DETRAN variam por estado — confirme sempre no órgão local."
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Documentacao", topico, res)
+                    st.session_state['doc_temp'] = res
+            else:
+                st.warning("Escolha ou descreva o tema.")
+
+        if st.session_state.get('doc_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['doc_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['doc_temp'], file_name="documentacao.txt", mime="text/plain",
+        key="dl_classico_11"
+    )
+
+        # ========================
+        # SIMULADOR DE PLACA PRETA
+        # ========================
+
+    with _tab_PlacaPreta:
+        st.header("🏅 Simulador de Placa Preta")
+
+        st.markdown('''<div class="disclaimer-avaliacao">
+        🏅 <strong>Importante:</strong> a certificação oficial de Placa Preta é feita por clubes de marca filiados à
+        FBVA (Federação Brasileira de Veículos Antigos) com vistoria presencial. Esta é apenas uma PRÉ-AVALIAÇÃO
+        educativa — não garante aprovação real.
+        </div>''', unsafe_allow_html=True)
+
+        veiculo_pp = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_pp")
+        idade_pp = st.text_input("📅 Idade do veículo (anos):", placeholder="ex: 35 anos", key="ti_classico_109")
+        descricao_pp = st.text_area("📝 Descreva o estado de originalidade e conservação:", height=150,
+            placeholder="ex: Veículo com 35 anos, motor original, pintura original com pequenos retoques, interior original, documentação em dia...", key="classico1_d2")
+
+        if st.button("🏅 FAZER PRÉ-AVALIAÇÃO", key="classico19"):
+            if descricao_pp.strip() and veiculo_pp.strip():
+                with st.spinner("Avaliando critérios..."):
+                    prompt = (
+                        f"Faça uma pré-avaliação educativa para certificação de Placa Preta.\\n"
+                        f"Veículo: {veiculo_pp}. Idade: {idade_pp or 'não informada'}.\\n"
+                        f"Descrição: {descricao_pp}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏅 PRÉ-AVALIAÇÃO — {veiculo_pp.upper()}\\n\\n"
+                        f"📅 CRITÉRIO DE IDADE:\\n[geralmente exige-se 30+ anos — avalie se atende com base na idade informada]\\n\\n"
+                        f"✅ CRITÉRIOS QUE PARECEM ATENDIDOS:\\n[com base na descrição]\\n\\n"
+                        f"⚠️ CRITÉRIOS QUE MERECEM ATENÇÃO:\\n[pontos que costumam ser exigidos e podem não estar claros na descrição]\\n\\n"
+                        f"📊 ESTIMATIVA DE CHANCE DE APROVAÇÃO: [Baixa/Moderada/Alta]\\n"
+                        f"[IMPORTANTE: deixe claro que isso é uma estimativa educativa, não uma garantia]\\n\\n"
+                        f"📋 PRÓXIMOS PASSOS REAIS:\\n[como buscar a certificação oficial — clube de marca filiado à FBVA]"
+                    )
+                    res = classicos_ia(prompt, "Seja conservador nas estimativas de aprovação — sempre deixe claro que apenas a vistoria presencial oficial determina a certificação real.")
+                    salvar_consulta("PlacaPreta", veiculo_pp, res)
+                    st.session_state['pp_temp'] = res
+            else:
+                st.warning("Informe o veículo e a descrição.")
+
+        if st.session_state.get('pp_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['pp_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['pp_temp'], file_name="placa_preta.txt", mime="text/plain",
+        key="dl_classico_12"
+    )
+
+        # ========================
+        # RADAR DO COLECIONADOR
+        # ========================
+
+    with _tab_Radar:
+        st.header("💎 Radar do Colecionador")
+        st.markdown(DISCLAIMER_AVALIACAO, unsafe_allow_html=True)
+
+        tema_radar = st.selectbox("O que você quer explorar:", [
+            "Os clássicos mais valorizados (tendência histórica)", "Potencial de valorização futura",
+            "Melhores oportunidades (preço acessível + potencial)", "Joias esquecidas (pouco conhecidos)",
+            "Índice de raridade de um modelo específico", "Índice de desejo (mais procurados)",
+            "Mercado nacional vs internacional", "Modelos possivelmente supervalorizados",
+            "Melhor momento para comprar/vender", "Próximos clássicos (modelos recentes com potencial)",
+        ], key="select_tema_radar")
+        categoria_radar = st.text_input("🎯 Categoria ou modelo específico (opcional):", placeholder="ex: nacionais dos anos 70, Opala, esportivos importados...", key="ti_classico_110")
+
+        if st.button("💎 EXPLORAR TENDÊNCIAS", key="classico20"):
+            with st.spinner("Analisando tendências..."):
+                prompt = (
+                    f"Explore o tema: {tema_radar}, no contexto do mercado de carros clássicos.\\n"
+                    f"Categoria/modelo de interesse: {categoria_radar or 'geral, sem foco específico'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"💎 {tema_radar.upper()}\\n\\n"
+                    f"📊 ANÁLISE:\\n[desenvolva o tema com base em padrões históricos conhecidos do mercado de clássicos]\\n\\n"
+                    f"🚗 MODELOS/EXEMPLOS RELEVANTES:\\n[liste exemplos concretos relacionados ao tema, com explicação breve de cada]\\n\\n"
+                    f"💡 INSIGHT PARA O COLECIONADOR:\\n[1-2 conclusões práticas]\\n\\n"
+                    f"⚠️ LEMBRETE:\\n[reforçar que são tendências históricas gerais, não previsões garantidas, e recomendar pesquisa em anúncios reais e tabelas especializadas]"
+                )
+                res = classicos_ia(prompt)
+                salvar_consulta("Radar", tema_radar, res)
+                st.session_state['radar_temp'] = res
+
+        if st.session_state.get('radar_temp'):
+            st.markdown(f"<div class='card-gold'>{st.session_state['radar_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['radar_temp'], file_name="radar_colecionador.txt", mime="text/plain",
+        key="dl_classico_13"
+    )
+
+        # ========================
+        # LINHA DO TEMPO
+        # ========================
+
+    with _tab_Timeline:
+        st.header("🏁 Linha do Tempo")
+
+        modelo_time = st.text_input("🚗 Modelo (sem ano específico):", value=st.session_state.veiculo_padrao.split(' ')[0] if st.session_state.veiculo_padrao else "", placeholder="ex: Fusca, Opala, Maverick...", key="ti_classico_111")
+
+        if st.button("🏁 VER EVOLUÇÃO ANO A ANO", key="classico21"):
+            if modelo_time.strip():
+                with st.spinner("Montando linha do tempo..."):
+                    prompt = (
+                        f"Crie uma linha do tempo da evolução do modelo: {modelo_time}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏁 LINHA DO TEMPO — {modelo_time.upper()}\\n\\n"
+                        f"[Para cada geração/período importante de mudança:]\\n"
+                        f"📅 [PERÍODO/ANOS]\\n"
+                        f"Principais mudanças: [motor, painel, lanternas, faróis, interior, suspensão, rodas, acabamentos — "
+                        f"o que mudou especificamente nesse período]\\n\\n"
+                        f"[Repita para todos os períodos relevantes da produção do modelo]\\n\\n"
+                        f"🏆 GERAÇÃO MAIS DESEJADA PELOS COLECIONADORES:\\n[qual período/ano é mais procurado e por quê]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Timeline", modelo_time, res)
+                    st.session_state['timeline_temp'] = res
+            else:
+                st.warning("Informe o modelo.")
+
+        if st.session_state.get('timeline_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['timeline_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['timeline_temp'], file_name="linha_do_tempo.txt", mime="text/plain",
+        key="dl_classico_14"
+    )
+
+        # ========================
+        # HISTÓRIA DO MODELO
+        # ========================
+
+    with _tab_Historia:
+        st.header("🌎 História do Modelo")
+
+        modelo_hist = st.text_input("🚗 Modelo:", value=st.session_state.veiculo_padrao.split(' ')[0] if st.session_state.veiculo_padrao else "", placeholder="ex: Fusca, Opala, Maverick...", key="ti_classico_112")
+
+        if st.button("🌎 CONTAR A HISTÓRIA", key="classico22"):
+            if modelo_hist.strip():
+                with st.spinner("Reunindo a história..."):
+                    prompt = (
+                        f"Conte a história completa do modelo: {modelo_hist}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🌎 A HISTÓRIA DO {modelo_hist.upper()}\\n\\n"
+                        f"💡 ORIGEM DO PROJETO:\\n[por que e como o veículo foi criado]\\n\\n"
+                        f"🌍 CONTEXTO HISTÓRICO:\\n[o que acontecia no mundo/país quando foi lançado]\\n\\n"
+                        f"👨‍🔧 DESIGNERS E ENGENHEIROS:\\n[pessoas-chave por trás do projeto, se conhecidas]\\n\\n"
+                        f"🏁 SUCESSOS NAS PISTAS:\\n[se aplicável, conquistas em corridas/rally]\\n\\n"
+                        f"📺 PROPAGANDAS DA ÉPOCA:\\n[como o veículo era anunciado, slogans marcantes]\\n\\n"
+                        f"💡 CURIOSIDADES:\\n[2-3 fatos pouco conhecidos]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Historia", modelo_hist, res)
+                    st.session_state['hist_temp'] = res
+            else:
+                st.warning("Informe o modelo.")
+
+        if st.session_state.get('hist_temp'):
+            st.markdown(f"<div class='card-dark'>{st.session_state['hist_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['hist_temp'], file_name="historia_modelo.txt", mime="text/plain",
+        key="dl_classico_15"
+    )
+
+        # ========================
+        # DIÁRIO DA RESTAURAÇÃO
+        # ========================
+
+    with _tab_Diario:
+        st.header("🏕️ Diário da Restauração")
+        st.markdown("Registre a evolução do seu projeto.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            etapa_diario = st.text_input("🔧 Etapa/serviço realizado:", placeholder="ex: Troca do sistema de freios", key="ti_classico_113")
+            gasto_diario = st.number_input("💰 Gasto nesta etapa (R$):", min_value=0.0, value=0.0, step=50.0, key="classico23")
+        with col2:
+            fornecedor_diario = st.text_input("🏪 Fornecedor/oficina (opcional):", placeholder="ex: Auto Peças Clássicas, Oficina do João...", key="ti_classico_114")
+            horas_diario = st.number_input("⏱️ Horas trabalhadas:", min_value=0.0, value=0.0, step=0.5, key="classico24")
+
+        notas_diario = st.text_area("📝 Notas sobre essa etapa:", height=100, placeholder="ex: Encontrei peças originais NOS, processo mais difícil do que esperado...", key="classico25")
+
+        if st.button("📝 REGISTRAR NO DIÁRIO", key="classico26"):
+            if etapa_diario.strip():
+                st.session_state.diario_restauracao.append({
+                    'data': datetime.now().strftime('%d/%m/%Y'),
+                    'etapa': etapa_diario, 'gasto': gasto_diario, 'fornecedor': fornecedor_diario,
+                    'horas': horas_diario, 'notas': notas_diario,
+                })
+                st.success("✅ Registrado no diário!")
+                st.rerun()
+            else:
+                st.warning("Descreva a etapa.")
+
+        if st.session_state.diario_restauracao:
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            total_gasto = sum(e['gasto'] for e in st.session_state.diario_restauracao)
+            total_horas = sum(e['horas'] for e in st.session_state.diario_restauracao)
+
+            c1, c2, c3 = st.columns(3)
+            c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.diario_restauracao)}</div><div>Etapas registradas</div></div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='stat-box'><div class='stat-numero'>R${total_gasto:,.0f}</div><div>Gasto total</div></div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_horas:.0f}h</div><div>Horas trabalhadas</div></div>", unsafe_allow_html=True)
+
+            st.markdown("### 📖 Histórico de Etapas")
+            for i, etapa in enumerate(reversed(st.session_state.diario_restauracao)):
+                idx_real = len(st.session_state.diario_restauracao) - 1 - i
+                with st.expander(f"🔧 {etapa['etapa']} — {etapa['data']} — R${etapa['gasto']:,.0f}"):
+                    st.markdown(f"**Fornecedor:** {etapa.get('fornecedor','não informado')}")
+                    st.markdown(f"**Horas trabalhadas:** {etapa.get('horas',0)}h")
+                    if etapa.get('notas'):
+                        st.markdown(f"**Notas:** {etapa['notas']}")
+                    if st.button("🗑️ Remover", key=f"del_diario_{i}"):
+                        st.session_state.diario_restauracao.pop(idx_real)
+                        st.rerun()
+
+            if st.button("🤖 GERAR RESUMO COMPLETO DO PROJETO", key="classico27"):
+                with st.spinner("Gerando resumo..."):
+                    etapas_txt = "\\n".join([f"- {e['etapa']} ({e['data']}): R${e['gasto']:,.0f}, {e['horas']}h" for e in st.session_state.diario_restauracao])
+                    prompt = (
+                        f"Crie um resumo completo do projeto de restauração com base no histórico.\\n"
+                        f"Veículo: {st.session_state.veiculo_padrao}.\\n"
+                        f"Etapas registradas:\\n{etapas_txt}\\n"
+                        f"Total gasto: R${total_gasto:,.2f}. Total horas: {total_horas}h.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🏕️ RESUMO DO PROJETO DE RESTAURAÇÃO\\n\\n"
+                        f"📊 VISÃO GERAL:\\n[resumo do progresso até agora]\\n\\n"
+                        f"💰 ANÁLISE DE CUSTOS:\\n[comentário sobre o investimento até agora]\\n\\n"
+                        f"📋 PRÓXIMAS ETAPAS SUGERIDAS:\\n[com base no que já foi feito, o que tipicamente viria a seguir]\\n\\n"
+                        f"🏆 VALOR AGREGADO ESTIMADO:\\n[como esse investimento tende a impactar o valor do veículo — estimativa educativa]"
+                    )
+                    res = classicos_ia(prompt)
+                    st.session_state['resumo_diario_temp'] = res
+
+            if st.session_state.get('resumo_diario_temp'):
+                st.markdown(f"<div class='card-purple'>{st.session_state['resumo_diario_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar resumo (.txt)", data=st.session_state['resumo_diario_temp'], file_name="resumo_restauracao.txt", mime="text/plain",
+        key="dl_classico_16"
+    )
+
+        # ========================
+        # SOM ORIGINAL
+        # ========================
+
+    with _tab_Som:
+        st.header("🔊 Som Original")
+
+        veiculo_som = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_som")
+
+        if st.button("🔊 DESCREVER SOM ORIGINAL", key="classico28"):
+            if veiculo_som.strip():
+                with st.spinner("Descrevendo..."):
+                    prompt = (
+                        f"Descreva como era o som/ronco original deste veículo: {veiculo_som}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🔊 SOM ORIGINAL — {veiculo_som.upper()}\\n\\n"
+                        f"🎵 CARACTERÍSTICA DO RONCO:\\n[descrição sonora detalhada — grave, agudo, rítmico, etc]\\n\\n"
+                        f"⚙️ CONFIGURAÇÃO DE FÁBRICA:\\n[motor, escapamento original que geravam esse som]\\n\\n"
+                        f"🔄 DIFERENÇAS ENTRE VERSÕES DE MOTOR:\\n[se houver múltiplas opções de motor, como o som varia]\\n\\n"
+                        f"🛠️ ESCAPAMENTOS ALTERNATIVOS DA ÉPOCA:\\n[opções de escape esportivo que existiam para esse modelo]\\n\\n"
+                        f"💡 CURIOSIDADE SONORA:\\n[algo interessante sobre o som desse modelo específico]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("Som", veiculo_som, res)
+                    st.session_state['som_temp'] = res
+            else:
+                st.warning("Informe o veículo.")
+
+        if st.session_state.get('som_temp'):
+            st.markdown(f"<div class='card'>{st.session_state['som_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['som_temp'], file_name="som_original.txt", mime="text/plain",
+        key="dl_classico_17"
+    )
+
+        # ========================
+        # QUIZ DO COLECIONADOR
+        # ========================
+
+    with _tab_Quiz:
+        st.header("🧠 Quiz do Colecionador")
+        st.markdown(f"Pontuação atual: **{st.session_state.quiz_pontuacao} pontos** | Nível: **{st.session_state.quiz_nivel_atual}**")
+
+        nivel_quiz = st.selectbox("Escolha o nível:", ["Iniciante","Intermediário","Avançado","Especialista","Mestre do Antigomobilismo"], key="select_nivel_quiz")
+        tema_quiz = st.text_input("Tema específico (opcional):", placeholder="ex: carros nacionais, motores, história geral...", key="ti_classico_115")
+
+        if st.button("🧠 GERAR PERGUNTA", key="classico29"):
+            with st.spinner("Preparando pergunta..."):
+                prompt = (
+                    f"Crie 1 pergunta de quiz sobre carros clássicos, nível {nivel_quiz}.\\n"
+                    f"Tema: {tema_quiz or 'geral'}.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🧠 PERGUNTA ({nivel_quiz}):\\n[a pergunta]\\n\\n"
+                    f"A) [opção]\\nB) [opção]\\nC) [opção]\\nD) [opção]\\n\\n"
+                    f"✅ RESPOSTA CORRETA: [letra]\\n"
+                    f"📖 EXPLICAÇÃO: [por que essa é a resposta, com contexto interessante]"
+                )
+                res = classicos_ia(prompt)
+                st.session_state['quiz_pergunta_temp'] = res
+                st.session_state['quiz_respondido'] = False
+
+        if st.session_state.get('quiz_pergunta_temp'):
+            partes = st.session_state['quiz_pergunta_temp'].split('✅ RESPOSTA CORRETA')
+            st.markdown(f"<div class='card'>{partes[0]}</div>", unsafe_allow_html=True)
+
+            if not st.session_state.get('quiz_respondido'):
+                if st.button("👁️ VER RESPOSTA", key="classico30"):
+                    st.session_state['quiz_respondido'] = True
+                    st.rerun()
+            else:
+                st.markdown(f"<div class='card-gold'>✅ RESPOSTA CORRETA{partes[1] if len(partes)>1 else ''}</div>", unsafe_allow_html=True)
+                col_acertei, col_errei = st.columns(2)
+                with col_acertei:
+                    if st.button("✅ Acertei!", key="classico31"):
+                        pontos = {"Iniciante":5,"Intermediário":10,"Avançado":15,"Especialista":20,"Mestre do Antigomobilismo":30}
+                        st.session_state.quiz_pontuacao += pontos.get(nivel_quiz, 10)
+                        st.session_state.quiz_nivel_atual = nivel_quiz
+                        st.success(f"🎉 +{pontos.get(nivel_quiz,10)} pontos!")
+                with col_errei:
+                    if st.button("❌ Errei", key="classico32"):
+                        st.info("Sem problema, vamos para a próxima!")
+
+        # ========================
+        # ENGENHARIA EXPLICADA
+        # ========================
+
+    with _tab_Engenharia:
+        st.header("🔬 Engenharia Explicada")
+
+        tema_eng = st.selectbox("Componente:", [
+            "Carburador", "Distribuidor", "Suspensão", "Diferencial", "Câmbio (manual de época)",
+            "Freios a tambor vs disco", "Direção mecânica/hidráulica", "Sistema elétrico de 6V vs 12V",
+        ], key="select_tema_eng")
+
+        if st.button("🔬 EXPLICAR", key="classico33"):
+            with st.spinner("Preparando explicação..."):
+                prompt = (
+                    f"Explique de forma simples e visual: {tema_eng}, no contexto de carros clássicos.\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"🔬 {tema_eng.upper()}\\n\\n"
+                    f"📖 O QUE É E PARA QUE SERVE:\\n[explicação simples]\\n\\n"
+                    f"⚙️ COMO FUNCIONA:\\n[explicação do mecanismo, passo a passo]\\n\\n"
+                    f"🔧 PROBLEMAS COMUNS EM CLÁSSICOS:\\n[o que tipicamente dá problema nesse componente em carros antigos]\\n\\n"
+                    f"🛠️ MANUTENÇÃO BÁSICA:\\n[cuidados que o proprietário pode ter]\\n\\n"
+                    f"💡 CURIOSIDADE TÉCNICA:\\n[1 fato interessante sobre a evolução desse componente]"
+                )
+                res = classicos_ia(prompt)
+                salvar_consulta("Engenharia", tema_eng, res)
+                st.session_state['eng_temp'] = res
+
+        if st.session_state.get('eng_temp'):
+            st.markdown(f"<div class='card-blue'>{st.session_state['eng_temp']}</div>", unsafe_allow_html=True)
+            st.download_button("📋 Baixar (.txt)", data=st.session_state['eng_temp'], file_name="engenharia.txt", mime="text/plain",
+        key="dl_classico_18"
+    )
+
+        # ========================
+        # DNA DO AUTOMÓVEL
+        # ========================
+
+    with _tab_DNA:
+        st.header("🧬 DNA do Automóvel")
+        st.markdown("Uma viagem no tempo até a época em que seu clássico nasceu.")
+
+        veiculo_dna = st.text_input("🚗 Modelo e ano:", value=st.session_state.veiculo_padrao, key="veiculo_dna")
+
+        if st.button("🧬 VIAJAR NO TEMPO", key="classico34"):
+            if veiculo_dna.strip():
+                with st.spinner("Reconstruindo a época..."):
+                    prompt = (
+                        f"Reconstrua a época em que este veículo nasceu: {veiculo_dna}\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"🧬 DNA — {veiculo_dna.upper()}\\n\\n"
+                        f"📅 COMO ERA O BRASIL E O MUNDO NAQUELE ANO:\\n[contexto histórico geral]\\n\\n"
+                        f"💰 QUANTO CUSTAVA O CARRO NO LANÇAMENTO:\\n[valor aproximado na época, em moeda da época]\\n\\n"
+                        f"🏭 COMO FUNCIONAVA A FÁBRICA:\\n[contexto da produção na época]\\n\\n"
+                        f"📰 PRINCIPAIS ACONTECIMENTOS HISTÓRICOS DO ANO:\\n[2-3 eventos marcantes]\\n\\n"
+                        f"⛽ PREÇO DOS COMBUSTÍVEIS NA ÉPOCA:\\n[contexto aproximado]\\n\\n"
+                        f"🎵 MÚSICAS MAIS FAMOSAS DA ÉPOCA:\\n[2-3 exemplos]\\n\\n"
+                        f"🛣️ COMO ERAM AS ESTRADAS:\\n[contexto da infraestrutura da época]\\n\\n"
+                        f"🏁 PRINCIPAIS CONCORRENTES:\\n[outros modelos que disputavam o mesmo mercado]\\n\\n"
+                        f"📈 SALÁRIO MÍNIMO E PODER DE COMPRA:\\n[contexto aproximado — quantos salários mínimos custava o carro]\\n\\n"
+                        f"👨‍👩‍👧 PERFIL TÍPICO DO COMPRADOR:\\n[quem comprava esse carro na época]"
+                    )
+                    res = classicos_ia(prompt)
+                    salvar_consulta("DNA", veiculo_dna, res)
+                    st.session_state['dna_temp'] = res
+            else:
+                st.warning("Informe o veículo.")
+
+        if st.session_state.get('dna_temp'):
+            st.markdown(f"<div class='card-dark'>{st.session_state['dna_temp']}</div>", unsafe_allow_html=True)
+            st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['dna_temp'], file_name="dna_automovel.txt", mime="text/plain", use_container_width=True,
+        key="dl_classico_19"
+    )
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_dna", use_container_width=True):
+                    st.session_state.consultas_salvas.append({'modulo':'DNA','tema':veiculo_dna if 'veiculo_dna' in dir() else '','conteudo':st.session_state['dna_temp'],'data':datetime.now().strftime('%d/%m %H:%M')})
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # CONSULTOR 24 HORAS
+        # ========================
+
+    with _tab_Consultor:
+        st.header("🤖 Consultor 24 Horas")
+        st.markdown("Pergunte qualquer coisa sobre qualquer carro antigo.")
+
+        if 'chat_consultor' not in st.session_state:
+            st.session_state.chat_consultor = []
+        if 'consultor_key' not in st.session_state:
+            st.session_state.consultor_key = 0
+
+        if st.session_state.chat_consultor:
+            for msg in st.session_state.chat_consultor:
+                if msg['role'] == 'user':
+                    st.markdown(f"<div style='background:#FEF3E2;border:1px solid #B45309;border-radius:12px 12px 4px 12px;padding:12px 16px;margin:8px 0;'><b>Você:</b> {msg['content']}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='card-dark' style='margin:8px 0;'><b>🚗 Consultor:</b><br>{msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown('''<div style="background:#FEF3E2;border:1px dashed #B45309;border-radius:12px;padding:16px;text-align:center;">
+            🤖 <strong>Pergunte qualquer coisa!</strong> Ex: "Qual a diferença entre o Maverick GT e o Maverick comum?",
+            "Vale a pena trocar o carburador original por injeção eletrônica?"
+            </div>''', unsafe_allow_html=True)
+
+        pergunta_consultor = st.text_input("Sua pergunta:", key=f"consultor_input_{st.session_state.consultor_key}", placeholder="Pergunte qualquer coisa sobre carros clássicos...")
+
+        col_env, col_limpar = st.columns([3, 1])
+        with col_env:
+            if st.button("📤 PERGUNTAR", key="classico35"):
+                if pergunta_consultor.strip():
+                    with st.spinner("Consultando..."):
+                        historico_msgs = [{"role": m["role"], "content": m["content"]} for m in st.session_state.chat_consultor[-10:]]
+                        resp = classicos_ia(pergunta_consultor, "Responda como um restaurador experiente, historiador e avaliador de mercado ao mesmo tempo. Seja didático e apaixonado.")
+                    st.session_state.chat_consultor.append({"role": "user", "content": pergunta_consultor})
+                    st.session_state.chat_consultor.append({"role": "assistant", "content": resp})
+                    st.session_state.consultor_key += 1
+                    salvar_consulta("Consultor", pergunta_consultor[:60], resp)
+                    st.rerun()
+                else:
+                    st.warning("Digite sua pergunta.")
+        with col_limpar:
+            if st.button("🗑️ Limpar", key="classico36"):
+                st.session_state.chat_consultor = []
+                st.rerun()
+
+        # ========================
+        # BIBLIOTECA
+        # ========================
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+    "© 2026 Clássicos IA — Especialista em Carros Antigos com IA · MeusAgentesIA.com.br"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
+    "guardiao_pessoal": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+import re
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="GUARDIÃO PESSOAL", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+# --- ESTILO CSS ---
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#FDFAF6; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#92400E,#78350F) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#78350F,#5C2D0A) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#3D2B1F !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#FDF8F0,#FAF0E6); padding:20px; border-radius:14px; border:1px solid #D4B896; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#3D2B1F !important; }
+
+    .card-dark { background:linear-gradient(135deg,#FAF0E6,#F5E6D3); padding:20px; border-radius:14px; border:1px solid #C4956A; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#3D2B1F !important; }
+
+    .card-green { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #D4B896; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#3D2B1F !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#7C5C3E !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #D4B896; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#3D2B1F !important; }
+
+    .badge { background:#92400E; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#D4B896,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #D4B896; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#3D2B1F !important; }
+
+    .chat-persona { background:#FDFAF6; border:1px solid #D4B896; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#3D2B1F !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #D4B896; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#3D2B1F !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #D4B896; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#3D2B1F !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #D4B896; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#3D2B1F !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#7C5C3E !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
+@st.cache_resource
+def get_cache_guardiao():
+    return {"perfis": {}}
+
+_cache = get_cache_guardiao()
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+CHAVES_SALVAR = [
+    'usuario', 'historico_relatorios', 'relatorios_salvos',
+    'cidade_padrao', 'tem_filhos', 'tem_idosos_em_casa',
+    'conquistas_desbloqueadas', 'checklist_diario_status',
+    'horarios_trajeto_historico', 'tempo_total_planejamento_min',
+]
+
+def gerar_json_sessao() -> str:
+    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
+
+def carregar_json_sessao(dados):
+    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
+    _pref = (
+        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
+        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
+    )
+    import re as _re
+    for k, v in dados.items():
+        if k in _bloq: continue
+        if any(k.startswith(p) for p in _pref): continue
+        if _re.match(r'.+_\\d+$', k): continue
+        st.session_state[k] = v
+
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_relatorio(tipo: str, local: str, conteudo: str, indice_seguranca: int = None):
+    st.session_state.historico_relatorios.append({
+        'data':             datetime.now().strftime('%d/%m %H:%M'),
+        'tipo':             tipo,
+        'local':            local,
+        'conteudo':         conteudo,
+        'indice_seguranca': indice_seguranca,
+    })
+    st.session_state.tempo_total_planejamento_min += 4  # estimativa de tempo gasto por análise
+    verificar_conquistas()
+
+def extrair_indice_seguranca(texto: str) -> int:
+    '''Extrai um índice 0-100 do texto, ou estima com base no nível de risco mencionado.'''
+    match = re.search(r'(\\d{1,3})\\s*/\\s*100', texto)
+    if match:
+        valor = int(match.group(1))
+        return min(100, max(0, valor))
+    # fallback: estima pelo nível de risco textual
+    texto_lower = texto.lower()
+    if "elevado" in texto_lower or "🔴" in texto:
+        return 35
+    elif "moderado" in texto_lower or "🟡" in texto:
+        return 62
+    else:
+        return 85
+
+CONQUISTAS_DEFINIDAS = [
+    {"id": "primeira_analise",  "nome": "Primeira Análise",         "emoji": "🏅", "condicao": lambda s: len(s.historico_relatorios) >= 1},
+    {"id": "primeiro_trajeto",  "nome": "Primeiro Trajeto Seguro",   "emoji": "🚶", "condicao": lambda s: any(r['tipo']=='Trajeto' for r in s.historico_relatorios)},
+    {"id": "primeira_viagem",   "nome": "Primeira Viagem Segura",    "emoji": "✈️", "condicao": lambda s: any(r['tipo']=='Viagem' for r in s.historico_relatorios)},
+    {"id": "casa_protegida",    "nome": "Casa Protegida",            "emoji": "🏠", "condicao": lambda s: any(r['tipo']=='Residência' for r in s.historico_relatorios)},
+    {"id": "dez_analises",      "nome": "10 Análises Realizadas",    "emoji": "🎯", "condicao": lambda s: len(s.historico_relatorios) >= 10},
+    {"id": "especialista",      "nome": "Especialista em Prevenção", "emoji": "🛡️", "condicao": lambda s: len(s.historico_relatorios) >= 25},
+    {"id": "familia_protegida", "nome": "Família Protegida",         "emoji": "👨‍👩‍👧", "condicao": lambda s: any(r['tipo']=='Infantil' for r in s.historico_relatorios) and any(r['tipo']=='Idosos' for r in s.historico_relatorios)},
+    {"id": "todas_categorias",  "nome": "Proteção Completa",         "emoji": "🏆", "condicao": lambda s: len(set(r['tipo'] for r in s.historico_relatorios)) >= 5},
+]
+
+def verificar_conquistas():
+    '''Checa se alguma nova conquista foi desbloqueada e retorna lista de novas.'''
+    novas = []
+    for c in CONQUISTAS_DEFINIDAS:
+        if c['id'] not in st.session_state.conquistas_desbloqueadas:
+            if c['condicao'](st.session_state):
+                st.session_state.conquistas_desbloqueadas.append(c['id'])
+                novas.append(c)
+    return novas
+
+def calcular_progresso_categoria(tipo: str, meta: int = 5) -> int:
+    '''Calcula % de progresso (0-100) numa categoria, com teto na meta.'''
+    count = sum(1 for r in st.session_state.historico_relatorios if r['tipo'] == tipo)
+    return min(100, round(count / meta * 100))
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+defaults = {
+    'etapa':                "Login",
+    'usuario':              "",
+    'api_key':              "",
+    'pagina':               "Home",
+    'historico_relatorios': [],
+    'relatorios_salvos':    [],
+    'cidade_padrao':        "",
+    'tem_filhos':           False,
+    'tem_idosos_em_casa':   False,
+    'conquistas_desbloqueadas':   [],
+    'checklist_diario_status':    {},
+    'horarios_trajeto_historico': [],
+    'tempo_total_planejamento_min': 0,
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- PRINCÍPIO ÉTICO COMPARTILHADO EM TODOS OS PROMPTS ---
+PRINCIPIO_COMUNICACAO = '''
+PRINCÍPIO OBRIGATÓRIO DE COMUNICAÇÃO DE RISCO — siga isso em TODA a resposta:
+- NUNCA afirme como fato absoluto que um lugar "é perigoso" ou que algo "vai acontecer"
+- Use sempre linguagem de probabilidade e prevenção: "esta região apresenta maior registro histórico de determinados tipos de ocorrência",
+  "isso não significa que um incidente vá acontecer, mas pode justificar cuidados adicionais"
+- Você está fornecendo orientação preventiva geral baseada em padrões conhecidos de segurança urbana — não dados em tempo real
+  nem estatísticas oficiais verificadas. Deixe isso implícito no tom, sem precisar repetir a cada frase
+- Nunca estigmatize bairros, grupos de pessoas ou regiões inteiras
+- O objetivo é AUMENTAR a sensação de preparo e cuidado, NUNCA gerar pânico ou medo excessivo
+- Equilibre sempre alertas com reforço de que a esmagadora maioria dos trajetos e situações do dia a dia ocorre sem qualquer incidente
+
+FORMATO OBRIGATÓRIO — TODA resposta de relatório/análise deve:
+1. Incluir uma linha com "ÍNDICE DE SEGURANÇA: [X]/100" onde X é um número de 0 a 100 coerente com o nível de risco descrito
+   (quanto mais riscos/cuidados, menor o número; ambientes tranquilos ficam entre 75-95)
+2. Terminar SEMPRE com uma seção final assim:
+   🧠 SE EU ESTIVESSE NO SEU LUGAR:
+   [1-2 frases em primeira pessoa, como um conselho direto e pessoal — ex: "Se eu estivesse no seu lugar, faria três mudanças simples: ..."]
+'''
+
+# --- MOTOR DE IA ---
+def guardiao_ia(prompt: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        system = f'''Você é um consultor especializado em segurança pessoal e prevenção de riscos urbanos.
+Usuário: {st.session_state.usuario}.
+{PRINCIPIO_COMUNICACAO}
+{system_extra}
+Seja prático, específico e útil. Escreva em português brasileiro, tom calmo e responsável — nunca alarmista.'''
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": prompt},
+            ],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total  = len(st.session_state.historico_relatorios)
+    salvos = len(st.session_state.relatorios_salvos)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#EFF6FF;border:1px solid #3B82F6;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
+            f"💾 <strong>Antes de sair, salve seus dados no computador.</strong><br>"
+            f"<span style='color:#888;font-size:0.88em;'>{total} relatórios gerados · {salvos} salvos</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button(
+            label="💾 SALVAR MEUS DADOS (.json)",
+            data=gerar_json_sessao(),
+            file_name=f"guardiao_pessoal_{nome_usuario}.json",
+            mime="application/json",
+            use_container_width=True,
+            key="guardiao14"
+        )
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+def renderizar_nivel_risco(texto: str) -> int:
+    '''Detecta o nível de risco mencionado no texto, renderiza o card visual com índice numérico, e retorna o índice.'''
+    texto_lower = texto.lower()
+    if "elevado" in texto_lower or "🔴" in texto:
+        nivel, classe, emoji = "ELEVADO", "risco-elevado", "🔴"
+    elif "moderado" in texto_lower or "🟡" in texto:
+        nivel, classe, emoji = "MODERADO", "risco-moderado", "🟡"
+    else:
+        nivel, classe, emoji = "BAIXO", "risco-baixo", "🟢"
+
+    indice = extrair_indice_seguranca(texto)
+
+    st.markdown(f'''
+    <div class="risco-box {classe}">
+        <div style="font-size:2.5em;">{emoji}</div>
+        <div class="risco-titulo">ÍNDICE DE SEGURANÇA: {indice}/100</div>
+        <div style="font-size:0.95em;color:#444;margin-top:2px;font-weight:600;">Nível de risco: {nivel}</div>
+        <div style="font-size:0.85em;color:#555;margin-top:6px;">Estimativa preventiva baseada nas informações fornecidas</div>
+    </div>
+    ''', unsafe_allow_html=True)
+    return indice
+
+DISCLAIMER_PADRAO = '''
+<div class="disclaimer">
+⚠️ <strong>Importante:</strong> este relatório é uma orientação preventiva geral gerada por IA, baseada em padrões conhecidos
+de segurança urbana — não é um dado oficial de criminalidade nem uma garantia de que algo vai ou não acontecer.
+Use como apoio para tomar precauções, não como verdade absoluta sobre qualquer região ou pessoa.
+Em caso de emergência real, ligue para a Polícia (190) ou o serviço de emergência local.
+</div>
+'''
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'checklist_diario_status' not in st.session_state: st.session_state['checklist_diario_status'] = None
+if 'cidade_padrao' not in st.session_state: st.session_state['cidade_padrao'] = None
+if 'conquistas_desbloqueadas' not in st.session_state: st.session_state['conquistas_desbloqueadas'] = []
+if 'historico_relatorios' not in st.session_state: st.session_state['historico_relatorios'] = []
+if 'relatorios_salvos' not in st.session_state: st.session_state['relatorios_salvos'] = None
+if 'tem_filhos' not in st.session_state: st.session_state['tem_filhos'] = None
+if 'tem_idosos_em_casa' not in st.session_state: st.session_state['tem_idosos_em_casa'] = None
+if 'tempo_total_planejamento_min' not in st.session_state: st.session_state['tempo_total_planejamento_min'] = 0
+
+if st.session_state.etapa == "Login":
+    st.markdown("# 🤖 GUARDIÃO PESSOAL")
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+
+    # ── BOTÃO DE EMERGÊNCIA — sempre visível no topo ──
+    st.markdown('<div class="btn-emergencia">', unsafe_allow_html=True)
+    if st.button("🚨 MODO EMERGÊNCIA — PRECISO DE AJUDA AGORA", key="btn_emerg_top", use_container_width=True):
+        st.session_state.pagina = "Emergencia"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+
+
+    # TABS
+    _tab_Home, _tab_Trajeto, _tab_Viagem, _tab_Residencia, _tab_Infantil, _tab_Idosos, _tab_Golpes, _tab_Checklist, _tab_Biblioteca = st.tabs(['🏠 Home', '🚶 Trajeto', '🏨 Viagem', '🏠2 Residencia', '👶 Infantil', '👵 Idosos', '📱 Golpes', '☑️ Checklist', '📚 Biblioteca'])
+
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_guardiao")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_guardiao", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_Home:
+        col_u, col_r = st.columns([3, 1])
+        with col_u:
+            st.title("🛡️ Central de Segurança")
+            st.markdown(f"<span class='badge'>{st.session_state.usuario}</span>", unsafe_allow_html=True)
+        with col_r:
+            if st.button("🚪 Sair", key="guardiao3"):
+                for k in list(st.session_state.keys()):
+                    del st.session_state[k]
+                st.rerun()
+
+        if len(st.session_state.historico_relatorios) == 0:
+            st.markdown('''<div style="background:#FEF3C7;border:2px solid #F59E0B;border-radius:12px;
+            padding:12px 18px;margin-bottom:4px;color:#000;font-size:0.9em;font-weight:600;">
+            ⚠️ Seus dados não estão mais no servidor.
+            </div>''', unsafe_allow_html=True)
+            arq_home = st.file_uploader("Carregar meus dados salvos (.json):", type=["json"], key="upload_home")
+            if arq_home is not None:
+                try:
+                    dados_home = json.load(arq_home)
+                    carregar_json_sessao(dados_home)
+                    salvar_perfil_cache(st.session_state.usuario)
+                    st.success("✅ Dados recuperados!")
+                    st.rerun()
+                except Exception:
+                    st.error("Arquivo inválido.")
+
+        # ── ÍNDICE DE PROTEÇÃO — indicador principal ──
+        ultimos_indices = [r['indice_seguranca'] for r in st.session_state.historico_relatorios[-5:] if r.get('indice_seguranca') is not None]
+        if ultimos_indices:
+            indice_medio = round(sum(ultimos_indices) / len(ultimos_indices))
+        else:
+            indice_medio = None
+
+        if indice_medio is not None:
+            if indice_medio >= 75:
+                cor_idx, emoji_idx, msg_idx, classe_idx = "#22C55E", "🟢", "Você não possui nenhum alerta crítico recente.", "risco-baixo"
+            elif indice_medio >= 50:
+                cor_idx, emoji_idx, msg_idx, classe_idx = "#B45309", "🟡", "Encontramos alguns pontos que merecem atenção.", "risco-moderado"
+            else:
+                cor_idx, emoji_idx, msg_idx, classe_idx = "#B91C1C", "🔴", "Há recomendações importantes nas suas últimas análises.", "risco-elevado"
+
+            st.markdown(f'''
+            <div class="indice-protecao-box {classe_idx}" style="border-color:{cor_idx};">
+                <div style="font-size:0.85em;color:#555;letter-spacing:1px;">ÍNDICE DE PROTEÇÃO (média recente)</div>
+                <div class="indice-numero" style="color:{cor_idx};">{emoji_idx} {indice_medio}/100</div>
+                <div class="indice-sub">{msg_idx}</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        else:
+            st.markdown('''
+            <div class="indice-protecao-box" style="border-color:#3B82F6;background:#EFF6FF;">
+                <div style="font-size:0.85em;color:#555;">ÍNDICE DE PROTEÇÃO</div>
+                <div class="indice-numero" style="color:#1D4ED8;">—</div>
+                <div class="indice-sub">Faça sua primeira análise para ver seu índice aqui.</div>
+            </div>
+            ''', unsafe_allow_html=True)
+
+        # ── BOTÃO CENTRAL DE NOVA ANÁLISE ──
+        if st.button("🔍 FAZER NOVA ANÁLISE", key="btn_nova_analise_home", use_container_width=True):
+            st.session_state.pagina = "Trajeto"
+            st.rerun()
+
+
+        # ── RESUMO EDUCATIVO (não é dado em tempo real — deixamos isso claro) ──
+        with st.expander("📋 Tipos de risco comuns para ficar atento (resumo educativo geral)"):
+            st.markdown('''<div class="disclaimer" style="margin-top:0;">
+            Este é um resumo educativo geral sobre categorias de risco frequentemente reportadas em grandes centros urbanos —
+            não é um boletim em tempo real da sua região específica. Para uma análise direcionada ao seu trajeto ou situação,
+            use o botão "Fazer Nova Análise" acima.
+            </div>''', unsafe_allow_html=True)
+            st.markdown('''
+        - ⚠️ **Golpe do falso Pix** — segue em alta em todo o Brasil, fique atento a comprovantes falsos
+        - 🚗 **Furto de veículos e itens internos** — mais comum em estacionamentos não monitorados
+        - 📱 **Furto de celular em vias movimentadas** — principalmente em horários de pico
+        - 🌧️ **Baixa visibilidade em dias de chuva** — reduz o tempo de reação a qualquer imprevisto
+        - 🌙 **Trajetos noturnos em vias pouco iluminadas** — atenção redobrada após 22h
+            ''')
+
+
+        # ── DASHBOARD EM CARDS ──
+        st.markdown("### 📊 Seu histórico")
+        tipos = {}
+        for r in st.session_state.historico_relatorios:
+            tipos[r['tipo']] = tipos.get(r['tipo'], 0) + 1
+
+        horas_planejamento = round(st.session_state.tempo_total_planejamento_min / 60, 1)
+
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.markdown(f"<div class='dash-card'><div class='dash-card-emoji'>📄</div><div class='dash-card-valor'>{len(st.session_state.historico_relatorios)}</div><div class='dash-card-label'>Análises realizadas</div></div>", unsafe_allow_html=True)
+        with c2:
+            st.markdown(f"<div class='dash-card'><div class='dash-card-emoji'>⏱️</div><div class='dash-card-valor'>{horas_planejamento}h</div><div class='dash-card-label'>De planejamento preventivo</div></div>", unsafe_allow_html=True)
+        with c3:
+            st.markdown(f"<div class='dash-card'><div class='dash-card-emoji'>🚶</div><div class='dash-card-valor'>{tipos.get('Trajeto',0)}</div><div class='dash-card-label'>Trajetos analisados</div></div>", unsafe_allow_html=True)
+        with c4:
+            st.markdown(f"<div class='dash-card'><div class='dash-card-emoji'>🏠</div><div class='dash-card-valor'>{tipos.get('Residência',0)}</div><div class='dash-card-label'>Residências protegidas</div></div>", unsafe_allow_html=True)
+
+
+        # ── BARRAS DE PROGRESSO POR CATEGORIA ──
+        st.markdown("### 📈 Seu progresso por categoria")
+        categorias_progresso = [
+            ("🏠 Casa", "Residência", 3), ("🚶 Trajetos", "Trajeto", 5),
+            ("✈️ Viagens", "Viagem", 3), ("📱 Golpes estudados", "Golpes", 5),
+        ]
+        for label, tipo_cat, meta in categorias_progresso:
+            pct = calcular_progresso_categoria(tipo_cat, meta)
+            st.markdown(f'''
+            <div class="progresso-categoria">
+                <div class="progresso-categoria-label"><span>{label}</span><span>{pct}%</span></div>
+                <div class="progresso-barra-bg"><div class="progresso-barra-fill" style="width:{pct}%;"></div></div>
+            </div>
+            ''', unsafe_allow_html=True)
+
+
+        # ── CONQUISTAS ──
+        st.markdown("### 🏅 Conquistas")
+        col_conq1, col_conq2 = st.columns(2)
+        for i, c in enumerate(CONQUISTAS_DEFINIDAS):
+            col = col_conq1 if i % 2 == 0 else col_conq2
+            desbloqueada = c['id'] in st.session_state.conquistas_desbloqueadas
+            classe = "conquista-card" if desbloqueada else "conquista-card conquista-bloqueada"
+            with col:
+                st.markdown(f'''
+                <div class="{classe}">
+                    <div class="conquista-emoji">{c['emoji'] if desbloqueada else '🔒'}</div>
+                    <div>
+                        <div style="font-weight:600;">{c['nome']}</div>
+                        <div style="font-size:0.78em;color:#888;">{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>
+                    </div>
+                </div>
+                ''', unsafe_allow_html=True)
+
+
+        # ── PERFIL ──
+        with st.expander("⚙️ Configurar meu perfil"):
+            col_a, col_b, col_c = st.columns(3)
+            with col_a:
+                st.session_state.cidade_padrao = st.text_input("Sua cidade:", value=st.session_state.cidade_padrao, placeholder="ex: São Paulo, SP", key="cidade_padrao_input")
+            with col_b:
+                st.session_state.tem_filhos = st.checkbox("👶 Tenho filhos", value=st.session_state.tem_filhos, key="check_filhos")
+            with col_c:
+                st.session_state.tem_idosos_em_casa = st.checkbox("👵 Tenho idosos em casa", value=st.session_state.tem_idosos_em_casa, key="check_idosos")
+
+        st.markdown("<div class='card'>💡 <em>'Prevenção não é viver com medo. É viver com preparo.'</em></div>", unsafe_allow_html=True)
+
+        st.markdown("### 🗺️ O que cada aba faz")
+        guia = {
+            "🚶 Trajeto":      "Analisa seu deslocamento — origem, destino, meio de transporte e horário — e gera relatório de risco",
+            "🏨 Viagem":       "Segurança específica para quando você for viajar — região, golpes contra turistas, apps recomendados",
+            "🏠 Residência":   "Avalia a segurança da sua casa, apartamento ou condomínio com sugestões práticas",
+            "👶 Infantil":     "Orientações de segurança para quando os filhos saem sozinhos ou ficam em casa",
+            "👵 Idosos":       "Cuidados de segurança específicos para idosos — em casa e em deslocamentos",
+            "📱 Golpes":       "Explicação detalhada dos golpes mais comuns e como se proteger de cada um",
+            "📚 Biblioteca":   "Histórico completo de relatórios, organizado por data e nível de risco",
+        }
+        for aba, desc in guia.items():
+            st.markdown(f"**{aba}** — {desc}")
+
+        if st.session_state.historico_relatorios:
+            st.markdown("### 🕐 Últimos Relatórios")
+            for item in reversed(st.session_state.historico_relatorios[-4:]):
+                idx_item = item.get('indice_seguranca')
+                if idx_item is not None:
+                    selo = "🟢" if idx_item >= 75 else ("🟡" if idx_item >= 50 else "🔴")
+                else:
+                    selo = "🔵"
+                st.markdown(
+                    f"<div class='hist-item'>{selo} <span class='badge'>{item['tipo']}</span> "
+                    f"<small style='color:#888'>{item['data']}</small><br>"
+                    f"<small>{item.get('local', '')[:80]}</small></div>", unsafe_allow_html=True)
+
+        # ========================
+        # ANÁLISE DE TRAJETO
+        # ========================
+
+        st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+        st.markdown("### 💾 Salvar e Carregar Dados")
+        _csl1, _csl2 = st.columns(2)
+        with _csl1:
+            import json as _json_sv
+            _dados_sv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
+            st.download_button("💾 Salvar dados (.json)",
+                data=_json_sv.dumps(_dados_sv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_sv_guardiao")
+        with _csl2:
+            _arq_sv = st.file_uploader("📂 Carregar dados:", type=["json"], key="ul_sv_guardiao")
+            if _arq_sv:
+                try:
+                    import json as _json_ld
+                    for _k, _v in _json_ld.loads(_arq_sv.read().decode()).items():
+                        st.session_state[_k] = _v
+                    st.success("✅ Dados carregados!")
+                    st.rerun()
+                except: st.error("Arquivo inválido.")
+
+    with _tab_Trajeto:
+        st.header("🚶 Análise de Trajeto")
+        st.markdown("Informe seu deslocamento e receba um relatório preventivo completo.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            origem = st.text_input("📍 De onde você sai:", value=st.session_state.cidade_padrao, placeholder="ex: Bairro Centro, São Paulo", key="guardiao4")
+            destino = st.text_input("📍 Para onde vai:", placeholder="ex: Bairro Vila Madalena, São Paulo", key="guardiao5")
+            transporte = st.selectbox("🚶 Meio de transporte:", ["A pé", "Bicicleta", "Moto", "Carro", "Transporte público (ônibus/metrô)", "Aplicativo (Uber/99)"], key="guardiao6")
+        with col2:
+            horario = st.selectbox("🕒 Horário da saída:", [
+                "Manhã (6h-12h)", "Tarde (12h-18h)", "Início da noite (18h-21h)", "Noite (21h-00h)", "Madrugada (00h-6h)",
+            ], key="guardiao13")
+            companhia = st.radio("👤 Você vai:", ["Sozinho(a)", "Acompanhado(a)"], horizontal=True, key="guardiao7")
+            modelo_veiculo = ""
+            if transporte in ["Carro", "Moto"]:
+                modelo_veiculo = st.text_input("🚗 Modelo do veículo (opcional):", placeholder="ex: Honda Civic, Honda CG 160...", key="guardiao8")
+
+        if st.button("🛡️ GERAR RELATÓRIO DE SEGURANÇA", key="guardiao9"):
+            if origem.strip() and destino.strip():
+                with st.spinner("Analisando seu trajeto..."):
+                    prompt = (
+                        f"Crie um relatório preventivo de segurança para este trajeto.\\n"
+                        f"Origem: {origem}. Destino: {destino}. Transporte: {transporte}.\\n"
+                        f"Horário: {horario}. Companhia: {companhia}.\\n"
+                        f"{'Veículo: ' + modelo_veiculo if modelo_veiculo else ''}\\n\\n"
+                        f"FORMATO OBRIGATÓRIO:\\n\\n"
+                        f"📊 NÍVEL DE RISCO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\n"
+                        f"[1-2 linhas explicando essa estimativa preventiva — baseada em horário, tipo de trajeto, companhia]\\n\\n"
+                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESTA ROTA:\\n"
+                        f"[Liste 3-5 tipos de ocorrência mais comuns para esse tipo de trajeto/horário — furto de celular, abordagens, etc — "
+                        f"sempre com linguagem preventiva, nunca afirmativa]\\n\\n"
+                        + (f"🚗 SEGURANÇA DO VEÍCULO:\\n"
+                           f"[Cuidados específicos para {modelo_veiculo or transporte} nesse horário e trajeto — onde estacionar, o que evitar]\\n\\n" if transporte in ["Carro","Moto"] else "")
+                        + f"📱 GOLPES COMUNS NESSE TIPO DE DESLOCAMENTO:\\n"
+                        f"[1-2 golpes mais relevantes para esse contexto específico, com explicação rápida de como funcionam]\\n\\n"
+                        f"💡 RECOMENDAÇÕES PRÁTICAS PARA ESTE TRAJETO:\\n"
+                        f"[3-5 ações concretas — rota alternativa, app de localização, horário melhor, etc]\\n\\n"
+                        f"🎒 CHECKLIST RÁPIDO ANTES DE SAIR:\\n"
+                        f"☑ [item 1]\\n☑ [item 2]\\n☑ [item 3]\\n☑ [item 4]\\n☑ [item 5]"
+                    )
+                    res = guardiao_ia(prompt)
+                    if res: st.session_state['res_trajeto_guardi1'] = str(res)
+                    indice_calc = extrair_indice_seguranca(res)
+                    salvar_relatorio("Trajeto", f"{origem} → {destino}", res, indice_calc)
+                    st.session_state['trajeto_temp'] = res
+                    renderizar_nivel_risco(res)
+                    for nova in verificar_conquistas():
+                        st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista desbloqueada!</strong><br>{nova['emoji']} {nova['nome']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card'>{res}</div>", unsafe_allow_html=True)
+                    st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            else:
+                st.warning("Informe origem e destino.")
+
+        if st.session_state.get('trajeto_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar relatório (.txt)", data=st.session_state['trajeto_temp'],
+                    file_name="relatorio_trajeto.txt", mime="text/plain", use_container_width=True, key="guardiao12")
+            with col_sv:
+                if st.button("❤️ Salvar relatório", use_container_width=True, key="guardiao10"):
+                    st.session_state.relatorios_salvos.append({
+                        'tipo': 'Trajeto', 'local': f"{origem} → {destino}" if 'origem' in dir() else '',
+                        'conteudo': st.session_state['trajeto_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # SEGURANÇA EM VIAGEM
+        # ========================
+
+    with _tab_Viagem:
+        st.header("🏨 Segurança em Viagem")
+        st.markdown("Cuidados específicos para o destino que você vai visitar.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            destino_viagem = st.text_input("✈️ Destino da viagem:", placeholder="ex: Rio de Janeiro, Cancún, Lisboa...", key="guardiao11")
+            tipo_viagem = st.selectbox("🎯 Tipo de viagem:", ["Turismo/lazer", "Negócios", "Visita a família", "Mochilão/econômica"], key="guardiao12_d2")
+            hospedagem = st.selectbox("🏨 Tipo de hospedagem:", ["Hotel", "Airbnb/casa alugada", "Hostel", "Casa de família/amigos"], key="guardiao13_d2")
+        with col2:
+            perfil_viajante = st.selectbox("👤 Perfil:", ["Sozinho(a)", "Casal", "Família com crianças", "Grupo de amigos", "Mulher viajando sozinha"], key="guardiao14_d2")
+            bairro_destino = st.text_input("📍 Bairro/região específica (se souber):", placeholder="ex: Copacabana, Centro Histórico...", key="guardiao15")
+
+        if st.button("🛡️ GERAR RELATÓRIO DE SEGURANÇA DA VIAGEM", key="guardiao16"):
+            if destino_viagem.strip():
+                with st.spinner("Analisando segurança do destino..."):
+                    prompt = (
+                        f"Crie um relatório preventivo de segurança para viagem.\\n"
+                        f"Destino: {destino_viagem}. Bairro/região: {bairro_destino or 'não especificado'}.\\n"
+                        f"Tipo de viagem: {tipo_viagem}. Hospedagem: {hospedagem}. Perfil: {perfil_viajante}.\\n\\n"
+                        f"FORMATO OBRIGATÓRIO:\\n\\n"
+                        f"📊 NÍVEL DE RISCO GERAL DO DESTINO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\n"
+                        f"[1-2 linhas com a estimativa preventiva]\\n\\n"
+                        f"🏙️ SOBRE A REGIÃO:\\n"
+                        f"[Visão geral preventiva sobre {destino_viagem}{' / ' + bairro_destino if bairro_destino else ''} — pontos fortes e cuidados gerais]\\n\\n"
+                        f"📱 GOLPES COMUNS CONTRA TURISTAS NESSE TIPO DE DESTINO:\\n"
+                        f"[2-4 golpes típicos com explicação de como funcionam e como evitar]\\n\\n"
+                        f"🚫 CUIDADOS ESPECÍFICOS PARA {perfil_viajante.upper()}:\\n"
+                        f"[Orientações direcionadas a esse perfil de viajante]\\n\\n"
+                        f"🗺️ ORIENTAÇÕES GERAIS DE DESLOCAMENTO:\\n"
+                        f"[Como se locomover com mais segurança nessa região — apps recomendados, transporte a evitar de madrugada, etc]\\n\\n"
+                        f"🏨 SEGURANÇA NA HOSPEDAGEM ({hospedagem}):\\n"
+                        f"[Cuidados específicos para esse tipo de hospedagem]\\n\\n"
+                        f"📲 APPS RECOMENDADOS PARA ESSE DESTINO:\\n"
+                        f"[Apps de transporte, mapas, tradução, emergência — relevantes para esse lugar]\\n\\n"
+                        f"🎒 CHECKLIST DE VIAGEM SEGURA:\\n"
+                        f"☑ [item 1]\\n☑ [item 2]\\n☑ [item 3]\\n☑ [item 4]\\n☑ [item 5]"
+                    )
+                    res = guardiao_ia(prompt)
+                    if res: st.session_state['res_viagem_guardi2'] = str(res)
+                    indice_calc = extrair_indice_seguranca(res)
+                    salvar_relatorio("Viagem", destino_viagem, res, indice_calc)
+                    st.session_state['viagem_temp'] = res
+                    renderizar_nivel_risco(res)
+                    for nova in verificar_conquistas():
+                        st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista desbloqueada!</strong><br>{nova['emoji']} {nova['nome']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-orange'>{res}</div>", unsafe_allow_html=True)
+                    st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            else:
+                st.warning("Informe o destino da viagem.")
+
+        if st.session_state.get('viagem_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar relatório (.txt)", data=st.session_state['viagem_temp'],
+                    file_name="relatorio_viagem.txt", mime="text/plain", use_container_width=True, key="guardiao11_d2")
+            with col_sv:
+                if st.button("❤️ Salvar relatório", key="sv_viagem", use_container_width=True):
+                    st.session_state.relatorios_salvos.append({
+                        'tipo': 'Viagem', 'local': destino_viagem if 'destino_viagem' in dir() else '',
+                        'conteudo': st.session_state['viagem_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # SEGURANÇA RESIDENCIAL
+        # ========================
+
+    with _tab_Residencia:
+        st.header("🏠 Segurança Residencial")
+        st.markdown("Avaliação preventiva da sua casa, apartamento ou condomínio.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            tipo_moradia = st.selectbox("🏠 Tipo de moradia:", ["Casa térrea", "Casa com mais de 1 andar", "Apartamento", "Apartamento em condomínio fechado", "Sítio/zona rural"], key="guardiao17")
+            bairro_casa = st.text_input("📍 Bairro/cidade:", value=st.session_state.cidade_padrao, placeholder="ex: Bairro Jardins, São Paulo", key="guardiao18")
+            tem_portao = st.radio("🚪 Tem portão/grade na entrada?", ["Sim", "Não"], horizontal=True, key="guardiao19")
+        with col2:
+            tem_cameras = st.radio("📷 Já tem câmeras instaladas?", ["Sim", "Não"], horizontal=True, key="guardiao20")
+            tem_alarme = st.radio("🔔 Já tem alarme?", ["Sim", "Não"], horizontal=True, key="guardiao21")
+            moradores = st.selectbox("👥 Quem mora na casa:", ["Sozinho(a)", "Casal sem filhos", "Família com crianças", "Família com idosos", "Compartilhada (república/colegas)"], key="guardiao22")
+
+        pontos_fracos = st.text_area("⚠️ Pontos que você já considera vulneráveis (opcional):", height=80,
+            placeholder="ex: muro baixo nos fundos, rua pouco iluminada, fico muito tempo viajando...", key="guardiao10_d2")
+
+        if st.button("🛡️ GERAR ANÁLISE DE SEGURANÇA RESIDENCIAL", key="guardiao23"):
+            if bairro_casa.strip():
+                with st.spinner("Analisando sua residência..."):
+                    prompt = (
+                        f"Crie uma análise preventiva de segurança residencial.\\n"
+                        f"Tipo de moradia: {tipo_moradia}. Bairro: {bairro_casa}.\\n"
+                        f"Portão: {tem_portao}. Câmeras: {tem_cameras}. Alarme: {tem_alarme}.\\n"
+                        f"Moradores: {moradores}. Pontos já identificados: {pontos_fracos or 'nenhum informado'}.\\n\\n"
+                        f"FORMATO OBRIGATÓRIO:\\n\\n"
+                        f"📊 NÍVEL DE VULNERABILIDADE ESTIMADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\n"
+                        f"[1-2 linhas explicando a estimativa com base no que foi informado]\\n\\n"
+                        f"💡 ILUMINAÇÃO:\\n"
+                        f"[Recomendações específicas para {tipo_moradia}]\\n\\n"
+                        f"📷 CÂMERAS E MONITORAMENTO:\\n"
+                        f"[Sugestões de pontos estratégicos — considerando que {tem_cameras.lower()} já tem]\\n\\n"
+                        f"🔒 FECHADURAS E TRANCAS:\\n"
+                        f"[Recomendações de tipo de fechadura e pontos de reforço]\\n\\n"
+                        f"🔔 ALARME E SENSORES:\\n"
+                        f"[Sugestões considerando que {tem_alarme.lower()} já tem]\\n\\n"
+                        f"🚪 ROTINA DE CHEGADA E SAÍDA:\\n"
+                        f"[Hábitos seguros específicos para {moradores}]\\n\\n"
+                        f"🎯 PONTOS VULNERÁVEIS A REVISAR:\\n"
+                        f"[Baseado no tipo de moradia e no que foi informado, incluindo: {pontos_fracos or 'pontos genéricos comuns a esse tipo de moradia'}]\\n\\n"
+                        f"📋 PLANO DE AÇÃO — PRIORIDADES:\\n"
+                        f"1. [ação mais urgente]\\n2. [ação 2]\\n3. [ação 3]\\n4. [ação 4]"
+                    )
+                    res = guardiao_ia(prompt)
+                    if res: st.session_state['res_residencia_guardi3'] = str(res)
+                    indice_calc = extrair_indice_seguranca(res)
+                    salvar_relatorio("Residência", f"{tipo_moradia} — {bairro_casa}", res, indice_calc)
+                    st.session_state['residencia_temp'] = res
+                    renderizar_nivel_risco(res)
+                    for nova in verificar_conquistas():
+                        st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista desbloqueada!</strong><br>{nova['emoji']} {nova['nome']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-purple'>{res}</div>", unsafe_allow_html=True)
+                    st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            else:
+                st.warning("Informe o bairro/cidade.")
+
+        if st.session_state.get('residencia_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar análise (.txt)", data=st.session_state['residencia_temp'],
+                    file_name="seguranca_residencial.txt", mime="text/plain", use_container_width=True, key="guardiao9_d2")
+            with col_sv:
+                if st.button("❤️ Salvar análise", key="sv_resid", use_container_width=True):
+                    st.session_state.relatorios_salvos.append({
+                        'tipo': 'Residência', 'local': bairro_casa if 'bairro_casa' in dir() else '',
+                        'conteudo': st.session_state['residencia_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # SEGURANÇA INFANTIL
+        # ========================
+
+    with _tab_Infantil:
+        st.header("👶 Segurança Infantil")
+        st.markdown("Orientações preventivas para a segurança dos seus filhos.")
+
+        situacao_infantil = st.text_area(
+            "📝 Descreva a situação:",
+            height=100,
+            placeholder="ex: Meu filho de 10 anos vai sozinho para a escola, caminhando 4 quadras pela manhã...",
+                                key="guardiao8_d2"
+                            )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            idade_crianca = st.selectbox("👶 Idade da criança/adolescente:", ["Até 6 anos", "7 a 9 anos", "10 a 12 anos", "13 a 15 anos", "16 a 17 anos"], key="guardiao24")
+            tem_celular = st.radio("📱 Tem celular?", ["Sim", "Não"], horizontal=True, key="guardiao25")
+        with col2:
+            frequencia = st.selectbox("🔁 Frequência da situação:", ["Diária", "Algumas vezes por semana", "Ocasional", "Primeira vez"], key="guardiao26")
+
+        if st.button("🛡️ GERAR ORIENTAÇÕES DE SEGURANÇA", key="guardiao27"):
+            if situacao_infantil.strip():
+                with st.spinner("Preparando orientações..."):
+                    prompt = (
+                        f"Crie orientações preventivas de segurança infantil para esta situação.\\n"
+                        f"Situação: {situacao_infantil}\\n"
+                        f"Idade: {idade_crianca}. Tem celular: {tem_celular}. Frequência: {frequencia}.\\n\\n"
+                        f"FORMATO OBRIGATÓRIO:\\n\\n"
+                        f"📊 NÍVEL DE ATENÇÃO RECOMENDADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\n"
+                        f"[1-2 linhas explicando — considerando idade e contexto, sem alarmismo]\\n\\n"
+                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESSA SITUAÇÃO:\\n"
+                        f"[3-4 pontos relevantes para essa idade e contexto específico]\\n\\n"
+                        f"💬 CONVERSA COM A CRIANÇA/ADOLESCENTE:\\n"
+                        f"[Como conversar sobre isso de forma apropriada para a idade, sem assustar]\\n\\n"
+                        f"📱 USO DE TECNOLOGIA PARA SEGURANÇA:\\n"
+                        f"[Apps de localização, como configurar, o que é apropriado para essa idade — considerando que {tem_celular.lower()} tem celular]\\n\\n"
+                        f"🎯 ORIENTAÇÕES PRÁTICAS PARA A CRIANÇA:\\n"
+                        f"[O que ensinar — sinais de alerta, o que fazer em situações específicas, palavra-código com a família, etc]\\n\\n"
+                        f"👨‍👩‍👧 ORIENTAÇÕES PARA OS PAIS/RESPONSÁVEIS:\\n"
+                        f"[Rotina de checagem, combinados, plano B em caso de imprevisto]\\n\\n"
+                        f"📋 CHECKLIST DE PREPARO:\\n"
+                        f"☑ [item 1]\\n☑ [item 2]\\n☑ [item 3]\\n☑ [item 4]"
+                    )
+                    res = guardiao_ia(prompt, "Você está orientando pais/responsáveis sobre segurança infantil. Seja acolhedor, nunca alarmista, e sempre apropriado para a idade da criança mencionada.")
+                    if res: st.session_state['res_infantil_guardi4'] = str(res)
+                    indice_calc = extrair_indice_seguranca(res)
+                    salvar_relatorio("Infantil", situacao_infantil[:60], res, indice_calc)
+                    st.session_state['infantil_temp'] = res
+                    renderizar_nivel_risco(res)
+                    for nova in verificar_conquistas():
+                        st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista desbloqueada!</strong><br>{nova['emoji']} {nova['nome']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-green'>{res}</div>", unsafe_allow_html=True)
+                    st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            else:
+                st.warning("Descreva a situação.")
+
+        if st.session_state.get('infantil_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar orientações (.txt)", data=st.session_state['infantil_temp'],
+                    file_name="seguranca_infantil.txt", mime="text/plain", use_container_width=True, key="guardiao7_d2")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_infantil", use_container_width=True):
+                    st.session_state.relatorios_salvos.append({
+                        'tipo': 'Infantil', 'local': situacao_infantil[:60] if 'situacao_infantil' in dir() else '',
+                        'conteudo': st.session_state['infantil_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # SEGURANÇA PARA IDOSOS
+        # ========================
+
+    with _tab_Idosos:
+        st.header("👵 Segurança para Idosos")
+        st.markdown("Cuidados preventivos específicos para a segurança de idosos — em casa e fora dela.")
+
+        situacao_idoso = st.text_area(
+            "📝 Descreva a situação:",
+            height=100,
+            placeholder="ex: Minha mãe de 75 anos mora sozinha e sai para o mercado a pé todos os dias...",
+                             key="guardiao6_d2"
+                         )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            contexto_idoso = st.selectbox("📍 Contexto principal:", [
+                "Mora sozinho(a)", "Mora com família mas fica sozinho(a) em parte do dia",
+                "Sai com frequência para compromissos", "Recebe visitas/prestadores de serviço em casa",
+                "Usa transporte público ou aplicativos", "Tem dificuldade de locomoção",
+            ], key="guardiao5_d2")
+        with col2:
+            usa_celular_idoso = st.radio("📱 Usa celular/smartphone?", ["Sim, com facilidade", "Sim, com dificuldade", "Não usa"], horizontal=True, key="guardiao28")
+
+        if st.button("🛡️ GERAR ORIENTAÇÕES DE SEGURANÇA", key="guardiao29"):
+            if situacao_idoso.strip():
+                with st.spinner("Preparando orientações..."):
+                    prompt = (
+                        f"Crie orientações preventivas de segurança para idosos.\\n"
+                        f"Situação: {situacao_idoso}\\n"
+                        f"Contexto: {contexto_idoso}. Uso de celular: {usa_celular_idoso}.\\n\\n"
+                        f"FORMATO OBRIGATÓRIO:\\n\\n"
+                        f"📊 NÍVEL DE ATENÇÃO RECOMENDADO: [🟢 Baixo / 🟡 Moderado / 🔴 Elevado]\\n"
+                        f"[1-2 linhas explicando — respeitoso com a autonomia do idoso, sem infantilizar]\\n\\n"
+                        f"⚠️ PRINCIPAIS PONTOS DE ATENÇÃO NESSA SITUAÇÃO:\\n"
+                        f"[3-4 pontos relevantes — incluindo golpes comuns contra idosos, como falsa central bancária, falso parente, etc, se aplicável]\\n\\n"
+                        f"📱 TECNOLOGIA DE APOIO:\\n"
+                        f"[Apps de localização compartilhada, botão de emergência, como configurar considerando o nível de uso de celular: {usa_celular_idoso}]\\n\\n"
+                        f"💬 COMO CONVERSAR SOBRE ISSO:\\n"
+                        f"[Como abordar o tema com o idoso de forma respeitosa, preservando autonomia e dignidade]\\n\\n"
+                        f"🏠 AJUSTES NO AMBIENTE/ROTINA:\\n"
+                        f"[Sugestões práticas adaptadas ao contexto: {contexto_idoso}]\\n\\n"
+                        f"🚨 GOLPES ESPECÍFICOS CONTRA IDOSOS A EXPLICAR PARA ELE(A):\\n"
+                        f"[2-3 golpes mais comuns direcionados a idosos, explicados de forma clara]\\n\\n"
+                        f"📋 CHECKLIST DE PREPARO:\\n"
+                        f"☑ [item 1]\\n☑ [item 2]\\n☑ [item 3]\\n☑ [item 4]"
+                    )
+                    res = guardiao_ia(prompt, "Você está orientando sobre segurança de idosos. Seja respeitoso com a autonomia e dignidade da pessoa idosa — nunca infantilize ou trate como incapaz.")
+                    if res: st.session_state['res_idosos_guardi5'] = str(res)
+                    indice_calc = extrair_indice_seguranca(res)
+                    salvar_relatorio("Idosos", situacao_idoso[:60], res, indice_calc)
+                    st.session_state['idosos_temp'] = res
+                    renderizar_nivel_risco(res)
+                    for nova in verificar_conquistas():
+                        st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista desbloqueada!</strong><br>{nova['emoji']} {nova['nome']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-orange'>{res}</div>", unsafe_allow_html=True)
+                    st.markdown(DISCLAIMER_PADRAO, unsafe_allow_html=True)
+            else:
+                st.warning("Descreva a situação.")
+
+        if st.session_state.get('idosos_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar orientações (.txt)", data=st.session_state['idosos_temp'],
+                    file_name="seguranca_idosos.txt", mime="text/plain", use_container_width=True, key="guardiao4_d2")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_idosos", use_container_width=True):
+                    st.session_state.relatorios_salvos.append({
+                        'tipo': 'Idosos', 'local': situacao_idoso[:60] if 'situacao_idoso' in dir() else '',
+                        'conteudo': st.session_state['idosos_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # GUIA DE GOLPES COMUNS
+        # ========================
+
+    with _tab_Golpes:
+        st.header("📱 Guia de Golpes Comuns")
+        st.markdown("Entenda como funcionam os golpes mais comuns para reconhecê-los antes que aconteçam.")
+
+        golpes_predefinidos = [
+            "Golpe da maquininha", "Golpe do Pix", "Falso motoboy/entregador",
+            "Falsa central bancária", "Golpe do WhatsApp clonado", "Golpe do falso sequestro",
+            "Golpe do amor (romance scam)", "Golpe do boleto falso", "Golpe da falsa promoção/sorteio",
+            "Golpe do suporte técnico falso", "Outro (descrever)",
+        ]
+        golpe_selecionado = st.selectbox("📋 Qual golpe você quer entender:", golpes_predefinidos, key="guardiao30")
+
+        descricao_extra = ""
+        if golpe_selecionado == "Outro (descrever)":
+            descricao_extra = st.text_area("Descreva a situação suspeita:", height=80,
+                placeholder="ex: Recebi uma mensagem dizendo que ganhei um prêmio e preciso pagar uma taxa...", key="guardiao3_d2")
+
+        if st.button("📱 EXPLICAR ESSE GOLPE", key="guardiao31"):
+            with st.spinner("Preparando explicação..."):
+                topico = descricao_extra if golpe_selecionado == "Outro (descrever)" and descricao_extra.strip() else golpe_selecionado
+                prompt = (
+                    f"Explique detalhadamente como funciona: {topico}\\n\\n"
+                    f"FORMATO:\\n\\n"
+                    f"📱 {topico.upper()}\\n\\n"
+                    f"🎭 COMO FUNCIONA:\\n"
+                    f"[Explicação passo a passo de como os criminosos aplicam esse golpe]\\n\\n"
+                    f"🚩 SINAIS DE ALERTA:\\n"
+                    f"[3-5 sinais que indicam que você pode estar sendo vítima desse golpe]\\n\\n"
+                    f"🛡️ COMO SE PROTEGER:\\n"
+                    f"[Ações preventivas concretas]\\n\\n"
+                    f"⚡ O QUE FAZER SE JÁ CAIU NESSE GOLPE:\\n"
+                    f"[Passos imediatos — bancos, boletim de ocorrência, bloqueios]\\n\\n"
+                    f"📞 CONTATOS ÚTEIS:\\n"
+                    f"[Telefones/canais relevantes para esse tipo de golpe — banco, polícia, etc]"
+                )
+                res = guardiao_ia(prompt)
+                if res: st.session_state['res_golpes_guardi6'] = str(res)
+                salvar_relatorio("Golpes", topico, res)
+                st.session_state['golpe_temp'] = res
+                st.markdown(f"<div class='card-dark'>{res}</div>", unsafe_allow_html=True)
+
+        if st.session_state.get('golpe_temp'):
+            col_dl, col_sv = st.columns(2)
+            with col_dl:
+                st.download_button("📋 Baixar explicação (.txt)", data=st.session_state['golpe_temp'],
+                    file_name="guia_golpe.txt", mime="text/plain", use_container_width=True, key="guardiao2")
+            with col_sv:
+                if st.button("❤️ Salvar", key="sv_golpe", use_container_width=True):
+                    st.session_state.relatorios_salvos.append({
+                        'tipo': 'Golpes', 'local': golpe_selecionado if 'golpe_selecionado' in dir() else '',
+                        'conteudo': st.session_state['golpe_temp'],
+                        'data': datetime.now().strftime('%d/%m %H:%M'),
+                    })
+                    st.success("❤️ Salvo!")
+
+        # ========================
+        # MODO EMERGÊNCIA
+        # ========================
+
+    with _tab_Checklist:
+        st.header("☑️ Checklist Diário")
+        st.markdown("Confira antes de sair de casa. Pequenos hábitos que aumentam sua segurança no dia a dia.")
+
+        hoje = datetime.now().strftime('%d/%m/%Y')
+        if st.session_state.checklist_diario_status.get('data') != hoje:
+            st.session_state.checklist_diario_status = {'data': hoje, 'itens': {}}
+
+        itens_checklist = [
+            ("celular", "📱 Celular carregado"),
+            ("localizacao", "📍 Localização compartilhada ativada"),
+            ("familia", "👨‍👩‍👧 Família/alguém avisado do trajeto"),
+            ("documentos", "🪪 Documentos"),
+            ("dinheiro", "💰 Dinheiro separado (não tudo na mesma carteira)"),
+            ("carregador", "🔌 Carregador portátil/power bank"),
+            ("rota", "🗺️ Rota verificada antes de saiir"),
+        ]
+
+        marcados = 0
+        for chave_item, label_item in itens_checklist:
+            valor_atual = st.session_state.checklist_diario_status['itens'].get(chave_item, False)
+            novo_valor = st.checkbox(label_item, value=valor_atual, key=f"check_{chave_item}_{hoje}")
+            st.session_state.checklist_diario_status['itens'][chave_item] = novo_valor
+            if novo_valor:
+                marcados += 1
+
+        pct_checklist = round(marcados / len(itens_checklist) * 100)
+        cor_check = "#22C55E" if pct_checklist == 100 else ("#B45309" if pct_checklist >= 50 else "#B91C1C")
+        st.markdown(f'''
+        <div class="progresso-categoria">
+            <div class="progresso-categoria-label"><span>Checklist de hoje</span><span>{marcados}/{len(itens_checklist)}</span></div>
+            <div class="progresso-barra-bg"><div class="progresso-barra-fill" style="width:{pct_checklist}%;background:{cor_check};"></div></div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+        if pct_checklist == 100:
+            st.success("✅ Checklist completo! Você está com tudo certo para sair.")
+        elif marcados > 0:
+            st.info(f"Faltam {len(itens_checklist) - marcados} item(ns) para completar o checklist de hoje.")
+
+        # ========================
+        # BIBLIOTECA / HISTÓRICO DE SEGURANÇA
+        # ========================
+
+    with _tab_Biblioteca:
+        st.header("📚 Histórico de Segurança")
+        st.markdown("Linha do tempo de todas as suas análises, com o selo de risco de cada uma.")
+
+        if not st.session_state.historico_relatorios:
+            st.info("Nenhuma análise ainda. Use as abas acima para gerar seu primeiro relatório!")
+        else:
+            tipos_bib = list(set(r['tipo'] for r in st.session_state.historico_relatorios))
+            col_f1, col_f2 = st.columns(2)
+            with col_f1:
+                filtro = st.selectbox("Filtrar por tipo:", ["Todos"] + tipos_bib, key="filtro_bib_tipo")
+            with col_f2:
+                filtro_selo = st.selectbox("Filtrar por nível:", ["Todos", "🟢 Seguro", "🟡 Atenção", "🔴 Alto risco"], key="filtro_bib_selo")
+
+            def selo_do_item(item):
+                idx = item.get('indice_seguranca')
+                if idx is None:
+                    return "🔵", "Sem índice"
+                elif idx >= 75:
+                    return "🟢", "Seguro"
+                elif idx >= 50:
+                    return "🟡", "Atenção"
+                else:
+                    return "🔴", "Alto risco"
+
+            rels_filtrados = []
+            for r in st.session_state.historico_relatorios:
+                if filtro != "Todos" and r['tipo'] != filtro:
+                    continue
+                selo_emoji, selo_label = selo_do_item(r)
+                if filtro_selo != "Todos" and selo_label not in filtro_selo:
+                    continue
+                rels_filtrados.append(r)
+
+            st.markdown(f"**{len(rels_filtrados)} relatório(s) encontrado(s)**")
+
+            # Agrupamento por data relativa (Hoje / Ontem / Esta semana / Mais antigo)
+            hoje_str = datetime.now().strftime('%d/%m')
+            agrupado = {"Hoje": [], "Esta semana": [], "Anteriores": []}
+            for item in reversed(rels_filtrados):
+                data_item = item['data'].split(' ')[0]
+                if data_item == hoje_str:
+                    agrupado["Hoje"].append(item)
+                else:
+                    agrupado["Esta semana"].append(item)  # simplificado — sem cálculo de data exato
+
+            for grupo_nome, itens_grupo in agrupado.items():
+                if not itens_grupo:
+                    continue
+                st.markdown(f"#### {grupo_nome}")
+                for i, item in enumerate(itens_grupo):
+                    selo_emoji, selo_label = selo_do_item(item)
+                    idx_val = item.get('indice_seguranca')
+                    idx_texto = f"{idx_val}/100" if idx_val is not None else "—"
+                    with st.expander(f"{selo_emoji} [{item['tipo']}] {item.get('local', '')[:60]} — {idx_texto} — {item['data']}"):
+                        st.markdown(f"<div class='card'>{item['conteudo']}</div>", unsafe_allow_html=True)
+                        idx_real_hist = st.session_state.historico_relatorios.index(item)
+                        col_sv, col_del = st.columns([3, 1])
+                        with col_sv:
+                            if st.button("❤️ Salvar nos favoritos", key=f"sv_bib_{grupo_nome}_{i}"):
+                                st.session_state.relatorios_salvos.append(item.copy())
+                                st.success("Salvo!")
+                        with col_del:
+                            if st.button("🗑️", key=f"del_bib_{grupo_nome}_{i}"):
+                                st.session_state.historico_relatorios.pop(idx_real_hist)
+                                st.rerun()
+
+        if st.session_state.relatorios_salvos:
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            st.markdown("### ❤️ Seus Favoritos")
+            for i, item in enumerate(reversed(st.session_state.relatorios_salvos)):
+                idx_real = len(st.session_state.relatorios_salvos) - 1 - i
+                with st.expander(f"❤️ [{item['tipo']}] {item.get('local', '')[:60]} — {item['data']}"):
+                    st.markdown(f"<div class='card'>{item['conteudo']}</div>", unsafe_allow_html=True)
+                    if st.button("🗑️ Remover dos favoritos", key=f"del_fav_{i}"):
+                        st.session_state.relatorios_salvos.pop(idx_real)
+                        st.rerun()
+
+        if st.session_state.historico_relatorios:
+            st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+            historico_txt = "\\n\\n".join(
+                f"[{r['data']}] {r['tipo']} — {r['local']}\\n{r['conteudo']}\\n{'─'*40}"
+                for r in st.session_state.historico_relatorios
+            )
+            st.download_button("⬇️ Exportar todo o histórico (.txt)", data=historico_txt,
+                file_name="historico_guardiao.txt", mime="text/plain", key="guardiao1")
+
+            if st.button("🗑️ Limpar Todo o Histórico", key="guardiao32"):
+                st.session_state.historico_relatorios = []
+                st.rerun()
+
+        # --- RODAPÉ ---
+        st.markdown(
+        "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+        "© 2026 Guardião Pessoal — Consultor de Segurança e Prevenção com IA · MeusAgentesIA.com.br"
+        "</div>", unsafe_allow_html=True
+        )
+
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
+    "tenda_ravengar": """import streamlit as st
+from groq import Groq
+import random
+import json
+import os
+from datetime import datetime
+
+# --- 1. CONFIGURAÇÃO E ESTILO ---
+st.set_page_config(page_title="Tenda do Ravengar", page_icon="🔮", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F6FBF4; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#16A34A,#15803D) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#15803D,#166534) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#14532D !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#14532D !important; }
+
+    .card-dark { background:linear-gradient(135deg,#DCFCE7,#D1FAE5); padding:20px; border-radius:14px; border:1px solid #6EE7B7; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#14532D !important; }
+
+    .card-green { background:linear-gradient(135deg,#DCFCE7,#BBF7D0); padding:20px; border-radius:14px; border:1px solid #4ADE80; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#14532D !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#14532D !important; }
+
+    .badge { background:#166534; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#14532D !important; }
+
+    .chat-persona { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#14532D !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#14532D !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#14532D !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#14532D !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#166534 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# --- CURSOS EMBUTIDOS ---
+CURSOS = {
+  "quiromancia": {
+    "titulo": "Quiromancia — A Arte de Ler as Mãos",
+    "descricao": "Aprenda a decifrar o mapa da alma humana através das linhas, montes e formas da mão. Um dos sistemas divinatórios mais antigos do mundo, praticado há mais de 5.000 anos.",
+    "icone": "✋",
+    "total_aulas": 8,
+    "aulas": {
+      "1": {
+        "titulo": "A Mão como Mapa da Alma",
+        "conteudo": "A quiromancia — do grego 'kheir' (mão) e 'manteia' (adivinhação) — é uma das práticas divinatórias mais antigas da humanidade. Registros de seu uso datam de mais de 5.000 anos, encontrados em textos hindus, chineses, sumérios e egípcios. A premissa central é poderosa em sua simplicidade: a mão não mente. Enquanto o rosto pode sorrir quando o coração chora, a mão carrega impressa a história real de uma pessoa — seus padrões, suas tendências, suas forças e suas vulnerabilidades.\\n\\nHá dois conceitos fundamentais que todo estudante de quiromância precisa compreender antes de olhar para qualquer linha. O primeiro é a distinção entre mão dominante e mão recessiva. A mão dominante — aquela com a qual você escreve — revela o que você fez com o potencial que recebeu. É a mão do presente e do futuro construído. A mão recessiva — a outra — revela o que você nasceu sendo, seu potencial original, o que o destino traçou antes que você começasse a agir sobre ele. Quando as linhas das duas mãos diferem muito, isso indica uma pessoa que trabalhou ativamente para transformar sua natureza original. Quando são muito similares, indica alguém que ainda está vivendo dentro dos padrões com que nasceu.\\n\\nO segundo conceito é que a mão é um sistema vivo. Ao contrário do que muitos pensam, as linhas da mão mudam ao longo do tempo. Novos ramos aparecem, linhas se aprofundam ou enfraquecem, marcas surgem e desaparecem. Isso é documentado em estudos médicos: pessoas que passam por mudanças psicológicas profundas — terapia intensa, traumas, conversões espirituais — frequentemente apresentam alterações visíveis nas linhas dentro de dois a três anos.\\n\\nExistem quatro tipos básicos de mão, e identificá-los é o primeiro passo de qualquer leitura séria. A mão de Terra tem palma quadrada e dedos curtos — seu portador é prático, estável, confia nos sentidos e na realidade tangível, tende ao conservadorismo e à desconfiança do abstrato. A mão de Ar tem palma quadrada e dedos longos — seu portador é analítico, comunicativo, curioso, mas pode ser frio emocionalmente e excessivamente intelectual. A mão de Água tem palma retangular e dedos longos — seu portador é sensível, criativo, empático, profundamente emocional, mas pode ser instável e facilmente influenciável. A mão de Fogo tem palma retangular e dedos curtos — seu portador é apaixonado, espontâneo, carismático, impulsivo, e frequentemente impaciente.\\n\\nAntes de qualquer leitura, observe a mão inteira como um todo: sua textura (mãos macias indicam sensibilidade; mãos ásperas indicam pragmatismo), sua flexibilidade (mãos muito flexíveis indicam adaptabilidade mas também falta de firmeza; mãos rígidas indicam determinação mas também teimosia), sua temperatura (mãos frias frequentemente acompanham pessoas que guardam emoções; mãos quentes acompanham pessoas expansivas) e sua cor geral (palidez pode indicar retraimento emocional; vermelhidão intensa pode indicar excesso de paixão ou raiva contida).",
+        "exemplo": "Imagine que você encontra duas pessoas com mãos completamente diferentes. A primeira tem palma quadrada, dedos curtos e mão rígida com textura áspera — você já sabe, antes de ver uma única linha, que está diante de alguém prático, desconfiado do abstrato, que precisa ver para crer. A segunda tem palma longa, dedos finos e flexíveis, mão suave e levemente fria — você já percebe uma pessoa sensível, criativa, mas que guarda muito dentro de si. A forma da mão já conta metade da história antes mesmo de você tocar nas linhas.",
+        "aplicacao": "1. Peça para a pessoa estender ambas as mãos com a palma para cima, relaxadas. 2. Observe primeiro a forma geral — palma quadrada ou retangular? Dedos curtos ou longos? 3. Classifique o tipo de mão (Terra, Ar, Água ou Fogo). 4. Observe a textura, flexibilidade e temperatura. 5. Compare as duas mãos — são similares ou muito diferentes? 6. Apenas depois dessas observações comece a olhar para as linhas.",
+        "exercicio": "Examine sua própria mão agora. Identifique: qual é o tipo da sua mão? A palma é quadrada ou retangular? Os dedos são curtos ou longos? A mão é flexível ou rígida? Fria ou quente? Depois faça o mesmo com a mão de alguém próximo e compare. O que as diferenças dizem sobre vocês dois?",
+        "gabarito": "Não existe resposta errada aqui — o objetivo é desenvolver o olhar. Uma mão de Terra com palma quadrada e dedos curtos indica alguém mais prático e concreto. Uma mão de Água com palma longa e dedos finos indica alguém mais sensível e intuitivo. O mais importante é perceber que você já extrai informações antes de ver uma única linha."
+      },
+      "2": {
+        "titulo": "As Três Linhas Principais",
+        "conteudo": "Existem dezenas de linhas que podem aparecer na palma da mão, mas três delas são universais — presentes em praticamente todas as mãos humanas — e constituem a espinha dorsal de qualquer leitura quiromântica. São a Linha da Vida, a Linha da Cabeça e a Linha do Coração. Compreendê-las profundamente é mais valioso do que conhecer superficialmente todas as outras dezenas de linhas menores.\\n\\nA LINHA DA VIDA é a linha que curva ao redor do monte de Vênus (o monte carnoso na base do polegar). Contrariamente ao que o folclore popular diz, ela NÃO prevê quanto tempo você vai viver. Estudos feitos com centenas de pessoas que morreram precocemente mostraram linhas da vida longas; e pessoas que viveram mais de noventa anos foram encontradas com linhas curtas. O que ela realmente revela é a QUALIDADE e a INTENSIDADE da vida — sua vitalidade, energia, resistência física e emocional, e os grandes ciclos e mudanças da vida.\\n\\nUma linha da vida profunda, clara e bem marcada indica boa vitalidade, resistência e uma vida vivida com intensidade. Uma linha fraca, fragmentada ou com muitas interrupções indica períodos de baixa energia, problemas de saúde recorrentes ou fases de grande instabilidade. Quando a linha faz um arco amplo em direção ao centro da palma, indica uma pessoa expansiva, que ocupa espaço no mundo. Quando fica colada ao polegar com um arco pequeno, indica alguém mais contido, que tende a se retrair.\\n\\nBifurcações na linha da vida são muito significativas: uma bifurcação no início indica uma infância dividida entre dois mundos ou influências muito diferentes. Uma bifurcação no meio indica uma grande virada — mudança de país, carreira, ou identidade. Uma bifurcação no final indica uma fase de dispersão de energia na velhice ou, em algumas tradições, a possibilidade de dois caminhos igualmente fortes se abrindo.\\n\\nA LINHA DA CABEÇA começa na mesma região que a linha da vida (entre o polegar e o indicador) e atravessa a palma horizontalmente. Ela revela o estilo de pensamento, a forma como a mente processa a realidade, a capacidade intelectual e a relação entre razão e emoção.\\n\\nSe a linha da cabeça começa unida à linha da vida por um trecho antes de se separar, indica uma pessoa cautelosa que precisa de segurança antes de agir — quanto mais longo o trecho unido, maior a influência da família e do passado nas decisões. Se começa separada da linha da vida, indica independência, coragem para agir sem precisar de aprovação.\\n\\nUma linha da cabeça reta indica pensamento lógico, pragmático e linear. Uma linha que desce em direção ao monte da Lua (na parte inferior da palma) indica imaginação fértil, pensamento criativo e poético, mas também tendência ao devaneio. Quanto mais a linha desce, mais pronunciada essa característica.\\n\\nA LINHA DO CORAÇÃO corre horizontalmente na parte superior da palma, sob os dedos. Ela revela a vida emocional, a capacidade de amar, a forma como a pessoa se relaciona afetivamente e o que ela precisa para se sentir amada.\\n\\nUma linha do coração que termina sob o dedo indicador indica um amor idealista, que busca a perfeição no parceiro e às vezes ama mais o ideal do que a pessoa real. Que termina sob o dedo médio indica uma pessoa que ama com possessividade e intensidade. Que termina entre os dois indica equilíbrio entre idealismo e realismo.\\n\\nUma linha profunda e clara indica intensa vida emocional. Uma linha com muitas pequenas ramificações indica que a pessoa já amou muito e com muitas pessoas diferentes. Uma linha encadeada (que parece uma corrente) indica insegurança emocional profunda, dificuldade de confiar.",
+        "exemplo": "Imagine uma pessoa cuja linha da cabeça desce acentuadamente em direção à parte inferior da palma, enquanto a linha do coração tem muitas ramificações finas. Você já consegue ler: é uma pessoa de imaginação muito fértil (linha da cabeça descendente), que amou muito e com intensidade em várias ocasiões (ramificações na linha do coração), mas que provavelmente mistura muito amor com fantasia — ama a pessoa que imagina que o outro é tanto quanto ama o que o outro realmente é.",
+        "aplicacao": "1. Identifique as três linhas principais. 2. Para cada uma, observe: profundidade (clara ou fraca?), comprimento (longa ou curta?), direção (reta ou curva?), e marcas (bifurcações, interrupções, ilhas). 3. Leia cada linha individualmente. 4. Depois integre as três numa narrativa — como a mente (linha da cabeça) e o coração (linha do coração) se relacionam? A vitalidade (linha da vida) suporta o estilo de vida que a pessoa leva?",
+        "exercicio": "Examine as três linhas principais da sua mão dominante. Desenhe-as num papel. Para cada uma, responda: ela é profunda ou fraca? Longa ou curta? Tem interrupções ou bifurcações? Onde termina? Compare com a mão recessiva — o que mudou desde que você nasceu?",
+        "gabarito": "O objetivo deste exercício é treinar o olhar para identificar e distinguir as três linhas. A interpretação virá com a prática. O mais importante é perceber que cada linha conta uma história diferente: a vida (vitalidade), a cabeça (mente) e o coração (emoções) — e que essas três histórias precisam ser lidas juntas para fazer sentido."
+      },
+      "3": {
+        "titulo": "Os Montes da Mão",
+        "conteudo": "Os montes são as elevações carnosas encontradas na palma da mão. Cada monte corresponde a um planeta da astrologia clássica e revela aspectos específicos da personalidade. Um monte desenvolvido (elevado e firme) indica que as qualidades daquele planeta estão presentes e ativas. Um monte plano ou afundado indica ausência ou repressão dessas qualidades. Um monte excessivamente desenvolvido pode indicar excesso ou compulsão.\\n\\nO MONTE DE JÚPITER fica na base do dedo indicador. Revela ambição, liderança, espiritualidade e desejo de reconhecimento. Bem desenvolvido: pessoa ambiciosa, com senso de missão, carismática e com vocação para liderar. Plano: falta de ambição, dificuldade de assumir responsabilidades. Excessivo: arrogância, necessidade compulsiva de poder e reconhecimento.\\n\\nO MONTE DE SATURNO fica na base do dedo médio. Revela prudência, seriedade, responsabilidade e capacidade de suportar dificuldades. Bem desenvolvido: pessoa séria, confiável, disciplinada, com profunda consciência moral. Plano: irresponsabilidade, fuga das consequências. Excessivo: pessimismo crônico, tendência à depressão e ao isolamento.\\n\\nO MONTE DE APOLO (ou Sol) fica na base do dedo anelar. Revela criatividade, gosto estético, desejo de brilhar e amor pela beleza. Bem desenvolvido: pessoa criativa, com bom gosto, que tem facilidade de ser amada e admirada. Plano: falta de criatividade, dificuldade de expressar-se. Excessivo: vaidade, necessidade excessiva de atenção e admiração.\\n\\nO MONTE DE MERCÚRIO fica na base do dedo mínimo. Revela comunicação, inteligência, capacidade de negociação e habilidade com palavras e negócios. Bem desenvolvido: pessoa eloquente, inteligente, boa negociadora. Plano: dificuldade de comunicação, timidez. Excessivo: tendência à desonestidade, manipulação através das palavras.\\n\\nO MONTE DE VÊNUS fica na base do polegar, circundado pela linha da vida. Revela capacidade de amar, sensualidade, vitalidade física e amor pela vida. Bem desenvolvido: pessoa amorosa, sensual, cheia de vida e energia. Plano: frieza emocional, baixa libido, dificuldade de se conectar. Excessivo: sensualidade compulsiva, excesso de paixões.\\n\\nO MONTE DA LUA fica na parte inferior da palma, no lado oposto ao polegar. Revela imaginação, intuição, espiritualidade e conexão com o inconsciente. Bem desenvolvido: pessoa intuitiva, criativa, com rica vida interior e tendência ao misticismo. Plano: falta de imaginação, excesso de materialismo. Excessivo: tendência a fugir da realidade, fantasias excessivas.\\n\\nO MONTE DE MARTE se divide em dois: Marte Positivo (entre o polegar e o monte de Júpiter) e Marte Negativo (na parte lateral da palma, entre o monte da Lua e o monte de Mercúrio). Juntos revelam coragem, resistência, capacidade de luta e controle emocional sob pressão.",
+        "exemplo": "Uma mão com monte de Vênus muito desenvolvido, monte de Apolo proeminente e monte da Lua elevado descreve uma pessoa apaixonada e sensual (Vênus), criativa e que ama a beleza (Apolo), com forte vida interior e intuição aguçada (Lua). Se o monte de Saturno for plano nessa mesma mão, você tem alguém que vive intensamente mas com dificuldade de colocar limites e assumir responsabilidades práticas.",
+        "aplicacao": "1. Observe cada monte individualmente, pressionando suavemente para sentir se é firme, mole ou plano. 2. Classifique cada um: desenvolvido, plano ou excessivo. 3. Identifique os dois ou três montes mais proeminentes — eles revelam as energias dominantes da pessoa. 4. Integre essa leitura com as linhas já estudadas.",
+        "exercicio": "Observe os montes da sua mão. Quais são os dois mais desenvolvidos? Quais são os mais planos? Escreva uma frase sobre o que isso diz sobre você. Depois compare com alguém próximo.",
+        "gabarito": "Os dois montes mais desenvolvidos revelam as forças dominantes da personalidade. Os mais planos revelam áreas de menor desenvolvimento ou pontos de crescimento. Não existe combinação perfeita — cada configuração tem pontos fortes e desafios."
+      },
+      "4": {
+        "titulo": "As Linhas Secundárias",
+        "conteudo": "Além das três linhas principais, existem linhas secundárias que aprofundam a leitura de forma significativa. As mais importantes são a Linha do Destino, a Linha do Sol, a Linha do Mercúrio e as Linhas de Afeto.\\n\\nA LINHA DO DESTINO (ou Linha de Saturno) sobe verticalmente pelo centro da palma em direção ao dedo médio. Ela não está presente em todas as mãos — e isso por si só já é uma informação. Quando ausente, indica uma pessoa que escreve seu próprio caminho sem um destino claramente definido, vivendo por impulso e escolhas momentâneas. Quando presente, indica que a pessoa tem um senso de missão ou direção, que sua vida segue um fio condutor reconhecível.\\n\\nO ponto de origem da linha do destino é crucial: quando começa na base da palma (perto do pulso), indica que o senso de propósito é precoce e vem de dentro. Quando começa na linha da vida, indica que a carreira ou missão foi fortemente moldada pela família. Quando começa no monte da Lua, indica uma carreira ou direção que depende do público, da aprovação alheia ou de colaborações — comum em artistas, políticos e professores.\\n\\nInterrupções na linha do destino indicam mudanças significativas de direção na vida. Uma linha que termina antes de chegar ao dedo médio indica que a pessoa para de seguir seu destino em algum momento — por escolha, medo ou circunstâncias.\\n\\nA LINHA DO SOL (ou Linha de Apolo) sobe em direção ao dedo anelar. Indica sucesso, reconhecimento, talento criativo e capacidade de brilhar publicamente. Quando presente e clara, indica que a pessoa tem potencial para ser reconhecida e admirada em sua área. Quando ausente, não significa fracasso — apenas que o sucesso virá de forma mais privada, sem reconhecimento público amplo.\\n\\nAs LINHAS DE AFETO (ou Linhas de União) são as linhas horizontais que aparecem na lateral da mão, abaixo do dedo mínimo. Cada linha marcada pode indicar um relacionamento significativo. O que importa não é a quantidade, mas a qualidade: uma linha profunda e clara indica um relacionamento duradouro e profundo; uma linha fraca ou fragmentada indica uma relação que começou mas não se consolidou; uma bifurcação no início pode indicar dificuldade para comprometer-se; uma bifurcação no final pode indicar separação.\\n\\nA LINHA DE MERCÚRIO (ou Linha de Saúde) desce diagonalmente do monte de Mercúrio em direção à base da palma. Paradoxalmente, quanto mais fraca ou ausente essa linha, melhor — indica saúde robusta e estável. Quando presente e marcada, pode indicar sensibilidade do sistema nervoso ou digestivo, ou uma mente que trabalha intensamente e precisa de mais cuidado com o corpo.",
+        "exemplo": "Uma pessoa com linha do destino saindo do monte da Lua, linha do Sol presente e forte, e linhas de afeto com bifurcações no final tem uma história bastante legível: é alguém cuja carreira depende do público (monte da Lua), que tem talento reconhecido (linha do Sol), mas cujos relacionamentos tendem a chegar a crises ou separações (bifurcações nas linhas de afeto).",
+        "aplicacao": "1. Procure a linha do destino — ela existe? De onde parte? Tem interrupções? 2. Procure a linha do Sol — está presente? É forte ou fraca? 3. Observe as linhas de afeto na lateral da mão — quantas são marcadas? Qual é a qualidade de cada uma? 4. Integre tudo numa leitura única.",
+        "exercicio": "Examine se você tem linha do destino. Se sim, de onde ela parte? Isso ressoa com sua experiência de vida — você sente que tem um propósito claro? Se não tem a linha, isso também faz sentido para você?",
+        "gabarito": "A ausência da linha do destino não é negativa — indica liberdade e fluidez. A presença indica senso de missão. O objetivo é sempre verificar se a leitura ressoa com a experiência real da pessoa."
+      },
+      "5": {
+        "titulo": "Os Dedos e suas Falanges",
+        "conteudo": "Os dedos são uma dimensão muitas vezes negligenciada da quiromância, mas revelam aspectos da personalidade tão importantes quanto as linhas. Cada dedo corresponde a um planeta e a uma área da vida, e cada falange (segmento do dedo) revela um nível diferente de expressão dessa energia.\\n\\nO POLEGAR revela força de vontade e lógica — a capacidade de transformar intenção em ação. Um polegar longo indica grande determinação e lógica forte. Um polegar curto indica impulsividade e dificuldade de sustentar esforços prolongados. Um polegar muito rígido indica teimosia e inflexibilidade. Um polegar muito flexível (que dobra muito para trás) indica adaptabilidade e generosidade, mas também facilidade para ceder demais.\\n\\nO INDICADOR (Júpiter) revela ambição, autoconfiança e relação com a autoridade. Quando é mais longo que o anelar, indica uma personalidade dominante, com forte necessidade de liderança e controle. Quando é mais curto que o anelar, indica introversão e tendência a deixar os outros liderarem.\\n\\nO DEDO MÉDIO (Saturno) revela equilíbrio, responsabilidade e senso de dever. É sempre o mais longo — quando é desproporcional mente longo em relação aos outros, indica uma personalidade séria e introspectiva em excesso. Quando é quase do mesmo tamanho que os vizinhos, indica alguém que não se leva demasiadamente a sério.\\n\\nO ANELAR (Apolo) revela criatividade, senso estético e necessidade de reconhecimento. Quando é mais longo que o indicador, indica uma personalidade criativa, voltada para as artes e para a expressão pessoal, que valoriza mais criar do que liderar. Homens com anelar mais longo que o indicador foram estudados em pesquisas que os associam a maior exposição a testosterona no útero e a personalidades mais assertivas e competitivas.\\n\\nO MÍNIMO (Mercúrio) revela comunicação, inteligência e habilidade social. Um dedo mínimo longo (que ultrapassa a primeira articulação do anelar) indica eloquência, habilidade com palavras e facilidade de convencer. Um mínimo curto pode indicar dificuldade de expressão verbal ou timidez social.\\n\\nAs FALANGES de cada dedo dividem-se em três: a superior (ponta do dedo) representa o aspecto mental ou espiritual daquela energia; a média representa o aspecto prático; e a inferior (próxima à palma) representa o aspecto material ou instintivo. Uma falange mais desenvolvida (mais carnuda ou longa) indica que aquele nível é dominante.",
+        "exemplo": "Uma pessoa com polegar longo e rígido, indicador mais longo que o anelar e dedo mínimo comprido tem um perfil bastante definido: forte vontade e lógica (polegar longo), personalidade dominante que precisa liderar (indicador comprido), e grande facilidade de comunicação e persuasão (mínimo longo). É o perfil clássico de um líder nato com habilidade para convencer e executar.",
+        "aplicacao": "1. Compare o comprimento dos dedos entre si. 2. Observe a flexibilidade do polegar. 3. Compare indicador e anelar — qual é maior? 4. Observe o comprimento do mínimo em relação ao anelar. 5. Para cada dedo, observe qual das três falanges é mais desenvolvida.",
+        "exercicio": "Olhe para seus dedos agora. Indicador ou anelar — qual é maior? O que isso diz sobre você? Seu polegar é rígido ou flexível? Isso ressoa com sua forma de ser?",
+        "gabarito": "Não existe combinação de dedos melhor que outra — cada configuração tem virtudes e desafios. O objetivo é reconhecer padrões e usá-los para compreender melhor a si mesmo e às pessoas ao redor."
+      },
+      "6": {
+        "titulo": "Marcas Especiais na Mão",
+        "conteudo": "Além das linhas e montes, existem marcas especiais que aparecem na palma e nos dedos, cada uma com significado específico. Conhecê-las aprofunda enormemente a leitura.\\n\\nO ANEL DE SALOMÃO é um arco ou linha que aparece na base do dedo indicador, circundando o monte de Júpiter. É uma das marcas mais valorizadas na quiromância — indica sabedoria, capacidade de liderança espiritual, tendência natural para o ensino e uma profunda intuição sobre as pessoas. Pessoas com esse anel raramente conseguem ser enganadas por muito tempo.\\n\\nO ANEL DE SATURNO é uma linha que circunda a base do dedo médio. Ao contrário do Anel de Salomão, é considerado uma marca desafiadora — indica tendência ao isolamento, dificuldade de se conectar com os outros, e em casos extremos, uma tendência à melancolia profunda.\\n\\nA CRUZ MÍSTICA aparece no centro da palma, na área chamada quadrângulo (entre as linhas da cabeça e do coração), sem tocar em nenhuma das linhas principais. É uma das marcas mais raras e valorizadas — indica forte intuição, interesse genuíno pelo oculto e místico, e frequentemente aparece em pessoas com dons mediúnicos ou grande sensibilidade espiritual.\\n\\nO TRIÂNGULO formado pelo encontro de três linhas em qualquer parte da mão é considerado uma marca de talento e proteção naquela área específica. Um triângulo sobre o monte de Mercúrio indica talento para negócios e comunicação. Sobre o monte de Apolo, talento artístico protegido.\\n\\nA ESTRELA é um conjunto de pequenas linhas que se cruzam formando uma estrela em qualquer ponto da mão. Sobre os montes, geralmente indica um evento súbito e poderoso relacionado àquele planeta — pode ser positivo ou negativo dependendo do contexto. Uma estrela sobre a linha da vida pode indicar um evento físico intenso.\\n\\nAS ILHAS são pequenas formações ovais dentro de uma linha, onde a linha se divide e depois se une novamente. Em qualquer linha que apareçam, indicam um período de dispersão, confusão ou dupla influência. Na linha da cabeça, podem indicar períodos de confusão mental ou problemas nervosos. Na linha do coração, períodos de conflito emocional.\\n\\nAS GRADES são conjuntos de linhas que se cruzam formando uma grade sobre um monte. Geralmente indicam bloqueio ou excesso de energia naquele monte — a energia existe mas está travada ou sendo mal direcionada.",
+        "exemplo": "Uma pessoa com Anel de Salomão no indicador e Cruz Mística no centro da palma é alguém com marcas raras que indicam forte intuição humana (Anel de Salomão) e genuína sensibilidade para o oculto e espiritual (Cruz Mística). Se essa pessoa também tiver o monte da Lua bem desenvolvido, você está diante de alguém com capacidades mediúnicas ou intuitivas fora do comum.",
+        "aplicacao": "1. Examine o centro da palma com boa iluminação — existe uma Cruz Mística? 2. Observe a base de cada dedo — há linhas circulares? 3. Procure triângulos formados pela confluência de linhas. 4. Observe se existem ilhas nas linhas principais.",
+        "exercicio": "Com boa iluminação e uma lupa se necessário, examine sua mão em busca de marcas especiais. Anote todas que encontrar. Alguma ressoa com o que você sabe sobre si mesmo?",
+        "gabarito": "As marcas especiais adicionam nuance à leitura. A Cruz Mística é a mais significativa para quem estuda o misticismo. O Anel de Salomão é muito valorizado. Lembre: marcas isoladas nunca contam a história completa — precisam ser integradas ao resto da leitura."
+      },
+      "7": {
+        "titulo": "Leitura Integrada — Juntando Tudo",
+        "conteudo": "Uma leitura quiromântica completa não é uma soma de partes isoladas — é uma narrativa integrada onde cada elemento confirma, contradiz ou enriquece os outros. O leitor experiente não lê linha por linha como um checklist; ele olha para a mão como um todo e deixa uma história emergir.\\n\\nO processo de uma leitura integrada começa com a impressão geral: qual é o primeiro sentimento que a mão transmite? Há harmonia entre os elementos ou existe tensão visível — como uma linha do coração profunda e intensa combinada com uma linha da cabeça muito racional e reta, indicando uma guerra interna entre coração e razão?\\n\\nDepois vêm os elementos dominantes: quais são os dois ou três aspectos mais proeminentes? Um monte de Vênus exuberante com linhas de afeto fragmentadas conta uma história muito específica — alguém com enorme capacidade de amar, mas cuja história amorosa foi marcada por rupturas e recomeços.\\n\\nEm seguida, as contradições internas: onde a mão mostra tensão? Uma linha da cabeça que desce muito (imaginação fértil) combinada com linha do destino partindo do monte da Lua (carreira dependente do público) e monte de Mercúrio desenvolvido (comunicação) aponta para um escritor, roteirista ou poeta — alguém que usa a imaginação para se comunicar com muitas pessoas.\\n\\nFinalmente, a questão do crescimento: o que a mão recessiva mostra de diferente da dominante? Essas diferenças revelam o trabalho que a pessoa fez sobre si mesma — ou deixou de fazer.\\n\\nAlguns princípios importantes para a leitura integrada: nunca faça previsões absolutas — sempre use linguagem de tendência ('isso sugere', 'há uma inclinação para'). Nunca assuste — informações sobre saúde ou eventos negativos devem ser comunicados com cuidado e acompanhados de possibilidades de ação. Sempre confirme com a pessoa — a leitura é um diálogo, não um monólogo. E nunca esqueça: a mão mostra tendências, não fatalidades. O livre-arbítrio existe e as linhas mudam.",
+        "exemplo": "Imagine uma mão com: tipo Água (palma longa, dedos finos), monte da Lua muito desenvolvido, linha da cabeça descendente, linha do coração com muitas ramificações, linha do destino partindo do monte da Lua, Anel de Salomão no indicador. A narrativa integrada: pessoa profundamente sensível e imaginativa (tipo Água + monte da Lua + linha da cabeça descendente), que amou muito e de formas variadas (linha do coração com ramificações), cuja missão de vida envolve conectar-se com o público através da sensibilidade e intuição (linha do destino do monte da Lua), com profunda sabedoria sobre as pessoas (Anel de Salomão). Provavelmente um artista, terapeuta ou professor.",
+        "aplicacao": "1. Observe a mão inteira por 30 segundos sem analisar nada. Que impressão geral você tem? 2. Identifique os 3 elementos mais proeminentes. 3. Identifique as possíveis contradições internas. 4. Compare as duas mãos. 5. Monte uma narrativa coerente. 6. Valide com a pessoa.",
+        "exercicio": "Faça uma leitura completa da sua própria mão, seguindo os passos acima. Escreva um parágrafo — não uma lista — descrevendo quem você é com base no que vê. Compare com o que você sabe sobre si mesmo.",
+        "gabarito": "Uma boa leitura integrada soa como alguém que conhece a pessoa há anos. Ela não lista características — ela conta uma história. O objetivo deste exercício é desenvolver exatamente essa capacidade narrativa."
+      },
+      "8": {
+        "titulo": "Ética e Prática na Quiromância",
+        "conteudo": "Aprender a ler mãos é adquirir uma responsabilidade. Quando você olha para a mão de alguém e começa a falar sobre sua vida, sua personalidade e seus padrões, você está entrando em território íntimo. A pessoa à sua frente pode estar vulnerável, em busca de respostas, ou simplesmente curiosa — mas em qualquer caso, suas palavras terão peso.\\n\\nO primeiro princípio ético é a não-maleficência: nunca provoque medo desnecessário. Se você vê marcas que poderiam ser interpretadas negativamente, sempre as enquadre em possibilidades e não em fatalidades, e sempre acompanhe com o que pode ser feito. 'Há uma tendência a períodos de baixa energia que merecem atenção ao cuidado do corpo' é muito diferente de 'você vai ter problemas de saúde graves'.\\n\\nO segundo princípio é a honestidade sobre seus limites: você é um estudante de quiromância, não um oráculo infalível. Dizer 'isso sugere uma tendência para...' ou 'o que vejo aqui pode indicar...' é mais honesto e mais eficaz do que afirmações absolutas.\\n\\nO terceiro princípio é o respeito à autonomia: a leitura deve empoderar, não criar dependência. O objetivo de uma boa leitura quiromântica é que a pessoa saia com mais clareza sobre si mesma, não com medo de seu destino ou com necessidade de voltar toda semana para saber o que fazer.\\n\\nO quarto princípio é a confidencialidade: o que você vê nas mãos de alguém é informação privada. Não compartilhe detalhes de uma leitura com terceiros sem permissão.\\n\\nFinalmente, o desenvolvimento do leitor: a quiromância é uma arte que se desenvolve com prática. Leia o máximo de mãos que puder — de pessoas que você conhece bem, para poder verificar se sua leitura ressoa. Mantenha um diário de leituras. Revisite suas interpretações. E nunca pare de estudar.",
+        "exemplo": "Uma pessoa chega até você preocupada com seu relacionamento. Você vê linhas de afeto fragmentadas e uma linha do coração com ilhas. Em vez de dizer 'seu relacionamento vai terminar', você pode dizer: 'Vejo que você passou por períodos de confusão emocional nos relacionamentos — há uma tendência a entrar em fases de indecisão. O que você está sentindo agora sobre essa relação?' Isso abre um diálogo útil sem criar profecia autocumprida.",
+        "aplicacao": "1. Sempre peça permissão antes de fazer uma leitura. 2. Nunca faça leituras de pessoas em estado emocional muito fragilizado sem cuidado redobrado. 3. Use sempre linguagem de tendência, nunca de certeza. 4. Finalize toda leitura com algo que empodere a pessoa. 5. Mantenha um diário de leituras para seu desenvolvimento.",
+        "exercicio": "Pratique fazer uma leitura completa de alguém que você conhece bem. Depois pergunte à pessoa se o que você disse ressoou. Anote o que acertou e o que não acertou. Esse feedback é o maior professor.",
+        "gabarito": "A ética na quiromância não é uma limitação — é o que separa um leitor genuíno de alguém que usa o misticismo para manipular ou assustar. O leitor ético usa seu conhecimento para iluminar, não para impressionar."
+      }
+    }
+  },
+  "leitura_fria": {
+    "titulo": "Leitura Fria — A Arte de Ler Pessoas",
+    "descricao": "Aprenda a extrair informações precisas sobre qualquer pessoa usando apenas observação, linguagem estratégica e conhecimento de psicologia humana. A técnica usada por médiuns, mentalistas e grandes líderes.",
+    "icone": "🧊",
+    "total_aulas": 8,
+    "aulas": {
+      "1": {
+        "titulo": "O que é Leitura Fria — e o que não é",
+        "conteudo": "Leitura fria é a capacidade de fazer afirmações precisas sobre uma pessoa desconhecida usando apenas observação, raciocínio dedutivo, conhecimento de psicologia humana e linguagem estrategicamente escolhida — sem qualquer informação prévia sobre ela. O nome vem do inglês 'cold reading': ler alguém 'a frio', sem aquecimento prévio de informações.\\n\\nAntes de tudo, é crucial entender o que a leitura fria NÃO é. Ela não é telepatia, clarividência ou dom sobrenatural. Ela é uma habilidade aprendível, baseada em princípios psicológicos documentados e em observação treinada. Isso não diminui seu poder — ao contrário, significa que qualquer pessoa suficientemente dedicada pode desenvolvê-la.\\n\\nA leitura fria é usada em contextos muito diversos: médiuns e videntes a usam (conscientemente ou não) para criar a impressão de acesso sobrenatural. Negociadores e advogados a usam para entender rapidamente com quem estão lidando. Médicos e psicólogos a usam para captar sinais que o paciente não verbaliza. Grandes vendedores a usam para adaptar sua abordagem em tempo real.\\n\\nOs pilares da leitura fria são quatro. O primeiro é a OBSERVAÇÃO: você coleta dados visuais antes de dizer qualquer palavra — aparência, postura, roupas, acessórios, mãos, rosto, forma de se mover. O segundo é o CONHECIMENTO ESTATÍSTICO: saber o que é verdade para a maioria das pessoas em determinado contexto permite fazer afirmações com alta probabilidade de acerto. O terceiro é a LINGUAGEM ESTRATÉGICA: a forma como você formula uma afirmação determina se ela será aceita ou rejeitada, independente de seu conteúdo. O quarto é a LEITURA DE REAÇÕES: você monitora continuamente como a pessoa responde ao que você diz, e ajusta sua leitura em tempo real.\\n\\nO efeito Barnum ou efeito Forer é o fenômeno psicológico central que explica parte do funcionamento da leitura fria. Em 1948, o psicólogo Bertram Forer deu a seus alunos um teste de personalidade e depois entregou a cada um um 'resultado personalizado'. Na verdade, todos receberam exatamente o mesmo texto — uma série de afirmações vagas e positivas. Quando pediu que avaliassem a precisão do resultado numa escala de 0 a 5, a média foi 4,26. O texto era composto por afirmações como 'Você tem necessidade de ser apreciado pelos outros' e 'Embora tenha algumas fraquezas, você geralmente é capaz de compensá-las'. Essas afirmações parecem pessoais mas se aplicam a praticamente todo ser humano.",
+        "exemplo": "Um praticante experiente de leitura fria observa uma mulher que chega para uma consulta. Em 30 segundos, ele nota: ela usa aliança mas toca nela nervosamente (casamento com tensão), tem olheiras mas está bem maquiada (cansada mas se esforça para parecer bem), carrega uma agenda de papel em vez de usar o celular para anotações (organizada, valoriza o tangível), e tem uma pequena cicatriz no pulso que ela não esconde (passou por algo difícil e não tem vergonha disso). Antes de ela dizer uma palavra, ele já tem um esboço de quem ela é.",
+        "aplicacao": "1. Antes de qualquer interação, pause e observe por 30 segundos sem falar. 2. Liste mentalmente 5 observações concretas. 3. Para cada observação, pergunte: o que isso provavelmente indica? 4. Formule hipóteses, não certezas. 5. Prepare-se para testar e ajustar.",
+        "exercicio": "Vá a um lugar público (café, shopping, parque) e escolha uma pessoa que não te conheça. Observe por 2 minutos sem interagir. Escreva 10 observações e para cada uma, uma hipótese sobre essa pessoa. O objetivo não é acertar tudo — é treinar o olhar.",
+        "gabarito": "Boas observações são específicas ('ela toca o anel nervosamente') e não vagas ('ela parece nervosa'). Boas hipóteses são baseadas na observação ('tensão no casamento?') e não em preconceitos. O treino está em separar o que você VÊ do que você IMAGINA."
+      },
+      "2": {
+        "titulo": "A Arte das Afirmações Estratégicas",
+        "conteudo": "Uma das ferramentas mais poderosas da leitura fria é a capacidade de formular afirmações que parecem específicas mas têm alta probabilidade de acerto. Existem várias técnicas para isso, e conhecê-las serve tanto para quem pratica leitura fria quanto para quem quer reconhecer quando alguém está usando essas técnicas nele.\\n\\nAs AFIRMAÇÕES BARNUM são declarações que parecem pessoais mas se aplicam à maioria das pessoas. 'Você às vezes se questiona se está no caminho certo' — isso é verdade para mais de 90% dos adultos. 'Há uma parte de você que as pessoas ao seu redor raramente conhecem' — também universal. 'Você tem uma capacidade maior do que a que costuma mostrar' — quase todo mundo concorda. O segredo é entregar essas afirmações com confiança e tom pessoal, como se você estivesse revelando algo específico sobre aquela pessoa.\\n\\nAs AFIRMAÇÕES DE ESPELHO são aquelas que cobrem os dois lados de uma característica ao mesmo tempo. 'Você pode ser muito generoso, mas também sabe quando precisa proteger o que é seu' — seja lá como a pessoa for, ela vai concordar com alguma parte disso. 'Você tem uma sensibilidade que nem sempre mostra, mas que as pessoas próximas a você percebem' — cobre tanto os extrovertidos (que escondem a sensibilidade) quanto os introvertidos (que a mostram apenas para poucos).\\n\\nAs AFIRMAÇÕES ESTATÍSTICAS são baseadas no conhecimento de probabilidades. Se a pessoa é mulher entre 30 e 50 anos, há alta probabilidade de que ela se preocupe com relacionamentos, com a saúde de familiares próximos, e com a questão de estar realizando seu potencial. Se é um homem de meia-idade, há alta probabilidade de que ele se preocupe com trabalho, com reconhecimento profissional e com questões financeiras. Essas são probabilidades — não certezas — mas funcionam como ponto de partida.\\n\\nA TÉCNICA DO JACKPOT é quando você faz uma série de afirmações em sequência, monitorando as reações, e quando percebe que uma acertou em cheio (a pessoa reage visivelmente), você aprofunda aquela linha e abandona as outras. É como uma pessoa procurando um sinal de rádio: quando encontra a frequência certa, para de girar o dial e aumenta o volume.\\n\\nA TÉCNICA DA AFIRMAÇÃO SUAVE é formular afirmações de forma que qualquer resposta — positiva ou negativa — se encaixe. 'Vejo uma figura masculina importante em sua vida, alguém que foi uma influência significativa...' Se a pessoa confirma, você continua nessa direção. Se ela diz 'não tenho pai', você diz 'às vezes essa figura pode ser um tio, um professor, ou mesmo uma ausência que deixou marca'. A afirmação era vaga o suficiente para se adaptar a qualquer cenário.",
+        "exemplo": "Um praticante diz para uma mulher: 'Vejo que você tem uma força que as pessoas ao seu redor às vezes não percebem — você cuida de todos mas raramente pede ajuda.' A mulher fica emocionada e concorda. Isso funcionou porque é estatisticamente muito comum em mulheres de meia-idade, especialmente as que procuram consultas místicas — elas tendem a ser cuidadoras. A afirmação pareceu específica mas era estatisticamente provável.",
+        "aplicacao": "1. Comece com afirmações Barnum para criar rapport. 2. Observe as reações e identifique onde há ressonância. 3. Quando encontrar um ponto de ressonância (a pessoa reage com emoção ou entusiasmo), aprofunde. 4. Use afirmações de espelho em áreas onde você não tem certeza. 5. Sempre ancore suas afirmações em observações reais.",
+        "exercicio": "Escreva 5 afirmações Barnum — afirmações que parecem pessoais mas se aplicam à maioria. Depois teste-as com alguém próximo. Observe a reação. Isso vai te mostrar como funciona o efeito Barnum na prática.",
+        "gabarito": "Boas afirmações Barnum são positivas ou neutras (nunca negativas), parecem específicas mas são amplas, e falam sobre características universais como ambição, sensibilidade, dualidade e capacidade não revelada. 'Você tem uma criatividade que nem sempre encontra espaço de expressão' é um exemplo clássico."
+      },
+      "3": {
+        "titulo": "Leitura de Linguagem Corporal para Leitura Fria",
+        "conteudo": "A linguagem corporal fornece à leitura fria uma camada de dados em tempo real que vai muito além das afirmações estatísticas. Quando você combina observação corporal com afirmações estratégicas, a precisão da leitura aumenta dramaticamente.\\n\\nA POSTURA revela o estado emocional de base da pessoa. Ombros para frente e cabeça levemente abaixada indicam defensividade ou baixa autoestima. Ombros para trás e queixo levemente erguido indicam confiança ou necessidade de projetar confiança. Uma pessoa que senta na ponta da cadeira está ansiosa ou muito engajada. Uma pessoa que senta bem encostada está relaxada ou indiferente.\\n\\nOs MICROGESTOS são movimentos involuntários que duram menos de um quinto de segundo e revelam emoções reais antes que a pessoa possa mascarar. O mais conhecido é a microexpressão facial — um flash de emoção genuína que aparece e desaparece antes do rosto assumir a expressão controlada. Outras microexpressões incluem: toque no nariz (pode indicar desconforto com o que está sendo dito), toque nos lábios (contenção de palavra), cruzar os braços (fechamento ou desconforto), piscar mais que o normal (estresse ou processamento de informação intensa).\\n\\nOS OLHOS são particularmente ricos em informação. O contato visual sustentado indica confiança ou domínio. Olhos que evitam contato indicam timidez, vergonha, ou em alguns contextos, mentira. Pupilas dilatadas indicam interesse genuíno ou excitação. Olhos que se movem para cima e para a esquerda (em pessoas destras) frequentemente acompanham a recuperação de uma memória visual real. Olhos que se movem para cima e para a direita frequentemente acompanham a construção de uma imagem — o que pode indicar imaginação ou construção de mentira.\\n\\nA VOZ fornece informação independente das palavras. Uma voz que sobe ao final de afirmações (como se fossem perguntas) indica insegurança. Uma voz que oscila em volume indica instabilidade emocional. Falar muito rápido indica ansiedade. Pausas longas antes de responder podem indicar cuidado ou, em alguns contextos, construção de resposta.\\n\\nAs ROUPAS e ACESSÓRIOS são dados ricos e frequentemente negligenciados. Roupas muito combinadas e impecáveis indicam necessidade de controle e boa impressão. Roupas confortáveis mas descuidadas indicam que a pessoa está em modo de autopreservação ou não se importa com opinião alheia neste momento. Acessórios muitos (anéis, pulseiras, colares) indicam expressividade e necessidade de adorno. Poucos acessórios indicam minimalismo ou praticidade.",
+        "exemplo": "Uma pessoa entra numa sala com ombros levemente curvados, cruza os braços assim que senta, mas sorri amplamente ao ser cumprimentada. Leitura integrada: ela está defensiva ou vulnerável (postura), mas quer parecer aberta e receptiva (sorriso). Há uma tensão entre o que sente e o que quer projetar. Uma boa afirmação de abertura: 'Sinto que você carrega algo que não tem sido fácil de mostrar para os outros.'",
+        "aplicacao": "1. Antes de começar qualquer leitura ou interação, observe postura e acessórios. 2. Durante a interação, monitore microgestos — especialmente toque no rosto e movimento dos olhos. 3. Ouça o tom de voz independente das palavras. 4. Quando perceber discrepância entre o que a pessoa diz e como o corpo reage, confie mais no corpo.",
+        "exercicio": "Assista a 10 minutos de uma entrevista em vídeo sem som. Tente ler apenas a linguagem corporal do entrevistado. O que você percebe? Depois assista com som e compare.",
+        "gabarito": "A linguagem corporal nunca deve ser lida em gestos isolados — sempre em clusters (grupos de gestos). Um braço cruzado sozinho pode ser frio. Braços cruzados + ombros retraídos + pouco contato visual formam um cluster de fechamento emocional."
+      },
+      "4": {
+        "titulo": "O Feedback Loop — Ajustando a Leitura em Tempo Real",
+        "conteudo": "A diferença entre um iniciante e um praticante experiente de leitura fria não está no que eles dizem — está em como eles ouvem e ajustam. A leitura fria não é um monólogo; é um diálogo altamente calibrado onde cada resposta da outra pessoa fornece informação para a próxima afirmação.\\n\\nO FEEDBACK POSITIVO é quando a pessoa confirma, concorda ou reage com emoção ao que você disse. Pode ser verbal ('sim, exatamente!') ou não-verbal (aceno de cabeça, olhos que se iluminam, postura que se abre). Quando isso acontece, você encontrou um ponto de ressonância — aprofunde imediatamente essa linha.\\n\\nO FEEDBACK NEGATIVO é quando a pessoa nega, questiona ou reage com frieza. Um praticante inexperiente para aqui. Um experiente nunca abandona uma afirmação de forma abrupta — ele a reformula: 'Talvez isso ainda não tenha se manifestado completamente, mas pode estar por vir' ou 'Talvez seja algo que você sente mas não reconhece conscientemente ainda'.\\n\\nO FEEDBACK NEUTRO é o mais desafiador — quando a pessoa não reage de forma clara. Nesse caso, use uma pergunta aberta para extrair informação: 'O que isso te faz pensar?' ou 'Isso ressoa com algo que você está vivendo agora?'\\n\\nA técnica do HOT READING — que não deve ser confundida com leitura fria — é quando o praticante obtém informações sobre a pessoa ANTES da sessão. Médiuns desonestos frequentemente usam assistentes que conversam com os visitantes na sala de espera. Na versão legítima, qualquer informação que você já tenha sobre a pessoa é apenas contexto — o que você faz com ela durante a sessão ainda é leitura fria.\\n\\nO EFEITO ÉLVIS é quando a pessoa começa a fornecer informações voluntariamente, empolgada com a leitura. Ela passa de receptor passivo para colaborador ativo — e frequentemente fornece exatamente as informações que confirmam e aprofundam a leitura. O praticante experiente sabe que, nesse momento, precisa escutar mais do que falar.\\n\\nA ARMADILHA DO EGO é o maior inimigo do praticante: quando você está tão focado em impressionar que para de ouvir. As melhores leituras acontecem quando o praticante está completamente presente e responsivo, não quando está ensaiando mentalmente a próxima afirmação impressionante.",
+        "exemplo": "Você diz: 'Vejo que há uma figura feminina importante em sua vida que partiu cedo demais.' A pessoa franze a testa e diz: 'Não perdi ninguém assim.' Um praticante experiente não recua — ele reformula: 'Às vezes essa partida não é física — pode ser uma distância, uma ruptura, uma separação que aconteceu antes que estivesse pronta.' Se a pessoa reflete e diz 'minha mãe se foi quando eu tinha 12 anos mas ainda está viva, simplesmente sumiu da minha vida', você encontrou o ponto.",
+        "aplicacao": "1. Após cada afirmação, pause e observe a reação ANTES de continuar. 2. Classifique a reação: positiva, negativa ou neutra. 3. Positiva: aprofunde. Negativa: reformule. Neutra: faça uma pergunta aberta. 4. Nunca abandone uma afirmação de forma abrupta — sempre ofereça uma saída alternativa. 5. Quando a pessoa começar a falar muito, ouça.",
+        "exercicio": "Numa conversa normal com alguém próximo, pratique o feedback loop: faça uma afirmação sobre essa pessoa, observe a reação, e ajuste. Veja quantas vezes você consegue aprofundar uma linha usando apenas as reações dela.",
+        "gabarito": "O feedback loop é a habilidade mais difícil de desenvolver porque exige dividir a atenção entre falar, observar e ajustar simultaneamente. Começa devagar e vai ficando automático com prática."
+      },
+      "5": {
+        "titulo": "Perfis Estatísticos e Probabilidades",
+        "conteudo": "Uma das bases mais sólidas da leitura fria é o conhecimento de perfis estatísticos — o que é verdadeiro para a maioria das pessoas em determinadas categorias. Esse conhecimento permite fazer afirmações com alta probabilidade de acerto mesmo antes de observar qualquer detalhe específico da pessoa.\\n\\nAs pessoas que buscam consultas místicas ou esotéricas têm um perfil muito específico segundo as pesquisas. A maioria está passando por uma transição de vida (fim de relacionamento, mudança de carreira, perda, nova fase). A maioria tem pelo menos uma área de vida onde sente que perdeu o controle. A maioria nutre esperança de que as coisas vão melhorar. E a maioria está em busca de validação e de ser ouvida tanto quanto está em busca de respostas.\\n\\nPerfis por FAIXA ETÁRIA: jovens adultos (18-30) geralmente se preocupam com identidade, carreira, relacionamentos e independência. Adultos de meia-idade (30-50) geralmente se preocupam com realizações, relacionamentos em curso, filhos e sentido de vida. Pessoas mais velhas (50+) geralmente se preocupam com saúde, legado, relacionamentos com filhos adultos e a questão de ter vivido bem.\\n\\nPerfis por APARÊNCIA E ESTILO: roupas muito formais em contexto informal indicam alguém que precisa de controle e boa impressão. Roupas alternativas ou artísticas indicam alguém que valoriza a expressão individual e provavelmente tem perspectivas não-convencionais. Roupas práticas e funcionais indicam alguém focado em resultados. Muito uso de marcas visíveis indica necessidade de status.\\n\\nPerfis por ESTADO CIVIL E SITUAÇÃO FAMILIAR: alianças, fotos visíveis, referências a filhos — tudo isso fornece contexto. Pessoas casadas com filhos pequenos geralmente carregam tensão entre realização pessoal e responsabilidade familiar. Pessoas solteiras após os 35 frequentemente carregam alguma ambiguidade sobre o assunto — seja paz com a escolha, seja mágoa de histórias não resolvidas.\\n\\nÉ CRUCIAL entender que perfis estatísticos são FERRAMENTAS, não verdades absolutas. Eles aumentam a probabilidade de acerto mas não garantem nada. O uso consciente deles é o que separa a leitura fria ética da manipulação.",
+        "exemplo": "Uma mulher de aproximadamente 40 anos, bem vestida, com aliança mas sem fotos de filhos visíveis, que procura uma consulta num dia útil pela manhã. Perfil estatístico: casada, possivelmente sem filhos ou com filhos crescidos, tem tempo e recursos disponíveis, veio num horário que sugere que controla seu próprio tempo (empresária ou profissional liberal). A preocupação mais provável: algo no casamento ou na realização pessoal. Afirmação de abertura: 'Sinto que você chegou até aqui buscando clareza sobre uma decisão importante — algo que envolve tanto o que você construiu quanto o que ainda quer construir.'",
+        "aplicacao": "1. Antes de qualquer interação, colete dados demográficos visíveis. 2. Use perfis estatísticos para formular hipóteses iniciais. 3. Teste essas hipóteses com afirmações abertas. 4. Ajuste conforme o feedback. 5. Nunca trate um perfil estatístico como certeza.",
+        "exercicio": "Escolha três pessoas que você conhece superficialmente (não íntimas). Para cada uma, liste o que você sabe sobre elas estatisticamente (faixa etária, situação aparente, estilo). Formule 3 afirmações prováveis para cada uma. Depois, numa conversa natural, veja quantas ressoam.",
+        "gabarito": "Perfis estatísticos bem aplicados têm taxa de acerto de 60-80% — muito acima do acaso. O treino está em aprender quais afirmações têm maior probabilidade para cada perfil e como formulá-las de forma que ressoem."
+      },
+      "6": {
+        "titulo": "A Leitura Fria em Diferentes Contextos",
+        "conteudo": "A leitura fria não existe apenas no contexto místico — ela é uma habilidade que se aplica a praticamente qualquer interação humana. Conhecer suas aplicações amplia tanto o uso quanto a defesa contra usos manipuladores.\\n\\nNO CONTEXTO MÍSTICO E DIVINATÓRIO, a leitura fria é a espinha dorsal de muitas consultas de tarot, quiromância, astrologia e mediunidade. Isso não significa que essas práticas são todas fraude — significa que a intuição genuína e a leitura fria frequentemente coexistem, e que mesmo praticantes honestos usam elementos de leitura fria sem necessariamente perceber. O praticante ético sabe disso e é honesto sobre o que é observação e o que é algo mais.\\n\\nNAS VENDAS E NEGOCIAÇÃO, a leitura fria determina qual abordagem usar com qual pessoa. Um bom vendedor percebe em 30 segundos se está diante de alguém que decide pela lógica ou pela emoção, e adapta a apresentação. Um bom negociador percebe o que a outra parte mais teme perder, e usa isso como alavanca.\\n\\nNA MEDICINA E PSICOLOGIA CLÍNICA, a leitura fria bem aplicada ajuda o profissional a perceber o que o paciente não está dizendo verbalmente — dor que minimiza, angústia que esconde, ou ao contrário, ansiedade que amplifica. Os melhores clínicos são leitores frios altamente treinados, mesmo sem usar esse nome.\\n\\nNOS RELACIONAMENTOS PESSOAIS, a leitura fria é a base da empatia profunda. Perceber quando alguém está sofrendo mas dizendo que está bem, quando alguém está com raiva mas expressando indiferença, quando alguém precisa de espaço mas pede atenção — tudo isso é leitura fria aplicada ao amor.\\n\\nA DEFESA CONTRA LEITURA FRIA é tão importante quanto aprender a fazê-la. Você está vulnerável à leitura fria quando está emocionalmente carregado, quando quer muito acreditar em algo, ou quando é tomado de surpresa. Conhecer as técnicas é a melhor defesa: quando alguém faz uma afirmação Barnum, você reconhece. Quando alguém usa o jackpot, você percebe. Isso não destrói a experiência — apenas te coloca no controle dela.",
+        "exemplo": "Você está sendo entrevistado para um emprego. O entrevistador é um praticante intuitivo de leitura fria. Ele observa que você está levemente tenso (dedos entrelaçados), mas confiante no conteúdo (voz firme). Ele diz: 'Me fale sobre um momento em que você precisou trabalhar sob pressão.' Enquanto você responde, ele lê sua linguagem corporal para avaliar se você fala da experiência com orgulho, com ansiedade, ou com relutância — e isso diz mais sobre como você lida com pressão do que as palavras que você escolhe.",
+        "aplicacao": "1. Identifique em qual contexto você mais quer desenvolver essa habilidade. 2. Estude os perfis estatísticos específicos desse contexto. 3. Pratique a observação nesse ambiente específico. 4. Desenvolva também sua capacidade de reconhecer quando outros estão usando leitura fria em você.",
+        "exercicio": "Na próxima semana, em pelo menos 3 interações diferentes (trabalho, relacionamento, conversa casual), pratique conscientemente: observe antes de falar, formule hipóteses, teste com afirmações ou perguntas abertas, ajuste pelo feedback. Anote o que aprendeu em cada uma.",
+        "gabarito": "A leitura fria é mais eficaz quando passa despercebida. O objetivo não é impressionar — é conectar, entender e adaptar. Quanto mais natural e menos performática ela for, mais poderosa será."
+      },
+      "7": {
+        "titulo": "A Psicologia do Acreditar — Por que Funciona",
+        "conteudo": "Para usar a leitura fria com consciência e responsabilidade, é essencial entender por que as pessoas acreditam — os mecanismos psicológicos que tornam essa técnica eficaz mesmo quando as afirmações são vagas ou incorretas.\\n\\nO VIÉS DE CONFIRMAÇÃO é talvez o mais poderoso: as pessoas tendem a lembrar e valorizar as informações que confirmam o que já acreditam ou querem acreditar, e a esquecer ou minimizar as que contradizem. Depois de uma sessão de tarot ou quiromância, a pessoa lembra das afirmações que acertaram com muito mais vivacidade do que das que erraram. Isso cria uma sensação subjetiva de alta precisão mesmo quando a taxa objetiva de acerto foi mediana.\\n\\nA VALIDAÇÃO EMOCIONAL é frequentemente mais importante do que a precisão factual. Quando um leitor diz 'você carrega uma força que os outros raramente percebem', a pessoa não está avaliando se isso é estatisticamente provável — ela está sentindo que alguém finalmente a viu. Essa sensação de ser visto e compreendido é extremamente poderosa e está frequentemente por trás da experiência de 'ele sabia tudo sobre mim'.\\n\\nO EFEITO DE COLABORAÇÃO ATIVA é quando a pessoa começa a preencher as lacunas com suas próprias informações, sem perceber que está fazendo isso. Um leitor diz: 'Vejo uma viagem importante em sua vida que mudou algo fundamental.' A pessoa pensa na viagem que fez dois anos atrás e concorda — mas foi ela quem forneceu a especificidade. O leitor apenas abriu a porta.\\n\\nA ILUSÃO DE ESPECIFICIDADE ocorre quando afirmações vagas são percebidas como específicas porque a pessoa as interpreta através de seu próprio contexto. 'Há alguém em sua vida que não é quem aparenta ser' — essa frase pode se aplicar a uma infinidade de situações, mas a pessoa imediatamente pensa em alguém específico e fica impressionada com a 'precisão'.\\n\\nO ESTADO DE ABERTURA EMOCIONAL em que as pessoas chegam a consultas místicas as torna mais receptivas a sugestões. Quando alguém está vulnerável, em transição, ou buscando respostas, o cérebro está mais aberto a aceitar afirmações sem o filtro crítico habitual — é um estado semelhante à hipnose leve.\\n\\nConhecer esses mecanismos serve a dois propósitos: permite ao praticante ser mais eficaz E mais ético, pois ele entende o poder que tem sobre a pessoa naquele momento. E permite ao consultante manter sua agência, aproveitando a experiência sem perder o senso crítico.",
+        "exemplo": "Após uma consulta, uma pessoa relata para amigos: 'Ela sabia exatamente que eu passei por uma decepção amorosa recente e que estou repensando minha carreira.' O que realmente aconteceu: o leitor fez afirmações Barnum sobre transições e decepções (universal), a pessoa preencheu com suas experiências específicas, e o viés de confirmação fez o resto. Isso não torna a experiência inválida — mas é importante entender o que realmente aconteceu.",
+        "aplicacao": "1. Ao receber uma leitura de qualquer tipo, observe ativamente: quais afirmações eram realmente específicas? Quais eram Barnum? Você preencheu alguma lacuna? 2. Ao fazer uma leitura, seja honesto consigo mesmo sobre o que é observação, o que é probabilidade estatística e o que é genuína intuição.",
+        "exercicio": "Releia as afirmações desta aula e identifique 3 afirmações Barnum que você poderia usar. Depois imagine como essas afirmações seriam recebidas por pessoas em diferentes estados emocionais (alguém estável vs alguém em crise). O que muda?",
+        "gabarito": "A eficácia da leitura fria não depende de engano — depende de psicologia. Usar esse conhecimento com honestidade é o que distingue o praticante íntegro."
+      },
+      "8": {
+        "titulo": "Ética, Limites e Responsabilidade",
+        "conteudo": "A leitura fria é uma das habilidades mais poderosas que uma pessoa pode desenvolver — e exatamente por isso requer uma reflexão ética profunda. O poder de fazer alguém sentir que você 'sabe' coisas sobre ela cria uma responsabilidade real.\\n\\nO PRINCÍPIO DA NÃO-MANIPULAÇÃO é fundamental: existe uma diferença enorme entre usar a leitura fria para criar conexão genuína, entender melhor as pessoas e ajudá-las — e usá-la para criar dependência, extrair dinheiro, ou exercer controle. A linha pode parecer sutil mas é clara: a intenção e o resultado.\\n\\nA TRANSPARÊNCIA QUANDO RELEVANTE: em contextos onde alguém acredita que você tem poderes sobrenaturais quando na verdade está usando técnicas aprendíveis, há uma questão ética real. Cada praticante precisa decidir onde fica sua linha. Alguns optam por total transparência. Outros argumentam que a experiência criada tem valor real independente do mecanismo. O mínimo ético é nunca explorar financeiramente essa crença de forma abusiva.\\n\\nO CUIDADO COM PESSOAS VULNERÁVEIS: pessoas em crise, luto, doenças graves ou perturbação mental estão em estado de maior suscetibilidade. Usar leitura fria (ou qualquer técnica de influência) com essas pessoas exige redobrado cuidado. Nunca crie dependência em alguém que está em estado vulnerável. Nunca substitua ajuda profissional real por uma consulta mística.\\n\\nA QUESTÃO DO DIAGNÓSTICO: nunca faça afirmações sobre saúde que possam ser interpretadas como diagnóstico médico. 'Vejo uma sensibilidade no sistema nervoso' pode levar uma pessoa a ignorar sintomas reais ou, ao contrário, a entrar em pânico desnecessário.\\n\\nA HONESTIDADE SOBRE OS ERROS: em qualquer prática honesta de leitura fria ou leitura intuitiva, haverá erros. A forma como o praticante lida com os erros é reveladora de sua integridade. Admitir 'errei nessa' é sinal de praticante sério. Redirecionar ou tentar salvar toda afirmação errada é sinal de falta de integridade.\\n\\nFINALMENTE: a leitura fria, quando praticada com integridade, não é um engodo — é uma habilidade de percepção e conexão humana profunda. Os melhores praticantes — sejam eles médiuns, psicólogos, médicos ou negociadores — usam essas técnicas para genuinamente ajudar, entender e conectar. É o propósito que define o caráter da prática.",
+        "exemplo": "Um praticante recebe uma mulher que, claramente, está procurando uma razão para permanecer num relacionamento problemático. Usando leitura fria, ele percebe isso rapidamente. A decisão ética: não confirmar o que ela quer ouvir apenas para agradá-la, mas também não fazer afirmações absolutas sobre o relacionamento. Em vez disso, direcionar a conversa para o que ela quer e merece, não para o que o parceiro vai ou não vai fazer.",
+        "aplicacao": "1. Defina sua própria linha ética antes de praticar leitura fria em qualquer contexto. 2. Nunca use a técnica para criar dependência ou para influenciar decisões importantes de forma unilateral. 3. Seja honesto sobre seus erros. 4. Em contextos profissionais (vendas, liderança), seja consciente de quando está usando e para quê.",
+        "exercicio": "Reflita: em que contextos da sua vida você já foi 'lido' por alguém usando essas técnicas — conscientemente ou não? Como se sentiu? O que teria mudado se você tivesse reconhecido a técnica na hora?",
+        "gabarito": "A resposta a este exercício é pessoal, mas o objetivo é desenvolver consciência crítica — tanto para usar a técnica com integridade quanto para não ser manipulado por ela."
+      }
+    }
+  },
+  "numerologia": {
+    "titulo": "Numerologia — O Código dos Números",
+    "descricao": "Os números são a linguagem do universo. Aprenda a decifrar o código numérico do seu nome e data de nascimento para revelar sua missão, personalidade e destino.",
+    "icone": "🔢",
+    "total_aulas": 6,
+    "aulas": {
+      "1": {
+        "titulo": "Os Fundamentos — Como Calcular",
+        "conteudo": "A numerologia é o estudo da relação entre números e eventos, personalidades e destinos. Suas raízes estão em Pitágoras (570 a.C.), que acreditava que 'tudo é número' — que a realidade é fundamentalmente matemática e que os números carregam vibrações próprias que influenciam a vida humana. A numerologia pitagórica, base do sistema mais usado no ocidente, reduz todos os números a um dígito de 1 a 9, com exceção dos números mestres 11, 22 e 33.\\n\\nO SISTEMA DE REDUÇÃO: qualquer número maior que 9 é reduzido somando seus dígitos até chegar a um único algarismo. Exemplo: 29 = 2+9 = 11 (número mestre, não reduz mais) ou 37 = 3+7 = 10 = 1+0 = 1. Os NÚMEROS MESTRES 11, 22 e 33 não são reduzidos porque carregam uma vibração especial — são considerados números de missão elevada.\\n\\nO NÚMERO DO CAMINHO DE VIDA é calculado a partir da data de nascimento completa. Exemplo: nascido em 15/03/1990. Some: 1+5 = 6 (dia); 0+3 = 3 (mês); 1+9+9+0 = 19 = 1+9 = 10 = 1+0 = 1 (ano). Depois some os resultados: 6+3+1 = 10 = 1+0 = 1. Caminho de vida 1.\\n\\nO NÚMERO DA EXPRESSÃO (ou do Destino) é calculado a partir do nome completo. Cada letra recebe um valor numérico: A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J=1, K=2, L=3, M=4, N=5, O=6, P=7, Q=8, R=9, S=1, T=2, U=3, V=4, W=5, X=6, Y=7, Z=8. Some todos os valores do nome completo e reduza.\\n\\nO NÚMERO DA ALMA é calculado usando apenas as VOGAIS do nome completo. Revela o que você deseja profundamente, sua motivação interior.\\n\\nO NÚMERO DA PERSONALIDADE é calculado usando apenas as CONSOANTES do nome completo. Revela como os outros te percebem, sua máscara social.",
+        "exemplo": "Maria Silva: M(4)+A(1)+R(9)+I(9)+A(1) = 24; S(1)+I(9)+L(3)+V(4)+A(1) = 18. Total: 24+18 = 42 = 4+2 = 6. Expressão 6 — alguém com forte vocação para cuidar, harmonizar e servir. As vogais: A+I+A+I+A = 1+9+1+9+1 = 21 = 3. Alma 3 — desejo profundo de criatividade e expressão.",
+        "aplicacao": "1. Calcule seu Caminho de Vida. 2. Calcule sua Expressão usando o nome completo de registro. 3. Calcule sua Alma (só vogais). 4. Calcule sua Personalidade (só consoantes). 5. Anote os quatro números e veja quais se repetem — repetições indicam ênfase.",
+        "exercicio": "Calcule seus quatro números fundamentais agora. Algum número se repete? O Caminho de Vida e a Expressão são harmônicos (próximos ou iguais) ou contrastantes (muito diferentes)? O que isso pode indicar sobre tensões internas?",
+        "gabarito": "Quando Caminho de Vida e Expressão são iguais ou muito próximos, indica alinhamento entre missão e forma de se expressar. Quando são opostos, indica tensão entre quem você é chamado a ser e como você naturalmente age."
+      },
+      "2": {
+        "titulo": "Os Números de 1 a 9 — Significados Completos",
+        "conteudo": "NÚMERO 1 — O Pioneiro: independência, liderança, originalidade, coragem para iniciar. Missão: tornar-se líder de si mesmo antes de liderar outros. Desafio: tendência ao egoísmo, dificuldade de colaborar e de aceitar ajuda. Vibração: solar, masculina, ativa.\\n\\nNÚMERO 2 — O Diplomata: cooperação, sensibilidade, parceria, intuição. Missão: criar harmonia e ser a ponte entre forças opostas. Desafio: excesso de dependência dos outros, dificuldade de tomar decisões sozinho, sensibilidade excessiva à crítica. Vibração: lunar, feminina, receptiva.\\n\\nNÚMERO 3 — O Criativo: expressão, alegria, criatividade, comunicação, sociabilidade. Missão: inspirar, criar e trazer leveza ao mundo. Desafio: dispersão, superficialidade, dificuldade de focar e completar projetos. Vibração: jovial, expansiva.\\n\\nNÚMERO 4 — O Construtor: trabalho, disciplina, estabilidade, organização, perseverança. Missão: construir bases sólidas e duradouras. Desafio: rigidez, excesso de controle, resistência à mudança, tendência ao workaholism. Vibração: terrosa, sólida.\\n\\nNÚMERO 5 — O Aventureiro: liberdade, mudança, versatilidade, experiência, sensualidade. Missão: viver plenamente a experiência humana em sua diversidade. Desafio: impulsividade, fuga do compromisso, excesso de mudanças, tendência às vícios. Vibração: mercurial, mutável.\\n\\nNÚMERO 6 — O Guardião: amor, responsabilidade, família, cura, serviço. Missão: cuidar, harmonizar e criar beleza no mundo. Desafio: excesso de sacrifício pessoal, tendência ao controle disfarçado de cuidado, dificuldade de receber. Vibração: venusina, nutritiva.\\n\\nNÚMERO 7 — O Buscador: análise, espiritualidade, introspecção, sabedoria, mistério. Missão: ir fundo na busca pela verdade, seja científica ou espiritual. Desafio: isolamento, desconfiança, frieza emocional, ceticismo que se torna cinismo. Vibração: solitária, profunda.\\n\\nNÚMERO 8 — O Realizador: poder, abundância, ambição, autoridade, sucesso material. Missão: aprender a usar o poder com sabedoria e criar abundância para si e para outros. Desafio: materialismo, abuso de poder, obsessão por controle e sucesso. Vibração: saturnal, intensa.\\n\\nNÚMERO 9 — O Humanista: compaixão, universalidade, finalização, idealismo. Missão: servir à humanidade e ao bem maior, deixar ir o que não serve mais. Desafio: dificuldade de focar no pessoal (ama a humanidade mas pode negligenciar as pessoas próximas), tendência ao martírio. Vibração: nobre, expansiva.",
+        "exemplo": "Uma pessoa com Caminho de Vida 7 e Expressão 3 vive uma tensão fascinante: a missão de aprofundar, refletir e buscar a verdade interior (7) expressa através da comunicação, criatividade e sociabilidade (3). O resultado típico: um escritor, filósofo ou artista que usa a expressão criativa para compartilhar insights profundos. Pense em Carl Jung (Caminho 7, altamente analítico e espiritual) ou em um poeta místico.",
+        "aplicacao": "1. Leia o significado do seu Caminho de Vida. Ressoa? 2. Leia o significado da sua Expressão. 3. Compare os dois — são harmônicos ou criam tensão? 4. Leia o desafio de cada número — reconhece esses padrões em você?",
+        "exercicio": "Para cada um dos seus quatro números, identifique: uma forma como essa energia se manifesta positivamente na sua vida, e uma forma como o desafio desse número aparece. Seja honesto.",
+        "gabarito": "Os desafios dos números não são fraquezas — são áreas de aprendizado. Um 8 que aprende a usar o poder com generosidade torna-se um líder extraordinário. Um 5 que aprende a comprometer-se transforma a versatilidade em riqueza."
+      },
+      "3": {
+        "titulo": "Números Mestres — 11, 22 e 33",
+        "conteudo": "Os números mestres são considerados na numerologia como vibrações de missão elevada — carregam o potencial amplificado dos números base (2, 4 e 6) mas com uma intensidade e uma chamada espiritual mais alta. Quem tem número mestre no Caminho de Vida, Expressão ou outros cálculos importantes carrega tanto o potencial extraordinário quanto o desafio correspondente.\\n\\nNÚMERO MESTRE 11 — O Iluminado: é o 2 amplificado. Onde o 2 busca harmonia e parceria, o 11 busca iluminar, inspirar e elevar. É o número da intuição extrema, da sensibilidade espiritual aguçada, da capacidade de captar o que ainda não é visível para os outros. Missão: ser um canal de inspiração para outras pessoas, usando a sensibilidade e a intuição como ferramentas. Desafio: extrema sensibilidade que pode virar ansiedade crônica, tendência a carregar o peso do mundo, dificuldade de aterrar as visões elevadas na realidade prática.\\n\\nNÚMERO MESTRE 22 — O Construtor Mestre: é o 4 amplificado. Onde o 4 constrói estruturas pessoais com disciplina, o 22 constrói estruturas que impactam muitas pessoas — projetos de grande escala, sistemas, legados. É o número com maior potencial de realização concreta de todos. Missão: transformar sonhos visionários em realidades tangíveis que beneficiem muitos. Desafio: a grandiosidade da missão pode paralisar (o peso do potencial), ou pode levar ao outro extremo — a pessoa que, incapaz de suportar a responsabilidade, vive aquém de seu potencial por toda a vida.\\n\\nNÚMERO MESTRE 33 — O Mestre do Amor: é o 6 amplificado. Extremamente raro como número do Caminho de Vida (requer uma data de nascimento específica). Representa o amor incondicional, a cura e o ensinamento do mais alto nível. Missão: curar através do amor e do exemplo. Desafio: antes que a energia do 33 possa ser usada, o portador precisa dominar completamente as energias do 11 e do 22 — o que torna este um número de desenvolvimento extremamente lento e cheio de provas.\\n\\nPessoas com números mestres frequentemente relatam uma sensação de que a vida exige mais delas do que das outras pessoas — que o padrão para si mesmos é mais alto, que as provas são mais intensas e que as recompensas, quando vêm, são também mais profundas.",
+        "exemplo": "Nikola Tesla, Albert Einstein e Barack Obama têm sido associados ao número mestre 11 em diferentes sistemas de cálculo. O que eles têm em comum: uma capacidade de perceber e articular o que a maioria ainda não via, uma sensibilidade intensa (Tesla tinha obsessões e fobias; Einstein era profundamente solitário), e uma missão que claramente transcendeu o pessoal para impactar a humanidade.",
+        "aplicacao": "1. Verifique se algum dos seus números principais é 11, 22 ou 33. 2. Se sim, leia o significado do número amplificado E do número base (11 = também leia o 2). 3. Reflita: você sente o peso e o potencial dessa vibração na sua vida?",
+        "exercicio": "Se você tem um número mestre: identifique 3 momentos da sua vida onde a intensidade desse número se manifestou claramente — positiva ou negativamente. Se não tem número mestre: identifique uma pessoa próxima que tenha e observe como esses temas aparecem na vida dela.",
+        "gabarito": "Os números mestres não tornam ninguém automaticamente superior ou mais especial — eles indicam um caminho mais desafiador e com maior responsabilidade. Muitos portadores de números mestres vivem como o número base (2, 4 ou 6) durante grande parte da vida, só abraçando o potencial mais elevado na maturidade."
+      },
+      "4": {
+        "titulo": "Ciclos Numerológicos — O Ritmo da Vida",
+        "conteudo": "A numerologia não é estática — ela descreve ciclos temporais que explicam por que determinados temas surgem em determinadas fases da vida. Os principais ciclos são o Ano Pessoal, o Mês Pessoal e os Ciclos de Vida (Pínáculos e Desafios).\\n\\nO ANO PESSOAL é calculado somando o dia e mês de nascimento com o ano em curso. Exemplo: nascida em 15/03, no ano 2025: 1+5+0+3+2+0+2+5 = 18 = 1+8 = 9. Ano Pessoal 9. Cada Ano Pessoal tem um tema que influencia o que a vida traz naquele período.\\n\\nAno 1: começos, novos projetos, plantio, independência. Momento de iniciar, não de colher.\\nAno 2: parceria, paciência, cooperação, detalhes. Ano de espera e de cultivar.\\nAno 3: expressão, criatividade, socialização, alegria. Ano de florescer e comunicar.\\nAno 4: trabalho, fundação, disciplina, construção. Ano de trabalhar duro.\\nAno 5: mudança, liberdade, aventura, imprevisibilidade. Ano de transformação.\\nAno 6: família, responsabilidade, amor, compromisso. Ano de cuidar e harmonizar.\\nAno 7: reflexão, estudo, espiritualidade, introspecção. Ano interior.\\nAno 8: poder, dinheiro, autoridade, colheita. Ano de resultados materiais.\\nAno 9: conclusão, liberação, perdão, universalidade. Ano de finalizar e soltar.\\n\\nO CICLO DE 9 ANOS: a vida se organiza em ciclos de 9 anos. Após um Ano 9, vem um novo Ano 1 — um recomeço. Entender em qual ano do ciclo você está ajuda a não nadar contra a maré: quem tenta colher num Ano 4 (de trabalho e plantio) se frustra. Quem trabalha duro num Ano 8 (de colheita) maximiza os resultados.\\n\\nOS PÍNÁCULOS são quatro grandes fases da vida, cada uma com sua vibração. O primeiro Pináculo vai do nascimento até os 36 menos o Caminho de Vida (por exemplo, para Caminho de Vida 7, termina aos 29 anos). Cada Pináculo tem um número que revela o tema dominante daquela fase.",
+        "exemplo": "Uma pessoa descobre que está num Ano Pessoal 9 e fica surpresa — está exatamente num momento de grandes encerramentos: fim de relacionamento longo, mudança de cidade, saída de um emprego. O Ano 9 explica: é exatamente isso que deveria estar acontecendo. Resistir a esses encerramentos seria nadar contra a maré. O Ano 1 que vem a seguir trará novos começos — mas só se os encerramentos do 9 forem completados.",
+        "aplicacao": "1. Calcule seu Ano Pessoal atual. 2. Leia o tema desse ano. 3. Olhe para o que está acontecendo na sua vida — isso ressoa? 4. Calcule o Ano Pessoal do ano passado e do próximo — veja a sequência.",
+        "exercicio": "Calcule seus Anos Pessoais para os últimos 5 anos. Para cada ano, escreva o tema numerológico e um evento ou fase significativa daquele período. Quantos se encaixam?",
+        "gabarito": "A maioria das pessoas encontra forte correspondência entre os temas do Ano Pessoal e os eventos de suas vidas quando olham retrospectivamente. Isso não prova que a numerologia é 'verdade' absoluta — mas sugere que esses ritmos descrevem algo real sobre os ciclos da vida."
+      },
+      "5": {
+        "titulo": "Numerologia do Nome — Análise Avançada",
+        "conteudo": "O nome é muito mais do que uma etiqueta — na numerologia, ele é um campo de vibração que influencia como nos expressamos e como somos percebidos. A análise avançada do nome vai além dos quatro números básicos.\\n\\nO NOME DE BATISMO vs NOME SOCIAL: o nome completo de registro revela o potencial total — é a 'partitura completa'. O nome pelo qual você é chamado no dia a dia revela a vibração que você projeta no presente. Mudanças de nome (casamento, adoção de nome artístico, apelido consolidado) trazem novas vibrações — e a numerologia diz que não são neutras.\\n\\nNÚMEROS OCULTOS: quando alguns números não aparecem em nenhuma letra do nome completo, isso indica 'karmas ocultos' — áreas de vida onde a pessoa precisa desenvolver conscientemente o que não veio naturalmente. Por exemplo, se não há nenhuma letra com valor 4 no nome, pode haver dificuldade com disciplina, estrutura e compromisso de longo prazo.\\n\\nNÚMEROS DOMINANTES: números que aparecem muitas vezes nas letras do nome indicam uma ênfase. Um nome com muitas letras de valor 1 (A, J, S) indica alguém com forte energia de liderança e independência expressa na identidade.\\n\\nA TABELA COMPLETA DE LETRAS E NÚMEROS:\\n1: A, J, S\\n2: B, K, T\\n3: C, L, U\\n4: D, M, V\\n5: E, N, W\\n6: F, O, X\\n7: G, P, Y\\n8: H, Q, Z\\n9: I, R\\n\\nCOMPATIBILIDADE NUMEROLÓGICA ENTRE NOMES: quando dois nomes têm vibrações que se completam (por exemplo, um 1 e um 2 — liderança e cooperação), há harmonia natural. Quando as vibrações colidem (dois 1s, por exemplo — duas lideranças que disputam espaço), há mais conflito natural mas também mais dinamismo.",
+        "exemplo": "Uma artista que nasceu com nome de registro com Expressão 8 (vibração de poder e materialidade) adota um nome artístico que calcula para 3 (criatividade e expressão). A mudança de nome foi uma mudança de vibração — ela transitou de uma identidade de realizadora material para uma identidade de expressão criativa. Isso é numerologicamente coerente com a mudança de carreira.",
+        "aplicacao": "1. Liste todas as letras do seu nome completo e calcule a tabela numérica. 2. Identifique quais números de 1 a 9 estão ausentes. 3. Identifique quais aparecem mais vezes. 4. Se você tem apelido ou nome social diferente do de registro, calcule os dois e compare.",
+        "exercicio": "Calcule a Expressão do seu nome de registro e do nome pelo qual você é chamado cotidianamente (se diferente). O que muda? A vibração do nome cotidiano ressoa mais com quem você se sente sendo hoje?",
+        "gabarito": "Não há nome 'melhor' ou 'pior' — cada vibração tem seu propósito. O objetivo é entender qual vibração você está projetando e se ela está alinhada com quem você quer ser."
+      },
+      "6": {
+        "titulo": "Numerologia na Prática — Integrando os Números",
+        "conteudo": "Uma análise numerológica completa não é uma soma de descrições isoladas — é uma síntese que revela quem a pessoa é, qual é sua missão, que desafios enfrenta e em que fase de vida está.\\n\\nO MAPA NUMEROLÓGICO COMPLETO inclui pelo menos: Caminho de Vida (missão fundamental), Expressão (talentos e forma de agir), Alma (desejos profundos), Personalidade (máscara social), Ano Pessoal (fase atual), e números ausentes (karmas).\\n\\nCOMO INTEGRAR: comece pelo Caminho de Vida — ele é a missão, o fio condutor. Depois veja a Expressão — como essa missão é expressa naturalmente. Se Caminho e Expressão são harmônicos, a pessoa tende a fluir. Se são contrastantes, há tensão interna que pode ser fonte de criatividade ou de conflito.\\n\\nDepois olhe a Alma — o que a pessoa deseja profundamente. Se a Alma está alinhada com o Caminho e a Expressão, há coerência interna. Se a Alma deseja algo diferente do que o Caminho pede, há uma sensação de sacrifício ou de algo não vivido.\\n\\nOs NÚMEROS AUSENTES revelam onde o trabalho é mais necessário. Uma pessoa sem nenhum 6 no nome pode ter dificuldade com cuidado, família e responsabilidade — ou pode ser exatamente aí que sua maior lição de vida está.\\n\\nO ANO PESSOAL posiciona tudo isso no tempo: que aspectos do mapa estão sendo ativados agora? Um Caminho de Vida 1 num Ano 1 sente o impulso de liderança amplificado. Um Caminho 7 num Ano 9 está num momento de profunda introspecção e finalização.\\n\\nA PRECISÃO DE UMA BOA LEITURA: como em qualquer sistema simbólico, o numerólogo experiente usa os números como mapa, não como território. As descrições são arquétipos — cada pessoa os vive de forma única. O objetivo não é encaixar a pessoa num número, mas usar o número para abrir conversa sobre quem ela é.",
+        "exemplo": "Ana, Caminho de Vida 7, Expressão 3, Alma 9, Personalidade 3, Ano Pessoal 4, ausência do número 1. Leitura integrada: Ana é uma buscadora espiritual (7) que se expressa de forma criativa e comunicativa (Expressão e Personalidade 3), com um desejo profundo de servir à humanidade (Alma 9). O Ano 4 atual é de trabalho duro e construção de bases — provavelmente um período menos glamouroso mas de grande importância estrutural. A ausência do 1 sugere que iniciativa e liderança pessoal são áreas de desenvolvimento consciente para ela.",
+        "aplicacao": "1. Monte seu mapa completo com os cinco números. 2. Escreva um parágrafo integrando todos eles. 3. Identifique as harmonias e as tensões. 4. Veja o que o Ano Pessoal atual está ativando no mapa.",
+        "exercicio": "Faça a análise numerológica completa de alguém que você conhece bem (com permissão). Escreva um parágrafo integrando os números. Mostre para a pessoa e pergunte se ressoa. Anote o feedback.",
+        "gabarito": "Uma boa leitura numerológica integradora ressoa porque descreve padrões reais da personalidade, não porque é mágica. O sistema funciona como um espelho estruturado que ajuda a pessoa a ver a si mesma com mais clareza."
+      }
+    }
+  },
+  "runas": {
+    "titulo": "Runas Nórdicas — O Alfabeto dos Ancestrais",
+    "descricao": "As runas são o sistema de escrita e adivinhação dos povos germânicos e nórdicos. Cada runa é uma letra, um conceito e uma força cósmica. Aprenda a ler, lançar e interpretar as 24 runas do Elder Futhark.",
+    "icone": "ᚠ",
+    "total_aulas": 6,
+    "aulas": {
+      "1": {
+        "titulo": "A Origem das Runas",
+        "conteudo": "As runas (do proto-germânico 'rūnō', que significa 'segredo' ou 'sussurro') são o mais antigo sistema de escrita dos povos germânicos e nórdicos. Os registros arqueológicos mais antigos de runas datam do século II d.C., mas a tradição oral sugere uso muito anterior. Elas foram usadas simultaneamente como alfabeto (para inscrições em pedras, armas, jóias e madeira) e como sistema divinatório e mágico.\\n\\nA mitologia nórdica conta que as runas não foram inventadas — foram descobertas. Odin, o deus supremo dos nórdicos, pendurou-se de cabeça para baixo na Yggdrasil (a Árvore do Mundo) por nove dias e nove noites sem comer ou beber, em sacrifício de si mesmo para si mesmo, até que as runas se revelaram a ele em visão. Essa narrativa não é apenas mito — ela revela a natureza das runas: não são criações humanas, mas forças que existem no tecido da realidade e que foram acessadas através de sacrifício e contemplação profunda.\\n\\nO ELDER FUTHARK é o mais antigo e completo alfabeto rúnico, composto por 24 runas divididas em três grupos de 8 chamados Aettir (plural de Aett, 'família'): o Aett de Freyr/Freyja (runas 1-8), o Aett de Heimdall (runas 9-16) e o Aett de Tyr (runas 17-24). O nome 'Futhark' vem das seis primeiras runas: Fehu, Uruz, Thurisaz, Ansuz, Raidho, Kenaz.\\n\\nNa adivinhação rúnica, cada runa pode aparecer em posição direta (upright) ou invertida (merkstave). A posição invertida não significa necessariamente algo negativo — indica a energia da runa em sua manifestação mais desafiadora, bloqueada ou interiorizada. Nem todas as runas têm merkstave (runas simétricas como Isa ou Gebo têm o mesmo significado em qualquer posição).\\n\\nAs runas não 'preveem' o futuro de forma determinista — elas revelam as energias em jogo no momento presente e os padrões que, se continuarem, produzirão determinados resultados. São uma ferramenta de consciência, não de fatalismo.",
+        "exemplo": "Uma escavação arqueológica na Noruega encontrou uma runa Tiwaz (ᛏ) gravada numa faca de guerra viking. Não era decoração — era um encantamento pedindo proteção divina de Tyr, o deus da guerra justa. As runas eram inseparáveis da vida cotidiana, espiritual e guerreira dos nórdicos.",
+        "aplicacao": "1. Familiarize-se com os símbolos das 24 runas. 2. Aprenda o nome de cada uma. 3. Entenda a divisão em três Aettir. 4. Comece a perceber runas em contextos culturais — logotipos, tatuagens, símbolos modernos que derivam das runas.",
+        "exercicio": "Desenhe as 24 runas do Elder Futhark de memória (ou copiando) e escreva o nome de cada uma ao lado. Esse ato de escrever manualmente é, em si, uma forma de conexão com a tradição rúnica.",
+        "gabarito": "As 24 runas são: Fehu, Uruz, Thurisaz, Ansuz, Raidho, Kenaz, Gebo, Wunjo, Hagalaz, Nauthiz, Isa, Jera, Eihwaz, Perthro, Algiz, Sowilo, Tiwaz, Berkano, Ehwaz, Mannaz, Laguz, Ingwaz, Dagaz, Othala."
+      },
+      "2": {
+        "titulo": "O Primeiro Aett — As Runas de Freyr",
+        "conteudo": "O Primeiro Aett está sob a regência de Freyr e Freyja, os deuses da fertilidade, abundância, amor e magia. As oito runas deste grupo lidam com forças fundamentais da vida material e instintiva.\\n\\nFEHU (ᚠ) — Gado/Riqueza: a primeira runa é sobre prosperidade, abundância e o fluxo de riqueza. Antigamente, o gado era a riqueza mais fundamental. Fehu não é sobre dinheiro parado — é sobre riqueza em movimento, circulando, crescendo. Direta: prosperidade merecida, energia vital forte, momento de colheita. Merkstave: perda material, energia estagnada, ganância.\\n\\nURUZ (ᚢ) — Auroque/Força Bruta: o auroque era um boi selvagem de força imensuravelmente superior à do boi domesticado. Uruz é a força primitiva, a saúde robusta, a vitalidade animal. Direta: força, saúde, potencial não domesticado, momento de agir com vigor. Merkstave: fraqueza, doença, força mal direcionada.\\n\\nTHURISAZ (ᚦ) — Gigante/Espinho: é a runa do caos controlado, da força destruidora que também limpa o caminho. Associada a Thor e seus inimigos, os Jötnar (gigantes). Direta: proteção, força destrutiva utilizada construtivamente, momento de confrontar. Merkstave: perigo, compulsão, energia destrutiva descontrolada.\\n\\nANSUZ (ᚨ) — Boca/Mensagem Divina: a runa da comunicação divina, das palavras, da sabedoria de Odin. Direta: mensagem importante chegando, comunicação clara, sabedoria, bênção divina. Merkstave: má comunicação, engano, manipulação através de palavras.\\n\\nRAIDHO (ᚱ) — Roda/Jornada: movimento, viagem, ritmo. A roda é o veículo, a jornada é tanto física quanto espiritual. Direta: jornada positiva, progresso, bom timing, as coisas fluindo no ritmo certo. Merkstave: jornada bloqueada, timing errado, planos que precisam ser revistos.\\n\\nKENAZ (ᚲ) — Tocha/Conhecimento: a luz que ilumina o que estava escuro. Conhecimento, criatividade, transformação pelo fogo. Direta: iluminação, revelação, novo conhecimento, criatividade em chamas. Merkstave: falsa clareza, fogo destruidor, conhecimento usado de forma errada.\\n\\nGEBO (ᚷ) — Presente/Troca: a runa da dádiva, da troca equilibrada, da parceria. Não tem merkstave (é simétrica). Sempre significa: presente, intercâmbio, parceria, generosidade que cria conexão.\\n\\nWUNJO (ᚹ) — Alegria/Clã: bem-estar, alegria, a sensação de pertencer. Direta: felicidade, harmonia, objetivos alcançados, sentido de comunidade. Merkstave: alegria vazia, felicidade superficial, conflito dentro do grupo.",
+        "exemplo": "Numa tiragem para alguém que pergunta sobre sua situação financeira, Fehu aparece merkstave e Raidho aparece direta. Leitura: há uma estagnação ou perda na área financeira (Fehu invertida), mas o movimento está a caminho (Raidho direta) — a situação está em transição, não em colapso.",
+        "aplicacao": "1. Memorize as 8 runas do Primeiro Aett e seus significados. 2. Para cada uma, pense numa situação da sua vida onde aquela energia esteve presente. 3. Pratique identificar qual seria o significado merkstave de cada uma.",
+        "exercicio": "Escolha uma runa do Primeiro Aett que ressoa com algo que você está vivendo agora. Escreva seu símbolo três vezes, pronuncie seu nome em voz alta, e reflita por 5 minutos sobre como essa energia está presente (ou ausente) na sua vida.",
+        "gabarito": "As runas do Primeiro Aett lidam com as forças mais fundamentais: sobrevivência, recursos, força, comunicação, jornada, conhecimento, troca e alegria. São as runas da vida terrestre e instintiva."
+      },
+      "3": {
+        "titulo": "O Segundo Aett — As Runas de Heimdall",
+        "conteudo": "O Segundo Aett está sob a regência de Heimdall (o guardião dos mundos) e Mordgud. Estas runas lidam com desafios, transformação, e os ciclos mais profundos da existência.\\n\\nHAGALAZ (ᚺ) — Granizo: destruição súbita vinda de forças fora do nosso controle, como uma tempestade de granizo que arrasa a colheita. Não tem merkstave (é simétrica no Elder Futhark). Sempre significa: ruptura súbita, crise fora do controle, caos necessário para transformação. É uma das runas mais temidas mas também uma das mais transformadoras — o granizo destrói, mas fertiliza o solo para nova plantação.\\n\\nNAUTHIZ (ᚾ) — Necessidade/Limitação: a runa da restrição, da necessidade não satisfeita, mas também da resistência que fortalece. É no atrito que a faísca nasce. Direta: necessidade, limitação que ensina, paciência forçada, perseverança necessária. Merkstave: limitação paralisante, resistência que sufoca, recusa em aceitar restrições.\\n\\nISA (ᛁ) — Gelo: paralisia, congelamento, quietude forçada. Não tem merkstave. Sempre significa: tudo parou, é hora de aguardar, não force nada agora. O gelo não é o fim — é a preservação durante o inverno.\\n\\nJERA (ᛃ) — Ano/Colheita: o ciclo completo, a colheita que vem depois do plantio e da espera. Não tem merkstave. Sempre significa: o tempo certo chegou, a colheita é proporcional ao plantio, os ciclos da vida estão se completando.\\n\\nEIHWAZ (ᛇ) — Teixo/Transformação: o teixo é a árvore que vive por milênios, cuja madeira era usada para arcos de guerra, e que cresce em cemitérios — ela conecta vida e morte. Runa da transformação profunda e da perseverança através das crises. Direta: transformação, força que vem de dentro, confiabilidade. Merkstave: fraqueza interna, rigidez, bloqueio na transformação.\\n\\nPERTHRO (ᛈ) — Copa/Mistério: a mais misteriosa das runas. Seu significado exato é debatido. Associada ao destino, ao acaso, ao que está escondido. Direta: mistério se revelando, o acaso trabalhando a seu favor, prazer oculto. Merkstave: segredos dolorosos, o acaso trabalhando contra, vícios ocultos.\\n\\nALGIZ (ᛉ) — Alce/Escudo: proteção, conexão com o divino, consciência expandida. Direta: proteção, conexão espiritual, estar no lugar certo. Merkstave: vulnerabilidade, proteção enfraquecida, conexão com forças que drenam.\\n\\nSOWILO (ᛊ) — Sol: vitória, força solar, clareza. Não tem merkstave. Sempre positiva: sucesso, energia vital, clareza de propósito, vitória.",
+        "exemplo": "Hagalaz aparece numa tiragem sobre um relacionamento. Em vez de dizer 'crise devastadora', o leitor experiente diz: 'Há uma ruptura que não pode ser controlada chegando — ou já acontecendo. Mas o granizo fertiliza o solo. O que está sendo destruído aqui pode ser o espaço para algo novo e mais autêntico crescer.'",
+        "aplicacao": "1. Memorize as 8 runas do Segundo Aett. 2. Perceba que várias delas (Hagalaz, Isa, Jera) não têm merkstave — são forças neutras que se manifestam como são. 3. Identifique qual dessas energias está mais presente na sua vida agora.",
+        "exercicio": "Qual das runas do Segundo Aett descreve melhor a fase que você está vivendo? Escreva um parágrafo sobre como essa energia está se manifestando na sua vida.",
+        "gabarito": "O Segundo Aett lida com forças além do controle humano — crise, necessidade, congelamento, ciclos, mistério. Aprender a trabalhar com essas forças, em vez de resistir a elas, é a sabedoria central deste grupo."
+      },
+      "4": {
+        "titulo": "O Terceiro Aett — As Runas de Tyr",
+        "conteudo": "O Terceiro Aett está sob a regência de Tyr (deus da guerra justa e da lei) e Zisa. Estas runas lidam com humanidade, comunidade, herança e o fim dos ciclos.\\n\\nTIWAZ (ᛏ) — Tyr/Justiça: nomeada pelo deus que sacrificou a mão para acorrentar o lobo Fenrir, Tiwaz é a runa do sacrifício pelo bem maior, da justiça, da coragem moral. Direta: justiça, sacrifício honroso, vitória pela integridade. Merkstave: injustiça, sacrifício em vão, motivações desonestas disfarçadas de nobreza.\\n\\nBERKANO (ᛒ) — Bétula/Renascimento: a bétula é a primeira árvore a brotar após um incêndio florestal. Runa do renascimento, da feminidade, do cuidado que nutre. Direta: novo começo, nutrição, cura, renascimento após destruição. Merkstave: estagnação, incapacidade de crescer, controle disfarçado de cuidado.\\n\\nEHWAZ (ᛖ) — Cavalo/Parceria: dois cavalos trabalhando juntos — parceria que multiplica o poder de cada um. Direta: parceria frutífera, movimento em sincronia, confiança mútua. Merkstave: parceria desequilibrada, movimento sem direção, desconfiança.\\n\\nMANNAZ (ᛗ) — Humanidade: a runa da natureza humana, do ser social, da consciência de si mesmo dentro da coletividade. Direta: humanidade em equilíbrio, consciência expandida, cooperação. Merkstave: ego inflado, manipulação, perda da perspectiva sobre si mesmo.\\n\\nLAGUZ (ᛚ) — Água/Fluxo: a água que não pode ser controlada mas pode ser navegada. Intuição, inconsciente, fluxo das emoções. Direta: intuição confiável, fluir com a vida, emoções como guia. Merkstave: intuição bloqueada, emoções avassaladoras, afogamento nos sentimentos.\\n\\nINGWAZ (ᛜ) — Ing/Potencial: associada ao deus Ingwaz (Freyr), é a semente antes de germinar — potencial concentrado pronto para explodir. Não tem merkstave. Sempre significa: potencial pronto para se manifestar, conclusão de uma fase, energia concentrada.\\n\\nDAGAZ (ᛞ) — Amanhecer/Clareza: o momento entre a noite e o dia, quando tudo muda. Transformação, clareza repentina, breakthrough. Não tem merkstave. Sempre significa: transformação profunda, clareza que vem de dentro, novo dia que começa.\\n\\nOTHALA (ᛟ) — Herança/Lar: o que foi herdado — terra, sangue, tradição, valores familiares. Direta: herança valiosa, raízes que sustentam, propriedade e pertencimento. Merkstave: herança que prende, valores familiares tóxicos, incapacidade de deixar o passado.",
+        "exemplo": "Dagaz aparece numa tiragem para alguém que está no meio de uma crise existencial profunda. A mensagem: você está no limiar — não na escuridão, não na luz, mas no momento exato de transição. Dagaz não promete que vai ser fácil, mas confirma que a clareza está chegando e que esta crise é, na verdade, o amanhecer de algo novo.",
+        "aplicacao": "1. Memorize as 8 runas do Terceiro Aett. 2. Perceba a progressão dos três Aettir: do instintivo e material (1º) ao caótico e transformador (2º) ao humano e comunitário (3º). 3. Identifique onde cada Aett aparece na sua vida agora.",
+        "exercicio": "Escolha uma runa do Terceiro Aett e pesquise sua mitologia nórdica associada. Como a história do deus ou símbolo relacionado ilumina o significado da runa?",
+        "gabarito": "O Terceiro Aett representa a dimensão mais humana e espiritual das runas — justiça, renascimento, parceria, humanidade, intuição, potencial e herança. É onde o ciclo completo da existência se fecha."
+      },
+      "5": {
+        "titulo": "Métodos de Tiragem Rúnica",
+        "conteudo": "Existem muitas formas de fazer uma tiragem rúnica. As mais comuns vão de uma única runa a layouts complexos de 9 ou mais runas. A escolha do método depende da complexidade da pergunta e da profundidade de resposta desejada.\\n\\nA RUNA DO DIA: tire uma única runa pela manhã como orientação para o dia. Não faça uma pergunta específica — simplesmente abra a mente para receber uma mensagem. A runa revelada pode ser literal (Raidho num dia de viagem) ou simbólica (Isa num dia que pede pausa e reflexão).\\n\\nA TIRAGEM DE TRÊS RUNAS é o layout mais versátil. Dependendo da intenção, pode representar: Passado-Presente-Futuro / Situação-Ação-Resultado / Problema-Causa-Solução / Você-O Outro-A Relação. Esta flexibilidade torna a tiragem de três runas adequada para quase qualquer pergunta.\\n\\nA TIRAGEM DE CINCO RUNAS expande para: Situação Atual / O que Está Oculto / Conselho / Caminho Mais Provável / Resultado Final. É boa para situações mais complexas onde a dimensão oculta é importante.\\n\\nA CRUZ NÓRDICA (5 runas em forma de cruz) oferece: Centro (o coração da questão) / Norte (o passado relevante) / Sul (o possível futuro) / Leste (forças que ajudam) / Oeste (forças que dificultam).\\n\\nO CAST (lançamento livre) é o método mais antigo: as runas são jogadas sobre uma superfície e lidas com base em quais caíram com a face para cima, quais caíram perto do centro (mais relevantes), quais ficaram agrupadas, e quais caíram sozinhas.\\n\\nCOMO PREPARAR-SE: antes de qualquer tiragem, crie um estado de concentração e intenção. Muitos praticantes seguram as runas nas mãos por um momento, respiram profundamente, e formulam uma pergunta clara. A clareza da pergunta influencia a clareza da resposta.\\n\\nCOMO LIMPAR AS RUNAS: após uso, especialmente para outros, algumas tradições recomendam passar as runas pela fumaça de ervas (sálvia, arruda), enterrá-las brevemente na terra, ou simplesmente guardá-las num saco escuro por um tempo.",
+        "exemplo": "Alguém pergunta sobre uma decisão profissional. Tiragem de três runas: Passado (Fehu direta — prosperidade que construiu), Presente (Isa — pausa, congelamento, espera necessária), Futuro (Jera — colheita proporcional). Leitura: você construiu algo real (Fehu), está num momento de aparente paralisia que é na verdade necessário (Isa), e se respeitar esse ritmo, a colheita virá no tempo certo (Jera). Não force. Confie no ciclo.",
+        "aplicacao": "1. Comece com a runa do dia por pelo menos uma semana. 2. Depois experimente a tiragem de três runas para uma pergunta real. 3. Registre suas tiragens e depois verifique se a orientação se mostrou relevante.",
+        "exercicio": "Faça uma tiragem de três runas para uma situação real que você está vivendo. Use o modelo Situação-Ação-Resultado. Escreva sua interpretação e volte a ela em 2 semanas.",
+        "gabarito": "A interpretação de uma tiragem melhora com prática. No começo, leia cada runa individualmente. Com o tempo, você começa a ver como as runas dialogam entre si numa tiragem — o conjunto conta uma história mais rica do que as peças isoladas."
+      },
+      "6": {
+        "titulo": "Magia Rúnica e Runas de Proteção",
+        "conteudo": "Além da adivinhação, as runas foram historicamente usadas para magia — gravar runas em objetos para invocar proteção, amor, cura ou vitória. Essa tradição é chamada de galdrastafir (uso de runas em fórmulas mágicas) e está documentada em centenas de inscrições arqueológicas.\\n\\nAs RUNAS DE PROTEÇÃO mais poderosas incluem Algiz (proteção e conexão espiritual), Tiwaz (proteção guerreira e justiça), Thurisaz (barreira contra inimigos) e Isa (congelar situações negativas).\\n\\nAs RUNAS DE CURA incluem Berkano (renascimento e cura feminina), Laguz (fluxo e purificação emocional), Uruz (força vital e saúde) e Sowilo (energia solar e vitalidade).\\n\\nOs BINDRUNES são runas combinadas — duas ou mais runas sobrepostas para criar um símbolo composto com as energias de ambas. Muitos logos modernos e símbolos culturais são, na verdade, bindrunes ancestrais.\\n\\nA MAGIA RÚNICA na prática moderna não requer crença sobrenatural — pode ser entendida como um sistema de intenção simbólica. Gravar uma runa numa vela, carregar uma pedra com uma runa pintada, ou desenhar uma runa ao acordar são formas de intenção ritual que funcionam através da psicologia da intenção e do foco.\\n\\nRUNAS E MEDITAÇÃO: cada runa pode ser objeto de meditação. Sente-se em posição confortável, visualize a runa à sua frente, pronuncie seu nome repetidamente (canto rúnico ou 'galdr'), e abra-se para as imagens e sentimentos que surgem. Esta é a forma mais antiga de 'estudar' as runas — não através de livros, mas através de experiência direta.\\n\\nÉTICA NA PRÁTICA RÚNICA: como qualquer sistema de poder, as runas pedem responsabilidade. A tradição nórdica é clara: o uso de magia para prejudicar outros tem consequências — não necessariamente 'kármicas' no sentido orientalista, mas no sentido de que quem manipula energias destrutivas eventualmente é consumido por elas. A magia rúnica mais poderosa é sempre a que alinha a vontade pessoal com forças maiores, não a que tenta forçar resultados contra a natureza das coisas.",
+        "exemplo": "Uma pessoa que se sentindo particularmente vulnerável num momento difícil desenha a runa Algiz no interior do pulso com uma caneta comum ao sair de casa. Para ela, não é um encantamento sobrenatural — é um lembrete intencional de que ela carrega proteção consigo, um âncora simbólica de força. O efeito psicológico é real: ela se sente mais centrada durante o dia.",
+        "aplicacao": "1. Escolha uma runa que corresponde a algo que você quer desenvolver ou se proteger. 2. Desenhe-a num papel e coloque em lugar visível. 3. Toda vez que vê o símbolo, recorde sua intenção. 4. Pratique a meditação rúnica com pelo menos uma runa por semana.",
+        "exercicio": "Escolha uma situação na sua vida que precisa de uma força específica (proteção, cura, clareza, nova energia). Identifique qual runa corresponde a essa energia. Crie um ritual simples usando essa runa — pode ser desenhá-la, meditar com ela, ou carregá-la escrita num papel por uma semana.",
+        "gabarito": "A magia rúnica é, em sua essência, uma forma de psicologia simbólica: você usa um símbolo carregado de significado para ancorar uma intenção na mente e no comportamento. O 'poder' da runa é o poder que você investe nela através da intenção focada."
+      }
+    }
+  },
+  "tarot": {
+    "titulo": "Tarô Completo — Os 78 Arcanos",
+    "descricao": "O Tarô é um sistema de 78 cartas que mapeia a jornada da consciência humana. Aprenda a ler os Arcanos Maiores e Menores, os naipes e os métodos de tiragem.",
+    "icone": "🃏",
+    "total_aulas": 8,
+    "aulas": {
+      "1": {
+        "titulo": "História e Estrutura do Tarô",
+        "conteudo": "O Tarô como o conhecemos hoje surgiu na Europa do século XV como jogo de cartas aristocrático — os 'trionfi' italianos. Sua associação com adivinhação e misticismo só se consolidou no século XVIII, especialmente através da figura do ocultista Antoine Court de Gébelin, que afirmou (incorretamente) que o Tarô seria um repositório do conhecimento do Egito Antigo. Apesar da afirmação histórica ser falsa, ela catalisou o uso do Tarô como ferramenta divinatória e esotérica que se aprofundou nos séculos seguintes.\\n\\nO baralho de Tarô padrão tem 78 cartas divididas em duas partes: os 22 ARCANOS MAIORES (do latim 'arcanum', segredo) que representam forças arquetípicas universais, e os 56 ARCANOS MENORES que lidam com os aspectos cotidianos da existência.\\n\\nOs ARCANOS MAIORES vão do 0 (O Louco) ao XXI (O Mundo) e narram a jornada do herói — a Jornada do Louco — desde a inocência inicial até a realização completa. Cada arcano maior é um arquétipo que todos os seres humanos encontram em suas vidas.\\n\\nOs ARCANOS MENORES dividem-se em quatro naipes, cada um associado a um elemento:\\n- PAUS (Fogo): energia, paixão, criatividade, trabalho, ambição\\n- COPAS (Água): emoções, amor, relacionamentos, intuição, inconsciente\\n- ESPADAS (Ar): mente, conflito, comunicação, verdade, desafios mentais\\n- OUROS (Terra): dinheiro, trabalho concreto, corpo, materialidade, recursos\\n\\nDentro de cada naipe há 14 cartas: Ás (1) até 10, mais quatro cartas da corte: Valete, Cavaleiro, Rainha e Rei. As cartas de 1 a 10 narram uma progressão temática dentro de cada naipe. As cartas da corte representam aspectos de personalidade ou pessoas reais.\\n\\nO BARALHO DE RIDER-WAITE (1909) é o mais influente da história moderna. Criado pelo ocultista Arthur Edward Waite e ilustrado pela artista Pamela Colman Smith, foi o primeiro baralho a ter ilustrações completas em todas as 78 cartas (antes, as cartas menores eram apenas símbolos repetidos). A maioria dos baralhos modernos é baseada neste sistema.",
+        "exemplo": "Uma pessoa que nunca viu um baralho de Tarô percebe que as cartas dos Arcanos Maiores contam uma história: O Louco (0) parte sem planos; O Mago (I) usa suas ferramentas; A Sacerdotisa (II) desenvolve intuição; e assim por diante até O Mundo (XXI) onde a jornada se completa. Essa narrativa é a jornada de qualquer vida humana — de iniciante a sábio.",
+        "aplicacao": "1. Familiarize-se com a estrutura dos 78 arcanos. 2. Observe os quatro naipes e seus elementos. 3. Passe por todas as cartas da corte de cada naipe. 4. Identifique qual naipe parece mais familiar ou confortável para você.",
+        "exercicio": "Pegue um baralho (físico ou imagens digitais) e divida as 78 cartas em: Arcanos Maiores, Paus, Copas, Espadas e Ouros. Observe as imagens de cada grupo. Que impressão geral cada grupo transmite?",
+        "gabarito": "Os Arcanos Maiores têm uma qualidade mais dramática e universal. Os Paus têm energia e movimento. As Copas têm fluidez e emoção. As Espadas têm clareza cortante. Os Ouros têm solidez e concretude. Perceber essas atmosferas é o primeiro passo da leitura intuitiva."
+      },
+      "2": {
+        "titulo": "Os Arcanos Maiores — A Jornada do Louco (0-X)",
+        "conteudo": "O LOUCO (0): o início de tudo. Inocência, espontaneidade, o salto no desconhecido com confiança total. Não é estupidez — é a coragem de começar sem saber onde vai terminar. Pergunta central: o que você está prestes a iniciar sem garantias?\\n\\nO MAGO (I): vontade, habilidade, poder de manifestação. O Mago tem todos os quatro elementos (Paus, Copas, Espadas, Ouros) sobre sua mesa — ele tem as ferramentas, basta usá-las. Pergunta central: você está usando todo o seu potencial?\\n\\nA SACERDOTISA (II): intuição, mistério, conhecimento que não vem dos livros mas do silêncio e da escuta interior. O que está oculto. Pergunta central: o que você sabe mas ainda não reconhece saber?\\n\\nA IMPERATRIZ (III): fertilidade, abundância, natureza, maternidade, criação. A terra fértil que nutre. Pergunta central: o que em sua vida está crescendo e precisando de cuidado?\\n\\nO IMPERADOR (IV): estrutura, autoridade, ordem, paternidade, o poder que organiza. Pergunta central: onde você precisa estabelecer mais limites e estrutura?\\n\\nO HIEROFANTE (V): tradição, ensino, instituições, transmissão de sabedoria estabelecida. Pode ser o professor ou a doutrina. Pergunta central: que crenças ou tradições estão guiando (ou aprisionando) você?\\n\\nOS AMANTES (VI): escolha, amor, valores, alinhamento entre coração e mente. Não é necessariamente sobre romance — é sobre a grande escolha que define quem você é. Pergunta central: qual é a escolha fundamental que você está evitando?\\n\\nO CARRO (VII): vitória através do controle de forças opostas, determinação, movimento com propósito. Pergunta central: você está no controle do seu caminho ou sendo levado pelas circunstâncias?\\n\\nA FORÇA (VIII): força interior, compaixão que domina o instinto bruto, coragem que não precisa de força física. A mulher que doma o leão com amor. Pergunta central: onde você precisa de suavidade para encontrar sua força real?\\n\\nO EREMITA (IX): recolhimento, sabedoria interior, a jornada solitária em busca de luz. O lanterna que ilumina apenas o próximo passo. Pergunta central: que resposta você só encontrará no silêncio?\\n\\nA RODA DA FORTUNA (X): ciclos, sorte, destino, os movimentos maiores da vida que estão além do controle pessoal. Pergunta central: que ciclo está se completando ou começando na sua vida?",
+        "exemplo": "Uma pessoa atravessa uma fase de isolamento intenso e tira O Eremita. Em vez de interpretar isso como 'sinal negativo', o leitor percebe o alinhamento: a carta confirma e valida a fase. 'Você está num período de recollhimento necessário — não é fraqueza, é sabedoria. O Eremita não fica no escuro por punição; ele escolhe o silêncio para encontrar a luz que vai iluminar os outros depois.'",
+        "aplicacao": "1. Tire cada uma dessas cartas individualmente e estude sua imagem. 2. Para cada uma, identifique: qual é o desafio dessa carta? Qual é o presente? 3. Qual dessas cartas sente mais próxima de onde você está agora?",
+        "exercicio": "Escolha dois Arcanos Maiores desta lista — um que ressoa positivamente e um que te desconforta. Para cada um, escreva: por que essa carta me atrai/repele? O que ela diz sobre onde estou agora?",
+        "gabarito": "A carta que mais te desconforta frequentemente é a que mais tem a te ensinar. A carta que mais ressoa frequentemente confirma algo que você já sabe mas talvez não tenha nomeado."
+      },
+      "3": {
+        "titulo": "Os Arcanos Maiores — A Jornada do Louco (XI-XXI)",
+        "conteudo": "A JUSTIÇA (XI): causa e efeito, equilíbrio, consequências das escolhas. Não é punição — é equilíbrio. O que você colhe é o que plantou. Pergunta central: que padrão em sua vida está produzindo as consequências que você está vivendo?\\n\\nO ENFORCADO (XII): suspensão voluntária, mudança de perspectiva, sacrifício de uma forma de ver para ganhar uma mais verdadeira. O Enforcado escolheu se suspender — não é vítima. Pergunta central: que ponto de vista você precisa abandonar para enxergar mais claro?\\n\\nA MORTE (XIII): transformação profunda, fim de uma fase, o encerramento necessário para o novo começo. Raramente significa morte física — quase sempre significa a morte de uma identidade, relacionamento, ou forma de vida. Pergunta central: o que precisa morrer em você para que algo novo possa nascer?\\n\\nA TEMPERANÇA (XIV): equilíbrio, paciência, mistura cuidadosa de opostos, alquimia interior. Pergunta central: que extremos em sua vida precisam ser integrados?\\n\\nO DIABO (XV): ilusão de prisão, sombra, vícios, apego a coisas que nos limitam. Note na imagem do Rider-Waite: as correntes dos cativos são soltas o suficiente para que eles possam se libertar — eles ficam por escolha. Pergunta central: a que você está preso que na verdade não te prende?\\n\\nA TORRE (XVI): ruptura súbita, revelação que desaba estruturas falsas, libertação violenta de algo que precisava cair. É a carta mais temida mas frequentemente a mais libertadora. Pergunta central: que estrutura em sua vida está sendo desafiada porque era baseada em algo falso?\\n\\nA ESTRELA (XVII): esperança, renovação, cura, conexão com o divino após a escuridão. Depois da Torre, a Estrela. Sempre positiva: você está sendo renovado. Pergunta central: onde está a esperança que você ainda não permite ver?\\n\\nA LUA (XVIII): ilusão, medo, o inconsciente que emerge, o caminho tortuoso que deve ser navegado com intuição mais do que razão. Pergunta central: que medo ou ilusão está distorcendo sua percepção da realidade?\\n\\nO SOL (XIX): alegria, clareza, sucesso, vitalidade, a criança que sabe brincar. Sempre positiva: luz, transparência, vida plena. Pergunta central: onde você está proibindo a si mesmo de sentir alegria?\\n\\nO JULGAMENTO (XX): chamada, despertar, transformação final antes da conclusão, avaliação honesta de si mesmo. Pergunta central: qual chamada em sua vida você tem ignorado?\\n\\nO MUNDO (XXI): completude, integração, celebração do ciclo completo, síntese de tudo que foi aprendido. E então o ciclo recomeça com O Louco. Sempre positiva: você chegou num ponto de completude. Pergunta central: o que em sua vida está chegando a uma conclusão digna de celebração?",
+        "exemplo": "A Torre aparece numa tiragem sobre um casamento em crise. O leitor inexperiente teme. O experiente diz: 'O que está sendo sacudido aqui não é o amor — é a estrutura que vocês construíram em torno do amor que talvez não seja mais verdadeira. A Torre não destrói o que é real. O que vai ficar de pé depois é o que merece ficar.'",
+        "aplicacao": "1. Memorize as onze cartas desta aula. 2. Note as cartas difíceis (Morte, Diabo, Torre, Lua) e como cada uma tem uma face transformadora além do aspecto temível. 3. Complete a sequência da Jornada do Louco na sua mente.",
+        "exercicio": "Leia a sequência completa da Jornada do Louco (0 ao XXI) como se fosse uma história. Onde você está nessa jornada agora? Em qual carta você se reconhece?",
+        "gabarito": "A Jornada do Louco não é linear — voltamos às mesmas cartas em espiral, sempre em um nível mais profundo. Você pode estar na Morte pela terceira vez na vida, mas cada vez é uma transformação diferente, mais profunda."
+      },
+      "4": {
+        "titulo": "Os Arcanos Menores — Os Quatro Naipes",
+        "conteudo": "Os Arcanos Menores descrevem as experiências cotidianas da vida. Enquanto os Maiores lidam com forças arquetípicas universais, os Menores lidam com o que acontece dia a dia — conversas, dinheiro, sentimentos, conflitos, decisões.\\n\\nAS CARTAS DE ÁS representam o puro potencial de cada naipe, a semente antes de qualquer desenvolvimento:\\n- Ás de Paus: centelha criativa, nova inspiração, o início de um projeto com entusiasmo genuíno\\n- Ás de Copas: novo amor, abertura emocional, um coração que recomeça\\n- Ás de Espadas: clareza cortante, verdade revelada, novo insight\\n- Ás de Ouros: nova oportunidade material, semente de prosperidade\\n\\nAS CARTAS DE 2 AO 10 narram uma progressão:\\n- 2: equilíbrio inicial, escolha entre dois caminhos\\n- 3: expansão, criatividade, resultado inicial das sementes plantadas\\n- 4: estabilidade, descanso, consolidação\\n- 5: desafio, conflito, perda temporária\\n- 6: harmonia recuperada, presente, generosidade\\n- 7: reflexão, estratégia, autoexame\\n- 8: movimento rápido, poder em ação, mudanças\\n- 9: quase lá, intensidade antes do final, o pico da jornada do naipe\\n- 10: conclusão, completude, fim de um ciclo (pode ser fardo ou realização dependendo do naipe)\\n\\nEXEMPLOS POR NAIPE:\\n10 de Paus: fardo excessivo, carregar responsabilidades demais — é hora de delegar\\n10 de Copas: família em harmonia, felicidade emocional completa — realização\\n10 de Espadas: derrota aparente, fundo do poço — mas o sol está nascendo ao fundo da imagem\\n10 de Ouros: riqueza duradoura, legado familiar, abundância consolidada\\n\\nAS CARTAS DA CORTE representam aspectos de personalidade (partes de você) ou pessoas reais em sua vida:\\n- VALETE: energia jovem, aprendiz, mensagens, início de algo\\n- CAVALEIRO: ação, movimento, excesso da energia do naipe\\n- RAINHA: domínio maduro da energia interior do naipe\\n- REI: domínio maduro da energia exterior e de liderança do naipe",
+        "exemplo": "3 de Espadas — a carta com três espadas atravessando um coração sob chuva. É uma das cartas mais literalmente dolorosas do baralho. Significa: dor emocional real, tristeza, separação, decepção. Um bom leitor não ameniza: 'Isso dói. A carta não mente. Mas observe: a chuva passa. E dor processada honestamente é a que liberta.'",
+        "aplicacao": "1. Familiarize-se com a progressão numérica em cada naipe. 2. Compare a mesma posição numérica nos quatro naipes — o 5 de Paus (luta física/competição) vs o 5 de Copas (perda emocional) vs o 5 de Espadas (conflito mental) vs o 5 de Ouros (dificuldade material). 3. Pratique com as cartas da corte — qual Rainha você é? Qual Rei?",
+        "exercicio": "Separe todos os Ases. Para cada um, escreva: que novo começo esse naipe representa na sua vida agora? Há uma centelha de Paus, uma abertura de Copas, uma clareza de Espadas ou uma oportunidade de Ouros chegando?",
+        "gabarito": "Os Arcanos Menores ganham profundidade quando você percebe as progressões. O 5 sempre traz desafio — mas o 6 sempre traz recuperação. Saber disso numa leitura permite oferecer contexto: 'Você está no 5, mas o 6 está a caminho se você...'"
+      },
+      "5": {
+        "titulo": "Métodos de Tiragem — Do Simples ao Complexo",
+        "conteudo": "A CARTA DO DIA é o método mais simples e poderoso para quem está aprendendo. Tire uma carta pela manhã e carregue a questão que ela levanta durante o dia. À noite, reflita: como essa energia se manifestou? Esse exercício, feito por 30 dias consecutivos, desenvolve mais intuição do que anos de estudo teórico.\\n\\nA TIRAGEM DE TRÊS CARTAS é a mais versátil:\\n- Passado / Presente / Futuro\\n- Situação / Conselho / Resultado\\n- Mente / Corpo / Espírito\\n- Você / O Outro / A Relação\\n- O Problema / A Causa / A Solução\\n\\nA CRUZ CELTA é o layout mais tradicional e completo, com 10 cartas:\\n1. A situação central\\n2. O que cruza (obstáculo ou apoio)\\n3. O que está abaixo (fundação, o que você não vê)\\n4. O que ficou para trás\\n5. O que pode vir\\n6. O que está à frente imediatamente\\n7. Como você se vê\\n8. Como os outros te veem\\n9. Esperanças e medos\\n10. O resultado mais provável\\n\\nA TIRAGEM DA LUA (especial para questões emocionais e relacionamentos):\\n1. Onde você está emocionalmente agora\\n2. O que está oculto no inconsciente\\n3. O que o coração realmente quer\\n4. O que a mente diz\\n5. O que está impedindo\\n6. O que pode ser feito\\n7. O resultado se seguir o coração\\n\\nA LEITURA INVERTIDA: quando uma carta aparece de cabeça para baixo, pode significar: energia bloqueada ou interiorizada, resistência a essa energia, ou o aspecto shadow da carta. Não há consenso entre leitores — alguns não leem invertidas; outros as consideram essenciais. Experimente os dois sistemas e veja qual ressoa mais com você.\\n\\nO DIÁRIO DE TAROT: manter um caderno onde você registra cada tiragem, sua interpretação inicial e depois o que realmente aconteceu é o método mais eficaz de aprendizado. Com o tempo, você cria seu próprio sistema de referências baseado na experiência real.",
+        "exemplo": "Uma leitora faz uma Cruz Celta para entender por que não consegue avançar num projeto criativo. A posição 3 (o que está abaixo, fundação oculta) revela O Enforcado — ela está se suspendendo voluntariamente, esperando algo (talvez permissão) que nunca vai chegar de fora. A posição 7 (como ela se vê) revela O Eremita. A integração: ela se vê como alguém que precisa de mais preparação e isolamento, mas na verdade está usando a introspecção como desculpa para não agir.",
+        "aplicacao": "1. Comece com carta do dia por 30 dias. 2. Depois pratique tiragem de 3 cartas para situações reais. 3. Experimente a Cruz Celta apenas quando estiver confortável com as cartas individuais. 4. Mantenha diário.",
+        "exercicio": "Faça uma tiragem de três cartas para uma situação real: Situação-Conselho-Resultado. Fotografe ou escreva as cartas. Escreva sua interpretação. Em duas semanas, volte e compare com o que aconteceu.",
+        "gabarito": "Uma tiragem bem feita não diz o que vai acontecer — orienta sobre energias presentes e possíveis caminhos. O resultado muda conforme as escolhas. O Tarô mapeia possibilidades, não fatalidades."
+      },
+      "6": {
+        "titulo": "Intuição no Tarô — Além das Definições",
+        "conteudo": "Memorizar os significados das 78 cartas é apenas o primeiro nível de aprendizado no Tarô. O segundo nível — e o mais poderoso — é desenvolver a leitura intuitiva: a capacidade de olhar para uma carta dentro de um contexto específico e deixar que ela fale além das definições tradicionais.\\n\\nO MÉTODO INTUITIVO começa com a imagem: antes de pensar no significado aprendido, olhe para a imagem. O que você vê? Que emoção a imagem evoca? Que personagem na carta chama mais sua atenção? Onde seus olhos vão primeiro? Essas respostas são frequentemente mais relevantes para a pessoa à sua frente do que o significado genérico.\\n\\nO CONTEXTO TRANSFORMA O SIGNIFICADO: a Morte numa pergunta sobre saúde tem uma qualidade diferente do que a Morte numa pergunta sobre carreira. O contexto restringe e aprofunda o significado. A Lua para alguém perguntando sobre criatividade fala de imaginação e sonho; para alguém perguntando sobre relacionamento, fala de ilusão e projeção.\\n\\nA CONVERSA COM O CONSULTANTE: as melhores leituras não são monólogos — são diálogos. Perguntar 'o que essa imagem te faz pensar?' ou 'alguém específico vem à mente quando você vê essa carta?' frequentemente revela a camada mais profunda da leitura. O consultante sempre sabe mais do que você sobre a situação dele.\\n\\nAS COMBINAÇÕES ENTRE CARTAS: na Cruz Celta ou qualquer layout com múltiplas cartas, as cartas conversam entre si. Duas cartas de Espadas juntas amplificam o tema mental/conflitual. Uma carta de Copas entre duas de Espadas pode indicar emoções no meio de um conflito intelectual. Aprender a ver padrões entre cartas é o nível avançado.\\n\\nO DESCONFORTO HONESTO: algumas cartas são difíceis de entregar. A Torre para alguém que acabou de se casar. A Morte para alguém doente. O Diabo para alguém que acredita muito em si mesmo. O leitor experiente não evita essas cartas — ele encontra a forma honesta e compassiva de entregá-las. Omitir informação importante para não desconfortar é uma forma de desrespeito ao consultante.\\n\\nA CONFIANÇA NO PROCESSO: com o tempo, muitos leitores de Tarô descrevem uma experiência que vai além do conhecimento — uma sensação de que certas palavras simplesmente 'vêm' durante uma leitura, ou que certas cartas parecem 'querer' ser lidas de determinada forma naquele contexto. Isso pode ser chamado de intuição, inconsciente, conexão espiritual — o nome importa menos que cultivar essa abertura.",
+        "exemplo": "Um leitor faz uma tiragem para uma mulher sobre sua carreira. Ele tira A Imperatriz, e em vez de citar a definição clássica ('fertilidade, abundância, criatividade'), ele olha para a imagem e diz: 'Vejo uma mulher que tem tudo para nutrir e criar, mas que está confortavelmente sentada em seu trono quando o terreno ao redor dela está pedindo que ela se levante e plante.' A mulher chora: é exatamente o que está acontecendo — ela tem potencial mas está esperando as condições perfeitas para agir.",
+        "aplicacao": "1. Para cada nova carta que estuda, passe 2 minutos olhando apenas para a imagem antes de ler o significado. 2. Numa leitura real, diga o que a imagem te faz sentir ANTES de citar o significado aprendido. 3. Convide o consultante a participar.",
+        "exercicio": "Tire uma carta agora. Antes de pensar no significado, olhe para a imagem por 1 minuto. Escreva tudo que você observa e que emoção ela evoca. Depois leia o significado tradicional. Que diferenças há entre sua leitura intuitiva e a definição? O que sua leitura acrescentou?",
+        "gabarito": "Leituras intuitivas frequentemente captam nuances que as definições clássicas não cobrem. O objetivo não é substituir o conhecimento — é integrá-lo com percepção direta. As melhores leituras combinam os dois."
+      },
+      "7": {
+        "titulo": "Ética e Responsabilidade na Leitura do Tarô",
+        "conteudo": "Ler Tarô para outros é um ato de responsabilidade. As pessoas que procuram leituras frequentemente estão em momentos de vulnerabilidade, indecisão ou dor. O que um leitor diz — e como diz — tem impacto real.\\n\\nNUNCA FAÇA PREVISÕES ABSOLUTAS: 'Você vai se separar' ou 'Esse negócio vai falir' são afirmações irresponsáveis que podem criar profecias autocumpridas ou gerar ansiedade desnecessária. O Tarô mostra tendências, não fatalidades. A linguagem correta: 'As energias presentes sugerem...', 'Há uma tendência para...', 'Se nada mudar, a direção parece ser...'.\\n\\nNÃO SUBSTITUA AJUDA PROFISSIONAL: se alguém chega com sinais claros de depressão grave, pensamentos autodestrutivos, ou situação de abuso, o Tarô não é a ferramenta adequada como única resposta. O leitor responsável reconhece seus limites e direciona para ajuda profissional quando necessário.\\n\\nCONFIDENCIALIDADE: o que se compartilha numa leitura é privado. Usar informações de uma leitura para fofoca ou para impressionar outros é uma violação ética grave.\\n\\nO CÓDIGO DAS TRÊS ÉTICAS do Tarô, como proposto por Rachel Pollack: (1) O consultante tem o direito de saber o que as cartas mostram. (2) O consultante tem o direito de não saber se preferir. (3) O leitor tem o dever de entregar informações difíceis de forma responsável.\\n\\nLEITURAS PARA TERCEIROS: ler cartas sobre outra pessoa (sem sua presença ou conhecimento) é eticamente questionável. Você está analisando alguém que não deu permissão. Se fizer isso, mantenha o foco em ajudar o consultante a entender a dinâmica, não em 'expor' o terceiro.\\n\\nSEU PRÓPRIO ESTADO EMOCIONAL: não leia para outros quando estiver em estado emocional muito carregado. Sua perturbação afeta a leitura — tanto a clareza da interpretação quanto a qualidade da presença que você oferece. E seja cuidadoso ao ler para si mesmo sobre situações em que você está muito investido emocionalmente — é muito fácil ver o que quer ver.",
+        "exemplo": "Uma cliente pede uma leitura sobre se deve se separar do marido. Um leitor ético não diz 'as cartas dizem para se separar' — isso seria tirar uma decisão vital das mãos dela. Ele usa as cartas para ajudá-la a clarificar o que ela já sente: 'O que as cartas mostram sobre como você se sente nessa relação? O que elas mostram sobre o que você mais teme? O que elas dizem sobre o que você realmente quer?'",
+        "aplicacao": "1. Defina sua própria política de leituras — o que você lê, para quem, e como. 2. Desenvolva um 'protocolo de acolhimento' para começar uma leitura criando um espaço seguro. 3. Pratique a linguagem de possibilidade vs certeza.",
+        "exercicio": "Escreva 5 exemplos de afirmações problemáticas e reformule cada uma de forma responsável. Ex: 'Você vai ter problemas de saúde' → 'Há uma energia pedindo mais atenção ao corpo e ao descanso neste período.'",
+        "gabarito": "A reformulação responsável mantém a honestidade sem criar fatalismo. 'Há tendência para X se Y não mudar' é sempre mais útil do que 'X vai acontecer'. O objetivo é empoderar, não assustar."
+      },
+      "8": {
+        "titulo": "Desenvolvendo seu Estilo de Leitura",
+        "conteudo": "Depois de aprender os fundamentos, o próximo passo é desenvolver seu estilo único de leitura. Cada leitor é diferente — e a tentativa de imitar outro leitor produz leituras mecânicas e sem vida.\\n\\nENCONTRE SEU BARALHO: o baralho de Rider-Waite é a base de ensino, mas não precisa ser o baralho com o qual você lê. Explore diferentes baralhos até encontrar um cujas imagens falam diretamente à sua intuição. Alguns preferem o Thoth Tarot (mais hermético e simbólico), outros o Tarot de Marselha (mais antigo, sem cenas nas cartas menores), outros baralhos modernos com estilos variados.\\n\\nDEFINA SUA ABORDAGEM FILOSÓFICA: você lê Tarô como ferramenta psicológica, como sistema espiritual, como tradição esotérica, ou como uma combinação? Não há resposta certa — mas clareza sobre sua própria abordagem torna as leituras mais coesas.\\n\\nDESENVOLVA RITUAIS DE PREPARAÇÃO: muitos leitores têm um ritual simples antes de uma leitura — embaralhar as cartas de uma forma específica, um momento de silêncio, uma vela, uma pergunta mental de intenção. Esses rituais não são superstição — são ferramentas de foco que criam um estado mental propício para a leitura.\\n\\nAPRECIE AS CARTAS DIFÍCEIS: os leitores que mais crescem são os que aprendem a amar as cartas que antes temiam. A Torre, o Diabo, a Morte, o Dez de Espadas — cada uma dessas cartas, quando entendida profundamente, torna-se uma aliada poderosa. Elas aparecem quando são necessárias.\\n\\nESTUDE OS SISTEMAS CONECTADOS: o Tarô está profundamente conectado à Cabala, à astrologia e à numerologia. Os Arcanos Maiores correspondem a caminhos na Árvore da Vida cabalística. Cada naipe corresponde a um elemento astrológico. Cada número tem um significado numerológico. Esses sistemas se iluminam mutuamente.\\n\\nA JORNADA NUNCA TERMINA: praticantes com décadas de experiência continuam descobrindo novas camadas nas mesmas cartas. O Tarô é um sistema suficientemente rico para durar uma vida inteira de exploração. Cada fase da sua vida ilumina as cartas de uma nova forma — e as cartas iluminam cada fase.",
+        "exemplo": "Uma leitora com 10 anos de experiência conta que só entendeu O Enforcado de verdade quando passou por uma fase de sua própria vida onde precisou parar, esperar e mudar completamente de perspectiva. 'Antes eu ensinava o Enforcado. Depois de vivê-lo, passei a sentir o Enforcado nas leituras. Essa é a diferença entre saber e compreender.'",
+        "aplicacao": "1. Experimente pelo menos 3 baralhos diferentes. 2. Defina sua abordagem filosófica em uma frase. 3. Crie um ritual simples de preparação para leituras. 4. Escolha uma carta com a qual você tem dificuldade e passe um mês estudando apenas ela.",
+        "exercicio": "Escreva sua 'declaração de intenção' como leitora/leitor de Tarô: por que você lê? Para quem? Com que objetivo? Que valores guiam sua prática? Esse texto se torna sua âncora ética e filosófica.",
+        "gabarito": "Não há estilo certo de leitura — há estilos mais ou menos alinhados com quem você é e com o que você quer oferecer. A consistência entre seus valores, sua abordagem e sua prática é o que cria um leitor em quem as pessoas confiam."
+      }
+    }
+  },
+  "astrologia": {
+    "titulo": "Astrologia — A Linguagem dos Astros",
+    "descricao": "A astrologia é um dos mais antigos sistemas de autoconhecimento da humanidade. Aprenda a ler um mapa astral, entender os doze signos, os planetas e as casas astrológicas.",
+    "icone": "⭐",
+    "total_aulas": 6,
+    "aulas": {
+      "1": {
+        "titulo": "O que é Astrologia e como funciona",
+        "conteudo": "A astrologia é o estudo da relação entre as posições dos corpos celestes e os padrões da vida humana. Suas raízes remontam à Mesopotâmia, há mais de 4.000 anos, e ela é encontrada em praticamente todas as grandes civilizações — babilônica, egípcia, grega, romana, indiana (Jyotish) e chinesa. A versão ocidental que conhecemos hoje é uma síntese greco-romana desenvolvida entre 400 a.C. e 200 d.C.\\n\\nA PREMISSA FUNDAMENTAL da astrologia não é que os planetas 'causam' eventos — é que o cosmo e a vida humana são espelhos um do outro, seguindo os mesmos padrões. Como escreveu Hermes Trismegisto: 'Como é em cima, é embaixo; como é embaixo, é em cima.' Os planetas não determinam — eles indicam energias e tendências que se manifestam tanto no céu quanto na Terra.\\n\\nO MAPA NATAL (ou Mapa Astral) é uma fotografia do céu no exato momento e lugar do nascimento de uma pessoa. É um círculo dividido em 12 casas, com os 10 planetas posicionados nos 12 signos. A interpretação desse mapa revela a personalidade, os talentos, os desafios, os padrões relacionais e a trajetória de vida da pessoa.\\n\\nOs ELEMENTOS FUNDAMENTAIS do mapa são três: os PLANETAS (o que), os SIGNOS (como) e as CASAS (onde). Por exemplo: Marte (o que — ação, energia, desejo) em Escorpião (como — intenso, obsessivo, transformador) na 7ª Casa (onde — nos relacionamentos). Leitura: a pessoa age de forma intensa e transformadora especialmente nos relacionamentos.\\n\\nOs ASPECTOS são os ângulos entre planetas no mapa — as relações entre eles. Uma conjunção (planetas próximos) intensifica as energias. Uma oposição cria tensão. Um trígono facilita o fluxo. Um quadrado cria atrito que produz força. Um sextil cria oportunidade.\\n\\nA DIFERENÇA entre a astrologia solar (dos horóscopos de jornal) e a astrologia completa é enorme. O signo solar — o que a maioria das pessoas conhece — é apenas um dos muitos elementos do mapa. É como julgar uma sinfonia pela nota de abertura.",
+        "exemplo": "Dois Áries completamente diferentes: um tem Lua em Câncer e Ascendente em Peixes — por baixo da energia aguerrida de Áries há uma sensibilidade emocional profunda e uma presença suave. O outro tem Lua em Escorpião e Ascendente em Capricórnio — a energia de Áries é amplificada por intensidade emocional e ambição estruturada. O signo solar sozinho não conta a história completa.",
+        "aplicacao": "1. Calcule seu mapa natal (use Astro.com, gratuito, com data, hora e cidade de nascimento). 2. Identifique seu signo solar, lunar e ascendente. 3. Observe onde estão os planetas nos signos. 4. Familiarize-se com a estrutura das 12 casas.",
+        "exercicio": "Calcule seu mapa natal completo agora. Identifique: signo solar, signo lunar, ascendente. São harmônicos (do mesmo elemento) ou contrastantes? O que isso sugere sobre possíveis tensões internas?",
+        "gabarito": "Quando solar, lunar e ascendente são do mesmo elemento (ex: Áries, Leão, Sagitário — todos Fogo), há harmonia e clareza de identidade mas possível falta de equilíbrio. Quando são de elementos contrastantes (ex: Touro, Aquário, Escorpião), há maior complexidade e possível sensação de divisão interna."
+      },
+      "2": {
+        "titulo": "Os Doze Signos — Arquétipos do Zodíaco",
+        "conteudo": "ÁRIES (Fogo, Cardinal, Marte): o pioneiro, o guerreiro, o iniciador. Energia: ação direta, coragem, impulsividade, liderança instintiva. Desafio: impaciência, incapacidade de terminar o que começa, ego inflado. Dom: capacidade de iniciar o que outros não ousam começar.\\n\\nTOURO (Terra, Fixo, Vênus): o cultivador, o construtor de valores. Energia: sensualidade, estabilidade, determinação, amor pela beleza e pelo conforto. Desafio: teimosia, resistência à mudança, possessividade. Dom: perseverança e capacidade de criar valor duradouro.\\n\\nGÊMEOS (Ar, Mutável, Mercúrio): o comunicador, o eterno curioso. Energia: versatilidade, comunicação, curiosidade, habilidade de ver múltiplos lados. Desafio: superficialidade, dificuldade de comprometimento, ansiedade. Dom: adaptabilidade e capacidade de conectar ideias e pessoas.\\n\\nCÂNCER (Água, Cardinal, Lua): o nutrido, o guardião do lar. Energia: sensibilidade, memória emocional, cuidado, intuição, lealdade. Desafio: humor instável, dependência emocional, rancor que não libera. Dom: profunda empatia e capacidade de criar segurança para outros.\\n\\nLEÃO (Fogo, Fixo, Sol): o criador, o rei/rainha. Energia: criatividade, generosidade, carisma, necessidade de expressão e reconhecimento. Desafio: ego, necessidade de aprovação, dramaturgia. Dom: capacidade de inspirar e iluminar os outros.\\n\\nVIRGEM (Terra, Mutável, Mercúrio): o analista, o servidor dedicado. Energia: análise, precisão, serviço, atenção ao detalhe, pragmatismo. Desafio: perfeccionismo que paralisa, autocrítica excessiva, ansiedade. Dom: capacidade de ver o que precisa ser melhorado e de servir com excelência.\\n\\nLIBRA (Ar, Cardinal, Vênus): o diplomata, o buscador de harmonia. Energia: equilíbrio, beleza, relacionamentos, justiça, parceria. Desafio: indecisão, dependência do outro, aversão ao conflito que vira desonestidade. Dom: capacidade única de ver todos os lados e criar harmonia.\\n\\nESCORPIÃO (Água, Fixo, Plutão/Marte): o transformador, o mergulhador nas profundezas. Energia: intensidade, poder, transformação, lealdade absoluta, capacidade de ir ao fundo de qualquer questão. Desafio: controle, obsessão, rancor, manipulação. Dom: capacidade de morrer e renascer, de transformar o mais sombrio em ouro.\\n\\nSAGITÁRIO (Fogo, Mutável, Júpiter): o filósofo, o explorador. Energia: expansão, otimismo, busca por significado, aventura, visão de futuro. Desafio: irresponsabilidade, excesso de promessas, dogmatismo disfarçado de abertura. Dom: capacidade de enxergar além do imediato e inspirar esperança.\\n\\nCAPRICÓRNIO (Terra, Cardinal, Saturno): o realizador, o construtor de legados. Energia: ambição, disciplina, responsabilidade, estrutura, maturidade. Desafio: frieza emocional, workaholic, rigidez, medo do fracasso. Dom: capacidade de construir estruturas que duram além de uma vida.\\n\\nAQUÁRIO (Ar, Fixo, Urano/Saturno): o visionário, o rebelde. Energia: originalidade, pensamento inovador, humanitarismo, desapego. Desafio: frieza emocional, rebeldia pela rebeldia, desconexão com o individual em nome do coletivo. Dom: capacidade de ver o futuro e de criar novas formas de organização humana.\\n\\nPEIXES (Água, Mutável, Netuno/Júpiter): o místico, o dissoluto. Energia: compaixão, espiritualidade, criatividade, empatia universal, dissolução de fronteiras. Desafio: fuga da realidade, dificuldade de limites, vitimização. Dom: capacidade de conexão espiritual e de compaixão que transcende o ego.",
+        "exemplo": "Uma pessoa com Sol em Capricórnio, Lua em Câncer e Ascendente em Leão vive uma tríade fascinante e tensa: a ambição estruturada e séria de Capricórnio (Solar) com uma vida emocional profundamente ligada ao lar e à família (Lunar Câncer), mas projetando para o mundo uma presença calorosa, criativa e que quer ser admirada (Ascendente Leão). Essa pessoa trabalha muito (Capricórnio), precisa de segurança emocional para funcionar (Câncer), mas precisa também brilhar e ser reconhecida (Leão).",
+        "aplicacao": "1. Leia com atenção seu signo solar, lunar e ascendente. 2. Para cada um, identifique os dons e os desafios. 3. Perceba como esses três aspectos interagem na sua vida. 4. Identifique qual dos três parece mais dominante no seu dia a dia.",
+        "exercicio": "Para cada um dos seus três signos principais, escreva um exemplo concreto de como aquela energia se manifesta positivamente na sua vida, e um exemplo de como o desafio daquele signo aparece.",
+        "gabarito": "Reconhecer os desafios dos próprios signos sem julgamento é o passo mais difícil e mais libertador. Um Escorpião que reconhece a tendência ao controle pode trabalhar conscientemente com ela. Um Gêmeos que reconhece a dispersão pode criar estruturas para compensar."
+      },
+      "3": {
+        "titulo": "Os Planetas — Vozes do Mapa",
+        "conteudo": "Cada planeta representa uma função psicológica, uma 'voz' dentro da psique humana. A posição do planeta no signo diz como essa função se expressa; a posição na casa diz em qual área da vida ela atua.\\n\\nSOL: a identidade central, o ego, a vontade criativa. O que você está aqui para ser. O signo solar é a qualidade que você está desenvolvendo ao longo de toda a vida — não é o que você nasceu sendo, mas o que está se tornando.\\n\\nLUA: o mundo emocional, os instintos, as necessidades de segurança, o passado, a infância, a mãe. O signo lunar revela como você reage emocionalmente, o que te faz sentir seguro ou ameaçado, e como seu mundo interior funciona.\\n\\nMERCÚRIO: a mente, a comunicação, a forma de pensar e de processar informação. Revela se você pensa de forma linear ou associativa, se se comunica de forma direta ou indireta.\\n\\nVÊNUS: amor, beleza, valores, prazer, relacionamentos, o que te atrai e o que você acha belo. Revela o que você busca em relacionamentos e em experiências estéticas.\\n\\nMART: ação, desejo, energia, sexualidade, agressividade. Como você age para conseguir o que quer. Onde você coloca sua energia e força.\\n\\nJÚPITER: expansão, abundância, oportunidade, sabedoria, filosofia. Onde a vida tende a se expandir e oferecer oportunidades — mas também onde o excesso pode aparecer.\\n\\nSATURNO: limitação, disciplina, responsabilidade, karma, estrutura, medos profundos. Onde a vida exige mais esforço e onde as maiores conquistas são construídas através da perseverança. Saturno é severo mas justo.\\n\\nURANO: revolução, originalidade, ruptura súbita, liberdade, o futuro. Onde você é rebelde e onde rupturas são necessárias para crescimento.\\n\\nNETUNO: espiritualidade, ilusão, dissolução, sonhos, compaixão universal, o inconsciente coletivo. Onde você busca o transcendente — e onde pode se iludir.\\n\\nPLUTÃO: transformação profunda, poder, morte e renascimento, o inconsciente mais profundo. Onde você experimenta as transformações mais radicais da vida.",
+        "exemplo": "Saturno em Câncer na 4ª Casa: a função de Saturno (disciplina, responsabilidade, medo, construção lenta) expressa de forma canceriana (emocional, ligada ao lar, cuidadora) na área da família e lar (4ª Casa). Provável: responsabilidades familiares pesadas desde cedo, relação com a família que exigiu muito, dificuldade de sentir segurança emocional — mas também, quando trabalhado, capacidade de construir uma base familiar extraordinariamente sólida.",
+        "aplicacao": "1. No seu mapa natal, identifique a posição de cada planeta. 2. Para os planetas pessoais (Sol, Lua, Mercúrio, Vênus, Marte), leia signo e casa. 3. Para Saturno especificamente, leia com atenção — ele revela onde está o maior trabalho e a maior recompensa.",
+        "exercicio": "Onde está Saturno no seu mapa? Em qual signo e em qual casa? Esse posicionamento ressoa com os desafios e aprendizados mais constantes da sua vida?",
+        "gabarito": "Saturno é frequentemente o planeta que mais ressoa com a experiência real de vida porque ele descreve os padrões de dificuldade que retornam até serem dominados. Saturno em Gêmeos pode indicar dificuldade de comunicação ou aprendizado difícil; Saturno em Escorpião pode indicar lutas com poder e transformação."
+      },
+      "4": {
+        "titulo": "As Doze Casas Astrológicas",
+        "conteudo": "As 12 casas do mapa natal representam as 12 áreas da vida onde os planetas e signos atuam. Elas são determinadas pelo horário e local de nascimento — por isso o mesmo Sol em Áries de duas pessoas pode manifestar-se de formas muito diferentes dependendo de em qual casa ele está.\\n\\n1ª CASA (Ascendente): identidade, aparência, como você se apresenta ao mundo, a máscara social, o início de tudo. O signo na cúspide da 1ª casa é o Ascendente — a impressão imediata que você passa.\\n\\n2ª CASA: valores, recursos pessoais, dinheiro, posses, autoestima. Como você ganha e gasta. O que você considera valioso.\\n\\n3ª CASA: comunicação, irmãos, vizinhança, aprendizado básico, viagens curtas, mente cotidiana. Como você pensa e se comunica no dia a dia.\\n\\n4ª CASA (Fundo do Céu): lar, família de origem, raízes, o que está na base de tudo, a vida privada. A mãe ou figura materna.\\n\\n5ª CASA: criatividade, prazer, filhos, amor romântico (diferente de parceria), jogo, autoexpressão espontânea. Onde você se diverte e cria.\\n\\n6ª CASA: trabalho cotidiano (diferente de carreira), saúde, rotinas, serviço, os pequenos hábitos que constroem a vida.\\n\\n7ª CASA (Descendente): parcerias, casamento, contratos, o que você busca no outro, como são seus relacionamentos sérios. O oposto do Ascendente — o que você precisa do outro para se completar.\\n\\n8ª CASA: transformação, morte e renascimento, sexualidade profunda, heranças, recursos compartilhados, o que é oculto, o inconsciente.\\n\\n9ª CASA: filosofia, espiritualidade, viagens longas, ensino superior, busca por significado, o pai ou figura paterna, crenças expansivas.\\n\\n10ª CASA (Meio do Céu): carreira, reputação pública, status, autoridade, o que você quer conquistar no mundo. Como você é visto profissionalmente.\\n\\n11ª CASA: amizades, grupos, coletivo, causas, esperanças, o futuro, redes de apoio.\\n\\n12ª CASA: o inconsciente profundo, o que está oculto, padrões kármicos, isolamento, espiritualidade, o que precisa ser liberado.",
+        "exemplo": "Sol na 12ª Casa: a identidade central (Sol) expressa-se no domínio do que está oculto, do inconsciente e do espiritual (12ª Casa). Frequentemente indica alguém que prefere trabalhar nos bastidores, que tem dificuldade de brilhar publicamente mesmo com grande talento, e que tem uma vida espiritual ou psicológica rica. Muitos monges, artistas reclusisos e terapeutas têm Sol na 12ª Casa.",
+        "aplicacao": "1. Identifique em qual casa está cada planeta pessoal no seu mapa. 2. Para cada planeta em casa, combine: função do planeta + qualidade do signo + área da casa. 3. Identifique suas casas mais cheias (com vários planetas) — elas indicam as áreas mais ativas da sua vida.",
+        "exercicio": "Identifique as três casas mais cheias do seu mapa. Essas áreas da vida são realmente as mais ativas, complexas ou significativas para você? Como se manifestam?",
+        "gabarito": "Casas com muitos planetas são áreas de muito movimento, aprendizado e atividade. Casas vazias não são problemas — são áreas de menor foco, onde a vida flui mais simplesmente. Todos temos casas cheias e casas vazias."
+      },
+      "5": {
+        "titulo": "Trânsitos e Progressões — A Astrologia do Tempo",
+        "conteudo": "O mapa natal é fixo — uma fotografia do nascimento. Mas os planetas continuam se movendo após o nascimento, e quando eles transitam sobre pontos do mapa natal, ativam aquelas energias. Isso é a astrologia preditiva ou de timing.\\n\\nOS TRÂNSITOS são as posições dos planetas no céu hoje, comparadas com seu mapa natal. Quando Saturno transita sobre seu Sol natal, você entra numa fase de responsabilidades, limitações e maturidade forçada — dura aproximadamente 2 anos. Quando Júpiter transita sobre seu Sol, você entra numa fase de expansão, oportunidades e otimismo — dura cerca de 1 ano.\\n\\nOs PLANETAS LENTOS (Saturno, Urano, Netuno, Plutão) criam os trânsitos mais impactantes porque ficam mais tempo sobre cada ponto e ativam transformações profundas e duradouras. Os planetas rápidos (Sol, Lua, Mercúrio, Vênus, Marte) criam ativações menores e mais passageiras.\\n\\nO RETORNO DE SATURNO acontece quando Saturno volta à mesma posição que ocupava no nascimento — o que acontece aproximadamente aos 29-30 anos, 58-60 anos e 87-90 anos. É uma das grandes iniciações da vida: Saturno apresenta a conta das escolhas feitas e força uma reavaliação profunda. Os 'crises dos 30' que muitas pessoas descrevem são frequentemente o Retorno de Saturno.\\n\\nO RETORNO SOLAR acontece todo ano, quando o Sol volta à mesma posição do nascimento. O aniversário, basicamente. Um mapa do Retorno Solar (calculado para o momento exato em que o Sol retorna à posição natal) revela os temas do ano que se inicia.\\n\\nAS PROGRESSÕES são um sistema diferente onde o mapa natal 'avança' simbolicamente — um dia depois do nascimento equivale a um ano de vida. As progressões revelam o desenvolvimento interno, mais lento e profundo do que os trânsitos.",
+        "exemplo": "Uma mulher passa por uma crise existencial profunda aos 29 anos: fim de relacionamento longo, questionamento da carreira, sensação de que tudo que construiu não é mais suficiente. O mapa mostra Saturno transitando exatamente sobre seu Sol natal — o Retorno de Saturno clássico. A astrologia nomeia e contextualiza: não é crise, é iniciação. Saturno está pedindo que ela construa sua vida sobre bases mais verdadeiras.",
+        "aplicacao": "1. Verifique onde Saturno está no céu hoje e em qual posição do seu mapa ele está transitando. 2. Se você tem entre 28-30, 57-60 ou 86-89 anos, você está num Retorno de Saturno. 3. Use sites como Astro.com (seção de trânsitos) para visualizar os trânsitos atuais no seu mapa.",
+        "exercicio": "Pesquise os trânsitos atuais dos planetas lentos (Saturno, Urano, Netuno, Plutão) no seu mapa natal. Em qual casa cada um está? Esses temas de vida estão ativos agora?",
+        "gabarito": "Os trânsitos não causam eventos — eles descrevem energias que estão presentes. Plutão transitando pela 7ª Casa não significa que seu casamento vai acabar — significa que as relações estão passando por transformação profunda. Como essa transformação se manifesta depende de muitos fatores, incluindo suas escolhas."
+      },
+      "6": {
+        "titulo": "Lendo um Mapa Astral — Integrando Tudo",
+        "conteudo": "Uma leitura astrológica completa integra todos os elementos estudados numa narrativa coerente sobre quem a pessoa é, qual é sua jornada e em que momento ela está.\\n\\nO PROCESSO DE LEITURA começa com a impressão geral: qual elemento domina (Fogo, Terra, Ar ou Água)? Qual modalidade (Cardinal, Fixo ou Mutável)? Há um desequilíbrio óbvio (todos os planetas num lado do mapa, muitos em certas casas, elemento ausente)?\\n\\nDEPOIS vêm os três pontos fundamentais: Sol (identidade central e missão), Lua (mundo emocional e necessidades), Ascendente (forma de se apresentar e perceber o mundo).\\n\\nEM SEGUIDA os planetas pessoais (Mercúrio, Vênus, Marte) revelam como a pessoa pensa, o que ama e como age. Depois os planetas sociais (Júpiter, Saturno) revelam onde há expansão e onde há trabalho.\\n\\nOS ASPECTOS MAIS IMPORTANTES entre planetas revelam as dinâmicas internas — conjunções (fusão de energias), oposições (tensão que pede integração), trígonos (fluxo natural), quadrados (atrito que produz força).\\n\\nA SÍNTESE é o momento onde o astrólogo (ou você, lendo seu próprio mapa) monta a narrativa: não é uma lista de características — é uma história sobre quem essa pessoa é, que desafios carrega, que dons tem, e em que está no momento.\\n\\nASTROLOGIA E LIVRE-ARBÍTRIO: a astrologia mostra tendências, não fatalidades. Dois mapas idênticos (gêmeos) produzem vidas diferentes porque as escolhas são diferentes. O mapa é o terreno — você é o jardineiro. Mesmo o terreno mais difícil, cultivado com sabedoria, pode produzir flores extraordinárias.\\n\\nETICA NA PRÁTICA ASTROLÓGICA: assim como no Tarô, a astrologia pede responsabilidade. Nunca assuste com aspectos difíceis. Nunca faça previsões absolutas. Sempre use a linguagem de tendência e possibilidade. E lembre: o objetivo é iluminar, não determinar.",
+        "exemplo": "Um homem de 35 anos com Sol em Capricórnio (12ª Casa), Lua em Escorpião (10ª Casa), Ascendente Touro, Saturno em Escorpião (7ª Casa), e Júpiter em Áries (12ª Casa). Leitura integrada: há uma tensão fundamental entre a necessidade de ser visto e reconhecido profissionalmente (Lua em Escorpião na 10ª) e a tendência a trabalhar nos bastidores ou de forma oculta (Sol na 12ª). O Ascendente Touro apresenta ao mundo uma pessoa estável e confiável, mas por baixo há uma profundidade emocional e uma ambição que poucos percebem. Saturno na 7ª indica relacionamentos que são trabalho sério, onde as maiores lições de vida acontecem.",
+        "aplicacao": "1. Leia seu mapa natal completo seguindo a sequência: impressão geral, trídade básica (Sol-Lua-Asc), planetas pessoais, aspectos principais. 2. Escreva uma síntese de um parágrafo. 3. Compare com o que você sabe sobre si mesmo.",
+        "exercicio": "Escreva uma síntese de três parágrafos sobre seu próprio mapa natal: quem você é (Sun, Moon, Asc), como você age e o que busca (Mercúrio, Vênus, Marte), e qual é o seu maior desafio e maior dom (Saturno e Júpiter). Use linguagem de tendência, não de certeza.",
+        "gabarito": "Uma boa síntese astrológica soa como alguém que te conhece profundamente — porque ela integra múltiplas camadas numa narrativa coerente. O objetivo nunca é encaixar a pessoa num signo, mas usar o mapa como espelho para iluminar quem ela já é."
+      }
+    }
+  }
+}
+
+# --- 2. LÓGICA DE CONEXÃO ---
+def consultar_ravengar(sistema, pergunta, api_key):
+    try:
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            messages=[{"role": "system", "content": sistema}, {"role": "user", "content": pergunta}],
+            model="openai/gpt-oss-120b",
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        return f"Erro na conexão mística: {str(e)}"
+
+# --- 3. TELA DE ENTRADA ---
+if 'chave_api' not in st.session_state or not st.session_state.chave_api:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("<h1 style='text-align:center;'>🔮 Tenda do Ravengar</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center;color:#888;'>Mistérios da Mente e do Destino</p>", unsafe_allow_html=True)
+        st.markdown('''
+        <div style='background:#FFF0F5;border:1px solid #FFB7C5;border-radius:12px;
+        padding:14px 18px;margin-bottom:20px;font-size:0.9em;color:#000;line-height:1.8;text-align:center;'>
+        🔒 <strong>Exclusivo para Associados MeusAgentesIA.com.br</strong><br>
+        🔗 <a href='https://meusagentesia.com.br/' target='_blank'
+        style='color:#C2185B;font-weight:600;text-decoration:none;'>meusagentesia.com.br</a>
+        </div>
+        ''', unsafe_allow_html=True)
+        chave_digitada = st.text_input("🔑 Digite sua Chave Groq API para entrar:", type="password", key="input_chave_entrada")
+        st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+        if st.button("✨ ENTRAR NA TENDA", key="tendarav1"):
+            if chave_digitada.strip():
+                st.session_state.chave_api = chave_digitada.strip()
+                st.session_state['hora_entrada'] = datetime.now()
+                st.rerun()
+            else:
+                st.error("Por favor, insira sua chave API antes de entrar.")
+        st.markdown("<p style='text-align:center;font-size:0.8em;color:#aaa;'>Não tem uma chave? Crie grátis em <a href='https://console.groq.com/keys' target='_blank' style='color:#C2185B;'>console.groq.com/keys</a></p>", unsafe_allow_html=True)
+    st.stop()
+
+# Chave disponível para todo o app
+chave_api = st.session_state.chave_api
+
+# --- 4. INTERFACE PRINCIPAL ---
+st.markdown("<h1 style='text-align: center;'>🔮 Tenda do Ravengar</h1>", unsafe_allow_html=True)
+
+# Botão de sair
+col_sair1, col_sair2 = st.columns([5, 1])
+with col_sair2:
+    if st.button("🚪 Sair", key="btn_sair"):
+        del st.session_state['chave_api']
+        st.rerun()
+
+# --- MENSAGEM SOMBRIA DE BOAS-VINDAS ---
+hora_entrada = st.session_state.get('hora_entrada', datetime.now())
+dias_semana = ["segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado","domingo"]
+dia_semana = dias_semana[hora_entrada.weekday()]
+hora_fmt = hora_entrada.strftime("%Hh%M")
+
+FRASES_RAVENGAR = [
+    "As sombras sussurraram seu nome antes mesmo de você tocar a porta. Seja bem-vindo.",
+    "Você não encontrou esta tenda por acaso. Nada aqui é acidente.",
+    "Os espíritos já me avisaram que você viria. Estávamos esperando.",
+    "Algo dentro de você sabia que precisava estar aqui. Esse algo tem razão.",
+    "O véu entre os mundos é fino neste momento. Você chegou na hora certa.",
+    "Não foi você que me escolheu. Foi o destino que te trouxe até mim.",
+    "Há algo que você ainda não sabe sobre si mesmo. É para isso que você está aqui.",
+    "Os astros registraram sua chegada. O que será revelado não pode ser desvelado.",
+]
+if 'frase_boas_vindas' not in st.session_state:
+    st.session_state['frase_boas_vindas'] = random.choice(FRASES_RAVENGAR)
+
+frase = st.session_state['frase_boas_vindas']
+st.markdown(f'''
+<div class='boas-vindas-box'>
+    <div class='boas-vindas-hora'>🕯️ Você chegou às {hora_fmt} de uma {dia_semana}. Os espíritos já te aguardavam. 🕯️</div>
+    <div class='boas-vindas-frase'>"{frase}"<br><br>— <strong>Ravengar</strong></div>
+</div>
+''', unsafe_allow_html=True)
+
+# --- SOM AMBIENTE ---
+with st.expander("🎵 Som Ambiente Místico (ativar/desativar)"):
+    st.markdown("<p style='font-size:0.88em;color:#888;margin-bottom:6px;'>Clique em ▶ para tocar. Ative o loop manualmente se desejar repetir.</p>", unsafe_allow_html=True)
+    SONS = {
+        "🌙 Atmosfera Mística": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        "🌊 Sons da Natureza": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+        "🔮 Ambient Profundo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    }
+    som_escolhido = st.selectbox("Escolha o som:", list(SONS.keys()), key="select_som_ambiente", label_visibility="collapsed")
+    st.audio(SONS[som_escolhido], format="audio/mp3")
+
+
+# --- ABAS ---
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs([
+    "🔮 Oráculo", "👁️ Decifrador", "🔥 Teste de Intenção",
+    "🧠 Quiz Psicológico", "🌀 Vidas Passadas", "🃏 Carta do Tarot",
+    "⭐ Mapa Astral", "💞 Compatibilidade", "🔢 Numerologia",
+    "🖤 Espelho Negro", "🌙 Ritual de Intenção", "ᚠ Oráculo das Runas",
+    "🎓 Cursos Grátis"
+])
+
+# --- ABA 1: ORÁCULO ---
+with tab1:
+    st.markdown("### Selecione a Esfera")
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        if st.button("❤️ AMOR", key="tendarav2"): st.session_state.setor = "Amor"
+    with c2:
+        if st.button("💼 TRABALHO", key="tendarav3"): st.session_state.setor = "Trabalho"
+    with c3:
+        if st.button("⚖️ EMPREGO", key="tendarav4"): st.session_state.setor = "Emprego"
+    with c4:
+        if st.button("🌿 SAÚDE", key="tendarav5"): st.session_state.setor = "Saúde"
+    setor = st.session_state.get('setor', 'Destino')
+    st.write(f"Energia atual: **{setor}**")
+    pergunta_ora = st.text_area("O que as sombras devem revelar?", key="ora_input")
+    if st.button("PROFERIR VEREDITO", key="tendarav6"):
+        if chave_api:
+            res = consultar_ravengar(f"Você é o Ravengar. Responda sobre {setor}.", pergunta_ora, chave_api)
+            st.markdown(f"<div class='ravengar-card'>{res}</div>", unsafe_allow_html=True)
+
+# --- ABA 2: DECIFRADOR ---
+with tab2:
+    st.markdown("### 👁️ O Decifrador")
+    texto_dec = st.text_area("Insira o enigma, sonho ou mensagem:", key="dec_input")
+    if st.button("DECIFRAR MISTÉRIO", key="tendarav7"):
+        if chave_api:
+            res = consultar_ravengar("Você é o Ravengar, decifrador de símbolos.", texto_dec, chave_api)
+            st.markdown(f"<div class='ravengar-card'>{res}</div>", unsafe_allow_html=True)
+
+# --- ABA 3: TESTE DE INTENÇÃO ---
+with tab3:
+    st.markdown("### 🔥 Teste de Intenção Real")
+    col_a, col_b = st.columns(2)
+    with col_a: nome_alvo = st.text_input("Nome da pessoa:", key="nome_alvo")
+    with col_b: genero = st.radio("Essa pessoa é:", ["Homem", "Mulher"], key="tendarav8")
+    comportamento = st.text_area("Descreva o comportamento suspeito:", key="comp_input")
+    if st.button("DEVASSAR INTENÇÃO", key="tendarav9"):
+        if not chave_api or not comportamento:
+            st.error("Preencha a chave e o comportamento.")
+        else:
+            prompt_init = f"Você é o Ravengar. Analise as intenções de {nome_alvo}. Termine com uma pergunta provocativa."
+            res_inicial = consultar_ravengar(prompt_init, comportamento, chave_api)
+            st.session_state['historico'] = [{"role": "ravengar", "content": res_inicial}]
+    if 'historico' in st.session_state:
+        for msg in st.session_state['historico']:
+            if msg['role'] == "ravengar":
+                st.markdown(f"<div class='ravengar-card'>🔮 **Ravengar:**<br>{msg['content']}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"👤 **Você:** {msg['content']}")
+        with st.form(key="form_conversa", clear_on_submit=True):
+            resp_usuario = st.text_input("Sua resposta para o Ravengar:", key="tendarav10")
+            c1, c2 = st.columns(2)
+            if c1.form_submit_button("ENVIAR RESPOSTA", key="tendaravfsb501") and resp_usuario:
+                st.session_state['historico'].append({"role": "user", "content": resp_usuario})
+                hist_full = "\\n".join([f"{m['role']}: {m['content']}" for m in st.session_state['historico']])
+                nova_res = consultar_ravengar(f"Ravengar, histórico: {hist_full}", "Continue o diálogo.", chave_api)
+                st.session_state['historico'].append({"role": "ravengar", "content": nova_res})
+                st.rerun()
+            if c2.form_submit_button("🔄 RESETAR", key="tendaravfsb502"):
+                del st.session_state['historico']
+                st.rerun()
+
+# --- ABA 4: QUIZ PSICOLÓGICO ---
+with tab4:
+    st.markdown("### 🧠 Jornada pela Floresta")
+    st.markdown("*Responda com calma, deixando a primeira imagem que vier à mente guiar você.*")
+
+    perguntas_floresta = [
+        {"p": "Imagine que você está caminhando em uma floresta. Você está:", "o": ["Sozinho", "Acompanhado"],
+         "s": {"Sozinho": "Possui uma forte tendência à independência emocional. Consegue se bastar e encontrar seus próprios caminhos.", "Acompanhado": "Valoriza profundamente a conexão humana. Encontra força e segurança nas relações que constrói."}},
+        {"p": "De repente, um animal aparece bem à sua frente no caminho. Qual é esse animal?", "o": ["Um lobo", "Um coelho", "Um pássaro"],
+         "s": {"Um lobo": "Enxerga os desafios da vida como provações que exigem força e coragem. Não recua facilmente diante do que intimida.", "Um coelho": "Tem uma sensibilidade apurada e prefere a paz ao conflito. Evita situações de tensão e busca ambientes harmoniosos.", "Um pássaro": "Lida com a vida com uma leveza admirável. Tem a capacidade de ver as situações de um ponto de vista mais elevado."}},
+        {"p": "Ao se deparar com esse animal, o que você faz instintivamente?", "o": ["Recuo e me afasto", "Fico parado e encaro"],
+         "s": {"Recuo e me afasto": "Diante do desconhecido ou do desconforto, sua primeira reação é se proteger. Prefere analisar antes de agir.", "Fico parado e encaro": "Tem uma postura corajosa diante dos problemas. Não foge das situações difíceis — prefere encará-las de frente."}},
+        {"p": "Você segue em frente e encontra uma estrada. Como ela é?", "o": ["Pavimentada e bem definida", "De terra, sem sinalização"],
+         "s": {"Pavimentada e bem definida": "Valoriza a segurança, o planejamento e a previsibilidade. Sente-se mais confortável quando sabe para onde está indo.", "De terra, sem sinalização": "Tem uma veia aventureira e aprecia o imprevisível. A liberdade de descobrir o caminho por conta própria é algo que te move."}},
+        {"p": "No final da estrada, você avista uma casa. Como ela é?", "o": ["Grande e imponente", "Pequena e aconchegante"],
+         "s": {"Grande e imponente": "Carrega dentro de si uma ambição considerável e um desejo genuíno de crescer, expandir e conquistar.", "Pequena e aconchegante": "Preza pelo simples e pelo essencial. Encontra plenitude nas coisas menores, nos momentos íntimos e tranquilos."}},
+        {"p": "Ao chegar mais perto, você percebe que essa casa tem ou não tem cerca?", "o": ["Tem cerca ao redor", "Não tem cerca"],
+         "s": {"Tem cerca ao redor": "É uma pessoa que preserva seu espaço pessoal com cuidado. Tem limites bem definidos e não os abre para qualquer um.", "Não tem cerca": "É naturalmente aberto e receptivo. Tem facilidade em receber pessoas e raramente se fecha para o mundo."}},
+        {"p": "Você entra na casa e vê uma mesa ao centro da sala. Como ela está?", "o": ["Cheia, com muitas coisas em cima", "Completamente vazia"],
+         "s": {"Cheia, com muitas coisas em cima": "Sente-se cercado de pessoas e vivências. Há uma sensação de plenitude social na sua vida no momento.", "Completamente vazia": "Pode estar passando por um período de maior solidão ou distância das pessoas. Há algo que ainda não foi preenchido."}},
+        {"p": "No chão da sala, há uma xícara. O que você faz com ela?", "o": ["Pego e guardo com cuidado", "Deixo onde está"],
+         "s": {"Pego e guardo com cuidado": "Tem um apreço muito especial pelas memórias. O passado tem um peso significativo nas suas escolhas e na sua identidade.", "Deixo onde está": "Vive voltado para o presente. Tem facilidade com o desapego e não costuma se prender ao que já passou."}},
+        {"p": "Olhando com mais atenção, você percebe que a xícara é feita de que material?", "o": ["Porcelana fina", "Metal resistente"],
+         "s": {"Porcelana fina": "Para você, o amor é algo delicado, precioso e que precisa ser tratado com cuidado e atenção.", "Metal resistente": "Para você, o amor é sinônimo de resistência. Acredita em laços fortes, que suportam o tempo e as adversidades."}},
+        {"p": "Ao sair da casa, você encontra um lago. O que você faz?", "o": ["Mergulho de cabeça", "Molho apenas as mãos", "Passo direto sem parar"],
+         "s": {"Mergulho de cabeça": "Quando se entrega, é completamente. Mergulha de corpo e alma nas experiências e nas emoções.", "Molho apenas as mãos": "Tem um equilíbrio admirável entre razão e sentimento. Participa das emoções sem se perder nelas.", "Passo direto sem parar": "É alguém extremamente focado nos seus objetivos. Não se distrai facilmente e tem uma disciplina pouco comum."}},
+    ]
+
+    if 'passo_floresta' not in st.session_state: st.session_state.passo_floresta = 0
+    if 'analise_floresta' not in st.session_state: st.session_state.analise_floresta = []
+
+    if st.session_state.passo_floresta < len(perguntas_floresta):
+        q = perguntas_floresta[st.session_state.passo_floresta]
+        total = len(perguntas_floresta)
+        atual = st.session_state.passo_floresta + 1
+        st.progress(atual / total)
+        st.markdown(f"**Pergunta {atual} de {total}**")
+        st.markdown(f"### {q.get('p', '')}")
+        cols = st.columns(len(q.get('o', '')))
+        for i, opt in enumerate(q.get('o', '')):
+            if cols[i].button(opt, key=f"floresta_{st.session_state.passo_floresta}_{i}"):
+                st.session_state.analise_floresta.append(q.get('s', '')[opt])
+                st.session_state.passo_floresta += 1
+                st.rerun()
+    else:
+        if chave_api and st.session_state.analise_floresta:
+            respostas_txt = " ".join(st.session_state.analise_floresta)
+            sistema_psi = (
+                "Você é um psicólogo experiente e empático, especializado em análise de personalidade. "
+                "Com base nos traços que vou descrever, produza um veredito psicológico em formato de texto corrido, "
+                "como se estivesse falando diretamente com o paciente numa sessão presencial. "
+                "Não use tópicos, listas ou itens numerados. Escreva como um parágrafo fluido e orgânico, "
+                "integrando todos os traços numa narrativa coerente que fala sobre quem é essa pessoa, "
+                "como ela pensa, como se relaciona e o que isso revela sobre sua forma de estar no mundo. "
+                "O tom deve ser acolhedor, profundo e revelador."
+            )
+            with st.spinner("O Ravengar está lendo sua alma..."):
+                veredito = consultar_ravengar(sistema_psi, f"Traços identificados: {respostas_txt}", chave_api)
+            st.markdown(f"<div class='ravengar-card'>🧠 <strong>Veredito Psicológico</strong><br><br>{veredito}</div>", unsafe_allow_html=True)
+        elif not chave_api:
+            st.warning("Insira sua chave Groq API para receber o veredito.")
+        if st.button("RECOMEÇAR JORNADA", key="recomecar_floresta"):
+            st.session_state.passo_floresta = 0
+            st.session_state.analise_floresta = []
+            st.rerun()
+
+# --- ABA 5: VIDAS PASSADAS ---
+with tab5:
+    st.markdown("### 🌀 Quem Você Foi em Outra Vida?")
+    st.markdown("*Responda com sinceridade — são suas escolhas de hoje que revelam quem você foi ontem.*")
+
+    perguntas_vidas = [
+        {"p": "Quando você entra num ambiente desconhecido cheio de pessoas, o que acontece com você?",
+         "o": ["Sinto uma energia estranha, como se já conhecesse aquele lugar", "Me sinto totalmente fora do lugar, quero ir embora", "Fico observando tudo com curiosidade antes de interagir"],
+         "s": {"Sinto uma energia estranha, como se já conhecesse aquele lugar": "memória de vidas anteriores fortemente ativa; alma antiga com muitas experiências acumuladas", "Me sinto totalmente fora do lugar, quero ir embora": "alma que ainda está se adaptando ao plano terrestre; possivelmente vinda de uma existência mais sutil ou espiritual", "Fico observando tudo com curiosidade antes de interagir": "estrategista nato; provavelmente exerceu papéis de liderança ou comando em outras vidas"}},
+        {"p": "Existe algum período histórico que te fascina de forma quase inexplicável, como se você pertencesse àquele tempo?",
+         "o": ["Egito Antigo ou civilizações místicas", "Guerras medievais e batalhas", "Renascimento, artes e ciência", "Não sinto conexão com nenhum período específico"],
+         "s": {"Egito Antigo ou civilizações místicas": "forte ligação com conhecimentos esotéricos e sacerdócio; possível vida como guardião de saberes antigos", "Guerras medievais e batalhas": "alma de guerreiro; viveu sob códigos de honra, lealdade e conflito físico em vidas anteriores", "Renascimento, artes e ciência": "espírito criativo e intelectual; provavelmente foi artista, filósofo, inventor ou pensador em outra existência", "Não sinto conexão com nenhum período específico": "alma em transição; ainda processando as memórias de vidas passadas que não vieram à tona completamente"}},
+        {"p": "Você tem algum medo profundo, aquele tipo de medo que não consegue explicar de onde vem?",
+         "o": ["Medo de afogamento ou de profundezas", "Medo de altura ou de quedas", "Medo de ser traído ou abandonado", "Medo de perder o controle ou a liberdade"],
+         "s": {"Medo de afogamento ou de profundezas": "possível morte por afogamento ou naufrágio em vida anterior; alma que carrega esse trauma na memória celular", "Medo de altura ou de quedas": "queda fatal ou batalha em terreno elevado pode ter marcado uma de suas existências passadas", "Medo de ser traído ou abandonado": "viveu uma traição devastadora em outra vida — amor, amizade ou aliança que foi rompida de forma brutal", "Medo de perder o controle ou a liberdade": "possivelmente viveu como escravo, prisioneiro ou sob um regime opressivo; a busca por liberdade é o fio condutor de suas vidas"}},
+        {"p": "Como você se relaciona com o sofrimento alheio — quando vê alguém em dor, o que acontece dentro de você?",
+         "o": ["Sinto a dor do outro como se fosse minha", "Quero agir imediatamente para resolver", "Observo com compaixão, mas mantenho distância emocional", "Me sinto impotente e prefiro me afastar"],
+         "s": {"Sinto a dor do outro como se fosse minha": "alma altamente empática; provavelmente viveu como curandeiro, terapeuta ou figura espiritual de cura", "Quero agir imediatamente para resolver": "herói ou protetor em outras vidas; carrega a missão de intervir e transformar realidades", "Observo com compaixão, mas mantenho distância emocional": "sábio ou mentor; alguém que guiou outros pelo conhecimento, mas aprendeu a preservar sua própria energia", "Me sinto impotente e prefiro me afastar": "viveu perdas traumáticas que não pôde evitar; ainda carrega a culpa de não ter conseguido salvar alguém importante"}},
+        {"p": "O que te move profundamente na vida — aquilo que, quando falta, você sente que algo essencial está ausente?",
+         "o": ["Conhecimento e descoberta", "Amor e pertencimento", "Justiça e propósito", "Criação e expressão"],
+         "s": {"Conhecimento e descoberta": "eterna busca por compreender o mundo; viveu como filósofo, alquimista, cientista ou explorador", "Amor e pertencimento": "o amor é o fio que conecta todas as suas existências; busca constantemente reconhecer almas com quem já se conectou antes", "Justiça e propósito": "alma que sofreu injustiças ou lutou por causas maiores; veio com uma missão clara de transformar algo no mundo", "Criação e expressão": "artista da alma em múltiplas formas; viveu para criar, expressar e deixar marcas que transcendem o tempo"}},
+        {"p": "Quando você sonha, como costumam ser esses sonhos?",
+         "o": ["Vividos em lugares e épocas que não reconheço", "Cheios de simbolismos e imagens que parecem mensagens", "Muito reais, com pessoas que nunca conheci mas sinto como familiares", "Raramente lembro dos meus sonhos"],
+         "s": {"Vividos em lugares e épocas que não reconheço": "memória de vidas passadas aflorando durante o sono; o véu entre as existências é fino para você", "Cheios de simbolismos e imagens que parecem mensagens": "canal aberto com o inconsciente coletivo; provavelmente foi vidente, oráculo ou intérprete de sonhos", "Muito reais, com pessoas que nunca conheci mas sinto como familiares": "encontros com almas que já cruzaram sua jornada em outras dimensões do tempo; vínculos que transcendem esta vida", "Raramente lembro dos meus sonhos": "alma com proteção natural das memórias mais intensas; o esquecimento é um mecanismo de equilíbrio para sua jornada atual"}},
+        {"p": "Como as pessoas ao seu redor costumam te ver — qual papel você naturalmente ocupa nos grupos?",
+         "o": ["O que escuta e acolhe a todos", "O que lidera e organiza", "O que questiona e provoca reflexão", "O que prefere ficar à margem, observando"],
+         "s": {"O que escuta e acolhe a todos": "sacerdote, monge ou figura de consolo; viveu para ser o porto seguro de almas perdidas", "O que lidera e organiza": "rei, rainha, general ou comandante; carrega a autoridade natural de quem já governou vidas e destinos", "O que questiona e provoca reflexão": "filósofo, herético ou reformador; aquele que sempre desafiou o pensamento da sua época", "O que prefere ficar à margem, observando": "espião, monge solitário ou eremita; encontrou nas sombras e no silêncio o seu maior poder"}},
+        {"p": "Existe algo que você sente que veio a este mundo para fazer — uma missão que às vezes sente, mesmo que não consiga nomear?",
+         "o": ["Curar ou ajudar pessoas a se transformar", "Criar algo que deixe uma marca duradoura", "Proteger ou lutar por algo importante", "Entender e decifrar os mistérios da existência"],
+         "s": {"Curar ou ajudar pessoas a se transformar": "médico, xamã, terapeuta ou curandeiro em outras vidas; a missão de cura se repete em todas as suas existências", "Criar algo que deixe uma marca duradoura": "artista, construtor ou visionário; viveu para erguer — monumentos, obras, ideias — que sobrevivem ao corpo", "Proteger ou lutar por algo importante": "guerreiro, cavaleiro ou guardião; veio com a missão de defender o que considera sagrado", "Entender e decifrar os mistérios da existência": "alquimista, filósofo ou místico; sua alma é movida pela necessidade de compreender o que está além do visível"}},
+    ]
+
+    if 'passo_vidas' not in st.session_state: st.session_state.passo_vidas = 0
+    if 'analise_vidas' not in st.session_state: st.session_state.analise_vidas = []
+
+    if st.session_state.passo_vidas < len(perguntas_vidas):
+        q = perguntas_vidas[st.session_state.passo_vidas]
+        total_v = len(perguntas_vidas)
+        atual_v = st.session_state.passo_vidas + 1
+        st.progress(atual_v / total_v)
+        st.markdown(f"**Pergunta {atual_v} de {total_v}**")
+        st.markdown(f"### {q.get('p', '')}")
+        for i, opt in enumerate(q.get('o', '')):
+            if st.button(opt, key=f"vidas_{st.session_state.passo_vidas}_{i}"):
+                st.session_state.analise_vidas.append(q.get('s', '')[opt])
+                st.session_state.passo_vidas += 1
+                st.rerun()
+    else:
+        if chave_api and st.session_state.analise_vidas:
+            tracos_v = " ".join(st.session_state.analise_vidas)
+            sistema_vidas = (
+                "Você é o Ravengar, um oráculo ancestral com acesso aos registros akáshicos. "
+                "Com base nos traços descritos, revele quem essa pessoa foi em suas vidas passadas. "
+                "Escreva em formato de texto corrido e fluido, como uma revelação solene e envolvente — nunca em lista. "
+                "Descreva a(s) vida(s) passada(s) com riqueza: época, papel, o que viveu, como morreu e que karma trouxe. "
+                "Tom místico, profundo e revelador. Finalize com uma mensagem sobre o que essa alma veio completar nesta encarnação."
+            )
+            with st.spinner("O Ravengar consulta os Registros Akáshicos..."):
+                veredito_v = consultar_ravengar(sistema_vidas, f"Traços da alma: {tracos_v}", chave_api)
+            st.markdown(f"<div class='ravengar-card'>🌀 <strong>Revelação das Vidas Passadas</strong><br><br>{veredito_v}</div>", unsafe_allow_html=True)
+        elif not chave_api:
+            st.warning("Insira sua chave Groq API para receber a revelação.")
+        if st.button("RECOMEÇAR JORNADA", key="recomecar_vidas"):
+            st.session_state.passo_vidas = 0
+            st.session_state.analise_vidas = []
+            st.rerun()
+
+# --- ABA 6: CARTA DO TAROT ---
+with tab6:
+    st.markdown("### 🃏 Tire Sua Carta do Tarot")
+    st.markdown("*Respire fundo. Concentre-se no seu momento atual. Quando sentir que está pronto, clique.*")
+
+    ARCANOS = [
+        {"nome": "O Louco", "simbolo": "🌟", "numero": "0"},
+        {"nome": "O Mago", "simbolo": "🪄", "numero": "I"},
+        {"nome": "A Sacerdotisa", "simbolo": "🌙", "numero": "II"},
+        {"nome": "A Imperatriz", "simbolo": "🌸", "numero": "III"},
+        {"nome": "O Imperador", "simbolo": "👑", "numero": "IV"},
+        {"nome": "O Hierofante", "simbolo": "⛪", "numero": "V"},
+        {"nome": "Os Amantes", "simbolo": "💞", "numero": "VI"},
+        {"nome": "O Carro", "simbolo": "⚡", "numero": "VII"},
+        {"nome": "A Força", "simbolo": "🦁", "numero": "VIII"},
+        {"nome": "O Eremita", "simbolo": "🕯️", "numero": "IX"},
+        {"nome": "A Roda da Fortuna", "simbolo": "🎡", "numero": "X"},
+        {"nome": "A Justiça", "simbolo": "⚖️", "numero": "XI"},
+        {"nome": "O Enforcado", "simbolo": "🌿", "numero": "XII"},
+        {"nome": "A Morte", "simbolo": "🦋", "numero": "XIII"},
+        {"nome": "A Temperança", "simbolo": "🌊", "numero": "XIV"},
+        {"nome": "O Diabo", "simbolo": "🔗", "numero": "XV"},
+        {"nome": "A Torre", "simbolo": "⛈️", "numero": "XVI"},
+        {"nome": "A Estrela", "simbolo": "✨", "numero": "XVII"},
+        {"nome": "A Lua", "simbolo": "🌕", "numero": "XVIII"},
+        {"nome": "O Sol", "simbolo": "☀️", "numero": "XIX"},
+        {"nome": "O Julgamento", "simbolo": "🎺", "numero": "XX"},
+        {"nome": "O Mundo", "simbolo": "🌍", "numero": "XXI"},
+    ]
+
+    if st.button("🃏 REVELAR MINHA CARTA DO DIA", key="tendarav11"):
+        st.session_state['carta_do_dia'] = random.choice(ARCANOS)
+
+    if 'carta_do_dia' in st.session_state:
+        carta = st.session_state['carta_do_dia']
+        st.markdown(f'''
+        <div class='tarot-card'>
+            <div style='font-size:0.85em;opacity:0.7;letter-spacing:2px;'>ARCANO {carta['numero']}</div>
+            <div class='tarot-simbolo'>{carta['simbolo']}</div>
+            <div class='tarot-titulo'>{carta['nome']}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+        if chave_api:
+            with st.spinner("O Ravengar interpreta os símbolos..."):
+                sistema_tarot = (
+                    "Você é o Ravengar, intérprete dos arcanos do Tarot. "
+                    "Produza uma leitura profunda e envolvente em texto corrido — sem tópicos, sem listas. "
+                    "Fale diretamente com quem tirou a carta, em segunda pessoa. "
+                    "Aborde o significado geral, o que revela sobre o momento atual, as energias em jogo e uma orientação para as próximas horas. "
+                    "Tom místico, sábio e acolhedor."
+                )
+                leitura = consultar_ravengar(sistema_tarot, f"A carta tirada foi: {carta['nome']} (Arcano {carta['numero']})", chave_api)
+            st.markdown(f"<div class='ravengar-card'>🔮 <strong>Leitura da Carta</strong><br><br>{leitura}</div>", unsafe_allow_html=True)
+        if st.button("🔄 TIRAR NOVA CARTA", key="tendarav12"):
+            del st.session_state['carta_do_dia']
+            st.rerun()
+
+# --- ABA 7: MAPA ASTRAL ---
+with tab7:
+    st.markdown("### ⭐ Mapa Astral Rápido")
+    st.markdown("*Informe seus dados de nascimento e o Ravengar revela os seus três signos fundamentais.*")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        data_nasc = st.text_input("📅 Data de nascimento:", placeholder="ex: 15/03/1990", key="astral_data")
+    with col2:
+        hora_nasc = st.text_input("🕐 Hora de nascimento:", placeholder="ex: 14h30 (opcional)", key="astral_hora")
+    with col3:
+        cidade_nasc = st.text_input("📍 Cidade de nascimento:", placeholder="ex: São Paulo, SP", key="astral_cidade")
+
+    if st.button("⭐ REVELAR MEU MAPA ASTRAL", key="tendarav13"):
+        if data_nasc.strip():
+            with st.spinner("Os astros se alinham..."):
+                sistema_astral = (
+                    "Você é o Ravengar, astrólogo ancestral. Com base na data, hora e cidade de nascimento fornecidas, "
+                    "identifique o signo solar, o signo lunar provável e o ascendente provável da pessoa. "
+                    "Se a hora não foi fornecida, mencione que o ascendente é estimado. "
+                    "Escreva a leitura em texto corrido e fluido, como uma revelação direta à pessoa, em segunda pessoa. "
+                    "Integre os três signos numa narrativa coerente sobre quem essa pessoa é, como pensa, como ama e qual sua missão. "
+                    "Tom místico, profundo e revelador. Não use listas."
+                )
+                leitura_astral = consultar_ravengar(
+                    sistema_astral,
+                    f"Data: {data_nasc}. Hora: {hora_nasc or 'não informada'}. Cidade: {cidade_nasc or 'não informada'}.",
+                    chave_api
+                )
+            st.markdown(f'''
+            <div class='astral-box'>
+                ⭐ <strong>Seu Mapa Astral</strong><br><br>{leitura_astral}
+            </div>
+            ''', unsafe_allow_html=True)
+        else:
+            st.warning("Informe ao menos a data de nascimento.")
+
+# --- ABA 8: COMPATIBILIDADE ---
+with tab8:
+    st.markdown("### 💞 Compatibilidade entre Duas Almas")
+    st.markdown("*O Ravengar revela se essas almas têm conexão kármica e o que o destino reserva para elas.*")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Alma 1**")
+        nome1 = st.text_input("Nome:", key="comp_nome1", placeholder="ex: Maria")
+        signo1 = st.selectbox("Signo:", ["Áries","Touro","Gêmeos","Câncer","Leão","Virgem","Libra","Escorpião","Sagitário","Capricórnio","Aquário","Peixes"], key="comp_signo1")
+    with col2:
+        st.markdown("**Alma 2**")
+        nome2 = st.text_input("Nome:", key="comp_nome2", placeholder="ex: João")
+        signo2 = st.selectbox("Signo:", ["Áries","Touro","Gêmeos","Câncer","Leão","Virgem","Libra","Escorpião","Sagitário","Capricórnio","Aquário","Peixes"], key="comp_signo2")
+
+    tipo_relacao = st.selectbox("Tipo de relação:", ["Amor e romance","Amizade profunda","Parceria profissional","Família"], key="comp_tipo")
+
+    if st.button("💞 REVELAR COMPATIBILIDADE", key="tendarav14"):
+        if nome1.strip() and nome2.strip():
+            with st.spinner("O Ravengar consulta os registros kármicos..."):
+                sistema_comp = (
+                    "Você é o Ravengar, guardião dos registros kármicos. "
+                    "Analise a compatibilidade entre duas pessoas com base nos signos e tipo de relação. "
+                    "Escreva em texto corrido, fluido e revelador — sem listas. "
+                    "Aborde: o que une essas almas, o que pode gerar conflito, se há conexão kármica de vidas passadas, "
+                    "o potencial da relação e o que o destino reserva para elas. "
+                    "Tom místico, apaixonante e profundo."
+                )
+                leitura_comp = consultar_ravengar(
+                    sistema_comp,
+                    f"{nome1} ({signo1}) e {nome2} ({signo2}). Tipo de relação: {tipo_relacao}.",
+                    chave_api
+                )
+            st.markdown(f"<div class='ravengar-card'>💞 <strong>{nome1} & {nome2}</strong><br><br>{leitura_comp}</div>", unsafe_allow_html=True)
+        else:
+            st.warning("Informe os dois nomes.")
+
+# --- ABA 9: NUMEROLOGIA ---
+with tab9:
+    st.markdown("### 🔢 Numerologia do Nome e do Destino")
+    st.markdown("*Seu nome completo e sua data de nascimento carregam um código numérico que o Ravengar pode decifrar.*")
+
+    nome_num = st.text_input("✍️ Seu nome completo:", key="num_nome", placeholder="ex: Maria Aparecida Silva")
+    data_num = st.text_input("📅 Sua data de nascimento:", key="num_data", placeholder="ex: 15/03/1990")
+
+    if st.button("🔢 DECIFRAR MEU CÓDIGO NUMÉRICO", key="tendarav15"):
+        if nome_num.strip() and data_num.strip():
+            with st.spinner("O Ravengar calcula os números do seu destino..."):
+                sistema_num = (
+                    "Você é o Ravengar, numerólogo ancestral. Com base no nome completo e data de nascimento, "
+                    "calcule e interprete: o Número do Destino (soma dos dígitos da data de nascimento reduzida), "
+                    "o Número da Alma (soma das vogais do nome, reduzida) e o Número da Personalidade (soma das consoantes). "
+                    "Mostre o cálculo de forma simples, depois escreva a interpretação integrada em texto corrido fluido, "
+                    "em segunda pessoa, como uma revelação direta. Tom místico e revelador."
+                )
+                leitura_num = consultar_ravengar(
+                    sistema_num,
+                    f"Nome: {nome_num}. Data: {data_num}.",
+                    chave_api
+                )
+            st.markdown(f"<div class='ravengar-card'>🔢 <strong>Seu Código Numérico</strong><br><br>{leitura_num}</div>", unsafe_allow_html=True)
+        else:
+            st.warning("Informe o nome completo e a data de nascimento.")
+
+# --- ABA 10: ESPELHO NEGRO ---
+with tab10:
+    st.markdown("### 🖤 O Espelho Negro")
+    st.markdown("*Descreva um sonho recorrente, perturbador ou aquele que nunca saiu da sua cabeça. O Ravengar vai ao fundo.*")
+
+    sonho_input = st.text_area("🌙 Descreva o sonho com todos os detalhes que lembrar:", height=160, key="sonho_input",
+        placeholder="ex: Estou sempre num corredor comprido e escuro, sem saída. Sinto que alguém me segue mas quando olho não há ninguém. Acordo com o coração acelerado...")
+
+    if st.button("🖤 INTERPRETAR O SONHO", key="tendarav16"):
+        if sonho_input.strip():
+            with st.spinner("O Ravengar mergulha nas sombras do seu inconsciente..."):
+                sistema_sonho = (
+                    "Você é o Ravengar, intérprete do inconsciente e dos reinos oníricos. "
+                    "Analise este sonho com profundidade — vá além do óbvio. "
+                    "Escreva em texto corrido, fluido e perturbadoramente preciso, em segunda pessoa. "
+                    "Aborde: o que os símbolos representam no inconsciente, o que a mente está tentando comunicar, "
+                    "que emoção ou situação não resolvida pode estar gerando esse sonho, e o que ele revela sobre o momento atual da pessoa. "
+                    "Tom sombrio, perspicaz e revelador — como se o Ravengar visse algo que a própria pessoa ainda não ousou olhar."
+                )
+                interpretacao = consultar_ravengar(sistema_sonho, f"O sonho: {sonho_input}", chave_api)
+            st.markdown(f"<div class='ravengar-card'>🖤 <strong>O Que as Sombras Revelam</strong><br><br>{interpretacao}</div>", unsafe_allow_html=True)
+        else:
+            st.warning("Descreva o sonho antes de invocar o Espelho Negro.")
+
+# --- ABA 11: RITUAL DE INTENÇÃO ---
+with tab11:
+    st.markdown("### 🌙 Ritual de Intenção")
+    st.markdown("*Escreva o que você quer manifestar. O Ravengar cria um ritual personalizado para você.*")
+
+    intencao_input = st.text_area("✨ O que você quer manifestar?", height=120, key="intencao_input",
+        placeholder="ex: Quero encontrar um amor verdadeiro, quero prosperidade no meu negócio, quero me libertar de um relacionamento tóxico...")
+
+    if st.button("🌙 CRIAR MEU RITUAL", key="tendarav17"):
+        if intencao_input.strip():
+            with st.spinner("O Ravengar consulta as forças do universo..."):
+                sistema_ritual = (
+                    "Você é o Ravengar, guardião dos rituais de intenção e manifestação. "
+                    "Com base na intenção descrita, crie um ritual personalizado e simbólico. "
+                    "Escreva em texto corrido, revelador e envolvente. Inclua: "
+                    "a melhor fase da lua para realizar o ritual, o elemento associado (fogo, água, terra, ar), "
+                    "uma afirmação poderosa personalizada para essa intenção específica, "
+                    "um gesto físico simbólico para ancorar a intenção, "
+                    "e uma orientação sobre como liberar o que precisa ser liberado para abrir espaço ao que se deseja manifestar. "
+                    "Tom místico, poético e profundamente pessoal — como se o ritual tivesse sido criado especialmente para essa alma."
+                )
+                ritual = consultar_ravengar(sistema_ritual, f"Intenção: {intencao_input}", chave_api)
+            st.markdown(f"<div class='ravengar-card'>🌙 <strong>Seu Ritual de Intenção</strong><br><br>{ritual}</div>", unsafe_allow_html=True)
+        else:
+            st.warning("Escreva sua intenção antes de invocar o ritual.")
+
+# --- ABA 12: ORÁCULO DAS RUNAS ---
+with tab12:
+    st.markdown("### ᚠ Oráculo das Runas")
+    st.markdown("*As runas nórdicas carregam a sabedoria ancestral dos povos do norte. Concentre-se e tire a sua.*")
+
+    RUNAS = [
+        {"nome": "Fehu", "simbolo": "ᚠ", "palavra": "Prosperidade", "elemento": "Fogo"},
+        {"nome": "Uruz", "simbolo": "ᚢ", "palavra": "Força", "elemento": "Terra"},
+        {"nome": "Thurisaz", "simbolo": "ᚦ", "palavra": "Proteção", "elemento": "Fogo"},
+        {"nome": "Ansuz", "simbolo": "ᚨ", "palavra": "Sabedoria", "elemento": "Ar"},
+        {"nome": "Raidho", "simbolo": "ᚱ", "palavra": "Jornada", "elemento": "Ar"},
+        {"nome": "Kenaz", "simbolo": "ᚲ", "palavra": "Iluminação", "elemento": "Fogo"},
+        {"nome": "Gebo", "simbolo": "ᚷ", "palavra": "Dádiva", "elemento": "Ar"},
+        {"nome": "Wunjo", "simbolo": "ᚹ", "palavra": "Alegria", "elemento": "Terra"},
+        {"nome": "Hagalaz", "simbolo": "ᚺ", "palavra": "Ruptura", "elemento": "Água"},
+        {"nome": "Nauthiz", "simbolo": "ᚾ", "palavra": "Necessidade", "elemento": "Fogo"},
+        {"nome": "Isa", "simbolo": "ᛁ", "palavra": "Pausa", "elemento": "Água"},
+        {"nome": "Jera", "simbolo": "ᛃ", "palavra": "Colheita", "elemento": "Terra"},
+        {"nome": "Eihwaz", "simbolo": "ᛇ", "palavra": "Transformação", "elemento": "Terra"},
+        {"nome": "Perthro", "simbolo": "ᛈ", "palavra": "Mistério", "elemento": "Água"},
+        {"nome": "Algiz", "simbolo": "ᛉ", "palavra": "Escudo", "elemento": "Ar"},
+        {"nome": "Sowilo", "simbolo": "ᛊ", "palavra": "Vitória", "elemento": "Fogo"},
+        {"nome": "Tiwaz", "simbolo": "ᛏ", "palavra": "Justiça", "elemento": "Ar"},
+        {"nome": "Berkano", "simbolo": "ᛒ", "palavra": "Renascimento", "elemento": "Terra"},
+        {"nome": "Ehwaz", "simbolo": "ᛖ", "palavra": "Movimento", "elemento": "Ar"},
+        {"nome": "Mannaz", "simbolo": "ᛗ", "palavra": "Humanidade", "elemento": "Ar"},
+        {"nome": "Laguz", "simbolo": "ᛚ", "palavra": "Fluxo", "elemento": "Água"},
+        {"nome": "Ingwaz", "simbolo": "ᛜ", "palavra": "Fertilidade", "elemento": "Terra"},
+        {"nome": "Dagaz", "simbolo": "ᛞ", "palavra": "Clareza", "elemento": "Fogo"},
+        {"nome": "Othala", "simbolo": "ᛟ", "palavra": "Herança", "elemento": "Terra"},
+    ]
+
+    if st.button("ᚠ TIRAR MINHA RUNA", key="tendarav18"):
+        st.session_state['runa_do_dia'] = random.choice(RUNAS)
+
+    if 'runa_do_dia' in st.session_state:
+        runa = st.session_state['runa_do_dia']
+        st.markdown(f'''
+        <div class='runa-card'>
+            <div style='font-size:0.82em;opacity:0.6;letter-spacing:2px;'>RUNA DO DIA · {runa['elemento'].upper()}</div>
+            <div class='runa-simbolo'>{runa['simbolo']}</div>
+            <div class='runa-nome'>{runa['nome']}</div>
+            <div style='font-size:0.95em;margin-top:6px;opacity:0.8;'>{runa['palavra']}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+        if chave_api:
+            with st.spinner("As runas sussurram..."):
+                sistema_runa = (
+                    "Você é o Ravengar, conhecedor da tradição rúnica nórdica e dos segredos do Elder Futhark. "
+                    "Interprete esta runa de forma profunda e personalizada para quem a tirou hoje. "
+                    "Escreva em texto corrido, em segunda pessoa, sem listas. "
+                    "Aborde: o significado ancestral da runa, o que ela revela sobre o momento atual, "
+                    "o que deve ser observado ou cuidado, e a mensagem que os ancestrais enviam através dela. "
+                    "Tom sombrio, ancestral e revelador."
+                )
+                leitura_runa = consultar_ravengar(
+                    sistema_runa,
+                    f"A runa tirada foi: {runa['nome']} ({runa['simbolo']}) — {runa['palavra']}. Elemento: {runa['elemento']}.",
+                    chave_api
+                )
+            st.markdown(f"<div class='ravengar-card'>ᚠ <strong>Mensagem dos Ancestrais</strong><br><br>{leitura_runa}</div>", unsafe_allow_html=True)
+
+        if st.button("🔄 TIRAR NOVA RUNA", key="tendarav19"):
+            del st.session_state['runa_do_dia']
+            st.rerun()
+
+# --- ABA 13: CURSOS GRÁTIS ---
+with tab13:
+    st.markdown("### 🎓 Cursos Grátis")
+    st.markdown("*Aprofunde seu conhecimento místico com cursos completos e gratuitos.*")
+
+    if not CURSOS:
+        st.warning("Arquivo de cursos não encontrado. Certifique-se que o arquivo `cursos_ravengar.json` está na mesma pasta do app.")
+    else:
+        # Inicializa estado dos cursos
+        if 'curso_ativo' not in st.session_state:
+            st.session_state.curso_ativo = None
+        if 'aula_ativa' not in st.session_state:
+            st.session_state.aula_ativa = None
+        if 'aulas_concluidas' not in st.session_state:
+            st.session_state.aulas_concluidas = {}
+        if 'quiz_ativo' not in st.session_state:
+            st.session_state.quiz_ativo = False
+        if 'quiz_resposta' not in st.session_state:
+            st.session_state.quiz_resposta = ""
+        if 'quiz_resultado' not in st.session_state:
+            st.session_state.quiz_resultado = None
+
+        # --- TELA: LISTA DE CURSOS ---
+        if st.session_state.curso_ativo is None:
+            cols = st.columns(3)
+            for idx, (chave, curso) in enumerate(CURSOS.items()):
+                col = cols[idx % 3]
+                concluidas = len(st.session_state.aulas_concluidas.get(chave, []))
+                total = curso['total_aulas']
+                pct = int(concluidas / total * 100) if total > 0 else 0
+                with col:
+                    st.markdown(f'''
+                    <div class='curso-card'>
+                        <div style='font-size:2.2em;'>{curso['icone']}</div>
+                        <div style='font-size:1.1em;font-weight:bold;margin:6px 0;'>{curso['titulo']}</div>
+                        <div style='font-size:0.82em;opacity:0.8;'>{curso['descricao'][:80]}...</div>
+                        <div style='margin-top:10px;font-size:0.85em;'>{total} aulas · {pct}% concluído</div>
+                    </div>
+                    ''', unsafe_allow_html=True)
+                    if col.button(f"ENTRAR NO CURSO", key=f"entrar_{chave}"):
+                        st.session_state.curso_ativo = chave
+                        st.session_state.aula_ativa = None
+                        st.session_state.quiz_ativo = False
+                        st.session_state.quiz_resultado = None
+                        st.rerun()
+
+        # --- TELA: LISTA DE AULAS DO CURSO ---
+        elif st.session_state.aula_ativa is None:
+            chave = st.session_state.curso_ativo
+            curso = CURSOS[chave]
+            concluidas = st.session_state.aulas_concluidas.get(chave, [])
+
+            col_v, col_b = st.columns([5, 1])
+            with col_b:
+                if st.button("← Voltar", key="voltar_cursos"):
+                    st.session_state.curso_ativo = None
+                    st.rerun()
+
+            st.markdown(f"## {curso['icone']} {curso['titulo']}")
+            st.markdown(f"*{curso['descricao']}*")
+
+            pct = int(len(concluidas) / curso['total_aulas'] * 100)
+            st.markdown(f'''
+            <div class='progresso-curso'>
+                📚 {len(concluidas)} de {curso['total_aulas']} aulas concluídas — {pct}% do curso
+            </div>
+            ''', unsafe_allow_html=True)
+            st.progress(pct / 100)
+
+            st.markdown("### 📋 Aulas do Curso")
+
+            for num, aula in curso['aulas'].items():
+                concluida = num in concluidas
+                status = "✅" if concluida else "📖"
+                col_a, col_b2 = st.columns([5, 1])
+                with col_a:
+                    st.markdown(f"**{status} Aula {num} — {aula['titulo']}**")
+                with col_b2:
+                    label = "Revisar" if concluida else "Estudar"
+                    if st.button(label, key=f"aula_{chave}_{num}"):
+                        st.session_state.aula_ativa = num
+                        st.session_state.quiz_ativo = False
+                        st.session_state.quiz_resposta = ""
+                        st.session_state.quiz_resultado = None
+                        st.rerun()
+
+            if len(concluidas) == curso['total_aulas']:
+                st.markdown("<hr>", unsafe_allow_html=True)
+                st.markdown("### 🏆 Você concluiu o curso!")
+                if st.button("🎓 GERAR MEU CERTIFICADO DO RAVENGAR", key=f"cert_{chave}"):
+                    with st.spinner("O Ravengar prepara seu pergaminho..."):
+                        sistema_cert = (
+                            "Você é o Ravengar, guardião dos saberes ancestrais. "
+                            "Escreva um certificado de conclusão solene e envolvente, como um pergaminho místico, "
+                            "em texto corrido e poético. Mencione o nome do aluno, o curso concluído, "
+                            "o que esse conhecimento significa e que poderes/responsabilidades esse saber confere. "
+                            "Tom grandioso, místico e honroso. Em português do Brasil."
+                        )
+                        cert = consultar_ravengar(
+                            sistema_cert,
+                            f"Aluno: {st.session_state.usuario}. Curso concluído: {curso['titulo']}.",
+                            chave_api
+                        )
+                    st.markdown(f"<div class='ravengar-card'>🎓 <strong>CERTIFICADO DO RAVENGAR</strong><br><br>{cert}</div>", unsafe_allow_html=True)
+
+        # --- TELA: CONTEÚDO DA AULA ---
+        else:
+            chave = st.session_state.curso_ativo
+            num = st.session_state.aula_ativa
+            curso = CURSOS[chave]
+            aula = curso['aulas'][num]
+            concluidas = st.session_state.aulas_concluidas.get(chave, [])
+
+            col_v2, col_t, col_p = st.columns([1, 4, 1])
+            with col_v2:
+                if st.button("← Aulas", key="voltar_aulas"):
+                    st.session_state.aula_ativa = None
+                    st.session_state.quiz_ativo = False
+                    st.session_state.quiz_resultado = None
+                    st.rerun()
+            with col_t:
+                st.markdown(f"**{curso['icone']} {curso['titulo']}**")
+            with col_p:
+                nums = list(curso['aulas'].keys())
+                idx_atual = nums.index(num)
+                if idx_atual < len(nums) - 1:
+                    if st.button("Próxima →", key="proxima_aula"):
+                        st.session_state.aula_ativa = nums[idx_atual + 1]
+                        st.session_state.quiz_ativo = False
+                        st.session_state.quiz_resultado = None
+                        st.rerun()
+
+            st.markdown(f"## Aula {num} — {aula['titulo']}")
+
+            # Conteúdo
+            st.markdown(f'''
+            <div class='aula-conteudo'>
+                {aula['conteudo'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
+
+            # Exemplo
+            st.markdown(f'''
+            <div class='aula-secao'>
+                <strong>🎬 Exemplo Prático</strong><br><br>
+                {aula['exemplo'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
+
+            # Aplicação
+            st.markdown(f'''
+            <div class='aula-secao'>
+                <strong>⚙️ Como Aplicar</strong><br><br>
+                {aula['aplicacao'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
+
+            # Exercício
+            st.markdown(f'''
+            <div class='aula-secao'>
+                <strong>🏋️ Exercício Prático</strong><br><br>
+                {aula['exercicio'].replace(chr(10), '<br>')}
+            </div>
+            ''', unsafe_allow_html=True)
+
+            # Gabarito (oculto até clicar)
+            with st.expander("✅ Ver Gabarito Comentado"):
+                st.markdown(aula['gabarito'])
+
+            st.markdown("<hr>", unsafe_allow_html=True)
+
+            # --- QUIZ DA AULA ---
+            st.markdown("### 🧠 Quiz da Aula")
+            st.markdown("Responda com suas próprias palavras — a IA avalia e comenta.")
+
+            if not st.session_state.quiz_ativo:
+                if st.button("🧠 INICIAR QUIZ DESTA AULA", key=f"quiz_btn_{chave}_{num}"):
+                    st.session_state.quiz_ativo = True
+                    st.session_state.quiz_resultado = None
+                    st.rerun()
+            else:
+                pergunta_quiz = (
+                    f"Com base no conteúdo da aula '{aula['titulo']}' do curso '{curso['titulo']}', "
+                    f"faça uma pergunta desafiadora que teste se o aluno realmente compreendeu o conteúdo — "
+                    f"não uma pergunta de memorização, mas de compreensão e aplicação. "
+                    f"Exiba apenas a pergunta, sem resposta."
+                )
+                if 'quiz_pergunta_texto' not in st.session_state or st.session_state.get('quiz_pergunta_aula') != f"{chave}_{num}":
+                    with st.spinner("Preparando pergunta..."):
+                        st.session_state.quiz_pergunta_texto = consultar_ravengar("Você é um professor de estudos esotéricos.", pergunta_quiz, chave_api)
+                        st.session_state.quiz_pergunta_aula = f"{chave}_{num}"
+
+                st.markdown(f"<div class='aula-secao'><strong>❓ Pergunta:</strong><br><br>{st.session_state.quiz_pergunta_texto}</div>", unsafe_allow_html=True)
+
+                st.session_state.quiz_resposta = st.text_area("Sua resposta:", height=120, key=f"quiz_resp_{chave}_{num}", value=st.session_state.quiz_resposta)
+
+                if st.button("📤 ENVIAR RESPOSTA", key=f"quiz_enviar_{chave}_{num}"):
+                    if st.session_state.quiz_resposta.strip():
+                        with st.spinner("O Ravengar avalia sua resposta..."):
+                            sistema_aval = (
+                                f"Você é um professor de estudos esotéricos avaliando a resposta de um aluno. "
+                                f"A aula era sobre: {aula['titulo']}. O conteúdo central foi: {aula['conteudo'][:500]}. "
+                                f"A pergunta foi: {st.session_state.quiz_pergunta_texto}. "
+                                f"Avalie a resposta do aluno de forma construtiva e aprofundada. "
+                                f"Diga o que ele acertou, o que pode aprofundar, e complete com o ponto mais importante que a resposta talvez não tenha coberto. "
+                                f"Tom encorajador e didático. Em português do Brasil."
+                            )
+                            st.session_state.quiz_resultado = consultar_ravengar(sistema_aval, f"Resposta do aluno: {st.session_state.quiz_resposta}", chave_api)
+                    else:
+                        st.warning("Escreva sua resposta antes de enviar.")
+
+                if st.session_state.quiz_resultado:
+                    st.markdown(f"<div class='ravengar-card'>🎓 <strong>Avaliação do Ravengar</strong><br><br>{st.session_state.quiz_resultado}</div>", unsafe_allow_html=True)
+
+                    if num not in concluidas:
+                        if st.button("✅ MARCAR AULA COMO CONCLUÍDA", key=f"concluir_{chave}_{num}"):
+                            if chave not in st.session_state.aulas_concluidas:
+                                st.session_state.aulas_concluidas[chave] = []
+                            if num not in st.session_state.aulas_concluidas[chave]:
+                                st.session_state.aulas_concluidas[chave].append(num)
+                            st.success("✅ Aula concluída! Continue para a próxima.")
+                            st.session_state.quiz_ativo = False
+                            st.session_state.quiz_resultado = None
+                            st.rerun()
+                    else:
+                        st.success("✅ Esta aula já foi concluída!")
+
+# --- SALVAR / CARREGAR DADOS ---
+st.markdown("<div class='rodape-ravengar'>✦ EXPLORANDO OS MISTÉRIOS DA MENTE E DO DESTINO ✦</div>", unsafe_allow_html=True)
+
+import json as _json_rv
+with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+    col_rv1, col_rv2 = st.columns(2)
+    with col_rv1:
+        _dados_rv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_')}
+        st.download_button("💾 Salvar dados (.json)",
+            data=_json_rv.dumps(_dados_rv, ensure_ascii=False, indent=2, default=str),
+            file_name=f"tenda_ravengar_{st.session_state.get('nome_aventureiro','user')}.json",
+            mime="application/json", key="dl_sv_ravengar")
+    with col_rv2:
+        _arq_rv = st.file_uploader("📂 Carregar dados:", type=["json"], key="ul_sv_ravengar")
+        if _arq_rv:
+            try:
+                for _k, _v in _json_rv.loads(_arq_rv.read().decode()).items():
+                    st.session_state[_k] = _v
+                st.success("✅ Dados carregados!"); st.rerun()
+            except:
+                st.error("Arquivo inválido.")
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:30px;'>"
+    "© 2026 TENDA DO RAVENGAR · MeusAgentesIA.com.br"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
+    "vida_inteligente": """import streamlit as st
+from groq import Groq
+from datetime import datetime
+import json
+import re
+
+# --- CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(page_title="VIDA INTELIGENTE", layout="wide")
+
+st.markdown('''
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stDecoration"] {visibility: hidden;}
+[data-testid="stStatusWidget"] {visibility: hidden;}
+</style>
+''', unsafe_allow_html=True)
+
+
+# --- ESTILO CSS ---
+st.markdown('''
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .stApp { background-color:#F8F9FA; font-family:'Inter',sans-serif; }
+    [data-testid="stSidebar"] { display:none; }
+
+    .stTextInput>div>div>input, .stTextArea>div>textarea,
+    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
+        background-color:#FFFFFF !important; color:#1A1A2E !important;
+        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
+    }
+
+    .stButton>button {
+        width:100%; border-radius:10px; height:3.2em;
+        background:linear-gradient(135deg,#495057,#343A40) !important; color:white !important;
+        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
+        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
+    }
+    .stButton>button:hover { background:linear-gradient(135deg,#343A40,#212529) !important; transform:translateY(-1px); }
+    .stApp .stButton>button, .stApp .stButton>button p,
+    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
+
+    .stApp h1, .stApp h2, .stApp h3 { color:#1A1A2E !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
+
+    .card { background:linear-gradient(135deg,#F1F3F5,#E9ECEF); padding:20px; border-radius:14px; border:1px solid #CED4DA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#1A1A2E !important; }
+
+    .card-dark { background:linear-gradient(135deg,#E9ECEF,#DEE2E6); padding:20px; border-radius:14px; border:1px solid #ADB5BD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#1A1A2E !important; }
+
+    .card-green { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
+
+    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
+
+    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
+
+    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
+    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
+
+    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #CED4DA; }
+    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#1A1A2E !important; }
+    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#495057 !important; }
+
+    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #CED4DA; }
+    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#1A1A2E !important; }
+
+    .badge { background:#495057; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
+
+    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#CED4DA,transparent); margin:18px 0; }
+
+    .chat-user { background:#FFFFFF; border:1px solid #CED4DA; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#1A1A2E !important; }
+
+    .chat-persona { background:#F8F9FA; border:1px solid #CED4DA; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
+    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#1A1A2E !important; }
+
+    .questao-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:12px; padding:18px; margin-bottom:14px; }
+    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#1A1A2E !important; }
+
+    .avaliacao-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:14px; padding:18px; margin-bottom:12px; }
+    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#1A1A2E !important; }
+
+    .meta-box { background:#FFFFFF; border:2px solid #CED4DA; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
+    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#1A1A2E !important; }
+    .stApp .meta-numero { font-size:2em; font-weight:700; color:#495057 !important; }
+
+    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
+    .chat-scroll-container > * { flex-shrink:0; }
+    
+
+    </style>
+''', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# CACHE
+# ─────────────────────────────────────────────
+@st.cache_resource
+def get_cache_vida():
+    return {"perfis": {}}
+
+_cache = get_cache_vida()
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA LOCAL (JSON)
+# ─────────────────────────────────────────────
+CHAVES_SALVAR = [
+    'usuario', 'notas_areas_vida', 'historico_planos', 'planos_salvos',
+    'missoes_hoje', 'missoes_concluidas_hoje', 'diario_entradas',
+    'habitos_ativos', 'conquistas_desbloqueadas', 'projetos_ativos',
+    'grandes_metas', 'data_ultima_missao',
+]
+
+def gerar_json_sessao() -> str:
+    dados = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+    dados['salvo_em'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+    return json.dumps(dados, ensure_ascii=False, indent=2, default=str)
+
+def carregar_json_sessao(dados):
+    _bloq = {'api_key','etapa','nome_login','chave_login','upload_login','btn_entrar_login'}
+    _pref = (
+        'btn_','sel_','ul_','dl_','cad_','_sub','_sm','_tab','_bsc',
+        'ativo_','rem_','sel_pet_','ev_','prof_','hig_','prev_',
+        'vac_','sint_','comp_','trad_','subs_','amb_','viag_','chat_',
+        'duvida_','emerg_','peso_','data_','obs_','tipo_','vet_','desc_',
+        'local_','prox_','alim','sit_emerg_','tc_','oraf','siau','agmag',
+        'lv','mv','pt','pi','sh','wc','rv','rp','rc',
+    )
+    import re as _re
+    for k, v in dados.items():
+        if k in _bloq: continue
+        if any(k.startswith(p) for p in _pref): continue
+        if _re.match(r'.+_\\d+$', k): continue
+        st.session_state[k] = v
+
+def salvar_perfil_cache(usuario: str):
+    _cache["perfis"][usuario] = {k: st.session_state.get(k) for k in CHAVES_SALVAR}
+
+def perfis_salvos() -> list:
+    return list(_cache["perfis"].keys())
+
+def carregar_perfil_cache(usuario: str) -> dict | None:
+    return _cache["perfis"].get(usuario)
+
+def salvar_plano(tipo: str, titulo: str, conteudo: str):
+    st.session_state.historico_planos.append({
+        'data':     datetime.now().strftime('%d/%m %H:%M'),
+        'tipo':     tipo,
+        'titulo':   titulo,
+        'conteudo': conteudo,
+    })
+    verificar_conquistas()
+
+# --- INICIALIZAÇÃO DE ESTADO ---
+AREAS_VIDA = ["Saúde", "Finanças", "Família", "Trabalho", "Estudos", "Saúde Mental", "Hábitos", "Bem-estar"]
+EMOJI_AREA = {"Saúde":"❤️","Finanças":"💰","Família":"👨‍👩‍👧","Trabalho":"💼","Estudos":"📚","Saúde Mental":"🧠","Hábitos":"🏃","Bem-estar":"😊"}
+
+defaults = {
+    'etapa':                "Login",
+    'usuario':               "",
+    'api_key':               "",
+    'pagina':                "Home",
+    'notas_areas_vida':      {a: 5 for a in AREAS_VIDA},
+    'historico_planos':      [],
+    'planos_salvos':         [],
+    'missoes_hoje':          [],
+    'missoes_concluidas_hoje': [],
+    'diario_entradas':       [],
+    'habitos_ativos':        [],
+    'conquistas_desbloqueadas': [],
+    'projetos_ativos':       [],
+    'grandes_metas':         [],
+    'data_ultima_missao':    "",
+
+    'missoes_concluidas_hoje_temp': [],
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# --- CONQUISTAS ---
+CONQUISTAS_DEFINIDAS = [
+    {"id": "primeiro_plano",   "nome": "Primeiro Plano Criado",    "emoji": "🎯", "condicao": lambda s: len(s.historico_planos) >= 1},
+    {"id": "primeira_semana",  "nome": "Primeira Semana Completa", "emoji": "📅", "condicao": lambda s: len(s.missoes_concluidas_hoje) >= 7},
+    {"id": "primeiro_habito",  "nome": "Primeiro Hábito Criado",   "emoji": "🔥", "condicao": lambda s: len(s.habitos_ativos) >= 1},
+    {"id": "primeiro_diario",  "nome": "Primeira Reflexão",        "emoji": "📖", "condicao": lambda s: len(s.diario_entradas) >= 1},
+    {"id": "primeiro_projeto", "nome": "Primeiro Projeto Iniciado","emoji": "📋", "condicao": lambda s: len(s.projetos_ativos) >= 1},
+    {"id": "primeira_meta",    "nome": "Primeira Grande Meta",     "emoji": "🏆", "condicao": lambda s: len(s.grandes_metas) >= 1},
+    {"id": "dez_planos",       "nome": "10 Planos Realizados",     "emoji": "🎖️", "condicao": lambda s: len(s.historico_planos) >= 10},
+    {"id": "vida_equilibrada", "nome": "Vida Equilibrada",         "emoji": "⚖️", "condicao": lambda s: all(v >= 6 for v in s.notas_areas_vida.values())},
+]
+
+def verificar_conquistas():
+    novas = []
+    for c in CONQUISTAS_DEFINIDAS:
+        if c['id'] not in st.session_state.conquistas_desbloqueadas:
+            if c['condicao'](st.session_state):
+                st.session_state.conquistas_desbloqueadas.append(c['id'])
+                novas.append(c)
+    return novas
+
+# --- ECOSSISTEMA — para onde encaminhar ---
+ECOSSISTEMA_APPS = {
+    "financeiro": {"nome": "Oráculo Financeiro", "emoji": "💰", "quando": "questões de orçamento, dívidas, investimentos"},
+    "procrastinacao": {"nome": "Destrava", "emoji": "⚡", "quando": "quando uma tarefa está travada e você não consegue agir"},
+    "mental": {"nome": "Mente Poderosa", "emoji": "🧠", "quando": "bloqueios emocionais, ansiedade, meditação, PNL"},
+    "treino": {"nome": "Personal Trainer IA", "emoji": "💪", "quando": "rotina de exercícios e treino físico"},
+    "vendas": {"nome": "Mestre de Vendas Físicas", "emoji": "📦", "quando": "objetivos envolvendo vender produtos ou abrir negócio"},
+    "juridico": {"nome": "Consultor Jurídico", "emoji": "⚖️", "quando": "dúvidas sobre direitos e questões legais"},
+    "seguranca": {"nome": "Guardião Pessoal", "emoji": "🛡️", "quando": "segurança pessoal, residencial ou em viagens"},
+    "alimentacao": {"nome": "Chef Calórico", "emoji": "🍽️", "quando": "alimentação, dieta e cardápio"},
+    "estudos": {"nome": "Tutor de Concursos", "emoji": "📚", "quando": "estudar para concursos ou provas específicas"},
+    "carreira": {"nome": "Perfil Profissional", "emoji": "💼", "quando": "currículo, LinkedIn e posicionamento profissional"},
+}
+
+# --- MOTOR DE IA ---
+def vida_ia(prompt: str, system_extra: str = "") -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        notas_txt = ", ".join([f"{a}: {n}/10" for a, n in st.session_state.notas_areas_vida.items()])
+        system = f'''Você é um Gerente Pessoal de Vida com IA — um misto de coach, planejador e consultor estratégico.
+Usuário: {st.session_state.usuario}.
+Notas atuais das áreas da vida: {notas_txt}.
+{system_extra}
+
+PRINCÍPIOS:
+- Seja prático, direto e organizado — sempre estruture em etapas claras
+- Considere o contexto real da pessoa, nunca dê conselhos genéricos
+- Quando relevante, mencione no final que existe uma ferramenta complementar no ecossistema para aprofundar
+  (mas só se for genuinamente útil, não force isso)
+- Português do Brasil, tom de gerente pessoal experiente — confiável e organizado, não robótico'''
+
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": prompt},
+            ],
+            model="openai/gpt-oss-120b",
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"⚠️ Erro na API: {e}"
+
+def detectar_app_recomendado(texto: str) -> dict | None:
+    '''Analisa o texto e sugere qual app do ecossistema pode ajudar.'''
+    texto_lower = texto.lower()
+    palavras_chave = {
+        "financeiro": ["dívida", "orçamento", "investir", "investimento", "gastos", "dinheiro", "economizar"],
+        "procrastinacao": ["procrastin", "travad", "não consigo começar", "adiando", "trava"],
+        "mental": ["ansiedade", "medo", "bloqueio emocional", "estresse", "meditar"],
+        "treino": ["treino", "exercício", "academia", "musculação", "correr"],
+        "vendas": ["vender", "negócio", "empreender", "produto físico"],
+        "juridico": ["direito", "lei", "processo", "advogado", "contrato"],
+        "seguranca": ["segurança", "risco", "perigo", "trajeto seguro"],
+        "alimentacao": ["dieta", "cardápio", "alimentação", "comida", "caloria"],
+        "estudos": ["concurso", "prova", "estudar para"],
+        "carreira": ["currículo", "linkedin", "entrevista de emprego"],
+    }
+    for app_key, palavras in palavras_chave.items():
+        if any(p in texto_lower for p in palavras):
+            return ECOSSISTEMA_APPS[app_key]
+    return None
+
+# --- BARRA DE SALVAR ---
+def barra_salvar():
+    salvar_perfil_cache(st.session_state.usuario)
+    nome_usuario = st.session_state.usuario.lower().replace(' ', '_') or 'minha_sessao'
+    total = len(st.session_state.historico_planos)
+    habitos = len(st.session_state.habitos_ativos)
+
+    col_info, col_btn = st.columns([4, 2])
+    with col_info:
+        st.markdown(
+            f"<div style='background:#F0F4FF;border:1px solid #6366F1;border-radius:10px;"
+            f"padding:10px 14px;font-size:0.84em;color:#1A1A2E;line-height:1.6;'>"
+            f"💾 <strong>Antes de sair, salve seus dados no computador.</strong><br>"
+            f"<span style='color:#888;font-size:0.88em;'>{total} planos gerados · {habitos} hábitos ativos</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+    with col_btn:
+        st.download_button(
+            label="💾 SALVAR MEUS DADOS (.json)",
+            data=gerar_json_sessao(),
+            file_name=f"vida_inteligente_{nome_usuario}.json",
+            mime="application/json",
+            use_container_width=True,
+            key="vidainte11"
+        )
+    st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.markdown('''<style>
+    .dica-nav{font-size:0.72em;color:#94A3B8;text-align:center;padding:2px 0 6px;}
+    .dica-mobile{display:none;}
+    .dica-desktop{display:block;}
+    @media(max-width:768px){.dica-mobile{display:block;}.dica-desktop{display:none;}}
+    </style>
+    <div class='dica-nav dica-mobile'>👆 Deslize o dedo para navegar entre as abas</div>
+    <div class='dica-nav dica-desktop'>📋 Clique no ícone acima para abrir o menu completo</div>
+    ''', unsafe_allow_html=True)
+
+def renderizar_encaminhamento(app_info: dict):
+    st.markdown(f'''
+    <div class="encaminhamento-box">
+        💡 <strong>Dica do ecossistema:</strong> para se aprofundar nesse assunto, o app
+        <strong>{app_info['emoji']} {app_info['nome']}</strong> é especializado em {app_info['quando']}.
+        Se você tiver esse app disponível, vale a pena consultá-lo.
+    </div>
+    ''', unsafe_allow_html=True)
+
+# ============================================================
+# TELA: LOGIN
+# ============================================================
+if 'conquistas_desbloqueadas' not in st.session_state: st.session_state['conquistas_desbloqueadas'] = []
+if 'diario_entradas' not in st.session_state: st.session_state['diario_entradas'] = []
+if 'grandes_metas' not in st.session_state: st.session_state['grandes_metas'] = []
+if 'habitos_ativos' not in st.session_state: st.session_state['habitos_ativos'] = []
+if 'historico_planos' not in st.session_state: st.session_state['historico_planos'] = []
+if 'missoes_concluidas_hoje' not in st.session_state: st.session_state['missoes_concluidas_hoje'] = []
+if 'missoes_concluidas_hoje_temp' not in st.session_state: st.session_state['missoes_concluidas_hoje_temp'] = []
+if 'missoes_hoje' not in st.session_state: st.session_state['missoes_hoje'] = []
+if 'planos_salvos' not in st.session_state: st.session_state['planos_salvos'] = []
+if 'projetos_ativos' not in st.session_state: st.session_state['projetos_ativos'] = []
+if 'data_ultima_missao' not in st.session_state: st.session_state['data_ultima_missao'] = None
+
+if st.session_state.etapa == "Login":
+    st.markdown("# 🤖 VIDA INTELIGENTE")
+    st.markdown("<div class=\\'card\\'><b>🔒 ACESSO RESTRITO A CLIENTES DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
+    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
+    with st.container():
+        nome  = st.text_input("Seu Nome:", key="nome_login")
+        chave = st.text_input("🔑 Sua Chave API da Groq:", type="password", key="chave_login")
+        arq_j = st.file_uploader("📂 Carregar dados salvos (.json):", type=["json"], key="upload_login")
+        dados_login = json.load(arq_j) if arq_j else None
+        if st.button("✨ ENTRAR", key="btn_entrar_login"):
+            if len(nome.strip()) < 2:
+                st.warning("Digite um nome com pelo menos 2 caracteres.")
+            elif chave.strip():
+                st.session_state.usuario = nome.strip()
+                st.session_state.api_key = chave
+                if dados_login: carregar_json_sessao(dados_login)
+                st.session_state.etapa = "App"
+                st.rerun()
+            else:
+                st.warning("Preencha nome e chave API.")
+
+elif st.session_state.etapa == "App":
+
+
+
+    # TABS — navegação nativa
+    _tab_Home, _tab_Objetivos, _tab_Planejamento, _tab_MissaoDia, _tab_Projetos, _tab_Tempo, _tab_Habitos, _tab_Diario, _tab_Metas, _tab_Crise, _tab_Revisao, _tab_Relatorio, _tab_Conquistas, _tab_Decisoes = st.tabs(['🏠 Painel da Vida', '🎯 Objetivos Inteligent', '📅 Planejamento Intelig', '🚀 Missão do Dia', '📋 Organizador de Proje', '⏰ Organizador do Tempo', '🔥 Hábitos', '📖 Diário Inteligente', '🏆 Grandes Metas', '🚨 Modo Crise', '🌙 Revisão Noturna', '📈 Relatório Semanal', '🎖️ Sistema de Conquista', '❤️ Central de Decisões'])
+
+    # ── BARRA SALVAR — aparece em todas as abas ──
+    with st.expander("💾 Salvar / Carregar meus dados", expanded=False):
+        _bsc1, _bsc2 = st.columns(2)
+        with _bsc1:
+            import json as _jsv
+            _dsv = {k: st.session_state.get(k) for k in list(st.session_state.keys()) if not k.startswith('_') and k not in ('api_key',)}
+            st.download_button("💾 Baixar meus dados (.json)",
+                data=_jsv.dumps(_dsv, ensure_ascii=False, indent=2, default=str),
+                file_name=f"dados_{st.session_state.get('usuario','user')}.json",
+                mime="application/json", key="dl_barra_sv_vidainte")
+        with _bsc2:
+            _fupsv = st.file_uploader("📂 Carregar dados salvos:", type=["json"], key="ul_barra_sv_vidainte", label_visibility="collapsed")
+            if _fupsv:
+                try:
+                    import json as _jld
+                    for _k2,_v2 in _jld.loads(_fupsv.read().decode()).items():
+                        if _k2 not in ('api_key','etapa'): st.session_state[_k2] = _v2
+                    st.success("✅ Dados restaurados!"); st.rerun()
+                except: st.error("Arquivo inválido.")
+
+
+    with _tab_Home:
+            col_u, col_r = st.columns([3, 1])
+            with col_u:
+                st.title(f"Olá, {st.session_state.usuario}! 🧠")
+                st.markdown("<span class='badge'>Gerente Pessoal Ativo</span>", unsafe_allow_html=True)
+            with col_r:
+                if st.button("🚪 Sair", key="vidainte3"):
+                    for k in list(st.session_state.keys()):
+                        del st.session_state[k]
+                    st.rerun()
+
+            if len(st.session_state.historico_planos) == 0:
+                st.markdown('''<div style="background:#FEF3C7;border:2px solid #F59E0B;border-radius:12px;
+                padding:12px 18px;margin-bottom:4px;color:#000;font-size:0.9em;font-weight:600;">
+                ⚠️ Seus dados não estão mais no servidor.
+                </div>''', unsafe_allow_html=True)
+                arq_home = st.file_uploader("Carregar meus dados salvos (.json):", type=["json"], key="upload_home")
+                if arq_home is not None:
+                    try:
+                        dados_home = json.load(arq_home)
+                        carregar_json_sessao(dados_home)
+                        salvar_perfil_cache(st.session_state.usuario)
+                        st.success("✅ Dados recuperados!")
+                        st.rerun()
+                    except Exception:
+                        st.error("Arquivo inválido.")
+
+            st.markdown("### 🏠 Painel da Vida")
+            st.markdown("Avalie de 0 a 10 cada área. Isso alimenta todos os planos que a IA cria para você.")
+
+            col_a, col_b = st.columns(2)
+            for i, area in enumerate(AREAS_VIDA):
+                col = col_a if i % 2 == 0 else col_b
+                with col:
+                    nota_atual = st.session_state.notas_areas_vida.get(area, 5)
+                    cor = "#22C55E" if nota_atual >= 7 else ("#B45309" if nota_atual >= 4 else "#B91C1C")
+                    st.markdown(f'''
+                    <div class="area-vida-box">
+                        <div class="area-vida-header">
+                            <span>{EMOJI_AREA[area]} {area}</span>
+                            <span class="area-vida-nota" style="color:{cor};">{nota_atual}/10</span>
+                        </div>
+                        <div class="barra-bg"><div class="barra-fill" style="width:{nota_atual*10}%;background:{cor};"></div></div>
+                    </div>
+                    ''', unsafe_allow_html=True)
+                    nova_nota = st.slider(f"Ajustar {area}", 0, 10, nota_atual, key=f"slider_{area}", label_visibility="collapsed")
+                    st.session_state.notas_areas_vida[area] = nova_nota
+
+            media_geral = round(sum(st.session_state.notas_areas_vida.values()) / len(AREAS_VIDA), 1)
+            area_mais_fraca = min(st.session_state.notas_areas_vida, key=st.session_state.notas_areas_vida.get)
+
+            cor_media = "#22C55E" if media_geral >= 7 else ("#B45309" if media_geral >= 4 else "#B91C1C")
+            st.markdown(f'''
+            <div class="card" style="text-align:center;">
+                <div style="font-size:0.85em;color:#555;">SUA MÉDIA GERAL DE VIDA</div>
+                <div style="font-size:2.2em;font-weight:700;color:{cor_media};font-family:'Playfair Display',serif;">{media_geral}/10</div>
+                <div style="font-size:0.9em;color:#555;margin-top:4px;">🎯 Comece por: <strong>{EMOJI_AREA[area_mais_fraca]} {area_mais_fraca}</strong> — é sua área mais frágil agora</div>
+            </div>
+            ''', unsafe_allow_html=True)
+
+            if st.button("🎯 CRIAR PLANO PARA MELHORAR ESSA ÁREA", key="btn_plano_area_fraca", use_container_width=True):
+                st.session_state.pagina = "Objetivos"
+                st.session_state['area_foco_objetivo'] = area_mais_fraca
+                st.rerun()
+
+
+            c1, c2, c3, c4 = st.columns(4)
+            c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.historico_planos)}</div><div>Planos criados</div></div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.habitos_ativos)}</div><div>Hábitos ativos</div></div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.projetos_ativos)}</div><div>Projetos ativos</div></div>", unsafe_allow_html=True)
+            c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{len(st.session_state.conquistas_desbloqueadas)}</div><div>Conquistas</div></div>", unsafe_allow_html=True)
+
+            st.markdown("<div class='card'>💡 <em>'Você não precisa ser perfeito em todas as áreas. Precisa saber qual delas merece sua atenção agora.'</em></div>", unsafe_allow_html=True)
+
+            st.markdown("### 🗺️ O que cada painel faz")
+            guia = {
+                "🎯 Objetivos":      "Transforme um objetivo grande em metas anuais, mensais, semanais e missão diária",
+                "📅 Planejamento":   "Organiza seu dia automaticamente, prioriza tarefas e evita sobrecarga",
+                "🚀 Missão do Dia":  "Gera sua missão personalizada para hoje, todos os dias",
+                "📋 Projetos":       "Divide qualquer projeto grande (abrir empresa, casar, faculdade) em etapas pequenas",
+                "⏰ Tempo":          "Analisa onde você perde tempo e o que pode eliminar ou delegar",
+                "🔥 Hábitos":        "Cria e acompanha hábitos novos com lembretes e progresso",
+                "📖 Diário":         "Reflexão guiada no fim do dia — o que deu certo, o que melhorar",
+                "🏆 Grandes Metas":  "Acompanha metas de longo prazo — casa, carro, faculdade, aposentadoria",
+                "🚨 Modo Crise":     "Quando a vida sai do controle, reorganiza toda a rotina com você",
+                "🌙 Revisão Noturna":"Antes de dormir, revisa o que foi cumprido e ajusta amanhã",
+                "📈 Relatório":      "Todo domingo, mostra sua evolução da semana",
+                "🎖️ Conquistas":     "Acompanhe as marcas que você já desbloqueou",
+                "❤️ Decisões":       "Tire dúvidas importantes — mudar de emprego, comprar algo, fazer um curso",
+            }
+            for aba, desc in guia.items():
+                st.markdown(f"**{aba}** — {desc}")
+
+            if st.session_state.historico_planos:
+                st.markdown("### 🕐 Últimos Planos")
+                for item in reversed(st.session_state.historico_planos[-4:]):
+                    st.markdown(
+                        f"<div class='hist-item'><span class='badge'>{item['tipo']}</span> "
+                        f"<small style='color:#888'>{item['data']}</small><br>"
+                        f"<small>{item.get('titulo', '')[:80]}</small></div>", unsafe_allow_html=True)
+
+        # ========================
+        # OBJETIVOS INTELIGENTES
+        # ========================
+
+    with _tab_Objetivos:
+            st.header("🎯 Objetivos Inteligentes")
+            st.markdown("Diga o que você quer alcançar. A IA transforma em um plano com etapas anuais, mensais, semanais e diárias.")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                objetivo = st.text_area("💭 O que você quer alcançar?", height=100,
+                    value=f"Quero melhorar minha área de {st.session_state.get('area_foco_objetivo','')}" if st.session_state.get('area_foco_objetivo') else "",
+                    placeholder="ex: Quero comprar uma casa, Quero emagrecer 15kg, Quero abrir meu negócio...", key="vidainte10")
+                prazo = st.selectbox("📅 Prazo desejado:", ["3 meses", "6 meses", "1 ano", "2 anos", "5 anos"], key="vidainte4")
+            with col2:
+                contexto_obj = st.text_area("📋 Contexto atual:", height=100,
+                    placeholder="ex: Tenho R$2.000/mês de renda livre, trabalho CLT, moro de aluguel...", key="vidainte9")
+                tempo_disp = st.selectbox("⏰ Tempo disponível por dia para isso:", ["15-30 min", "30min-1h", "1-2h", "2h+"], key="vidainte5")
+
+            if st.button("🎯 CRIAR MEU PLANO COMPLETO", key="vidainte6"):
+                if objetivo.strip():
+                    with st.spinner("Transformando seu objetivo em um plano..."):
+                        prompt = (
+                            f"Transforme este objetivo em um plano estruturado completo.\\n"
+                            f"Objetivo: {objetivo}. Prazo: {prazo}. Contexto: {contexto_obj or 'não informado'}.\\n"
+                            f"Tempo disponível por dia: {tempo_disp}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🎯 PLANO: {objetivo.upper()}\\n"
+                            f"Prazo: {prazo}\\n\\n"
+                            f"📅 OBJETIVO ANUAL:\\n[o que precisa estar pronto em 12 meses, ou no prazo total se menor]\\n\\n"
+                            f"📆 OBJETIVOS MENSAIS:\\n[divida em marcos mensais — quantos meses fizerem sentido no prazo]\\n\\n"
+                            f"📋 OBJETIVOS SEMANAIS (primeiras 4 semanas):\\n[ações semanais concretas]\\n\\n"
+                            f"☀️ MISSÃO DIÁRIA (o que fazer hoje):\\n[3-5 ações pequenas e imediatas, considerando {tempo_disp} disponível]\\n\\n"
+                            f"⚠️ MAIOR RISCO DE FALHAR NESSE PLANO:\\n[seja honesto sobre o que pode travar essa pessoa]\\n\\n"
+                            f"✅ COMO MEDIR PROGRESSO:\\n[indicador simples para acompanhar]"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_objetivos_vidain1'] = str(res)
+                        salvar_plano("Objetivo", objetivo, res)
+                        st.session_state['objetivo_temp'] = res
+                        app_sugerido = detectar_app_recomendado(objetivo)
+                        if app_sugerido:
+                            st.session_state['app_sugerido_objetivo'] = app_sugerido
+                else:
+                    st.warning("Descreva seu objetivo.")
+
+            if st.session_state.get('objetivo_temp'):
+                st.markdown(f"<div class='card'>{st.session_state['objetivo_temp']}</div>", unsafe_allow_html=True)
+                if st.session_state.get('app_sugerido_objetivo'):
+                    renderizar_encaminhamento(st.session_state['app_sugerido_objetivo'])
+
+                col_dl, col_sv = st.columns(2)
+                with col_dl:
+                    st.download_button("📋 Baixar plano (.txt)", data=st.session_state['objetivo_temp'],
+                        file_name="objetivo.txt", mime="text/plain", use_container_width=True, key="vidainte8")
+                with col_sv:
+                    if st.button("❤️ Salvar plano", use_container_width=True, key="vidainte7"):
+                        st.session_state.planos_salvos.append({
+                            'tipo': 'Objetivo', 'titulo': objetivo if 'objetivo' in dir() else '',
+                            'conteudo': st.session_state['objetivo_temp'],
+                            'data': datetime.now().strftime('%d/%m %H:%M'),
+                        })
+                        st.success("❤️ Salvo!")
+
+        # ========================
+        # PLANEJAMENTO INTELIGENTE
+        # ========================
+
+    with _tab_Planejamento:
+            st.header("📅 Planejamento Inteligente")
+            st.markdown("Organize seu dia — a IA prioriza e evita sobrecarga.")
+
+            tarefas_dia = st.text_area("📝 Liste suas tarefas de hoje (uma por linha):", height=150,
+                placeholder="Responder e-mails do trabalho\\nLevar filho ao médico\\nEstudar inglês 30min\\nPagar contas\\nTreinar...", key="vidainte7_d2")
+            col1, col2 = st.columns(2)
+            with col1:
+                horas_disp_plan = st.selectbox("⏰ Horas disponíveis hoje:", ["2 horas","4 horas","6 horas","8 horas","10+ horas"], key="vidainte8_d2")
+            with col2:
+                energia_hoje = st.select_slider("🔋 Sua energia hoje:", options=["Muito baixa","Baixa","Normal","Alta","Muito alta"], value="Normal", key="vidainte1")
+
+            if st.button("📅 ORGANIZAR MEU DIA", key="vidainte9_d2"):
+                if tarefas_dia.strip():
+                    with st.spinner("Organizando seu dia..."):
+                        prompt = (
+                            f"Organize este dia de forma inteligente.\\n"
+                            f"Tarefas: {tarefas_dia}\\n"
+                            f"Horas disponíveis: {horas_disp_plan}. Energia hoje: {energia_hoje}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📅 SEU DIA ORGANIZADO\\n\\n"
+                            f"🔴 PRIORIDADE MÁXIMA (faça primeiro):\\n[tarefas com justificativa]\\n\\n"
+                            f"🟡 IMPORTANTE (faça hoje, mas não primeiro):\\n[tarefas]\\n\\n"
+                            f"🟢 PODE ESPERAR (se sobrar tempo):\\n[tarefas]\\n\\n"
+                            f"⏰ CRONOGRAMA SUGERIDO:\\n[horário aproximado para cada bloco, considerando {horas_disp_plan} e energia {energia_hoje}]\\n\\n"
+                            f"⚠️ SINAL DE SOBRECARGA:\\n[se a lista for grande demais para o tempo disponível, avise isso claramente e sugira o que cortar]"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_planejamento_vidain2'] = str(res)
+                        salvar_plano("Planejamento", "Organização do dia", res)
+                        st.session_state['plan_temp'] = res
+                else:
+                    st.warning("Liste suas tarefas.")
+
+            if st.session_state.get('plan_temp'):
+                st.markdown(f"<div class='card-purple'>{st.session_state['plan_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['plan_temp'], file_name="planejamento_dia.txt", mime="text/plain", key="vidainte10_d2")
+
+        # ========================
+        # MISSÃO DO DIA
+        # ========================
+
+    with _tab_MissaoDia:
+            st.header("🚀 Missão do Dia")
+            hoje = datetime.now().strftime('%d/%m/%Y')
+
+            if st.session_state.data_ultima_missao != hoje or not st.session_state.missoes_hoje:
+                st.markdown("Gere sua missão personalizada para hoje.")
+                foco_missao = st.text_input("🎯 Algo específico em foco hoje? (opcional):", placeholder="ex: tenho uma reunião importante, preciso estudar para a prova...", key="vidainte11_d2")
+
+                if st.button("🚀 GERAR MINHA MISSÃO DE HOJE", key="vidainte12"):
+                    with st.spinner("Montando sua missão..."):
+                        notas_txt = ", ".join([f"{a} ({n}/10)" for a, n in st.session_state.notas_areas_vida.items() if n < 6])
+                        prompt = (
+                            f"Gere a missão do dia para {st.session_state.usuario}.\\n"
+                            f"Áreas que precisam de atenção (nota baixa): {notas_txt or 'nenhuma área crítica'}.\\n"
+                            f"Foco específico de hoje: {foco_missao or 'nenhum específico'}.\\n"
+                            f"Hábitos ativos: {', '.join(st.session_state.habitos_ativos) if st.session_state.habitos_ativos else 'nenhum cadastrado'}.\\n\\n"
+                            f"Gere de 4 a 6 itens de missão para HOJE — pequenos, concretos e realizáveis.\\n"
+                            f"Misture: 1 item da área mais fraca, 1 hábito ativo (se houver), 1 item do foco específico (se houver), e itens gerais de produtividade/bem-estar.\\n\\n"
+                            f"FORMATO — responda APENAS com a lista, uma ação por linha, sem numeração, começando com verbo no infinitivo:\\n"
+                            f"Exemplo de formato esperado:\\nFinalizar o orçamento mensal\\nCaminhar 30 minutos\\nEstudar inglês por 20 minutos\\nLigar para o cliente pendente"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_missaodia_vidain3'] = str(res)
+                        itens = [linha.strip() for linha in res.split('\\n') if linha.strip() and len(linha.strip()) > 5][:6]
+                        st.session_state.missoes_hoje = itens
+                        st.session_state.missoes_concluidas_hoje_temp = []
+                        st.session_state.data_ultima_missao = hoje
+                        salvar_plano("Missão Diária", hoje, res)
+                        st.rerun()
+            else:
+                st.markdown(f"#### 📅 Missão de hoje — {hoje}")
+                concluidas_hoje = st.session_state.get('missoes_concluidas_hoje_temp', [])
+
+                for i, item in enumerate(st.session_state.missoes_hoje):
+                    feito = i in concluidas_hoje
+                    col_check, col_texto = st.columns([1, 9])
+                    with col_check:
+                        marcado = st.checkbox("", value=feito, key=f"missao_check_{i}_{hoje}")
+                    with col_texto:
+                        estilo = "text-decoration:line-through;opacity:0.5;" if marcado else ""
+                        st.markdown(f"<div class='missao-item' style='{estilo}'>{'✅' if marcado else '⬜'} {item}</div>", unsafe_allow_html=True)
+
+                    if marcado and i not in concluidas_hoje:
+                        concluidas_hoje.append(i)
+                    elif not marcado and i in concluidas_hoje:
+                        concluidas_hoje.remove(i)
+
+                st.session_state.missoes_concluidas_hoje_temp = concluidas_hoje
+                pct = round(len(concluidas_hoje) / len(st.session_state.missoes_hoje) * 100) if st.session_state.missoes_hoje else 0
+
+                st.markdown(f'''
+                <div class="missao-dia-box">
+                    <div style="text-align:center;font-size:1.3em;font-weight:700;">{pct}% concluído hoje</div>
+                    <div class="barra-bg"><div class="barra-fill" style="width:{pct}%;background:#6366F1;"></div></div>
+                </div>
+                ''', unsafe_allow_html=True)
+
+                if pct == 100 and hoje not in st.session_state.missoes_concluidas_hoje:
+                    st.session_state.missoes_concluidas_hoje.append(hoje)
+                    st.success("🎉 Missão do dia 100% concluída! Isso conta para suas conquistas semanais.")
+                    for nova in verificar_conquistas():
+                        st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista!</strong><br>{nova['emoji']} {nova['nome']}</div>", unsafe_allow_html=True)
+
+                if st.button("🔄 Gerar nova missão (substitui a de hoje)", key="vidainte13"):
+                    st.session_state.missoes_hoje = []
+                    st.rerun()
+
+        # ========================
+        # ORGANIZADOR DE PROJETOS
+        # ========================
+
+    with _tab_Projetos:
+            st.header("📋 Organizador de Projetos")
+            st.markdown("Qualquer projeto grande — divida em etapas pequenas e gerenciáveis.")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                nome_projeto = st.text_input("📋 Nome do projeto:", placeholder="ex: Abrir minha empresa, Reformar a casa, Casar...", key="vidainte14")
+                tipo_projeto = st.selectbox("📂 Tipo:", ["Abrir empresa","Reformar casa","Casamento","Viagem","Construção","Faculdade","Concurso","Empreender","Mudança de cidade","Outro"], key="vidainte15")
+            with col2:
+                prazo_projeto = st.text_input("📅 Prazo desejado:", placeholder="ex: 6 meses, até dezembro...", key="prazo_projeto_input")
+                orcamento_projeto = st.text_input("💰 Orçamento disponível (opcional):", placeholder="ex: R$10.000, ainda não defini...", key="vidainte16")
+
+            detalhes_projeto = st.text_area("📝 Detalhes do projeto:", height=100,
+                placeholder="ex: Quero abrir uma loja de roupas femininas no bairro onde moro...", key="vidainte6_d2")
+
+            if st.button("📋 DIVIDIR PROJETO EM ETAPAS", key="vidainte17"):
+                if nome_projeto.strip():
+                    with st.spinner("Organizando seu projeto..."):
+                        prompt = (
+                            f"Divida este projeto em etapas pequenas e gerenciáveis.\\n"
+                            f"Projeto: {nome_projeto}. Tipo: {tipo_projeto}. Prazo: {prazo_projeto or 'não definido'}.\\n"
+                            f"Orçamento: {orcamento_projeto or 'não definido'}. Detalhes: {detalhes_projeto or 'não informado'}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"📋 PROJETO: {nome_projeto.upper()}\\n\\n"
+                            f"🗺️ FASES DO PROJETO:\\n\\n"
+                            f"FASE 1 — [nome da fase]:\\n[etapas dessa fase, cada uma com prazo estimado]\\n\\n"
+                            f"FASE 2 — [nome da fase]:\\n[etapas]\\n\\n"
+                            f"FASE 3 — [nome da fase]:\\n[etapas]\\n\\n"
+                            f"[continue com quantas fases fizerem sentido]\\n\\n"
+                            f"💰 ESTIMATIVA DE CUSTOS POR FASE:\\n[se houver orçamento envolvido]\\n\\n"
+                            f"⚠️ MAIORES RISCOS DESSE TIPO DE PROJETO:\\n[riscos comuns e como mitigar]\\n\\n"
+                            f"✅ PRIMEIRA AÇÃO CONCRETA (comece hoje):\\n[1 ação imediata]"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_projetos_vidain4'] = str(res)
+                        salvar_plano("Projeto", nome_projeto, res)
+                        if nome_projeto not in st.session_state.projetos_ativos:
+                            st.session_state.projetos_ativos.append(nome_projeto)
+                        st.session_state['projeto_temp'] = res
+                        for nova in verificar_conquistas():
+                            st.session_state.setdefault('toasts_pendentes', []).append(nova)
+                else:
+                    st.warning("Informe o nome do projeto.")
+
+            if st.session_state.get('projeto_temp'):
+                st.markdown(f"<div class='card-orange'>{st.session_state['projeto_temp']}</div>", unsafe_allow_html=True)
+                for toast in st.session_state.pop('toasts_pendentes', []):
+                    st.markdown(f"<div class='toast-conquista'>🎉 <strong>Nova conquista!</strong><br>{toast['emoji']} {toast['nome']}</div>", unsafe_allow_html=True)
+
+                col_dl, col_sv = st.columns(2)
+                with col_dl:
+                    st.download_button("📋 Baixar (.txt)", data=st.session_state['projeto_temp'],
+                        file_name=f"projeto_{nome_projeto.replace(' ','_') if 'nome_projeto' in dir() else ''}.txt",
+                        mime="text/plain", use_container_width=True, key="vidainte5_d2")
+                with col_sv:
+                    if st.button("❤️ Salvar", key="sv_proj", use_container_width=True):
+                        st.session_state.planos_salvos.append({
+                            'tipo': 'Projeto', 'titulo': nome_projeto if 'nome_projeto' in dir() else '',
+                            'conteudo': st.session_state['projeto_temp'],
+                            'data': datetime.now().strftime('%d/%m %H:%M'),
+                        })
+                        st.success("❤️ Salvo!")
+
+            if st.session_state.projetos_ativos:
+                st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+                st.markdown("### 📂 Seus projetos ativos")
+                for p in st.session_state.projetos_ativos:
+                    st.markdown(f"<span class='badge'>📋 {p}</span>", unsafe_allow_html=True)
+
+        # ========================
+        # ORGANIZADOR DO TEMPO
+        # ========================
+
+    with _tab_Tempo:
+            st.header("⏰ Organizador do Tempo")
+            st.markdown("Analise onde seu tempo está indo e o que pode mudar.")
+
+            rotina_atual = st.text_area("📝 Descreva sua rotina típica de um dia:", height=150,
+                placeholder="ex: Acordo 7h, trabalho das 8h às 18h, chego em casa e fico no celular até dormir às 23h...", key="vidainte4_d2")
+
+            if st.button("⏰ ANALISAR MEU TEMPO", key="vidainte18"):
+                if rotina_atual.strip():
+                    with st.spinner("Analisando sua rotina..."):
+                        prompt = (
+                            f"Analise esta rotina e identifique onde o tempo está sendo desperdiçado.\\n"
+                            f"Rotina: {rotina_atual}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"⏰ ANÁLISE DO SEU TEMPO\\n\\n"
+                            f"📊 MAPA DO SEU DIA:\\n[resumo das horas em cada tipo de atividade]\\n\\n"
+                            f"🕳️ ONDE VOCÊ ESTÁ PERDENDO TEMPO:\\n[identifique especificamente, com base no que foi descrito]\\n\\n"
+                            f"⏱️ TEMPO LIVRE REAL DISPONÍVEL:\\n[estimativa de quanto tempo de qualidade sobra por dia]\\n\\n"
+                            f"🗑️ O QUE PODE SER ELIMINADO:\\n[atividades de baixo valor identificadas]\\n\\n"
+                            f"🤝 O QUE PODE SER DELEGADO:\\n[se aplicável]\\n\\n"
+                            f"✅ COMO RECUPERAR PELO MENOS 1 HORA POR DIA:\\n[sugestão concreta e realista]"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_tempo_vidain5'] = str(res)
+                        salvar_plano("Tempo", "Análise de rotina", res)
+                        st.session_state['tempo_temp'] = res
+                else:
+                    st.warning("Descreva sua rotina.")
+
+            if st.session_state.get('tempo_temp'):
+                st.markdown(f"<div class='card-blue'>{st.session_state['tempo_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['tempo_temp'], file_name="analise_tempo.txt", mime="text/plain", key="vidainte19")
+
+        # ========================
+        # HÁBITOS
+        # ========================
+
+    with _tab_Habitos:
+            st.header("🔥 Hábitos")
+            st.markdown("Crie e acompanhe hábitos novos.")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                novo_habito = st.text_input("➕ Novo hábito:", placeholder="ex: Beber 2L de água, Ler 10 páginas, Meditar 5min...", key="vidainte20")
+                if st.button("➕ Adicionar hábito", key="vidainte21"):
+                    if novo_habito.strip() and novo_habito not in st.session_state.habitos_ativos:
+                        st.session_state.habitos_ativos.append(novo_habito)
+                        verificar_conquistas()
+                        st.success(f"✅ Hábito '{novo_habito}' adicionado!")
+                        st.rerun()
+            with col2:
+                if st.session_state.habitos_ativos:
+                    remover = st.selectbox("➖ Remover hábito:", ["Nenhum"] + st.session_state.habitos_ativos, key="vidainte22")
+                    if st.button("➖ Remover", key="vidainte23") and remover != "Nenhum":
+                        st.session_state.habitos_ativos.remove(remover)
+                        st.rerun()
+
+            if st.session_state.habitos_ativos:
+                st.markdown("### 📋 Seus hábitos ativos")
+                for h in st.session_state.habitos_ativos:
+                    st.markdown(f"<span class='badge-verde'>🔥 {h}</span>", unsafe_allow_html=True)
+
+                if st.button("🧠 PEDIR ESTRATÉGIA PARA CONSOLIDAR MEUS HÁBITOS", key="vidainte24"):
+                    with st.spinner("Criando estratégia..."):
+                        prompt = (
+                            f"Crie uma estratégia para consolidar estes hábitos: {', '.join(st.session_state.habitos_ativos)}.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🔥 ESTRATÉGIA DE HÁBITOS\\n\\n"
+                            f"[Para cada hábito, sugira: melhor horário, gatilho para lembrar, e como começar pequeno]\\n\\n"
+                            f"📅 COMO ENCAIXAR TODOS NA ROTINA SEM SOBRECARREGAR:\\n[ordem sugerida e timing]\\n\\n"
+                            f"💡 DICA DE CONSISTÊNCIA:\\n[1 técnica prática para não desistir nas primeiras semanas]"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_habitos_vidain6'] = str(res)
+                        salvar_plano("Hábitos", "Estratégia de hábitos", res)
+                        st.session_state['habito_estrategia_temp'] = res
+
+                if st.session_state.get('habito_estrategia_temp'):
+                    st.markdown(f"<div class='card-green'>{st.session_state['habito_estrategia_temp']}</div>", unsafe_allow_html=True)
+            else:
+                st.info("Nenhum hábito cadastrado ainda. Adicione o primeiro acima!")
+
+        # ========================
+        # DIÁRIO INTELIGENTE
+        # ========================
+
+    with _tab_Diario:
+            st.header("📖 Diário Inteligente")
+            st.markdown("Reflexão guiada de fim de dia.")
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                deu_certo = st.text_area("✅ O que deu certo hoje?", height=100, key="vidainte25")
+            with col2:
+                deu_errado = st.text_area("❌ O que deu errado hoje?", height=100, key="vidainte26")
+            with col3:
+                melhorar = st.text_area("🔧 Como melhorar amanhã?", height=100, key="vidainte27")
+
+            if st.button("📖 SALVAR REFLEXÃO DO DIA", key="vidainte28"):
+                if deu_certo.strip() or deu_errado.strip() or melhorar.strip():
+                    entrada = {
+                        'data': datetime.now().strftime('%d/%m/%Y %H:%M'),
+                        'deu_certo': deu_certo, 'deu_errado': deu_errado, 'melhorar': melhorar,
+                    }
+                    st.session_state.diario_entradas.append(entrada)
+                    verificar_conquistas()
+                    st.success("📖 Reflexão salva no seu diário!")
+                    st.rerun()
+                else:
+                    st.warning("Preencha pelo menos um campo.")
+
+            if st.session_state.diario_entradas:
+                st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+                st.markdown(f"### 📚 Suas reflexões ({len(st.session_state.diario_entradas)})")
+                for i, entrada in enumerate(reversed(st.session_state.diario_entradas[-10:])):
+                    with st.expander(f"📖 {entrada['data']}"):
+                        if entrada.get('deu_certo'): st.markdown(f"**✅ Deu certo:** {entrada.get('deu_certo', '')}")
+                        if entrada.get('deu_errado'): st.markdown(f"**❌ Deu errado:** {entrada.get('deu_errado', '')}")
+                        if entrada.get('melhorar'): st.markdown(f"**🔧 Melhorar:** {entrada.get('melhorar', '')}")
+
+        # ========================
+        # GRANDES METAS
+        # ========================
+
+    with _tab_Metas:
+            st.header("🏆 Grandes Metas")
+            st.markdown("Acompanhe metas de longo prazo.")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                nome_meta = st.text_input("🏆 Nome da meta:", placeholder="ex: Comprar casa própria, Trocar de carro...", key="vidainte29")
+                valor_meta = st.number_input("💰 Valor total necessário (R$):", min_value=0.0, value=0.0, step=1000.0, key="vidainte30")
+            with col2:
+                valor_atual = st.number_input("💰 Quanto você já tem (R$):", min_value=0.0, value=0.0, step=500.0, key="vidainte31")
+                prazo_meta = st.text_input("📅 Prazo desejado:", placeholder="ex: 2 anos, até 2028...", key="prazo_meta_input")
+
+            if st.button("🏆 ADICIONAR/ATUALIZAR META", key="vidainte32"):
+                if nome_meta.strip() and valor_meta > 0:
+                    meta_existente = next((m for m in st.session_state.grandes_metas if m['nome'] == nome_meta), None)
+                    if meta_existente:
+                        meta_existente['valor_total'] = valor_meta
+                        meta_existente['valor_atual'] = valor_atual
+                        meta_existente['prazo'] = prazo_meta
+                    else:
+                        st.session_state.grandes_metas.append({
+                            'nome': nome_meta, 'valor_total': valor_meta, 'valor_atual': valor_atual, 'prazo': prazo_meta,
+                        })
+                    verificar_conquistas()
+                    st.success("🏆 Meta salva!")
+                    st.rerun()
+                else:
+                    st.warning("Informe nome e valor total da meta.")
+
+            if st.session_state.grandes_metas:
+                st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+                st.markdown("### 📊 Suas Metas")
+                for meta in st.session_state.grandes_metas:
+                    pct = min(100, round(meta.get('valor_atual', '') / meta['valor_total'] * 100)) if meta['valor_total'] > 0 else 0
+                    falta = max(0, meta['valor_total'] - meta.get('valor_atual', ''))
+                    st.markdown(f'''
+                    <div class="card">
+                        <strong>🏆 {meta['nome']}</strong> — {meta.get('prazo','sem prazo definido')}<br>
+                        <div class="barra-bg" style="margin:8px 0;"><div class="barra-fill" style="width:{pct}%;background:#6366F1;"></div></div>
+                        R$ {meta.get('valor_atual', ''):,.2f} de R$ {meta['valor_total']:,.2f} ({pct}%) — faltam R$ {falta:,.2f}
+                    </div>
+                    ''', unsafe_allow_html=True)
+
+        # ========================
+        # MODO CRISE
+        # ========================
+
+    with _tab_Crise:
+            st.header("🚨 Modo Crise")
+            st.markdown("Quando a vida sai do controle, vamos reorganizar tudo com você.")
+
+            situacao_crise = st.text_area("O que está acontecendo?", height=120,
+                placeholder="ex: Perdi o emprego, Tive um problema de saúde, Aconteceu algo grave na família...", key="vidainte3_d2")
+
+            if st.button("🚨 REORGANIZAR MINHA ROTINA", key="vidainte33"):
+                if situacao_crise.strip():
+                    with st.spinner("Reorganizando com cuidado..."):
+                        notas_txt = ", ".join([f"{a}: {n}/10" for a, n in st.session_state.notas_areas_vida.items()])
+                        prompt = (
+                            f"SITUAÇÃO DE CRISE: {situacao_crise}\\n"
+                            f"Notas atuais das áreas de vida: {notas_txt}\\n\\n"
+                            f"A pessoa está passando por um momento difícil. Ajude a reorganizar a vida dela com cuidado e realismo.\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"🚨 ACOLHIMENTO:\\n[1-2 frases reconhecendo a dificuldade, sem minimizar nem dramatizar]\\n\\n"
+                            f"⚡ PRIORIDADES IMEDIATAS (próximos 7 dias):\\n[o que precisa de atenção AGORA — geralmente segurança financeira/emocional básica]\\n\\n"
+                            f"📅 ROTINA SIMPLIFICADA TEMPORÁRIA:\\n[uma rotina mais leve e realista para esse momento, não a rotina ideal]\\n\\n"
+                            f"🎯 O QUE PODE ESPERAR:\\n[o que NÃO precisa ser resolvido agora, para reduzir a sobrecarga mental]\\n\\n"
+                            f"🤝 REDE DE APOIO:\\n[sugestões de quem/onde buscar apoio para esse tipo de situação]\\n\\n"
+                            f"💪 PRÓXIMO PASSO QUANDO ESTABILIZAR:\\n[1 frase sobre o que vem depois, com esperança realista]"
+                        )
+                        res = vida_ia(prompt, "MODO CRISE: seja acolhedor, realista e prático. A pessoa precisa de clareza e cuidado, não de pressão para produtividade.")
+                        if res: st.session_state['res_crise_vidain7'] = str(res)
+                        salvar_plano("Modo Crise", situacao_crise[:60], res)
+                        st.session_state['crise_temp'] = res
+                        app_sugerido = detectar_app_recomendado(situacao_crise)
+                        if app_sugerido:
+                            st.session_state['app_sugerido_crise'] = app_sugerido
+                else:
+                    st.warning("Descreva a situação.")
+
+            if st.session_state.get('crise_temp'):
+                st.markdown(f"<div class='card-red'>{st.session_state['crise_temp']}</div>", unsafe_allow_html=True)
+                if st.session_state.get('app_sugerido_crise'):
+                    renderizar_encaminhamento(st.session_state['app_sugerido_crise'])
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['crise_temp'], file_name="modo_crise.txt", mime="text/plain", key="vidainte34")
+
+        # ========================
+        # REVISÃO NOTURNA
+        # ========================
+
+    with _tab_Revisao:
+            st.header("🌙 Revisão Noturna")
+            st.markdown("Antes de dormir, vamos revisar o dia.")
+
+            cumpriu = st.radio("Você cumpriu sua missão de hoje?", ["Sim, totalmente","Parcialmente","Não consegui"], horizontal=True, key="vidainte35")
+            pendente = st.text_area("O que ficou pendente?", height=80, key="vidainte36")
+            mudar_amanha = st.text_area("O que deve mudar amanhã?", height=80, key="vidainte37")
+
+            if st.button("🌙 SALVAR REVISÃO E DORMIR EM PAZ", key="vidainte38"):
+                entrada = {
+                    'data': datetime.now().strftime('%d/%m/%Y %H:%M'),
+                    'tipo': 'revisao_noturna',
+                    'cumpriu': cumpriu, 'pendente': pendente, 'mudar_amanha': mudar_amanha,
+                }
+                st.session_state.diario_entradas.append(entrada)
+                verificar_conquistas()
+                st.success("🌙 Revisão salva. Bom descanso!")
+
+        # ========================
+        # RELATÓRIO SEMANAL
+        # ========================
+
+    with _tab_Relatorio:
+            st.header("📈 Relatório Semanal")
+
+            total_planos = len(st.session_state.historico_planos)
+            total_missoes = len(st.session_state.missoes_concluidas_hoje)
+            total_diario = len(st.session_state.diario_entradas)
+            total_habitos = len(st.session_state.habitos_ativos)
+
+            c1, c2, c3, c4 = st.columns(4)
+            c1.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_planos}</div><div>Planos criados</div></div>", unsafe_allow_html=True)
+            c2.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_missoes}</div><div>Dias com missão completa</div></div>", unsafe_allow_html=True)
+            c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_diario}</div><div>Reflexões no diário</div></div>", unsafe_allow_html=True)
+            c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{total_habitos}</div><div>Hábitos em acompanhamento</div></div>", unsafe_allow_html=True)
+
+            if st.button("📈 GERAR RELATÓRIO COMPLETO DA SEMANA", key="vidainte39"):
+                with st.spinner("Montando seu relatório..."):
+                    notas_txt = ", ".join([f"{a}: {n}/10" for a, n in st.session_state.notas_areas_vida.items()])
+                    ultimas_reflexoes = "; ".join([e.get('deu_certo','') + " " + e.get('deu_errado','') for e in st.session_state.diario_entradas[-7:]])
+                    prompt = (
+                        f"Gere um relatório semanal de evolução pessoal.\\n"
+                        f"Planos criados na semana: {total_planos}. Dias com missão completa: {total_missoes}.\\n"
+                        f"Notas atuais das áreas: {notas_txt}.\\n"
+                        f"Reflexões recentes do diário: {ultimas_reflexoes or 'sem reflexões recentes'}.\\n"
+                        f"Hábitos ativos: {', '.join(st.session_state.habitos_ativos) if st.session_state.habitos_ativos else 'nenhum'}.\\n\\n"
+                        f"FORMATO:\\n\\n"
+                        f"📈 RELATÓRIO SEMANAL — {st.session_state.usuario.upper()}\\n\\n"
+                        f"🏆 DESTAQUES DA SEMANA:\\n[reconheça o que foi bem]\\n\\n"
+                        f"⚠️ PADRÃO DE ATENÇÃO:\\n[algo que se repetiu e merece ajuste]\\n\\n"
+                        f"📊 EVOLUÇÃO POR ÁREA:\\n[comente brevemente as áreas com base nas notas]\\n\\n"
+                        f"🎯 FOCO PARA A PRÓXIMA SEMANA:\\n[1-2 prioridades claras]\\n\\n"
+                        f"💬 MENSAGEM DO SEU GERENTE PESSOAL:\\n[1-2 frases motivadoras e realistas para a próxima semana]"
+                    )
+                    res = vida_ia(prompt)
+                    if res: st.session_state['res_relatorio_vidain8'] = str(res)
+                    salvar_plano("Relatório Semanal", datetime.now().strftime('%d/%m/%Y'), res)
+                    st.session_state['relatorio_temp'] = res
+
+            if st.session_state.get('relatorio_temp'):
+                st.markdown(f"<div class='card-dark'>{st.session_state['relatorio_temp']}</div>", unsafe_allow_html=True)
+                st.download_button("📋 Baixar relatório (.txt)", data=st.session_state['relatorio_temp'], file_name="relatorio_semanal.txt", mime="text/plain", key="vidainte40")
+
+        # ========================
+        # SISTEMA DE CONQUISTAS
+        # ========================
+
+    with _tab_Conquistas:
+            st.header("🎖️ Sistema de Conquistas")
+
+            col_conq1, col_conq2 = st.columns(2)
+            for i, c in enumerate(CONQUISTAS_DEFINIDAS):
+                col = col_conq1 if i % 2 == 0 else col_conq2
+                desbloqueada = c['id'] in st.session_state.conquistas_desbloqueadas
+                classe = "conquista-card" if desbloqueada else "conquista-card conquista-bloqueada"
+                with col:
+                    st.markdown(f'''
+                    <div class="{classe}">
+                        <div class="conquista-emoji">{c['emoji'] if desbloqueada else '🔒'}</div>
+                        <div>
+                            <div style="font-weight:600;">{c['nome']}</div>
+                            <div style="font-size:0.78em;color:#888;">{'Desbloqueada' if desbloqueada else 'Bloqueada'}</div>
+                        </div>
+                    </div>
+                    ''', unsafe_allow_html=True)
+
+            pct_conquistas = round(len(st.session_state.conquistas_desbloqueadas) / len(CONQUISTAS_DEFINIDAS) * 100)
+            st.markdown(f"<div class='card' style='text-align:center;'>🎖️ Você desbloqueou <strong>{len(st.session_state.conquistas_desbloqueadas)}/{len(CONQUISTAS_DEFINIDAS)}</strong> conquistas ({pct_conquistas}%)</div>", unsafe_allow_html=True)
+
+        # ========================
+        # CENTRAL DE DECISÕES
+        # ========================
+
+    with _tab_Decisoes:
+            st.header("❤️ Central de Decisões")
+            st.markdown("Tem uma dúvida importante? Vamos analisar vantagens, riscos e impacto nos seus objetivos.")
+
+            duvida = st.text_area("💭 Qual decisão você está em dúvida?", height=100,
+                placeholder="ex: Mudo de emprego? Compro esse carro? Faço esse curso?", key="vidainte2")
+            contexto_decisao = st.text_area("📋 Contexto adicional:", height=80,
+                placeholder="ex: O novo emprego paga 20% mais mas é mais distante de casa...", key="vidainte1_d2")
+
+            if st.button("❤️ ANALISAR ESSA DECISÃO", key="vidainte41"):
+                if duvida.strip():
+                    with st.spinner("Analisando..."):
+                        notas_txt = ", ".join([f"{a}: {n}/10" for a, n in st.session_state.notas_areas_vida.items()])
+                        prompt = (
+                            f"Ajude a analisar esta decisão.\\n"
+                            f"Decisão: {duvida}\\nContexto: {contexto_decisao or 'não informado'}\\n"
+                            f"Notas atuais das áreas de vida da pessoa: {notas_txt}\\n\\n"
+                            f"FORMATO:\\n\\n"
+                            f"❤️ ANÁLISE DA DECISÃO\\n\\n"
+                            f"✅ VANTAGENS:\\n[liste com base no contexto]\\n\\n"
+                            f"⚠️ RISCOS E DESVANTAGENS:\\n[liste com honestidade]\\n\\n"
+                            f"💰 IMPACTO FINANCEIRO/PRÁTICO:\\n[se aplicável]\\n\\n"
+                            f"🎯 IMPACTO NOS SEUS OBJETIVOS DE VIDA:\\n[considerando as áreas que a pessoa já avaliou]\\n\\n"
+                            f"🧠 CAMINHO SUGERIDO:\\n[uma sugestão clara, mas deixando explícito que a decisão final é da pessoa]"
+                        )
+                        res = vida_ia(prompt)
+                        if res: st.session_state['res_decisoes_vidain9'] = str(res)
+                        salvar_plano("Decisão", duvida[:60], res)
+                        st.session_state['decisao_temp'] = res
+                        app_sugerido = detectar_app_recomendado(duvida + " " + contexto_decisao)
+                        if app_sugerido:
+                            st.session_state['app_sugerido_decisao'] = app_sugerido
+                else:
+                    st.warning("Descreva sua dúvida.")
+
+            if st.session_state.get('decisao_temp'):
+                st.markdown(f"<div class='card-pink'>{st.session_state['decisao_temp']}</div>", unsafe_allow_html=True)
+                if st.session_state.get('app_sugerido_decisao'):
+                    renderizar_encaminhamento(st.session_state['app_sugerido_decisao'])
+                st.markdown('''<div class="disclaimer">⚠️ Esta análise é um apoio à reflexão, não uma recomendação definitiva — a decisão final e a responsabilidade por ela são sempre suas.</div>''', unsafe_allow_html=True)
+                st.download_button("📋 Baixar (.txt)", data=st.session_state['decisao_temp'], file_name="analise_decisao.txt", mime="text/plain", key="vidainte42")
+
+    # --- RODAPÉ ---
+    st.markdown(
+        "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+        "© 2026 Vida Inteligente — Gerente Pessoal de Vida com IA · MeusAgentesIA.com.br"
+        "</div>", unsafe_allow_html=True
+    )
+
+# --- RODAPÉ ---
+st.markdown(
+    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
+    "</div>", unsafe_allow_html=True
+)
+
+""",
 }
 AGENTES = [
     {"id": "viagens",        "emoji": "🗺️",  "nome": "Guia de Viagens",    "categoria": "Viagens · Lazer",        "codigo": "guia_viagens",       "auth_key": "etapa",       "etapa_app": "App"},
@@ -15640,9 +24200,17 @@ AGENTES = [
     {"id": "ingles",         "emoji": "🇺🇸", "nome": "Nexus English",      "categoria": "Inglês · Idiomas",       "codigo": "nexus_english",      "auth_key": "etapa",       "etapa_app": "app"},
     {"id": "investigacao",   "emoji": "🔍",   "nome": "Sherlock IA",        "categoria": "Investigação · Análise", "codigo": "sherlock_ia",        "auth_key": "etapa",       "etapa_app": "App"},
     {"id": "financeiro",     "emoji": "💰",   "nome": "Oráculo Financeiro", "categoria": "Finanças · Dinheiro",    "codigo": "oraculo_financeiro", "auth_key": "autenticado", "etapa_app": True},
-    {"id": "relacionamentos","emoji": "💘",   "nome": "Conexão Magnética",  "categoria": "Relacionamentos · Amor", "codigo": "conexao_magnetica",  "auth_key": "etapa",       "etapa_app": "App"},
+    {"id": "seducao_ia",       "emoji": "⚡",  "nome": "Presença IA",         "categoria": "Charme · Relacionamentos", "codigo": "seducao_ia",       "auth_key": "etapa", "etapa_app": "App"},
     {"id": "invencoes",      "emoji": "💡",   "nome": "Invenções IA",       "categoria": "Inovação · Criatividade","codigo": "invencoes_ia",       "auth_key": "etapa",       "etapa_app": "App"},
     {"id": "nexus",          "emoji": "🚀",   "nome": "Nexus Launch",       "categoria": "Startups · Negócios",    "codigo": "nexus_launcher",     "auth_key": "etapa",       "etapa_app": "Escolha_Tipo"},
+    {"id": "consultor_jur",    "emoji": "⚖️",  "nome": "Consultor Jurídico",  "categoria": "Direito · Jurídico",       "codigo": "consultor_juridico","auth_key": "etapa", "etapa_app": "App"},
+    {"id": "mente_poderosa",   "emoji": "🧠",  "nome": "Mente Poderosa",      "categoria": "Saúde Mental · PNL",       "codigo": "mente_poderosa",   "auth_key": "etapa", "etapa_app": "App"},
+    {"id": "pet_inteligente",  "emoji": "🐾",  "nome": "Pet Inteligente",     "categoria": "Pets · Animais",           "codigo": "pet_inteligente",  "auth_key": "etapa", "etapa_app": "App"},
+    {"id": "motos_classicas",  "emoji": "🏍️", "nome": "Clássicas Motos IA",  "categoria": "Motos · Clássicos",        "codigo": "classicas_motos_ia","auth_key": "etapa", "etapa_app": "App"},
+    {"id": "classicos_ia",     "emoji": "🎬",  "nome": "Clássicos IA",        "categoria": "Cultura · Clássicos",      "codigo": "classicos_ia",     "auth_key": "etapa", "etapa_app": "App"},
+    {"id": "guardiao",         "emoji": "🛡️", "nome": "Guardião Pessoal",    "categoria": "Segurança · Proteção",     "codigo": "guardiao_pessoal", "auth_key": "etapa", "etapa_app": "App"},
+    {"id": "tenda_ravengar",   "emoji": "🔮",  "nome": "Tenda do Ravengar",   "categoria": "Misticismo · Esotérico",   "codigo": "tenda_ravengar",   "auth_key": "etapa", "etapa_app": "App"},
+    {"id": "vida_inteligente", "emoji": "🧭",  "nome": "Vida Inteligente",    "categoria": "Vida · Planejamento",      "codigo": "vida_inteligente", "auth_key": "etapa", "etapa_app": "App"},
 ]
 
 
