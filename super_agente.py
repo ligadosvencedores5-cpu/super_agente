@@ -3444,6 +3444,30 @@ for _rc_r in st.session_state.get('historico_cardapios', []):
     _w_chef_r.writerow([str(_rc_r.get(c,'') if isinstance(_rc_r,dict) else '') for c in ['data','tipo','nome','objetivo','calorias']])
 st.download_button('⬇️ Baixar histórico (.csv)', data=_buf_chef_r.getvalue().encode('utf-8-sig'), file_name='Chef_Calorico.csv', mime='text/csv', use_container_width=True, key='dl_chef_root')
 
+
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_chef_cal, datetime as _dt_exp_chef_cal
+    _hist_historico_cardapios = st.session_state.get('historico_cardapios', [])
+    _txt_lines = []
+    for _item in _hist_historico_cardapios:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_chef_cal = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_chef_cal.encode('utf-8'),
+    file_name="Chef_Calorico_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_chef_cal_txt"
+)
+
+
 # --- RODAPÉ ---
 st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
@@ -7280,6 +7304,15 @@ elif st.session_state.etapa == "app":
             else:
                 st.warning("Descreva o que você quer aprender.")
 
+
+# ── EXPORTAR HISTÓRICO TXT ──
+_hist_ne = st.session_state.get('aula_historico', [])
+_txt_ne = "\n".join(f"[{m.get('role','')}] {m.get('content','')}" for m in _hist_ne if isinstance(m,dict)) or "Nenhuma aula registrada ainda."
+st.download_button("⬇️ Baixar histórico completo (.txt)", data=_txt_ne.encode('utf-8'),
+    file_name="Nexus_English_historico.txt", mime="text/plain",
+    use_container_width=True, key="dl_exp_nexusen_txt")
+
+
 # --- RODAPÉ ---
 st.markdown(
     "<div style='text-align:center;color:#CBD5E1;font-size:0.8em;margin-top:60px;'>"
@@ -8817,1257 +8850,841 @@ st.markdown(
 
 """,
     "oraculo_financeiro": """
-# [hub] import streamlit as st
-# [hub] from groq import Groq
-import pandas as pd
-# [hub] from datetime import datetime, date
-import math
+import streamlit as st
+from datetime import date, datetime
+import json
 
-# ─────────────────────────────────────────────
-# CONFIG PÁGINA
-# ─────────────────────────────────────────────
-# set_page_config removido pelo super_agente
+# ══════════════════════════════════════════════════
+# ORÁCULO FINANCEIRO IA — v2.0
+# Consultor financeiro pessoal com 12 módulos
+# ══════════════════════════════════════════════════
 
 st.markdown('''
 <style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-[data-testid="stToolbar"] {visibility: hidden;}
-[data-testid="stDecoration"] {visibility: hidden;}
-[data-testid="stStatusWidget"] {visibility: hidden;}
+.of-header{background:linear-gradient(135deg,#1a3c5e,#0d6e3f);
+  padding:2rem;border-radius:12px;color:#fff;text-align:center;margin-bottom:1.5rem;}
+.of-header h1{font-size:1.8rem;margin:0;font-weight:700;}
+.of-header p{margin:.4rem 0 0;opacity:.85;font-size:.95rem;}
+.kpi-box{background:#f0f7ff;border-left:4px solid #1a3c5e;
+  border-radius:8px;padding:1rem;margin:.4rem 0;}
+.kpi-box.verde{background:#f0fff4;border-left-color:#0d6e3f;}
+.kpi-box.vermelho{background:#fff0f0;border-left-color:#c0392b;}
+.kpi-box.amarelo{background:#fffbf0;border-left-color:#d4a017;}
+.kpi-label{font-size:.78rem;color:#555;font-weight:600;text-transform:uppercase;}
+.kpi-value{font-size:1.4rem;font-weight:700;color:#1a3c5e;margin-top:.2rem;}
+.modulo-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;
+  padding:1rem;margin:.5rem 0;cursor:pointer;transition:box-shadow .2s;}
+.tag{display:inline-block;background:#e8f4f8;color:#1a3c5e;
+  border-radius:20px;padding:.2rem .7rem;font-size:.75rem;font-weight:600;margin:.2rem;}
+.tag.urgente{background:#fff0e8;color:#c0392b;}
+.tag.ok{background:#e8fff0;color:#0d6e3f;}
+.secao{background:#f8f9fa;border-radius:10px;padding:1.2rem;margin:.8rem 0;}
 </style>
 ''', unsafe_allow_html=True)
 
-
-# ─────────────────────────────────────────────
-# DESIGN
-# ─────────────────────────────────────────────
-st.markdown('''
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-    .stApp { background-color:#F6FBF4; font-family:'Inter',sans-serif; }
-    [data-testid="stSidebar"] { display:none; }
-
-    .stTextInput>div>div>input, .stTextArea>div>textarea,
-    .stSelectbox>div>div>div, .stNumberInput>div>div>input {
-        background-color:#FFFFFF !important; color:#1A1A2E !important;
-        border:1px solid #CED4DA !important; font-family:'Inter',sans-serif !important;
-    }
-
-    .stButton>button {
-        width:100%; border-radius:10px; height:3.2em;
-        background:linear-gradient(135deg,#16A34A,#15803D) !important; color:white !important;
-        font-weight:600; border:none; box-shadow:2px 2px 8px rgba(0,0,0,0.1);
-        font-family:'Inter',sans-serif !important; transition:all 0.2s ease;
-    }
-    .stButton>button:hover { background:linear-gradient(135deg,#15803D,#166534) !important; transform:translateY(-1px); }
-    .stApp .stButton>button, .stApp .stButton>button p,
-    .stApp .stButton>button span, .stApp .stButton>button div { color:white !important; }
-
-    .stApp h1, .stApp h2, .stApp h3 { color:#14532D !important; font-family:'Inter',sans-serif !important; font-weight:700 !important; }
-
-    .card { background:linear-gradient(135deg,#F0FDF4,#DCFCE7); padding:20px; border-radius:14px; border:1px solid #86EFAC; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card, .stApp .card p, .stApp .card span, .stApp .card div, .stApp .card strong, .stApp .card em { color:#14532D !important; }
-
-    .card-dark { background:linear-gradient(135deg,#DCFCE7,#D1FAE5); padding:20px; border-radius:14px; border:1px solid #6EE7B7; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-dark, .stApp .card-dark p, .stApp .card-dark span, .stApp .card-dark div, .stApp .card-dark strong { color:#14532D !important; }
-
-    .card-green { background:linear-gradient(135deg,#DCFCE7,#BBF7D0); padding:20px; border-radius:14px; border:1px solid #4ADE80; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-green, .stApp .card-green p, .stApp .card-green span, .stApp .card-green div { color:#14532D !important; }
-
-    .card-blue { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); padding:20px; border-radius:14px; border:1px solid #93C5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-blue, .stApp .card-blue p, .stApp .card-blue span, .stApp .card-blue div { color:#1E3A8A !important; }
-
-    .card-red { background:linear-gradient(135deg,#FFF5F5,#FEE2E2); padding:20px; border-radius:14px; border:1px solid #FECACA; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-red, .stApp .card-red p, .stApp .card-red span, .stApp .card-red div { color:#7F1D1D !important; }
-
-    .card-yellow { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:18px; border-radius:12px; border:1px solid #FCD34D; margin-bottom:12px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-yellow, .stApp .card-yellow p, .stApp .card-yellow span, .stApp .card-yellow div { color:#78350F !important; }
-
-    .stat-box { background:#FFFFFF; border-radius:12px; padding:16px; text-align:center; border:1px solid #86EFAC; }
-    .stApp .stat-box div, .stApp .stat-box span, .stApp .stat-box p { color:#14532D !important; }
-    .stApp .stat-numero, .stat-numero { font-size:2em; font-weight:700; color:#166534 !important; }
-
-    .hist-item { background:#FFFFFF; border-radius:10px; padding:12px 16px; margin-bottom:8px; border-left:4px solid #86EFAC; }
-    .stApp .hist-item, .stApp .hist-item p, .stApp .hist-item span, .stApp .hist-item div, .stApp .hist-item small { color:#14532D !important; }
-
-    .badge { background:#166534; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
-    .badge-verde { background:#059669; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
-    .badge-amarelo { background:#B45309; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
-    .badge-azul { background:#1D4ED8; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
-    .badge-roxo { background:#6D28D9; color:white !important; padding:4px 12px; border-radius:20px; font-size:0.78em; font-weight:600; display:inline-block; margin:2px; }
-
-    .divider { border:none; height:1px; background:linear-gradient(to right,transparent,#86EFAC,transparent); margin:18px 0; }
-
-    .chat-user { background:#FFFFFF; border:1px solid #86EFAC; border-radius:12px 12px 4px 12px; padding:12px 16px; margin:8px 0; }
-    .stApp .chat-user, .stApp .chat-user p, .stApp .chat-user span, .stApp .chat-user div { color:#14532D !important; }
-
-    .chat-persona { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
-    .stApp .chat-persona, .stApp .chat-persona p, .stApp .chat-persona span, .stApp .chat-persona div { color:#14532D !important; }
-
-    .questao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:18px; margin-bottom:14px; }
-    .stApp .questao-box, .stApp .questao-box p, .stApp .questao-box span, .stApp .questao-box div { color:#14532D !important; }
-
-    .avaliacao-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:14px; padding:18px; margin-bottom:12px; }
-    .stApp .avaliacao-box, .stApp .avaliacao-box p, .stApp .avaliacao-box span, .stApp .avaliacao-box div { color:#14532D !important; }
-
-    .meta-box { background:#FFFFFF; border:2px solid #86EFAC; border-radius:12px; padding:16px; text-align:center; margin:10px 0; }
-    .stApp .meta-box, .stApp .meta-box div, .stApp .meta-box span { color:#14532D !important; }
-    .stApp .meta-numero { font-size:2em; font-weight:700; color:#166534 !important; }
-
-    .chat-scroll-container { max-height:40vh; overflow-y:auto; display:flex; flex-direction:column; scroll-behavior:smooth; padding-bottom:4px; }
-    .chat-scroll-container > * { flex-shrink:0; }
-
-    /* ── CLASSES USADAS NO APP ── */
-    .card-purple { background:linear-gradient(135deg,#F5F3FF,#EDE9FE); padding:20px; border-radius:14px; border:1px solid #C4B5FD; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-purple, .stApp .card-purple p, .stApp .card-purple span, .stApp .card-purple div { color:#3B0764 !important; }
-
-    .card-gold { background:linear-gradient(135deg,#FFFBEB,#FEF3C7); padding:20px; border-radius:14px; border:1px solid #FCD34D; margin-bottom:14px; white-space:normal; word-wrap:break-word; }
-    .stApp .card-gold, .stApp .card-gold p, .stApp .card-gold span, .stApp .card-gold div { color:#78350F !important; }
-
-    .alert-info { background:#EFF6FF; border:1px solid #93C5FD; border-radius:8px; padding:10px 14px; font-size:13px; color:#1E40AF !important; margin-bottom:8px; }
-    .alert-warn { background:#FFFBEB; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; font-size:13px; color:#92400E !important; margin-bottom:8px; }
-    .alert-danger { background:#FFF5F5; border:1px solid #FECACA; border-radius:8px; padding:10px 14px; font-size:13px; color:#991B1B !important; margin-bottom:8px; }
-    .alert-success { background:#F0FDF4; border:1px solid #86EFAC; border-radius:8px; padding:10px 14px; font-size:13px; color:#166534 !important; margin-bottom:8px; }
-
-    .metric-box { background:#FFFFFF; border-radius:12px; padding:14px 10px; text-align:center; border:1px solid #E5E7EB; }
-    .metric-label { font-size:11px; color:#6B7280; margin-bottom:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
-    .metric-value { font-size:20px; font-weight:700; color:#1A1A2E; }
-    .metric-sub { font-size:11px; color:#9CA3AF; margin-top:2px; }
-
-    .prog-wrap { background:#E5E7EB; border-radius:999px; height:7px; overflow:hidden; margin:5px 0; }
-    .prog-fill { height:100%; border-radius:999px; transition:width 0.4s ease; }
-
-    .badge-green  { background:#059669; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .badge-gold   { background:#B45309; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .badge-red    { background:#DC2626; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-    .badge-purple { background:#7C3AED; color:white !important; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; display:inline-block; }
-
-    .list-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #F3F4F6; font-size:13px; }
-    .list-item:last-child { border-bottom:none; }
-
-    .chat-ai { background:#F6FBF4; border:1px solid #86EFAC; border-radius:4px 12px 12px 12px; padding:12px 16px; margin:8px 0; }
-    .stApp .chat-ai, .stApp .chat-ai p, .stApp .chat-ai span, .stApp .chat-ai div { color:#14532D !important; }
-
-    </style>
-''', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# PERSISTÊNCIA LOCAL (JSON)
-# ─────────────────────────────────────────────
-
-# ── CACHE — persiste enquanto servidor não reiniciar ──────────
-@st.cache_resource
-def get_cache_oraculo():
-    return {"perfis": {}}   # {nome_user: dados}
-
-_cache = get_cache_oraculo()
-
-def salvar_perfil_cache(nome: str, dados: dict):
-    '''Salva no cache enquanto servidor estiver vivo.'''
-    _cache["perfis"][nome] = dados.copy()
-
-def carregar_perfil_cache(nome: str) -> dict | None:
-    return _cache["perfis"].get(nome)
-
-def perfis_salvos() -> list:
-    return list(_cache["perfis"].keys())
-
-# ─────────────────────────────────────────────
-# INICIALIZAÇÃO DE ESTADOS
-# ─────────────────────────────────────────────
-def init():
+# ── INIT SESSION STATE ──
+def _init():
     defaults = {
-        "autenticado": False,
-        "nome_user": "",
-        "api_key": "",
-        "renda_total": 0.0,
-        "outras_rendas": [],
-        "gastos": [],
-        "metas": [],
-        "contas_fixas": [],
-        "dividas": [],
-        "historico_chat": [],
-        "categorias_gastos": ["Alimentação","Transporte","Moradia","Saúde","Lazer","Educação","Vestuário","Tecnologia","Outros"],
-        "nivel_evolucao": "Nível 1: Iniciante",
-        "perfil_decisao": "Não Identificado",
-        "reserva_emergencia": 0.0,
-        "patrimonio_itens": [],
-        "config_meta_reserva": 6,
-        "taxa_invest_anual": 10.0,
+        "of_modulo": "inicio",
+        "of_renda": 0.0,
+        "of_outras_rendas": [],
+        "of_gastos": [],
+        "of_dividas": [],
+        "of_investimentos": [],
+        "of_patrimonios": [],
+        "of_metas": [],
+        "of_reserva_atual": 0.0,
+        "of_perfil": None,
+        "of_diagnostico_feito": False,
+        "of_historico_chat": [],
+        "of_idade": 0,
+        "of_dependentes": 0,
+        "of_renda_estavel": True,
+        "of_economia_historico": [],
     }
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
 
-init()
+_init()
 
-# ─────────────────────────────────────────────
-# UTILITÁRIOS
-# ─────────────────────────────────────────────
-def fmt(v):
+# ── FUNÇÕES DE CÁLCULO ──
+def calc_renda_total():
+    r = st.session_state.of_renda
+    for o in st.session_state.of_outras_rendas:
+        r += o.get("valor", 0)
+    return r
+
+def calc_gastos_total():
+    return sum(g.get("valor", 0) for g in st.session_state.of_gastos)
+
+def calc_saldo():
+    return calc_renda_total() - calc_gastos_total()
+
+def calc_taxa_poupanca():
+    rt = calc_renda_total()
+    if rt <= 0:
+        return 0
+    return (calc_saldo() / rt) * 100
+
+def calc_divida_total():
+    return sum(d.get("saldo", 0) for d in st.session_state.of_dividas)
+
+def calc_parcelas_total():
+    return sum(d.get("parcela", 0) for d in st.session_state.of_dividas)
+
+def calc_investimentos_total():
+    return sum(i.get("valor", 0) for i in st.session_state.of_investimentos)
+
+def calc_patrimonio_bruto():
+    ativos = st.session_state.of_reserva_atual + calc_investimentos_total()
+    for p in st.session_state.of_patrimonios:
+        ativos += p.get("valor", 0)
+    return ativos
+
+def calc_patrimonio_liquido():
+    return calc_patrimonio_bruto() - calc_divida_total()
+
+def fmt_brl(v):
     return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-def pct(v, total):
-    return round(v / total * 100, 1) if total > 0 else 0.0
-
-def barra(valor_pct, cor="#7C6FFF"):
-    p = max(0, min(100, valor_pct))
-    return f'<div class="prog-wrap"><div class="prog-fill" style="width:{p}%;background:{cor};"></div></div>'
-
-def get_totais():
-    renda  = st.session_state.renda_total + sum(x["valor"] for x in st.session_state.outras_rendas)
-    gv     = sum(x["valor"] for x in st.session_state.gastos)
-    gf     = sum(x["valor"] for x in st.session_state.contas_fixas if x.get("ativa", True))
-    gm     = sum(x["mensal"] for x in st.session_state.metas)
-    div_m  = sum(x["parcela_mensal"] for x in st.session_state.dividas)
-    saldo  = renda - gv - gf - gm - div_m
-    if renda > 0:
-        r = saldo / renda
-        if r >= 0.4:    st.session_state.nivel_evolucao = "Nível 5: Independente 🏆"
-        elif r >= 0.25: st.session_state.nivel_evolucao = "Nível 4: Estratégico 🎯"
-        elif r >= 0.1:  st.session_state.nivel_evolucao = "Nível 3: Organizado ✅"
-        elif r >= 0:    st.session_state.nivel_evolucao = "Nível 2: Equilibrado ⚖️"
-        else:           st.session_state.nivel_evolucao = "Nível 1: Déficit 🚨"
-    return renda, gv, gf, gm, div_m, saldo
-
-# ─────────────────────────────────────────────
-# IA — CONSULTOR
-# ─────────────────────────────────────────────
-def contexto_financeiro():
-    renda, gv, gf, gm, div_m, saldo = get_totais()
-    meta_res = gf * st.session_state.config_meta_reserva
-    cats = {}
-    for g in st.session_state.gastos:
-        cats[g["tipo"]] = cats.get(g["tipo"], 0) + g["valor"]
-    cats_txt    = "\\\\n".join(f"  • {c}: R${v:.2f} ({pct(v, renda)}%)" for c, v in cats.items()) or "  Nenhum"
-    dividas_txt = "\\\\n".join(f"  • {d['nome']}: saldo R${d['valor_total']-d['valor_pago']:.2f}, juros {d['juros_mensal']}%/mês" for d in st.session_state.dividas) or "  Nenhuma"
-    metas_txt   = "\\\\n".join(f"  • {m['nome']}: {fmt(m.get('atual',0))}/{fmt(m['valor'])}" for m in st.session_state.metas) or "  Nenhuma"
-    return f'''
-DADOS DO USUÁRIO:
-Renda total: R${renda:.2f}
-Despesas fixas: R${gf:.2f} ({pct(gf,renda)}%)
-Gastos variáveis: R${gv:.2f} ({pct(gv,renda)}%)
-Parcelas de dívidas: R${div_m:.2f}
-Metas mensais: R${gm:.2f} ({pct(gm,renda)}%)
-Saldo livre: R${saldo:.2f} ({pct(saldo,renda)}%)
-Reserva atual: R${st.session_state.reserva_emergencia:.2f} (meta: R${meta_res:.2f})
-Gastos por categoria:\\\\n{cats_txt}
-Dívidas:\\\\n{dividas_txt}
-Metas:\\\\n{metas_txt}
-'''
-
-def consultor(prompt, historico):
+def parse_brl(s):
     try:
-        client = Groq(api_key=st.session_state.api_key)
-        sys_msg = f'''Você é o Oráculo Financeiro — mentor de decisões financeiras pessoais. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
-Filosofia: direto, estratégico, sem rodeios. Aponta problemas sem medo.
-Nomenclatura: Blindagem = fixas+reserva | Expansão = metas/investimentos | Estabilidade = saldo livre.
-Regra 50/30/20: 50% necessidades, 30% desejos, 20% poupança.
-{contexto_financeiro()}
-Nível: {st.session_state.nivel_evolucao} | Perfil: {st.session_state.perfil_decisao}
-Responda em no máximo 4 parágrafos curtos. Sugira 1 ação concreta ao final.
-Termine sempre com: "⚠️ Análise baseada nos seus dados. Consulte um profissional certificado para decisões de grande impacto."
-'''
-        msgs = [{"role": "system", "content": sys_msg}]
-        for m in historico[-10:]:
-            msgs.append(m)
-        msgs.append({"role": "user", "content": prompt})
-        r = client.chat.completions.create(messages=msgs, model="openai/gpt-oss-120b", max_tokens=700, temperature=0.7)
-        return r.choices[0].message.content
-    except Exception as e:
-        return f"⚠️ Oráculo indisponível. Verifique sua chave API. Erro: {str(e)[:80]}"
+        return float(str(s).replace("R$","").replace(".","").replace(",",".").strip())
+    except:
+        return 0.0
 
-# ─────────────────────────────────────────────
-# TELA DE LOGIN
-# ─────────────────────────────────────────────
-# Garantia extra: init() já rodou acima, mas asseguramos valores padrão corretos
-if 'aporte_inv_salvo' not in st.session_state or st.session_state['aporte_inv_salvo'] is None:
-    st.session_state['aporte_inv_salvo'] = 0.0
-else:
-    st.session_state['aporte_inv_salvo'] = float(st.session_state['aporte_inv_salvo'])
-if 'cap_ini_inv_salvo' not in st.session_state or st.session_state['cap_ini_inv_salvo'] is None:
-    st.session_state['cap_ini_inv_salvo'] = 0.0
-else:
-    st.session_state['cap_ini_inv_salvo'] = float(st.session_state['cap_ini_inv_salvo'])
-if 'outras_rendas' not in st.session_state or st.session_state['outras_rendas'] is None:
-    st.session_state['outras_rendas'] = []
-if 'patrimonio_itens' not in st.session_state or st.session_state['patrimonio_itens'] is None:
-    st.session_state['patrimonio_itens'] = []
-if 'reserva_emergencia' not in st.session_state or st.session_state['reserva_emergencia'] is None:
-    st.session_state['reserva_emergencia'] = 0.0
-if 'config_meta_reserva' not in st.session_state or st.session_state['config_meta_reserva'] is None:
-    st.session_state['config_meta_reserva'] = 6
-if 'taxa_invest_anual' not in st.session_state or st.session_state['taxa_invest_anual'] is None:
-    st.session_state['taxa_invest_anual'] = 10.0
-if 'nivel_evolucao' not in st.session_state or st.session_state['nivel_evolucao'] is None:
-    st.session_state['nivel_evolucao'] = "Nível 1: Iniciante"
-if 'perfil_decisao' not in st.session_state or st.session_state['perfil_decisao'] is None:
-    st.session_state['perfil_decisao'] = "Não Identificado"
+def saldo_disponivel():
+    return calc_saldo() - calc_parcelas_total()
 
-if not st.session_state.autenticado:
-    st.markdown('''
-    <div style="text-align:center; padding:30px 20px 20px 20px;">
-      <div style="font-size:56px; margin-bottom:8px;">💰</div>
-      <h1 style="font-size:28px; margin:0; color:#1A1A2E;">Oráculo Financeiro</h1>
-      <p style="font-size:13px; color:#4B5563; letter-spacing:2px; margin-top:6px;">ECONOMIZE • GERENCIE • INVISTA • CRESÇA</p>
-    </div>
-    ''', unsafe_allow_html=True)
+# ── HEADER ──
+st.markdown('''
+<div class="of-header">
+  <h1>🔮 Oráculo Financeiro IA</h1>
+  <p>Seu consultor financeiro pessoal — análise, diagnóstico e plano de ação</p>
+</div>
+''', unsafe_allow_html=True)
 
-    st.markdown("<div class='card'><b>🔒 ACESSO RESTRITO A ASSOCIADOS DO MEUSAGENTESIA.COM.BR</b><br>🔗 <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;font-weight:700;text-decoration:underline;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
-    st.info("💻 **Dica:** Pela complexidade dos agentes, no computador a experiência é mais agradável.")
-
-    with st.form("login"):
-        nome  = st.text_input("👤 Seu nome", key="input_nome_login")
-        chave = st.text_input("🔑 Chave Groq API", type="password", key="input_chave_login")
-
-        # ── UPLOADER ─────────────────────
-        st.markdown('''<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;
-        padding:10px 14px;font-size:0.85em;color:#92400E;line-height:1.6;margin-top:8px;">
-        📥 <strong>Seus dados sumiram?</strong> Isso acontece quando o servidor reinicia.<br>
-        Selecione abaixo o arquivo <strong>.json</strong> que você salvou antes — tudo volta como era.
-        </div>''', unsafe_allow_html=True)
-
-        if st.form_submit_button("🚀 ENTRAR NO SISTEMA", key="oraculoffsb501"):
-            if nome and chave:
-                st.session_state.nome_user   = nome
-                st.session_state.api_key     = chave
-                st.session_state.autenticado = True
-                st.rerun()
-            else:
-                st.error("Preencha nome e chave API.")
-
-    st.markdown("🔑 Não tem chave Groq? Crie grátis em <a href='https://console.groq.com/keys' target='_blank' style='color:#5B50E8;font-weight:600;'>console.groq.com/keys</a>", unsafe_allow_html=True)
-    st.stop()
-
-# ─────────────────────────────────────────────
-# SISTEMA LOGADO
-# ─────────────────────────────────────────────
-renda, gv, gf, gm, div_m, saldo = get_totais()
-
-# HEADER
-c1, c2, c3 = st.columns([3, 2, 1])
-with c1:
-    st.markdown(f"<h1 style='margin:0;font-size:24px;color:#1A1A2E;'>💰 Oráculo de {st.session_state.nome_user}</h1>", unsafe_allow_html=True)
-with c2:
-    nivel = st.session_state.nivel_evolucao
-    cls   = "badge-green" if ("5" in nivel or "4" in nivel) else ("badge-gold" if ("3" in nivel or "2" in nivel) else "badge-red")
-    st.markdown(f"<div style='padding:14px 0;text-align:right;'><span class='{cls}' style='padding:6px 14px;font-size:12px;'>{nivel}</span></div>", unsafe_allow_html=True)
-with c3:
-    if st.button("🚪 Sair", key="oraculof1"):
-        st.session_state.autenticado = False
-        st.rerun()
-
-dados_atuais = {k: st.session_state.get(k) for k in st.session_state.keys()}
-salvar_perfil_cache(st.session_state.nome_user, dados_atuais)
-
-st.markdown("<hr>", unsafe_allow_html=True)
-
-# TABS
+# ── NAVEGAÇÃO POR TABS ──
 tabs = st.tabs([
-    "🏠 Dashboard", "🧠 Consultor IA", "💵 Renda",
-    "💸 Gastos", "🎯 Metas", "🛡️ Fixas",
-    "💳 Dívidas", "🏦 Reserva", "📈 Investimentos",
-    "⚖️ Patrimônio", "📊 Relatório", "⚙️ Config"
+    "🏠 Início",
+    "📊 Diagnóstico",
+    "💸 Gastos",
+    "💳 Dívidas",
+    "🎯 Metas",
+    "🏦 Patrimônio",
+    "📈 Investimentos",
+    "🤖 Oráculo IA",
+    "⬇️ Exportar"
 ])
 
-(tab_dash, tab_ia, tab_renda, tab_gastos, tab_metas,
- tab_fixas, tab_div, tab_res, tab_inv,
- tab_pat, tab_rel, tab_cfg) = tabs
+# ══════════════════════════════════════════════════
+# TAB 0 — INÍCIO / PAINEL
+# ══════════════════════════════════════════════════
+with tabs[0]:
+    renda = calc_renda_total()
+    gastos = calc_gastos_total()
+    saldo = calc_saldo()
+    taxa = calc_taxa_poupanca()
+    parcelas = calc_parcelas_total()
+    disp = saldo_disponivel()
 
-# ══════════════════════════════════════════════
-# 1. DASHBOARD
-# ══════════════════════════════════════════════
-with tab_dash:
+    if renda > 0:
+        # KPIs principais
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            cls = "verde" if saldo > 0 else "vermelho"
+            st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Renda Mensal</div><div class="kpi-value">{fmt_brl(renda)}</div></div>', unsafe_allow_html=True)
+        with col2:
+            st.markdown(f'<div class="kpi-box vermelho"><div class="kpi-label">Despesas</div><div class="kpi-value">{fmt_brl(gastos)}</div></div>', unsafe_allow_html=True)
+        with col3:
+            cls = "verde" if saldo > 0 else "vermelho"
+            st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Sobra Mensal</div><div class="kpi-value">{fmt_brl(saldo)}</div></div>', unsafe_allow_html=True)
+        with col4:
+            cls = "verde" if taxa >= 20 else ("amarelo" if taxa >= 10 else "vermelho")
+            st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Taxa de Poupança</div><div class="kpi-value">{taxa:.1f}%</div></div>', unsafe_allow_html=True)
 
-    # ── AVISO SE DADOS SUMIRAM ────────────────────────────────
-    tem_dados_dash = (
-        len(st.session_state.gastos) > 0 or
-        len(st.session_state.contas_fixas) > 0 or
-        st.session_state.renda_total > 0
-    )
-    if not tem_dados_dash:
-        st.markdown('''<div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:12px;
-        padding:12px 18px;margin-bottom:4px;color:#92400E;font-size:0.9em;font-weight:600;">
-        ⚠️ Seus dados não estão mais no servidor.
-        </div>''', unsafe_allow_html=True)
+        if parcelas > 0:
+            col5, col6 = st.columns(2)
+            with col5:
+                st.markdown(f'<div class="kpi-box vermelho"><div class="kpi-label">Total em Parcelas/Mês</div><div class="kpi-value">{fmt_brl(parcelas)}</div></div>', unsafe_allow_html=True)
+            with col6:
+                cls = "verde" if disp > 0 else "vermelho"
+                st.markdown(f'<div class="kpi-box {cls}"><div class="kpi-label">Disponível após dívidas</div><div class="kpi-value">{fmt_brl(disp)}</div></div>', unsafe_allow_html=True)
 
+        st.divider()
 
-    # Alerta de situação
-    if renda == 0:
-        st.markdown('<div class="alert-info">ℹ️ Comece cadastrando sua renda na aba <b>Renda</b>.</div>', unsafe_allow_html=True)
-    elif saldo < 0:
-        st.markdown(f'<div class="alert-danger">🚨 <b>Déficit de {fmt(abs(saldo))}!</b> Você gasta mais do que ganha. Ação imediata necessária.</div>', unsafe_allow_html=True)
-    elif saldo < renda * 0.1:
-        st.markdown(f'<div class="alert-warn">⚠️ Margem muito baixa ({pct(saldo,renda)}%). Recomendado: mínimo 20% livre.</div>', unsafe_allow_html=True)
+        # Diagnóstico rápido
+        st.subheader("🔍 Diagnóstico Rápido")
+        alertas = []
+        positivos = []
+
+        if taxa < 10 and saldo > 0:
+            alertas.append("Taxa de poupança abaixo de 10% — revise os gastos.")
+        if taxa >= 20:
+            positivos.append(f"Excelente! Você poupa {taxa:.0f}% da renda.")
+        if saldo < 0:
+            alertas.append("**Atenção:** Gastos superam a renda. Situação de déficit.")
+
+        divida_total = calc_divida_total()
+        if divida_total > 0:
+            comprometimento = (parcelas / renda * 100) if renda > 0 else 0
+            if comprometimento > 30:
+                alertas.append(f"Comprometimento de {comprometimento:.0f}% da renda com dívidas — alto risco.")
+            elif comprometimento > 0:
+                alertas.append(f"{comprometimento:.0f}% da renda comprometida com parcelas.")
+
+        reserva = st.session_state.of_reserva_atual
+        essenciais = sum(g.get("valor",0) for g in st.session_state.of_gastos if g.get("cat") in ["Moradia","Alimentação","Saúde","Transporte"])
+        reserva_ideal = essenciais * 6 if essenciais > 0 else gastos * 6
+        if reserva < reserva_ideal * 0.5:
+            alertas.append(f"Reserva de emergência insuficiente. Ideal: {fmt_brl(reserva_ideal)}.")
+        elif reserva >= reserva_ideal:
+            positivos.append("Reserva de emergência adequada.")
+
+        if len(st.session_state.of_metas) > 0:
+            positivos.append(f"{len(st.session_state.of_metas)} meta(s) cadastrada(s).")
+
+        for a in alertas:
+            st.warning(a)
+        for p in positivos:
+            st.success(p)
+
+        if not alertas and not positivos:
+            st.info("Complete as outras abas para receber um diagnóstico detalhado.")
+
+        # Distribuição dos gastos
+        if st.session_state.of_gastos:
+            st.subheader("📊 Distribuição dos Gastos")
+            cats = {}
+            for g in st.session_state.of_gastos:
+                c = g.get("cat", "Outros")
+                cats[c] = cats.get(c, 0) + g.get("valor", 0)
+            for c, v in sorted(cats.items(), key=lambda x: -x[1]):
+                pct = v / renda * 100 if renda > 0 else 0
+                st.markdown(f"**{c}** — {fmt_brl(v)} ({pct:.1f}% da renda)")
+                st.progress(min(pct/100, 1.0))
+
     else:
-        st.markdown(f'<div class="alert-success">✅ Sistema saudável. {fmt(saldo)} livres para expandir.</div>', unsafe_allow_html=True)
+        st.info("👋 Bem-vindo ao Oráculo Financeiro IA!\\n\\nComece cadastrando sua renda na aba **📊 Diagnóstico** ou vá direto para **💸 Gastos** para registrar suas despesas.")
 
-    # MÉTRICAS PRINCIPAIS
-    c1, c2, c3, c4, c5 = st.columns(5)
-    def metrica(col, label, val, cor, sub=""):
-        col.markdown(f'<div class="metric-box"><div class="metric-label">{label}</div><div class="metric-value" style="color:{cor};">{fmt(val)}</div><div class="metric-sub">{sub}</div></div>', unsafe_allow_html=True)
+        st.subheader("O que você precisa resolver hoje?")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown("**💸 Organizar contas**\\nDescobrir para onde vai o dinheiro.")
+        with col2:
+            st.markdown("**💳 Sair das dívidas**\\nReduzir juros e recuperar o controle.")
+        with col3:
+            st.markdown("**📈 Investir melhor**\\nAvaliar alternativas para seu perfil.")
+        col4, col5, col6 = st.columns(3)
+        with col4:
+            st.markdown("**🎯 Planejar metas**\\nTransformar sonhos em números.")
+        with col5:
+            st.markdown("**🏦 Construir patrimônio**\\nAumentar seu patrimônio líquido.")
+        with col6:
+            st.markdown("**🤖 Perguntar ao Oráculo**\\nAnálise e orientação personalizada.")
 
-    metrica(c1, "💰 Renda",            renda,            "#6EE7B7", "total/mês")
-    metrica(c2, "🛡️ Blindagem",        gf,               "#7DD3FC", f"{pct(gf,renda)}% da renda")
-    metrica(c3, "💸 Gastos Variáveis",  gv,               "#FCD34D", f"{pct(gv,renda)}% da renda")
-    metrica(c4, "🚀 Metas/Mês",         gm,               "#6D28D9", f"{pct(gm,renda)}% da renda")
-    cor_s = "#6EE7B7" if saldo >= 0 else "#FCA5A5"
-    metrica(c5, "⚖️ Estabilidade",     saldo,            cor_s,     f"{pct(saldo,renda)}% livre")
+# ══════════════════════════════════════════════════
+# TAB 1 — DIAGNÓSTICO / RENDA
+# ══════════════════════════════════════════════════
+with tabs[1]:
+    st.subheader("📊 Diagnóstico Financeiro")
+    st.caption("Cadastre sua renda e perfil. Esses dados alimentam todo o sistema.")
 
+    with st.form("form_renda", clear_on_submit=False):
+        st.markdown("**Perfil**")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            idade = st.number_input("Sua idade", min_value=0, max_value=100, value=st.session_state.of_idade or 30, step=1)
+        with c2:
+            dep = st.number_input("Dependentes", min_value=0, max_value=20, value=st.session_state.of_dependentes, step=1)
+        with c3:
+            estavel = st.selectbox("Renda estável?", ["Sim", "Não"], index=0 if st.session_state.of_renda_estavel else 1)
 
-    # ── GUIA DAS ABAS ────────────────────────────────────────
-    st.markdown("### 🗺️ O que cada aba faz")
-    guia = {
-        "🏠 Dashboard":        "Visão geral da sua saúde financeira com alertas e diagnóstico automático",
-        "🧠 Consultor IA":     "Mentor financeiro que conhece seus números e responde perguntas diretas",
-        "💵 Renda":            "Cadastre seu salário e outras fontes de renda",
-        "💸 Gastos":           "Registre e categorize seus gastos variáveis",
-        "🎯 Metas":            "Crie e acompanhe metas de economia e investimento",
-        "🛡️ Fixas":            "Gerencie suas contas fixas mensais",
-        "💳 Dívidas":          "Controle dívidas com estratégia avalanche ou bola de neve",
-        "🏦 Reserva":          "Acompanhe sua reserva de emergência",
-        "📈 Investimentos":    "Simulações e estratégias de investimento por perfil",
-        "⚖️ Patrimônio":       "Balanço entre ativos e passivos — seu patrimônio líquido",
-        "📊 Relatório":        "Relatório completo com fluxo de caixa e exportação",
-        "⚙️ Config":           "Ajuste metas e configurações do sistema",
-    }
-    for aba, desc in guia.items():
-        st.markdown(f"**{aba}** — {desc}")
+        st.markdown("**Renda Principal**")
+        renda_str = st.text_input("Renda líquida mensal (R$)", placeholder="Ex: 5000", value=str(st.session_state.of_renda) if st.session_state.of_renda else "")
 
-    col_a, col_b = st.columns(2)
+        reserva_str = st.text_input("Reserva de emergência atual (R$)", placeholder="Ex: 3000", value=str(st.session_state.of_reserva_atual) if st.session_state.of_reserva_atual else "")
 
-    with col_a:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>📊 Distribuição da Renda</b>", unsafe_allow_html=True)
-        if renda > 0:
-            for nome_d, val_d, cor_d in [
-                ("🛡️ Fixas",       gf,              "#38BDF8"),
-                ("💸 Variáveis",   gv,              "#FCD34D"),
-                ("💳 Dívidas",     div_m,           "#FCA5A5"),
-                ("🚀 Metas",       gm,              "#6D28D9"),
-                ("✅ Livre",       max(0, saldo),   "#6EE7B7"),
-            ]:
-                pct_d = pct(val_d, renda)
-                st.markdown(f'''
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-                  <span style="font-size:13px;color:#555577;">{nome_d}</span>
-                  <span style="font-size:13px;color:#1A1A2E;">{fmt(val_d)} <span style="color:#4B5563;">({pct_d}%)</span></span>
-                </div>{barra(pct_d, cor_d)}''', unsafe_allow_html=True)
-        else:
-            st.markdown("<p>Cadastre sua renda para ver a distribuição.</p>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>📐 Regra 50/30/20</b>", unsafe_allow_html=True)
-        if renda > 0:
-            cats_nec = ["Moradia","Alimentação","Saúde","Transporte"]
-            cats_des = ["Lazer","Vestuário","Tecnologia"]
-            nec = gf + sum(g["valor"] for g in st.session_state.gastos if g["tipo"] in cats_nec)
-            des = sum(g["valor"] for g in st.session_state.gastos if g["tipo"] in cats_des)
-            pou = gm
-            for rotulo_r, valor_r, ideal_r, cor_r in [
-                ("🏠 Necessidades (ideal 50%)", nec, 50, "#38BDF8"),
-                ("🎮 Desejos     (ideal 30%)",  des, 30, "#FCD34D"),
-                ("📈 Poupança    (ideal 20%)",  pou, 20, "#6EE7B7"),
-            ]:
-                real_r = pct(valor_r, renda)
-                ok_r   = "✅" if abs(real_r - ideal_r) <= 10 else "⚠️"
-                st.markdown(f'''
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-                  <span style="font-size:13px;color:#555577;">{rotulo_r}</span>
-                  <span style="font-size:13px;color:#1A1A2E;">{ok_r} {real_r:.1f}%</span>
-                </div>{barra(real_r, cor_r)}''', unsafe_allow_html=True)
-        else:
-            st.markdown("<p>Cadastre sua renda para ver a análise.</p>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_b:
-        meta_res_d = gf * st.session_state.config_meta_reserva
-        pct_res_d  = pct(st.session_state.reserva_emergencia, meta_res_d) if meta_res_d > 0 else 0
-        st.markdown(f'''<div class="card-green">
-        <b style='color:#1A1A2E;'>🛡️ Reserva de Emergência</b><br>
-        <span style='font-size:13px;color:#555577;'>{fmt(st.session_state.reserva_emergencia)} de {fmt(meta_res_d)} ({st.session_state.config_meta_reserva} meses)</span>
-        {barra(pct_res_d, "#10B981")}
-        <span style='font-size:12px;color:#4B5563;'>{'✅ Completa!' if pct_res_d >= 100 else f'Faltam {fmt(max(0, meta_res_d - st.session_state.reserva_emergencia))}'}</span>
-        </div>''', unsafe_allow_html=True)
-
-        if st.session_state.metas:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown("<b style='color:#1A1A2E;'>🎯 Metas em Andamento</b>", unsafe_allow_html=True)
-            for m in st.session_state.metas[:4]:
-                p_m   = pct(m.get("atual", 0), m["valor"])
-                rest  = round((m["valor"] - m.get("atual", 0)) / m["mensal"]) if m["mensal"] > 0 else "∞"
-                st.markdown(f'''
-                <div style="margin-bottom:10px;">
-                  <div style="display:flex;justify-content:space-between;">
-                    <span style="font-size:13px;color:#1A1A2E;">{m['nome']}</span>
-                    <span style="font-size:12px;color:#4B5563;">{p_m:.0f}% · {rest} meses</span>
-                  </div>{barra(p_m, "#7C6FFF")}
-                  <span style="font-size:11px;color:#4B5563;">{fmt(m.get('atual',0))} / {fmt(m['valor'])} · {fmt(m['mensal'])}/mês</span>
-                </div>''', unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        if st.session_state.dividas:
-            total_div_d = sum(d["valor_total"] - d["valor_pago"] for d in st.session_state.dividas)
-            st.markdown(f'''<div class="card-red">
-            <b style='color:#1A1A2E;'>💳 Dívidas em Aberto</b><br>
-            <span style='font-size:22px;font-weight:700;color:#991B1B;'>{fmt(total_div_d)}</span>
-            <span style='font-size:12px;color:#4B5563;'> saldo total · {fmt(div_m)}/mês</span><br>
-            <span style='font-size:12px;color:#4B5563;'>{len(st.session_state.dividas)} dívida(s) ativa(s)</span>
-            </div>''', unsafe_allow_html=True)
-
-        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>💡 Diagnóstico Automático</b>", unsafe_allow_html=True)
-        dicas = []
-        if renda > 0:
-            if pct(gf, renda) > 50:    dicas.append(("⚠️", "Fixas acima de 50% da renda. Revise contratos e assinaturas.", "warn"))
-            if pct(gv, renda) > 30:    dicas.append(("💸", "Variáveis acima de 30%. Identifique onde cortar.", "warn"))
-            if pct(gm, renda) < 10:    dicas.append(("🎯", "Menos de 10% alocado em metas. Aumente gradualmente.", "info"))
-            if pct_res_d < 100:        dicas.append(("🛡️", "Reserva incompleta. Priorize antes de investir.", "warn"))
-            if st.session_state.dividas: dicas.append(("💳", "Quite dívidas com juros altos primeiro (estratégia avalanche).", "warn"))
-            if saldo < 0:              dicas.append(("🚨", "DÉFICIT! Você gasta mais do que ganha. Corte imediato necessário.", "danger"))
-            if saldo > renda * 0.3 and pct_res_d >= 100:
-                                        dicas.append(("🚀", "Ótima saúde financeira! Hora de acelerar os investimentos.", "success"))
-        if not dicas:
-            dicas = [("ℹ️", "Preencha seus dados para receber o diagnóstico completo.", "info")]
-        cls_map = {"warn":"alert-warn","info":"alert-info","danger":"alert-danger","success":"alert-success"}
-        for ic, tx, tp in dicas:
-            st.markdown(f'<div class="{cls_map[tp]}" style="margin-bottom:6px;">{ic} {tx}</div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 2. CONSULTOR IA
-# ══════════════════════════════════════════════
-with tab_ia:
-    col_d, col_c = st.columns([1, 1.5])
-
-    with col_d:
-        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🧬 Perfil de Decisão</b>", unsafe_allow_html=True)
-        d1 = st.select_slider("Sem renda, sobreviveria:", ["< 1 mês","1-3 meses","3-6 meses","6-12 meses","1 ano+"], key="oraf1001")
-        d2 = st.radio("Maior medo:", ["Perder o que tenho","Deixar de ganhar","Dívidas"], horizontal=True, key="oraculof2")
-        d3 = st.radio("Objetivo:", ["Liberdade financeira","Estabilidade","Crescimento"], horizontal=True, key="oraculof3")
-        d4 = st.radio("Tolerância ao risco:", ["Conservador","Moderado","Arrojado"], horizontal=True, key="oraculof4")
-        if st.button("🔍 MAPEAR MEU PERFIL", key="oraculof5"):
-            st.session_state.perfil_decisao = f"{d3} | Risco: {d4} | Reserva: {d1}"
-            st.success(f"Perfil mapeado: {d3}, {d4}")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown('<div class="card-gold">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>📈 Simulador de Investimento</b>", unsafe_allow_html=True)
-        v_inv   = st.number_input("Aporte mensal (R$):", value=500.0, min_value=0.0, step=50.0, key="oraculof6")
-        t_inv   = st.slider("Prazo (anos):", 1, 40, 10, key="oraf1002")
-        cap_ini = st.number_input("Capital inicial (R$):", value=0.0, min_value=0.0, step=100.0, key="oraculof7")
-        taxa_a  = st.session_state.taxa_invest_anual
-        taxa_m  = (1 + taxa_a / 100) ** (1/12) - 1
-        if taxa_m > 0:
-            montante = cap_ini*(1+taxa_m)**(t_inv*12) + v_inv*(((1+taxa_m)**(t_inv*12)-1)/taxa_m)
-        else:
-            montante = cap_ini + v_inv*t_inv*12
-        investido = cap_ini + v_inv*t_inv*12
-        lucro     = montante - investido
-        st.markdown(f'''
-        <div style="display:flex;gap:10px;margin:10px 0;">
-          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:12px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Montante Final</div>
-            <div style="font-size:17px;font-weight:700;color:#065F46;">{fmt(montante)}</div>
-          </div>
-          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:12px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Lucro</div>
-            <div style="font-size:17px;font-weight:700;color:#6D28D9;">{fmt(lucro)}</div>
-          </div>
-        </div>
-        <span style="font-size:11px;color:#4B5563;">Taxa: {taxa_a}% a.a. | Total investido: {fmt(investido)}</span>
-        ''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<b style='color:#1A1A2E;font-size:13px;'>⚡ Perguntas Rápidas</b>", unsafe_allow_html=True)
-        for q in [
-            "Analise minha saúde financeira completa",
-            "Como priorizar meus objetivos agora?",
-            "Onde posso cortar gastos sem sofrimento?",
-            "Quanto devo investir com meu saldo atual?",
-            "Como quitar minhas dívidas mais rápido?",
-        ]:
-            if st.button(f"→ {q}", key=f"qr_{q[:18]}"):
-                with st.spinner("Consultando o Oráculo..."):
-                    resp = consultor(q, st.session_state.historico_chat)
-                    if resp: st.session_state['res_bsc2_oraf1'] = str(resp)
-                st.session_state.historico_chat.append({"role":"user","content":q})
-                st.session_state.historico_chat.append({"role":"assistant","content":resp})
-                st.rerun()
-
-    with col_c:
-        st.markdown("<b style='color:#1A1A2E;font-size:16px;'>💼 Mentor de Decisão</b>", unsafe_allow_html=True)
-        if not st.session_state.historico_chat:
-            st.markdown('<div class="alert-info" style="text-align:center;">💰 Faça sua primeira pergunta. O Oráculo conhece seus números e vai ser direto ao ponto.</div>', unsafe_allow_html=True)
-        for msg in st.session_state.historico_chat:
-            if msg["role"] == "user":
-                st.markdown(f'<div class="chat-user"><span style="font-size:11px;color:#4B5563;">👤 {st.session_state.nome_user}</span><br><span style="color:#1A1A2E;">{msg["content"]}</span></div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="chat-ai"><span style="font-size:11px;color:#5B50E8;">💰 Oráculo</span><br><span style="color:#333355;">{msg["content"]}</span></div>', unsafe_allow_html=True)
-
-        if p := st.chat_input("Qual é sua dúvida ou decisão financeira?", key="oraf1003"):
-            with st.spinner("O Oráculo está analisando..."):
-                resp = consultor(p, st.session_state.historico_chat)
-                if resp: st.session_state['res_bsc2_oraf2'] = str(resp)
-            st.session_state.historico_chat.append({"role":"user","content":p})
-            st.session_state.historico_chat.append({"role":"assistant","content":resp})
+        if st.form_submit_button("💾 Salvar Perfil", use_container_width=True):
+            st.session_state.of_renda = parse_brl(renda_str) if renda_str.strip() else 0.0
+            st.session_state.of_reserva_atual = parse_brl(reserva_str) if reserva_str.strip() else 0.0
+            st.session_state.of_idade = int(idade)
+            st.session_state.of_dependentes = int(dep)
+            st.session_state.of_renda_estavel = (estavel == "Sim")
+            st.success("Perfil salvo!")
             st.rerun()
 
-        if st.session_state.historico_chat:
-            if st.button("🗑️ Limpar conversa", key="oraculof8"):
-                st.session_state.historico_chat = []
+    # Outras fontes de renda
+    st.divider()
+    st.markdown("**Outras fontes de renda (opcional)**")
+
+    with st.form("form_outra_renda", clear_on_submit=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            or_nome = st.text_input("Fonte", placeholder="Ex: Freelance, Aluguel")
+        with c2:
+            or_val = st.text_input("Valor (R$)", placeholder="Ex: 800")
+        if st.form_submit_button("Adicionar fonte"):
+            if or_nome.strip() and or_val.strip():
+                st.session_state.of_outras_rendas.append({"nome": or_nome, "valor": parse_brl(or_val)})
                 st.rerun()
 
-# ══════════════════════════════════════════════
-# 3. RENDA
-# ══════════════════════════════════════════════
-with tab_renda:
-    col_r1, col_r2 = st.columns(2)
-    with col_r1:
-        st.markdown('<div class="card-green">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>💵 Renda Principal</b>", unsafe_allow_html=True)
-        with st.form("renda_principal"):
-            nr = st.number_input("Salário / Renda Mensal (R$)", min_value=0.0, value=st.session_state.renda_total, step=100.0, key="oraculof9")
-            if st.form_submit_button("💾 SALVAR", key="oraculoffsb502"):
-                st.session_state.renda_total = nr
+    for i, o in enumerate(st.session_state.of_outras_rendas):
+        c1, c2, c3 = st.columns([3, 2, 1])
+        with c1:
+            st.write(o["nome"])
+        with c2:
+            st.write(fmt_brl(o["valor"]))
+        with c3:
+            if st.button("🗑️", key=f"del_or_{i}"):
+                st.session_state.of_outras_rendas.pop(i)
                 st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>➕ Outras Fontes de Renda</b>", unsafe_allow_html=True)
-        with st.form("outras_rendas_form", clear_on_submit=True):
-            c1, c2 = st.columns(2)
-            with c1: nr_nome = st.text_input("Fonte", placeholder="Freela, aluguel...", key="oraculof10")
-            with c2: nr_val  = st.number_input("Valor (R$)", min_value=0.0, step=50.0, key="oraculof11")
-            nr_rec = st.checkbox("Recorrente todo mês?", value=True, key="oraculof12")
-            if st.form_submit_button("ADICIONAR", key="oraculoffsb503"):
-                if nr_nome and nr_val > 0:
-                    st.session_state.outras_rendas.append({"nome":nr_nome,"valor":nr_val,"recorrente":nr_rec})
-                    st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+    if st.session_state.of_renda > 0 or st.session_state.of_outras_rendas:
+        st.success(f"**Renda total: {fmt_brl(calc_renda_total())}**")
 
-    with col_r2:
-        total_r = st.session_state.renda_total + sum(x["valor"] for x in st.session_state.outras_rendas)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown(f"<b style='color:#1A1A2E;'>📋 Todas as Fontes — Total: {fmt(total_r)}/mês</b>", unsafe_allow_html=True)
-        st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">💼 Salário principal</span><span style="color:#065F46;font-weight:600;">{fmt(st.session_state.renda_total)}</span></div>', unsafe_allow_html=True)
-        for i, r in enumerate(st.session_state.outras_rendas):
-            rec = "🔄" if r["recorrente"] else "1️⃣"
-            col_rx, col_rd = st.columns([4, 1])
-            with col_rx:
-                st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">{rec} {r["nome"]}</span><span style="color:#065F46;">{fmt(r["valor"])}</span></div>', unsafe_allow_html=True)
-            with col_rd:
-                if st.button("✕", key=f"del_or_{i}"):
-                    st.session_state.outras_rendas.pop(i); st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+# ══════════════════════════════════════════════════
+# TAB 2 — GASTOS / ORÇAMENTO
+# ══════════════════════════════════════════════════
+with tabs[2]:
+    st.subheader("💸 Controle de Gastos")
 
-# ══════════════════════════════════════════════
-# 4. GASTOS VARIÁVEIS
-# ══════════════════════════════════════════════
-with tab_gastos:
-    col_g1, col_g2 = st.columns(2)
-    with col_g1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>💸 Registrar Gasto</b>", unsafe_allow_html=True)
-        with st.expander("Gerenciar categorias"):
-            nova_c = st.text_input("Nova categoria:", key="oraculof13")
-            if st.button("Adicionar categoria", key="oraculof14"):
-                if nova_c and nova_c not in st.session_state.categorias_gastos:
-                    st.session_state.categorias_gastos.append(nova_c); st.rerun()
-            cat_rem = st.selectbox("Remover categoria:", ["—"] + st.session_state.categorias_gastos, key="oraculof15")
-            if st.button("Remover", key="oraculof16") and cat_rem != "—":
-                st.session_state.categorias_gastos.remove(cat_rem); st.rerun()
-        with st.form("gasto_form", clear_on_submit=True):
-            g_cat  = st.selectbox("Categoria", st.session_state.categorias_gastos, key="oraculof17")
-            g_desc = st.text_input("Descrição", placeholder="Ex: Supermercado extra", key="oraculof18")
-            c1, c2 = st.columns(2)
-            with c1: g_val  = st.number_input("Valor (R$)", min_value=0.0, step=10.0, key="oraculof19")
-            with c2: g_data = st.date_input("Data", value=date.today())
-            g_parc = st.checkbox("É parcelado?", key="oraculof20")
-            g_np   = st.number_input("Nº parcelas", min_value=1, max_value=48, value=1, key="oraculof21") if g_parc else 1
-            if st.form_submit_button("💾 REGISTRAR", key="oraculoffsb504"):
-                if g_val > 0:
-                    st.session_state.gastos.append({"tipo":g_cat,"descricao":g_desc,"valor":g_val,"data":str(g_data),"parcelado":g_parc,"parcelas":g_np})
-                    st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+    CATS_GASTO = ["Moradia","Alimentação","Transporte","Saúde","Educação",
+                  "Lazer","Vestuário","Assinaturas","Seguros","Outros"]
 
-    with col_g2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown(f"<b style='color:#1A1A2E;'>📋 Gastos Registrados — Total: {fmt(gv)}</b>", unsafe_allow_html=True)
-        if not st.session_state.gastos:
-            st.markdown("<p>Nenhum gasto registrado ainda.</p>", unsafe_allow_html=True)
-        else:
-            cats_p  = list(set(g["tipo"] for g in st.session_state.gastos))
-            filtro  = st.multiselect("Filtrar por categoria:", cats_p, default=cats_p, key="oraf1004")
-            gastos_f = [g for g in st.session_state.gastos if g["tipo"] in filtro]
-            for i, g in enumerate(gastos_f):
-                parc_t = f" ({g['parcelas']}x)" if g.get("parcelado") else ""
-                desc_t = f'<br><span style="font-size:11px;color:#4B5563;">{g["descricao"]}</span>' if g.get("descricao") else ""
-                col_gi, col_gd = st.columns([5, 1])
-                with col_gi:
-                    st.markdown(f'<div class="list-item"><div><span style="color:#1A1A2E;">{g["tipo"]}{parc_t}</span>{desc_t}<br><span style="font-size:11px;color:#4B5563;">{g.get("data","")}</span></div><span style="color:#92400E;font-weight:600;">{fmt(g["valor"])}</span></div>', unsafe_allow_html=True)
-                with col_gd:
-                    idx = st.session_state.gastos.index(g)
-                    if st.button("✕", key=f"del_g_{i}"):
-                        st.session_state.gastos.pop(idx); st.rerun()
-            if gastos_f:
-                st.markdown("<hr>", unsafe_allow_html=True)
-                st.markdown("<b style='color:#1A1A2E;font-size:13px;'>Por categoria:</b>", unsafe_allow_html=True)
-                df_cat = pd.DataFrame(gastos_f).groupby("tipo")["valor"].sum().sort_values(ascending=False)
-                for cat_n, val_c in df_cat.items():
-                    p_c = pct(val_c, gv)
-                    st.markdown(f'''
-                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-                      <span style="font-size:12px;color:#555577;">{cat_n}</span>
-                      <span style="font-size:12px;color:#1A1A2E;">{fmt(val_c)} ({p_c}%)</span>
-                    </div>{barra(p_c, "#FCD34D")}''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 5. METAS
-# ══════════════════════════════════════════════
-with tab_metas:
-    col_m1, col_m2 = st.columns(2)
-    with col_m1:
-        st.markdown('<div class="card-purple">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🎯 Criar Nova Meta</b>", unsafe_allow_html=True)
-        m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
-        m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
-        c1, c2  = st.columns(2)
-        with c1: _m_val_str  = st.text_input("Valor total (R$)", placeholder="Ex: 5000", key="oraculof24")
-        with c2: _m_prazo_str = st.text_input("Prazo (meses)", placeholder="Ex: 12", value="12", key="oraculof25")
-        _m_atual_str = st.text_input("Já guardei (R$)", placeholder="Ex: 500", value="0", key="oraculof26")
-        if st.button("🚀 CRIAR META", key="oraculoffsb505", use_container_width=True):
-            try:
-                m_val   = float(_m_val_str.replace(',','.').replace('R$','').strip()) if _m_val_str.strip() else 0.0
-                m_prazo = int(_m_prazo_str.strip()) if _m_prazo_str.strip() else 12
-                m_atual = float(_m_atual_str.replace(',','.').replace('R$','').strip()) if _m_atual_str.strip() else 0.0
-            except ValueError:
-                st.error("Digite apenas números nos campos de valor e prazo.")
-                m_val = 0.0
-            if m_nome and m_val > 0:
-                mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
-                st.session_state.metas.append({"nome":m_nome,"categoria":m_cat,"valor":m_val,"mensal":mensal,"prazo":m_prazo,"atual":m_atual,"criada":str(date.today())})
-                for _k in ["oraculof22","oraculof23","oraculof24","oraculof25","oraculof26"]:
-                    if _k in st.session_state: del st.session_state[_k]
+    with st.form("form_gasto", clear_on_submit=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            g_nome = st.text_input("Descrição", placeholder="Ex: Aluguel")
+            g_cat = st.selectbox("Categoria", CATS_GASTO)
+        with c2:
+            g_val = st.text_input("Valor mensal (R$)", placeholder="Ex: 1200")
+            g_tipo = st.selectbox("Tipo", ["Fixo", "Variável"])
+        if st.form_submit_button("➕ Adicionar gasto", use_container_width=True):
+            if g_nome.strip() and g_val.strip():
+                st.session_state.of_gastos.append({
+                    "nome": g_nome, "cat": g_cat,
+                    "valor": parse_brl(g_val), "tipo": g_tipo,
+                    "data": str(date.today())
+                })
                 st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
-    with col_m2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown(f"<b style='color:#1A1A2E;'>📋 Metas Ativas — {fmt(gm)}/mês alocados</b>", unsafe_allow_html=True)
-        if not st.session_state.metas:
-            st.markdown("<p>Nenhuma meta criada ainda.</p>", unsafe_allow_html=True)
-        else:
-            for i, m in enumerate(st.session_state.metas):
-                p_m  = pct(m.get("atual", 0), m["valor"])
-                rest = max(0, round((m["valor"]-m.get("atual",0))/m["mensal"])) if m["mensal"] > 0 else "∞"
-                st.markdown(f'''<div class="card-purple" style="padding:12px;margin-bottom:8px;">
-                <div style="display:flex;justify-content:space-between;">
-                  <b style="color:#1A1A2E;">{m['nome']}</b>
-                  <span class="badge-purple">{m.get('categoria','')}</span>
-                </div>
-                <span style="font-size:12px;color:#555577;">{fmt(m.get('atual',0))} / {fmt(m['valor'])} · {fmt(m['mensal'])}/mês · {rest} meses</span>
-                {barra(p_m, "#7C6FFF")}
-                <span style="font-size:11px;color:#5B50E8;">{p_m:.1f}% concluído</span>
-                </div>''', unsafe_allow_html=True)
-                _mk = f"meta_atual_{i}"
-                if _mk not in st.session_state:
-                    st.session_state[_mk] = float(m.get("atual", 0))
-                col_mi, col_md = st.columns([4, 1])
-                with col_mi:
-                    st.number_input("Valor já guardado (R$):", min_value=0.0, max_value=float(m["valor"]), step=50.0, key=_mk)
-                    if st.button("✅ Atualizar", key=f"upd_m_{i}"):
-                        novo_a = st.session_state[_mk]
-                        st.session_state.metas[i]["atual"]  = novo_a
-                        st.session_state.metas[i]["mensal"] = (m["valor"]-novo_a)/m["prazo"] if m["prazo"] > 0 else 0
-                        st.rerun()
-                with col_md:
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    if st.button("✕", key=f"del_m_{i}"):
-                        if _mk in st.session_state: del st.session_state[_mk]
-                        st.session_state.metas.pop(i); st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+    if st.session_state.of_gastos:
+        st.markdown(f"**Total de gastos: {fmt_brl(calc_gastos_total())}**")
+        renda = calc_renda_total()
 
-# ══════════════════════════════════════════════
-# 6. CONTAS FIXAS
-# ══════════════════════════════════════════════
-with tab_fixas:
-    col_f1, col_f2 = st.columns(2)
-    with col_f1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🛡️ Adicionar Conta Fixa</b>", unsafe_allow_html=True)
-        with st.form("fixa_form", clear_on_submit=True):
-            f_nome = st.text_input("Nome", placeholder="Ex: Aluguel, Netflix...", key="oraculof27")
-            f_cat  = st.selectbox("Categoria", ["Moradia","Transporte","Alimentação","Saúde","Educação","Lazer","Serviços","Seguros","Outros"], key="oraculof28")
-            c1, c2 = st.columns(2)
-            with c1: f_val = st.number_input("Valor mensal (R$)", min_value=0.0, step=10.0, key="oraculof29")
-            with c2: f_dia = st.number_input("Dia do vencimento", min_value=1, max_value=31, value=10, key="oraculof30")
-            if st.form_submit_button("ADICIONAR", key="oraculoffsb506"):
-                if f_nome and f_val > 0:
-                    st.session_state.contas_fixas.append({"nome":f_nome,"valor":f_val,"dia_venc":f_dia,"categoria":f_cat,"ativa":True})
+        # Tabela de gastos
+        for i, g in enumerate(st.session_state.of_gastos):
+            c1, c2, c3, c4, c5 = st.columns([3, 2, 1.5, 1, 0.8])
+            with c1:
+                st.write(g["nome"])
+            with c2:
+                pct = g["valor"]/renda*100 if renda > 0 else 0
+                st.write(f"{fmt_brl(g['valor'])} ({pct:.0f}%)")
+            with c3:
+                st.write(g["cat"])
+            with c4:
+                st.write(g.get("tipo",""))
+            with c5:
+                if st.button("🗑️", key=f"del_g_{i}"):
+                    st.session_state.of_gastos.pop(i)
                     st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
-    with col_f2:
-        total_fixas_ativas = sum(x["valor"] for x in st.session_state.contas_fixas if x.get("ativa", True))
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown(f"<b style='color:#1A1A2E;'>🔒 Contas Fixas — {fmt(total_fixas_ativas)}/mês</b>", unsafe_allow_html=True)
-        if not st.session_state.contas_fixas:
-            st.markdown("<p>Nenhuma conta fixa cadastrada.</p>", unsafe_allow_html=True)
-        else:
-            fixas_ord = sorted(st.session_state.contas_fixas, key=lambda x: x.get("dia_venc", 99))
-            for i, f in enumerate(fixas_ord):
-                idx   = st.session_state.contas_fixas.index(f)
-                ativa = f.get("ativa", True)
-                col_fi, col_ft, col_fd = st.columns([4, 1, 1])
-                with col_fi:
-                    op = "1" if ativa else "0.4"
-                    st.markdown(f'<div class="list-item" style="opacity:{op};"><div><span style="color:#1A1A2E;">{f["nome"]}</span><br><span style="font-size:11px;color:#4B5563;">Dia {f.get("dia_venc","?")} · {f.get("categoria","")}</span></div><span style="color:#0369A1;font-weight:600;">{fmt(f["valor"])}</span></div>', unsafe_allow_html=True)
-                with col_ft:
-                    if st.button("⏸" if ativa else "▶", key=f"tog_f_{i}"):
-                        st.session_state.contas_fixas[idx]["ativa"] = not ativa; st.rerun()
-                with col_fd:
-                    if st.button("✕", key=f"del_f_{i}"):
-                        st.session_state.contas_fixas.pop(idx); st.rerun()
-            st.markdown("<hr>", unsafe_allow_html=True)
-            cats_f = {}
-            for f in st.session_state.contas_fixas:
-                if f.get("ativa", True):
-                    cats_f[f["categoria"]] = cats_f.get(f["categoria"], 0) + f["valor"]
-            for cat_f, val_f in sorted(cats_f.items(), key=lambda x: -x[1]):
-                p_f = pct(val_f, total_fixas_ativas)
-                st.markdown(f'''
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-                  <span style="font-size:12px;color:#555577;">{cat_f}</span>
-                  <span style="font-size:12px;color:#1A1A2E;">{fmt(val_f)}</span>
-                </div>{barra(p_f, "#38BDF8")}''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.divider()
+        # Resumo por categoria
+        st.markdown("**Por categoria:**")
+        cats = {}
+        for g in st.session_state.of_gastos:
+            c = g.get("cat","Outros")
+            cats[c] = cats.get(c,0) + g.get("valor",0)
+        for c, v in sorted(cats.items(), key=lambda x: -x[1]):
+            pct = v/renda*100 if renda > 0 else 0
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.progress(min(pct/100, 1.0), text=f"{c}: {fmt_brl(v)} ({pct:.1f}%)")
 
-# ══════════════════════════════════════════════
-# 7. DÍVIDAS
-# ══════════════════════════════════════════════
-with tab_div:
-    st.markdown('<div class="alert-info">💡 <b>Avalanche:</b> quite a dívida de maior juros primeiro. <b>Bola de Neve:</b> quite a menor primeiro.</div>', unsafe_allow_html=True)
-    col_dv1, col_dv2 = st.columns(2)
-    with col_dv1:
-        st.markdown('<div class="card-red">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>💳 Cadastrar Dívida</b>", unsafe_allow_html=True)
-        with st.form("div_form", clear_on_submit=True):
-            d_nome    = st.text_input("Nome", placeholder="Ex: Cartão Nubank, Financiamento Carro", key="oraculof31")
-            c1, c2    = st.columns(2)
-            with c1: d_total   = st.number_input("Valor total da dívida (R$)", min_value=0.0, step=100.0, key="oraculof32")
-            with c2: d_pago    = st.number_input("Já paguei (R$)", min_value=0.0, step=100.0, key="oraculof33")
-            c3, c4    = st.columns(2)
-            with c3: d_juros   = st.number_input("Juros ao mês (%)", min_value=0.0, max_value=100.0, step=0.1, key="oraculof34")
-            with c4: d_parcela = st.number_input("Parcela mensal (R$)", min_value=0.0, step=50.0, key="oraculof35")
-            if st.form_submit_button("REGISTRAR DÍVIDA", key="oraculoffsb507"):
-                if d_nome and d_total > 0:
-                    st.session_state.dividas.append({"nome":d_nome,"valor_total":d_total,"valor_pago":d_pago,"juros_mensal":d_juros,"parcela_mensal":d_parcela})
-                    st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_dv2:
-        total_div = sum(d["valor_total"] - d["valor_pago"] for d in st.session_state.dividas)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown(f"<b style='color:#1A1A2E;'>📋 Dívidas — Saldo Total: {fmt(total_div)}</b>", unsafe_allow_html=True)
-        if not st.session_state.dividas:
-            st.markdown('<div class="alert-success">✅ Nenhuma dívida cadastrada. Parabéns!</div>', unsafe_allow_html=True)
-        else:
-            dividas_ord = sorted(st.session_state.dividas, key=lambda x: -x["juros_mensal"])
-            for i, d in enumerate(dividas_ord):
-                saldo_d = d["valor_total"] - d["valor_pago"]
-                p_d     = pct(d["valor_pago"], d["valor_total"])
-                idx     = st.session_state.dividas.index(d)
-                col_di, col_dd = st.columns([5, 1])
-                with col_di:
-                    st.markdown(f'''<div class="card-red" style="padding:12px;margin-bottom:8px;">
-                    <div style="display:flex;justify-content:space-between;">
-                      <b style="color:#1A1A2E;">{d['nome']}</b>
-                      <span class="badge-red">{d['juros_mensal']}%/mês</span>
-                    </div>
-                    <span style="font-size:12px;color:#555577;">Saldo: {fmt(saldo_d)} · Parcela: {fmt(d['parcela_mensal'])}/mês</span>
-                    {barra(p_d, "#B91C1C")}
-                    <span style="font-size:11px;color:#991B1B;">{p_d:.1f}% quitado</span>
-                    </div>''', unsafe_allow_html=True)
-                    _dk = f"div_pago_{i}"
-                    if _dk not in st.session_state:
-                        st.session_state[_dk] = float(d["valor_pago"])
-                    st.number_input("Valor já pago (R$):", min_value=0.0, max_value=float(d["valor_total"]), step=50.0, key=_dk)
-                    if st.button("Atualizar pagamento", key=f"upd_d_{i}"):
-                        novo_pago = st.session_state[_dk]
-                        st.session_state.dividas[idx]["valor_pago"] = novo_pago
-                        if novo_pago >= d["valor_total"]:
-                            st.session_state.dividas.pop(idx)
-                            st.success("🎉 Dívida quitada!")
-                        st.rerun()
-                with col_dd:
-                    if st.button("✕", key=f"del_d_{i}"):
-                        st.session_state.dividas.pop(idx); st.rerun()
-
-            st.markdown("<hr>", unsafe_allow_html=True)
-            st.markdown("<b style='color:#1A1A2E;font-size:13px;'>⏱️ Previsão de Quitação</b>", unsafe_allow_html=True)
-            for d in dividas_ord:
-                saldo_d = d["valor_total"] - d["valor_pago"]
-                try:
-                    if d["parcela_mensal"] > 0 and d["juros_mensal"] > 0:
-                        taxa_md  = d["juros_mensal"] / 100
-                        meses_d  = math.ceil(math.log(d["parcela_mensal"] / (d["parcela_mensal"] - saldo_d*taxa_md)) / math.log(1+taxa_md)) if d["parcela_mensal"] > saldo_d*taxa_md else 999
-                    elif d["parcela_mensal"] > 0:
-                        meses_d  = math.ceil(saldo_d / d["parcela_mensal"])
-                    else:
-                        meses_d  = 999
-                except:
-                    meses_d = 999
-                txt_m = f"{meses_d} meses" if meses_d < 999 else "Revise a parcela"
-                st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">{d["nome"]}</span><span style="color:#991B1B;">{txt_m}</span></div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 8. RESERVA DE EMERGÊNCIA
-# ══════════════════════════════════════════════
-with tab_res:
-    meta_res = gf * st.session_state.config_meta_reserva
-    pct_res  = pct(st.session_state.reserva_emergencia, meta_res) if meta_res > 0 else 0
-    falta_res = max(0, meta_res - st.session_state.reserva_emergencia)
-    col_rv1, col_rv2 = st.columns(2)
-
-    with col_rv1:
-        st.markdown('<div class="card-green">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🛡️ Reserva de Emergência</b>", unsafe_allow_html=True)
-        st.markdown(f"<p>Ideal: <b style='color:#065F46;'>{st.session_state.config_meta_reserva} meses</b> de despesas fixas = <b style='color:#065F46;'>{fmt(meta_res)}</b></p>", unsafe_allow_html=True)
-        with st.form("reserva_form"):
-            novo_res = st.number_input("Valor atual da sua reserva (R$)", min_value=0.0, value=st.session_state.reserva_emergencia, step=100.0, key="oraculof36")
-            if st.form_submit_button("💾 SALVAR", key="oraculoffsb508"):
-                st.session_state.reserva_emergencia = novo_res; st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🏦 Onde Guardar a Reserva</b>", unsafe_allow_html=True)
-        for nm_r, desc_r, st_r, cor_r in [
-            ("Tesouro Selic",     "Seguro, liquidez diária, rende ~CDI",   "✅ Ideal",   "#6EE7B7"),
-            ("CDB 100%+ CDI",     "Bancos digitais, FGC até R$250k",       "✅ Ótimo",   "#6EE7B7"),
-            ("Conta Remunerada",  "Nubank, Inter — resgate imediato",      "✅ Prático", "#6EE7B7"),
-            ("Poupança",          "Rende menos que a inflação",            "⚠️ Evite",   "#FCD34D"),
-            ("Debaixo do colchão","Zero rendimento, risco físico",         "❌ Não",     "#FCA5A5"),
-        ]:
-            st.markdown(f'<div class="list-item"><div><span style="color:#1A1A2E;">{nm_r}</span><br><span style="font-size:11px;color:#4B5563;">{desc_r}</span></div><span style="color:{cor_r};font-size:12px;">{st_r}</span></div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_rv2:
-        cor_rv = "#6EE7B7" if pct_res >= 100 else "#FCA5A5"
-        st.markdown(f'''<div class="card">
-        <div style="text-align:center;margin-bottom:16px;">
-          <div style="font-size:34px;font-weight:700;color:{cor_rv};">{fmt(st.session_state.reserva_emergencia)}</div>
-          <div style="font-size:13px;color:#4B5563;">de {fmt(meta_res)}</div>
-        </div>
-        {barra(pct_res, "#10B981")}
-        <div style="display:flex;gap:10px;margin:16px 0;">
-          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:10px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Meses cobertos</div>
-            <div style="font-size:20px;font-weight:700;color:#10B981;">{round(st.session_state.reserva_emergencia/gf, 1) if gf > 0 else "∞"}</div>
-          </div>
-          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:10px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Meta (meses)</div>
-            <div style="font-size:20px;font-weight:700;color:#1A1A2E;">{st.session_state.config_meta_reserva}</div>
-          </div>
-          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:10px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Concluído</div>
-            <div style="font-size:20px;font-weight:700;color:#5B50E8;">{min(100, pct_res):.0f}%</div>
-          </div>
-        </div>
-        </div>''', unsafe_allow_html=True)
-        if pct_res >= 100:
-            st.markdown('<div class="alert-success">✅ Reserva completa! Use o excedente para investimentos.</div>', unsafe_allow_html=True)
-        else:
-            m_comp = math.ceil(falta_res / max(1, saldo)) if saldo > 0 else "∞"
-            st.markdown(f'<div class="alert-warn">⚠️ Faltam {fmt(falta_res)}. Com seu saldo atual, ~{m_comp} meses para completar.</div>', unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 9. INVESTIMENTOS
-# ══════════════════════════════════════════════
-with tab_inv:
-    st.markdown('<div class="card-gold">', unsafe_allow_html=True)
-    st.markdown("<b style='color:#1A1A2E;'>📈 Planejamento de Investimentos</b>", unsafe_allow_html=True)
-    ci1, ci2, ci3 = st.columns(3)
-    with ci1:
-        taxa_a_inv = st.number_input("Taxa anual esperada (%)", min_value=1.0, max_value=30.0, value=st.session_state.taxa_invest_anual, step=0.5, key="oraculof37")
-        st.session_state.taxa_invest_anual = taxa_a_inv
-    with ci2:
-        if "inv_aporte_mensal" not in st.session_state:
-            st.session_state["inv_aporte_mensal"] = float(st.session_state.aporte_inv_salvo)
-        aporte_inv = st.number_input("Aporte mensal (R$)", min_value=0.0, step=50.0, key="inv_aporte_mensal")
-        st.session_state.aporte_inv_salvo = aporte_inv
-    with ci3:
-        if "inv_capital_ini" not in st.session_state:
-            st.session_state["inv_capital_ini"] = float(st.session_state.cap_ini_inv_salvo)
-        cap_ini_inv = st.number_input("Capital inicial (R$)", min_value=0.0, step=500.0, key="inv_capital_ini")
-        st.session_state.cap_ini_inv_salvo = cap_ini_inv
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    taxa_m_inv = (1 + taxa_a_inv/100)**(1/12) - 1
-    st.markdown("<br><b style='color:#1A1A2E;'>🗓️ Projeções de Crescimento</b>", unsafe_allow_html=True)
-    prazos_inv = [1, 2, 5, 10, 20, 30]
-    cols_inv   = st.columns(len(prazos_inv))
-    dados_proj = []
-    for i, anos in enumerate(prazos_inv):
-        n = anos * 12
-        if taxa_m_inv > 0:
-            mont = cap_ini_inv*(1+taxa_m_inv)**n + aporte_inv*(((1+taxa_m_inv)**n-1)/taxa_m_inv)
-        else:
-            mont = cap_ini_inv + aporte_inv*n
-        inv_t  = cap_ini_inv + aporte_inv*n
-        lucro_i = mont - inv_t
-        dados_proj.append((anos, mont, lucro_i))
-        with cols_inv[i]:
-            st.markdown(f'''<div class="card-gold" style="text-align:center;padding:12px;">
-            <div style="font-size:13px;color:#92400E;font-weight:600;">{anos} ano{'s' if anos>1 else ''}</div>
-            <div style="font-size:15px;font-weight:700;color:#1A1A2E;margin:4px 0;">{fmt(mont)}</div>
-            <div style="font-size:11px;color:#4B5563;">+{fmt(lucro_i)}</div>
-            </div>''', unsafe_allow_html=True)
-
-    col_inv_a, col_inv_b = st.columns(2)
-
-    with col_inv_a:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>📊 Crescimento Visual</b>", unsafe_allow_html=True)
-        max_m = max(d[1] for d in dados_proj) if dados_proj else 1
-        for anos, mont, lucro_i in dados_proj:
-            p_i = pct(mont, max_m)
-            st.markdown(f'''
-            <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-              <span style="font-size:12px;color:#555577;">{anos} ano{'s' if anos>1 else ''}</span>
-              <span style="font-size:12px;color:#1A1A2E;">{fmt(mont)}</span>
-            </div>{barra(p_i, "#10B981")}''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_inv_b:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🎓 Onde Investir — Por Perfil</b>", unsafe_allow_html=True)
-        perfil_inv = st.radio("Perfil de risco:", ["Conservador","Moderado","Arrojado"], horizontal=True, key="oraculof40")
-        inv_map = {
-            "Conservador": [
-                ("Tesouro Selic",    "Liquidez diária, ~CDI",               "✅"),
-                ("CDB 100%+ CDI",    "FGC até R$250k, bancos digitais",     "✅"),
-                ("LCI / LCA",        "Isento de IR, ótimo custo-benefício", "✅"),
-                ("Fundo DI",         "Gestão profissional, renda fixa",     "✅"),
-            ],
-            "Moderado": [
-                ("Tesouro IPCA+",    "Protege da inflação, longo prazo",    "📈"),
-                ("Fundos Multimercado","Mix renda fixa + variável",         "📈"),
-                ("FIIs",             "Renda passiva mensal em imóveis",     "📈"),
-                ("ETF Renda Fixa",   "Diversificação automática",           "📈"),
-            ],
-            "Arrojado": [
-                ("Ações (Buy&Hold)", "Empresas sólidas, foco longo prazo",  "🚀"),
-                ("ETFs de Ações",    "BOVA11, IVVB11 (S&P 500 em R$)",     "🚀"),
-                ("FIIs + Ações",     "Renda passiva + crescimento",         "🚀"),
-                ("BDRs",             "Empresas internacionais em R$",       "🚀"),
-            ]
-        }
-        for nm_i, desc_i, st_i in inv_map[perfil_inv]:
-            st.markdown(f'<div class="list-item"><div><b style="color:#1A1A2E;">{nm_i}</b><br><span style="font-size:11px;color:#4B5563;">{desc_i}</span></div><span style="color:#065F46;">{st_i}</span></div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 10. PATRIMÔNIO
-# ══════════════════════════════════════════════
-with tab_pat:
-    col_p1, col_p2 = st.columns(2)
-    with col_p1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>📦 Registrar Item Patrimonial</b>", unsafe_allow_html=True)
-        with st.form("patr_form", clear_on_submit=True):
-            p_nome = st.text_input("Nome", placeholder="Apartamento, Carro, FGTS...", key="oraculof41")
-            p_tipo = st.radio("Tipo:", ["Ativo (tenho)","Passivo (devo)"], horizontal=True, key="oraculof42")
-            p_cat  = st.selectbox("Categoria", ["Imóveis","Veículos","Investimentos","Poupança","FGTS","Dívidas","Outros"], key="oraculof43")
-            p_val  = st.number_input("Valor (R$)", min_value=0.0, step=1000.0, key="oraculof44")
-            if st.form_submit_button("ADICIONAR", key="oraculoffsb509"):
-                if p_nome and p_val > 0:
-                    st.session_state.patrimonio_itens.append({"nome":p_nome,"valor":p_val,"tipo":p_tipo,"categoria":p_cat})
-                    st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_p2:
-        ativos   = [x for x in st.session_state.patrimonio_itens if "Ativo"   in x["tipo"]]
-        passivos = [x for x in st.session_state.patrimonio_itens if "Passivo" in x["tipo"]]
-        total_a  = sum(x["valor"] for x in ativos)
-        total_p  = sum(x["valor"] for x in passivos)
-        pat_liq  = total_a - total_p
-        cor_pl   = "#6EE7B7" if pat_liq >= 0 else "#FCA5A5"
-
-        st.markdown(f'''<div class="card">
-        <b style='color:#1A1A2E;'>⚖️ Balanço Patrimonial</b>
-        <div style="display:flex;gap:10px;margin:14px 0;">
-          <div style="flex:1;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:9px;padding:12px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Ativos</div>
-            <div style="font-size:18px;font-weight:700;color:#065F46;">{fmt(total_a)}</div>
-          </div>
-          <div style="flex:1;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:9px;padding:12px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Passivos</div>
-            <div style="font-size:18px;font-weight:700;color:#991B1B;">{fmt(total_p)}</div>
-          </div>
-          <div style="flex:1;background:#F0F0FA;border-radius:9px;padding:12px;text-align:center;">
-            <div style="font-size:11px;color:#4B5563;">Patrimônio Líquido</div>
-            <div style="font-size:18px;font-weight:700;color:{cor_pl};">{fmt(pat_liq)}</div>
-          </div>
-        </div>''', unsafe_allow_html=True)
-        for rotulo_p, lista_p, cor_p in [("✅ Ativos", ativos, "#6EE7B7"), ("❌ Passivos", passivos, "#FCA5A5")]:
-            if lista_p:
-                st.markdown(f"<b style='color:#1A1A2E;font-size:13px;'>{rotulo_p}:</b>", unsafe_allow_html=True)
-                for i, item in enumerate(lista_p):
-                    idx = st.session_state.patrimonio_itens.index(item)
-                    col_pi, col_pd = st.columns([5, 1])
-                    with col_pi:
-                        st.markdown(f'<div class="list-item"><span style="color:#1A1A2E;">{item["nome"]} <span style="color:#4B5563;font-size:11px;">({item["categoria"]})</span></span><span style="color:{cor_p};font-weight:600;">{fmt(item["valor"])}</span></div>', unsafe_allow_html=True)
-                    with col_pd:
-                        if st.button("✕", key=f"del_pat_{rotulo_p}_{i}"):
-                            st.session_state.patrimonio_itens.pop(idx); st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ══════════════════════════════════════════════
-# 11. RELATÓRIO
-# ══════════════════════════════════════════════
-with tab_rel:
-    st.markdown("<b style='color:#1A1A2E;font-size:18px;'>📊 Relatório Financeiro Completo</b>", unsafe_allow_html=True)
-    col_rl1, col_rl2 = st.columns(2)
-
-    with col_rl1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>📋 Resumo Executivo</b>", unsafe_allow_html=True)
-        total_div_r = sum(d["valor_total"]-d["valor_pago"] for d in st.session_state.dividas)
-        pat_liq_r   = sum(x["valor"] for x in st.session_state.patrimonio_itens if "Ativo" in x["tipo"]) - sum(x["valor"] for x in st.session_state.patrimonio_itens if "Passivo" in x["tipo"])
-        for lbl, val_r, cor_r in [
-            ("💰 Renda Total",           fmt(renda),                                  "#6EE7B7"),
-            ("🛡️ Despesas Fixas",         fmt(gf),                                     "#7DD3FC"),
-            ("💸 Gastos Variáveis",       fmt(gv),                                     "#FCD34D"),
-            ("💳 Parcelas de Dívidas",    fmt(div_m),                                  "#FCA5A5"),
-            ("🚀 Alocação em Metas",      fmt(gm),                                     "#6D28D9"),
-            ("⚖️ Saldo Livre",            fmt(saldo),                                  "#6EE7B7" if saldo>=0 else "#FCA5A5"),
-            ("🛡️ Reserva de Emergência",  fmt(st.session_state.reserva_emergencia),    "#6EE7B7"),
-            ("💳 Total de Dívidas",       fmt(total_div_r),                            "#FCA5A5"),
-            ("⚖️ Patrimônio Líquido",     fmt(pat_liq_r),                              "#FCD34D"),
-            ("📊 % Renda Comprometida",   f"{pct(gf+gv+gm+div_m, renda):.1f}%",      "#A0A0C0"),
-        ]:
-            st.markdown(f'<div class="list-item"><span style="color:#555577;">{lbl}</span><span style="color:{cor_r};font-weight:600;">{val_r}</span></div>', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_rl2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>💹 Fluxo de Caixa</b>", unsafe_allow_html=True)
+        # Análise do saldo
+        saldo = calc_saldo()
         if renda > 0:
-            for nome_f, val_f, cor_f in [
-                ("💰 Renda",          renda,           "#6EE7B7"),
-                ("🛡️ Fixas",          gf,              "#38BDF8"),
-                ("💸 Variáveis",      gv,              "#FCD34D"),
-                ("💳 Dívidas",        div_m,           "#FCA5A5"),
-                ("🚀 Metas",          gm,              "#6D28D9"),
-                ("✅ Saldo Livre",    max(0, saldo),   "#6EE7B7"),
-            ]:
-                pct_f = pct(val_f, renda)
-                st.markdown(f'''
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-                  <span style="font-size:13px;color:#555577;">{nome_f}</span>
-                  <span style="font-size:13px;color:#1A1A2E;">{fmt(val_f)} <span style="color:#4B5563;">({pct_f}%)</span></span>
-                </div>{barra(pct_f, cor_f)}''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+            if saldo > 0:
+                st.success(f"✅ Sobra {fmt_brl(saldo)}/mês ({saldo/renda*100:.1f}% da renda)")
+            else:
+                st.error(f"⚠️ Déficit de {fmt_brl(abs(saldo))}/mês — gastos superam a renda!")
+    else:
+        st.info("Nenhum gasto cadastrado ainda. Adicione seus gastos mensais acima.")
 
-        if st.session_state.gastos:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown("<b style='color:#1A1A2E;'>💸 Gastos por Categoria</b>", unsafe_allow_html=True)
-            df_rel = pd.DataFrame(st.session_state.gastos).groupby("tipo")["valor"].sum().sort_values(ascending=False)
-            st.bar_chart(df_rel)
-            st.markdown("</div>", unsafe_allow_html=True)
+# ══════════════════════════════════════════════════
+# TAB 3 — DÍVIDAS
+# ══════════════════════════════════════════════════
+with tabs[3]:
+    st.subheader("💳 Gestão de Dívidas")
 
-    st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown("<b style='color:#1A1A2E;'>💾 Exportar Dados</b>", unsafe_allow_html=True)
-    if True:
-        dados_exp = {
-            "usuario": st.session_state.nome_user,
-            "exportado_em": str(datetime.now()),
-            "renda": renda, "gastos": st.session_state.gastos,
-            "contas_fixas": st.session_state.contas_fixas,
-            "metas": st.session_state.metas, "dividas": st.session_state.dividas,
-            "reserva": st.session_state.reserva_emergencia,
-            "patrimonio": st.session_state.patrimonio_itens,
-        }
-        st.download_button(
-            "📥 Exportar relatório (.json)",
-            data=json.dumps(dados_exp, indent=2, ensure_ascii=False, default=str),
-            file_name=f"relatorio_{st.session_state.nome_user}_{date.today()}.json",
-            mime="application/json",
-            use_container_width=True,
-        
-        key="oraf3003",
+    with st.form("form_divida", clear_on_submit=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            d_nome = st.text_input("Nome da dívida", placeholder="Ex: Cartão Nubank")
+            d_saldo = st.text_input("Saldo devedor (R$)", placeholder="Ex: 5000")
+            d_juros = st.text_input("Juros ao mês (%)", placeholder="Ex: 3.5")
+        with c2:
+            d_parcela = st.text_input("Parcela mensal (R$)", placeholder="Ex: 250")
+            d_prazo = st.text_input("Prazo restante (meses)", placeholder="Ex: 24")
+            d_tipo = st.selectbox("Tipo", ["Cartão de crédito","Empréstimo pessoal","Financiamento","Cheque especial","Outro"])
+
+        if st.form_submit_button("➕ Adicionar dívida", use_container_width=True):
+            if d_nome.strip():
+                st.session_state.of_dividas.append({
+                    "nome": d_nome,
+                    "saldo": parse_brl(d_saldo),
+                    "juros": parse_brl(d_juros),
+                    "parcela": parse_brl(d_parcela),
+                    "prazo": int(d_prazo) if d_prazo.strip().isdigit() else 0,
+                    "tipo": d_tipo
+                })
+                st.rerun()
+
+    if st.session_state.of_dividas:
+        divida_total = calc_divida_total()
+        parcelas_total = calc_parcelas_total()
+        renda = calc_renda_total()
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total em dívidas", fmt_brl(divida_total))
+        with col2:
+            st.metric("Parcelas/mês", fmt_brl(parcelas_total))
+        with col3:
+            comprometimento = parcelas_total/renda*100 if renda > 0 else 0
+            st.metric("Comprometimento renda", f"{comprometimento:.1f}%",
+                      delta="Alto risco" if comprometimento > 30 else ("Atenção" if comprometimento > 20 else "OK"),
+                      delta_color="inverse" if comprometimento > 20 else "normal")
+
+        st.divider()
+        # Lista de dívidas
+        for i, d in enumerate(st.session_state.of_dividas):
+            with st.expander(f"{'🔴' if d.get('juros',0)>5 else '🟡'} {d['nome']} — {fmt_brl(d.get('saldo',0))}"):
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.write(f"**Saldo:** {fmt_brl(d.get('saldo',0))}")
+                    st.write(f"**Parcela:** {fmt_brl(d.get('parcela',0))}/mês")
+                    st.write(f"**Tipo:** {d.get('tipo','')}")
+                with c2:
+                    st.write(f"**Juros:** {d.get('juros',0):.2f}%/mês")
+                    st.write(f"**Prazo:** {d.get('prazo',0)} meses")
+                    custo = d.get("saldo",0) * (d.get("juros",0)/100) if d.get("juros",0) else 0
+                    if custo > 0:
+                        st.write(f"**Juros/mês estimado:** {fmt_brl(custo)}")
+                if st.button("🗑️ Remover", key=f"del_d_{i}"):
+                    st.session_state.of_dividas.pop(i)
+                    st.rerun()
+
+        # Estratégia de pagamento
+        st.divider()
+        st.subheader("🎯 Estratégia de Quitação")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**Método Avalanche** (recomendado)\\nPague primeiro a dívida com maior juros — economiza mais dinheiro no total.")
+            avalanche = sorted(st.session_state.of_dividas, key=lambda x: -x.get("juros",0))
+            for idx, d in enumerate(avalanche, 1):
+                st.write(f"{idx}. {d['nome']} ({d.get('juros',0):.1f}%/mês) — {fmt_brl(d.get('saldo',0))}")
+        with col2:
+            st.markdown("**Método Bola de Neve**\\nPague primeiro a menor dívida — psicologicamente motivador.")
+            bola = sorted(st.session_state.of_dividas, key=lambda x: x.get("saldo",0))
+            for idx, d in enumerate(bola, 1):
+                st.write(f"{idx}. {d['nome']} — {fmt_brl(d.get('saldo',0))}")
+    else:
+        st.success("✅ Nenhuma dívida cadastrada.")
+
+# ══════════════════════════════════════════════════
+# TAB 4 — METAS
+# ══════════════════════════════════════════════════
+with tabs[4]:
+    st.subheader("🎯 Metas Financeiras")
+
+    CATS_META = ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Aposentadoria","Outro"]
+
+    with st.form("form_meta", clear_on_submit=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            m_nome = st.text_input("Nome da meta", placeholder="Ex: Viagem para Europa")
+            m_cat = st.selectbox("Categoria", CATS_META)
+            m_val = st.text_input("Valor total (R$)", placeholder="Ex: 15000")
+        with c2:
+            m_atual = st.text_input("Já guardei (R$)", placeholder="Ex: 2000", value="0")
+            m_prazo = st.text_input("Prazo (meses)", placeholder="Ex: 18", value="12")
+            m_prior = st.selectbox("Prioridade", ["Alta", "Média", "Baixa"])
+
+        if st.form_submit_button("🚀 Criar Meta", use_container_width=True):
+            if m_nome.strip() and m_val.strip():
+                val = parse_brl(m_val)
+                atual = parse_brl(m_atual) if m_atual.strip() else 0.0
+                prazo = int(m_prazo) if m_prazo.strip().isdigit() else 12
+                faltante = max(0, val - atual)
+                mensal = faltante / prazo if prazo > 0 else faltante
+                st.session_state.of_metas.append({
+                    "nome": m_nome, "cat": m_cat, "valor": val,
+                    "atual": atual, "prazo": prazo,
+                    "mensal": mensal, "prioridade": m_prior,
+                    "criada": str(date.today())
+                })
+                st.rerun()
+
+    if st.session_state.of_metas:
+        saldo_disp = saldo_disponivel()
+        total_mensal_metas = sum(m.get("mensal",0) for m in st.session_state.of_metas)
+
+        if saldo_disp > 0:
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Disponível para metas", fmt_brl(saldo_disp))
+            with col2:
+                falta = total_mensal_metas - saldo_disp
+                cor = "normal" if falta <= 0 else "inverse"
+                st.metric("Total necessário/mês", fmt_brl(total_mensal_metas),
+                          delta=f"{'Sobram' if falta <= 0 else 'Faltam'} {fmt_brl(abs(falta))}",
+                          delta_color=cor)
+
+        st.divider()
+        for i, m in enumerate(st.session_state.of_metas):
+            faltante = max(0, m.get("valor",0) - m.get("atual",0))
+            pct = (m.get("atual",0)/m.get("valor",1)*100) if m.get("valor",0) > 0 else 0
+            with st.expander(f"{'🟢' if pct>=50 else '🟡' if pct>0 else '⚪'} {m['nome']} — {fmt_brl(m.get('valor',0))}"):
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.write(f"**Meta:** {fmt_brl(m.get('valor',0))}")
+                    st.write(f"**Já guardei:** {fmt_brl(m.get('atual',0))}")
+                    st.write(f"**Falta:** {fmt_brl(faltante)}")
+                with c2:
+                    st.write(f"**Prazo:** {m.get('prazo',0)} meses")
+                    st.write(f"**Preciso guardar:** {fmt_brl(m.get('mensal',0))}/mês")
+                    st.write(f"**Prioridade:** {m.get('prioridade','')}")
+                st.progress(min(pct/100, 1.0), text=f"Progresso: {pct:.0f}%")
+                if st.button("🗑️ Remover", key=f"del_m_{i}"):
+                    st.session_state.of_metas.pop(i)
+                    st.rerun()
+    else:
+        st.info("Cadastre sua primeira meta financeira.")
+
+# ══════════════════════════════════════════════════
+# TAB 5 — PATRIMÔNIO
+# ══════════════════════════════════════════════════
+with tabs[5]:
+    st.subheader("🏦 Gestão Patrimonial")
+    st.caption("Registre seus ativos (bens) e calcule seu patrimônio líquido.")
+
+    TIPOS_PATRIMONIO = ["Imóvel","Veículo","Conta bancária","Participação empresarial","Outro bem"]
+
+    with st.form("form_patrimonio", clear_on_submit=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            p_nome = st.text_input("Descrição", placeholder="Ex: Apartamento Santana")
+            p_tipo = st.selectbox("Tipo", TIPOS_PATRIMONIO)
+        with c2:
+            p_val = st.text_input("Valor estimado (R$)", placeholder="Ex: 250000")
+            p_liq = st.selectbox("Liquidez", ["Baixa (imóvel/veículo)","Média","Alta (dinheiro)"])
+        if st.form_submit_button("➕ Adicionar ativo", use_container_width=True):
+            if p_nome.strip() and p_val.strip():
+                st.session_state.of_patrimonios.append({
+                    "nome": p_nome, "tipo": p_tipo,
+                    "valor": parse_brl(p_val), "liquidez": p_liq
+                })
+                st.rerun()
+
+    if st.session_state.of_patrimonios or st.session_state.of_reserva_atual > 0 or calc_investimentos_total() > 0:
+        bruto = calc_patrimonio_bruto()
+        liquido = calc_patrimonio_liquido()
+        dividas = calc_divida_total()
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Patrimônio Bruto", fmt_brl(bruto))
+        with col2:
+            st.metric("Total em Dívidas", fmt_brl(dividas))
+        with col3:
+            st.metric("Patrimônio Líquido", fmt_brl(liquido),
+                      delta="Positivo" if liquido >= 0 else "Negativo",
+                      delta_color="normal" if liquido >= 0 else "inverse")
+
+        st.divider()
+        st.markdown("**Ativos cadastrados:**")
+        if st.session_state.of_reserva_atual > 0:
+            st.write(f"🏦 Reserva de emergência: {fmt_brl(st.session_state.of_reserva_atual)}")
+        if calc_investimentos_total() > 0:
+            st.write(f"📈 Investimentos: {fmt_brl(calc_investimentos_total())}")
+        for i, p in enumerate(st.session_state.of_patrimonios):
+            c1, c2, c3 = st.columns([3, 2, 1])
+            with c1:
+                st.write(f"{p['nome']} ({p['tipo']})")
+            with c2:
+                st.write(fmt_brl(p['valor']))
+            with c3:
+                if st.button("🗑️", key=f"del_p_{i}"):
+                    st.session_state.of_patrimonios.pop(i)
+                    st.rerun()
+
+        if dividas > 0:
+            st.divider()
+            st.markdown("**Passivos (dívidas):**")
+            for d in st.session_state.of_dividas:
+                st.write(f"🔴 {d['nome']}: {fmt_brl(d.get('saldo',0))}")
+    else:
+        st.info("Registre seus bens para calcular seu patrimônio líquido.")
+
+# ══════════════════════════════════════════════════
+# TAB 6 — INVESTIMENTOS
+# ══════════════════════════════════════════════════
+with tabs[6]:
+    st.subheader("📈 Investimentos")
+
+    TIPOS_INV = ["Tesouro Direto","CDB","LCI/LCA","Fundo de investimento",
+                 "Ações","ETF","FII","Previdência Privada","Poupança","Outro"]
+
+    with st.form("form_inv", clear_on_submit=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            inv_nome = st.text_input("Investimento", placeholder="Ex: CDB Nubank 120% CDI")
+            inv_tipo = st.selectbox("Tipo", TIPOS_INV)
+            inv_val = st.text_input("Valor atual (R$)", placeholder="Ex: 10000")
+        with c2:
+            inv_liq = st.selectbox("Liquidez", ["Diária","30 dias","D+30 a D+180","Longo prazo","Sem liquidez"])
+            inv_venc = st.text_input("Vencimento (ou 'sem vencimento')", placeholder="Ex: 2027-06")
+            inv_rent = st.text_input("Rentabilidade anual estimada (%)", placeholder="Ex: 12.5")
+        if st.form_submit_button("➕ Adicionar investimento", use_container_width=True):
+            if inv_nome.strip() and inv_val.strip():
+                st.session_state.of_investimentos.append({
+                    "nome": inv_nome, "tipo": inv_tipo,
+                    "valor": parse_brl(inv_val), "liquidez": inv_liq,
+                    "vencimento": inv_venc, "rentabilidade": parse_brl(inv_rent),
+                    "data": str(date.today())
+                })
+                st.rerun()
+
+    if st.session_state.of_investimentos:
+        total_inv = calc_investimentos_total()
+        st.metric("Total investido", fmt_brl(total_inv))
+
+        # Distribuição por tipo
+        tipos = {}
+        for inv in st.session_state.of_investimentos:
+            t = inv.get("tipo","Outro")
+            tipos[t] = tipos.get(t,0) + inv.get("valor",0)
+
+        st.markdown("**Distribuição:**")
+        for t, v in sorted(tipos.items(), key=lambda x: -x[1]):
+            pct = v/total_inv*100 if total_inv > 0 else 0
+            st.progress(min(pct/100,1.0), text=f"{t}: {fmt_brl(v)} ({pct:.0f}%)")
+
+        st.divider()
+        for i, inv in enumerate(st.session_state.of_investimentos):
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 1])
+            with c1:
+                st.write(inv["nome"])
+            with c2:
+                st.write(fmt_brl(inv["valor"]))
+            with c3:
+                st.write(inv.get("liquidez",""))
+            with c4:
+                if st.button("🗑️", key=f"del_i_{i}"):
+                    st.session_state.of_investimentos.pop(i)
+                    st.rerun()
+
+        # Perfil sugerido
+        st.divider()
+        st.subheader("🎯 Perfil do Investidor")
+        renda_fixa = sum(v for t,v in tipos.items() if t in ["Tesouro Direto","CDB","LCI/LCA","Poupança"])
+        variavel = sum(v for t,v in tipos.items() if t in ["Ações","ETF","FII"])
+        if total_inv > 0:
+            pct_rf = renda_fixa/total_inv*100
+            pct_rv = variavel/total_inv*100
+            if pct_rv > 40:
+                perfil_txt = "🔴 Arrojado — Alta exposição a renda variável."
+            elif pct_rv > 15:
+                perfil_txt = "🟡 Moderado — Boa diversificação entre renda fixa e variável."
+            else:
+                perfil_txt = "🟢 Conservador — Concentrado em renda fixa."
+            st.info(f"Perfil aparente: **{perfil_txt}**\\n\\nRenda fixa: {pct_rf:.0f}% | Renda variável: {pct_rv:.0f}%")
+    else:
+        st.info("Nenhum investimento cadastrado. Adicione seus investimentos para análise.")
+
+# ══════════════════════════════════════════════════
+# TAB 7 — ORÁCULO IA (CHAT)
+# ══════════════════════════════════════════════════
+with tabs[7]:
+    st.subheader("🤖 Consultor Oráculo IA")
+    st.caption("Faça perguntas e receba análises baseadas nos seus dados financeiros.")
+
+    # Monta contexto financeiro
+    def gerar_contexto():
+        renda = calc_renda_total()
+        gastos = calc_gastos_total()
+        saldo = calc_saldo()
+        ctx = f'''DADOS FINANCEIROS DO USUÁRIO (atualizados):
+- Renda líquida mensal: {fmt_brl(renda)}
+- Total de gastos mensais: {fmt_brl(gastos)}
+- Saldo mensal: {fmt_brl(saldo)}
+- Taxa de poupança: {calc_taxa_poupanca():.1f}%
+- Reserva de emergência atual: {fmt_brl(st.session_state.of_reserva_atual)}
+- Dívidas totais: {fmt_brl(calc_divida_total())} (parcelas: {fmt_brl(calc_parcelas_total())}/mês)
+- Investimentos: {fmt_brl(calc_investimentos_total())}
+- Patrimônio líquido: {fmt_brl(calc_patrimonio_liquido())}
+- Número de metas: {len(st.session_state.of_metas)}
+- Gastos por categoria: {json.dumps({g['cat']: g['valor'] for g in st.session_state.of_gastos}, ensure_ascii=False)}
+'''
+        if st.session_state.of_dividas:
+            ctx += f"- Dívidas: {[d['nome']+' '+str(d.get('saldo',0)) for d in st.session_state.of_dividas]}\\n"
+        if st.session_state.of_metas:
+            ctx += f"- Metas: {[m['nome']+' R$'+str(m.get('valor',0)) for m in st.session_state.of_metas]}\\n"
+        return ctx
+
+    SYSTEM_PROMPT = '''Você é o Oráculo Financeiro IA, um consultor financeiro pessoal especializado.
+Analise os dados reais do usuário fornecidos no contexto e ofereça orientação personalizada.
+Princípios:
+- Analise SEMPRE a situação completa antes de recomendar
+- Não recomende investimentos antes de avaliar dívidas, reserva e prazo
+- Diferencie fatos, estimativas e projeções
+- Seja claro, objetivo e use números reais do usuário
+- Nunca prometa rentabilidade ou resultados garantidos
+- Se faltar dados, pergunte
+- Use linguagem simples e formatação clara com emojis e tópicos'''
+
+    # Sugestões de perguntas
+    if not st.session_state.of_historico_chat:
+        st.markdown("**Sugestões de perguntas:**")
+        sugestoes = [
+            "Qual é minha situação financeira atual?",
+            "Como devo priorizar o pagamento das minhas dívidas?",
+            "Quanto tempo para construir minha reserva de emergência?",
+            "Como posso economizar mais por mês?",
+            "Qual minha capacidade de investimento?",
+        ]
+        for s in sugestoes:
+            if st.button(s, key=f"sug_{s[:20]}"):
+                st.session_state.of_historico_chat.append({"role":"user","content":s})
+                st.rerun()
+
+    # Histórico do chat
+    for msg in st.session_state.of_historico_chat:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # Input do usuário
+    pergunta = st.chat_input("Faça sua pergunta ao Oráculo...")
+    if pergunta:
+        st.session_state.of_historico_chat.append({"role":"user","content":pergunta})
+        with st.chat_message("user"):
+            st.markdown(pergunta)
+
+        ctx = gerar_contexto()
+        msgs_api = [{"role":"system","content":SYSTEM_PROMPT + "\\n\\n" + ctx}]
+        for m in st.session_state.of_historico_chat[-10:]:
+            msgs_api.append({"role":m["role"],"content":m["content"]})
+
+        try:
+            import anthropic as _anthr
+            _cli = _anthr.Anthropic()
+            with st.chat_message("assistant"):
+                with st.spinner("Oráculo analisando..."):
+                    resp = _cli.messages.create(
+                        model="claude-opus-4-5",
+                        max_tokens=1500,
+                        messages=msgs_api[1:],
+                        system=msgs_api[0]["content"]
+                    )
+                    resposta = resp.content[0].text
+                    st.markdown(resposta)
+            st.session_state.of_historico_chat.append({"role":"assistant","content":resposta})
+        except Exception as e:
+            st.error(f"Erro ao consultar IA: {e}")
+
+    if st.session_state.of_historico_chat:
+        if st.button("🗑️ Limpar conversa"):
+            st.session_state.of_historico_chat = []
+            st.rerun()
+
+# ══════════════════════════════════════════════════
+# TAB 8 — EXPORTAR
+# ══════════════════════════════════════════════════
+with tabs[8]:
+    st.subheader("⬇️ Exportar Dados")
+
+    import io as _io_of, csv as _csv_of
+    _buf_of = _io_of.StringIO()
+    _w_of = _csv_of.writer(_buf_of)
+
+    _w_of.writerow(["=== ORÁCULO FINANCEIRO IA — RELATÓRIO ==="])
+    _w_of.writerow([f"Gerado em: {date.today()}"])
+    _w_of.writerow([])
+
+    _w_of.writerow(["=== RENDA ==="])
+    _w_of.writerow(["Tipo","Descrição","Valor (R$)"])
+    _w_of.writerow(["Principal","Renda líquida",st.session_state.of_renda])
+    for o in st.session_state.of_outras_rendas:
+        _w_of.writerow(["Outra renda",o.get("nome",""),o.get("valor",0)])
+    _w_of.writerow(["TOTAL RENDA","",calc_renda_total()])
+    _w_of.writerow([])
+
+    _w_of.writerow(["=== GASTOS ==="])
+    _w_of.writerow(["Descrição","Categoria","Tipo","Valor (R$)","% da renda"])
+    renda = calc_renda_total()
+    for g in st.session_state.of_gastos:
+        pct = g.get("valor",0)/renda*100 if renda > 0 else 0
+        _w_of.writerow([g.get("nome",""),g.get("cat",""),g.get("tipo",""),g.get("valor",0),f"{pct:.1f}%"])
+    _w_of.writerow(["TOTAL GASTOS","","",calc_gastos_total(),""])
+    _w_of.writerow([])
+
+    _w_of.writerow(["=== DÍVIDAS ==="])
+    _w_of.writerow(["Nome","Tipo","Saldo (R$)","Parcela (R$)","Juros %/mês","Prazo (meses)"])
+    for d in st.session_state.of_dividas:
+        _w_of.writerow([d.get("nome",""),d.get("tipo",""),d.get("saldo",0),d.get("parcela",0),d.get("juros",0),d.get("prazo",0)])
+    _w_of.writerow(["TOTAL DÍVIDAS","","",calc_divida_total(),"",""])
+    _w_of.writerow([])
+
+    _w_of.writerow(["=== METAS ==="])
+    _w_of.writerow(["Nome","Categoria","Valor (R$)","Já guardei (R$)","Falta (R$)","Prazo (meses)","Guardar/mês (R$)","Prioridade"])
+    for m in st.session_state.of_metas:
+        falt = max(0, m.get("valor",0)-m.get("atual",0))
+        _w_of.writerow([m.get("nome",""),m.get("cat",""),m.get("valor",0),m.get("atual",0),falt,m.get("prazo",0),m.get("mensal",0),m.get("prioridade","")])
+    _w_of.writerow([])
+
+    _w_of.writerow(["=== PATRIMÔNIO ==="])
+    _w_of.writerow(["Descrição","Tipo","Valor (R$)","Liquidez"])
+    if st.session_state.of_reserva_atual > 0:
+        _w_of.writerow(["Reserva de emergência","Conta bancária",st.session_state.of_reserva_atual,"Alta"])
+    for inv in st.session_state.of_investimentos:
+        _w_of.writerow([inv.get("nome",""),inv.get("tipo",""),inv.get("valor",0),inv.get("liquidez","")])
+    for p in st.session_state.of_patrimonios:
+        _w_of.writerow([p.get("nome",""),p.get("tipo",""),p.get("valor",0),p.get("liquidez","")])
+    _w_of.writerow(["PATRIMÔNIO BRUTO","","",calc_patrimonio_bruto(),""])
+    _w_of.writerow(["DÍVIDAS TOTAIS","","",calc_divida_total(),""])
+    _w_of.writerow(["PATRIMÔNIO LÍQUIDO","","",calc_patrimonio_liquido(),""])
+    _w_of.writerow([])
+
+    _w_of.writerow(["=== INDICADORES ==="])
+    _w_of.writerow(["Indicador","Valor"])
+    _w_of.writerow(["Saldo mensal",calc_saldo()])
+    _w_of.writerow(["Taxa de poupança (%)",f"{calc_taxa_poupanca():.1f}%"])
+    _w_of.writerow(["Comprometimento renda com dívidas",f"{calc_parcelas_total()/renda*100:.1f}%" if renda > 0 else "N/A"])
+
+    st.download_button(
+        "⬇️ Baixar relatório completo (.csv)",
+        data=_buf_of.getvalue().encode("utf-8-sig"),
+        file_name=f"Oraculo_Financeiro_{date.today()}.csv",
+        mime="text/csv",
+        use_container_width=True,
+        key="dl_oraculo_v2"
     )
 
-# ══════════════════════════════════════════════
-# 12. CONFIGURAÇÕES
-# ══════════════════════════════════════════════
-with tab_cfg:
-    col_c1, col_c2 = st.columns(2)
-    with col_c1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>⚙️ Configurações do Sistema</b>", unsafe_allow_html=True)
-        meses_cfg = st.slider("Meta de reserva (meses de despesas fixas):", 1, 12, st.session_state.config_meta_reserva, key="oraf1005")
-        st.session_state.config_meta_reserva = meses_cfg
-        taxa_cfg  = st.number_input("Taxa de retorno padrão para simulações (% a.a.):", min_value=1.0, max_value=30.0, value=st.session_state.taxa_invest_anual, step=0.5, key="oraculof45")
-        st.session_state.taxa_invest_anual = taxa_cfg
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>ℹ️ Sobre o Oráculo</b>", unsafe_allow_html=True)
-        st.markdown('''
-        <p style="font-size:13px;line-height:1.7;">
-        O <b style="color:#1A1A2E;">Oráculo Financeiro</b> é um sistema pessoal de organização e educação financeira.
-        </p>
-        <p style="font-size:12px;color:#4B5563;">⚠️ Este sistema não é um serviço regulamentado. As análises são educativas e não substituem um consultor financeiro certificado (CFP/CEA).</p>
-        ''', unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_c2:
-        st.markdown('<div class="card-red">', unsafe_allow_html=True)
-        st.markdown("<b style='color:#1A1A2E;'>🗑️ Zona de Perigo</b>", unsafe_allow_html=True)
-        st.markdown("<p>Apaga permanentemente todos os dados inseridos nesta sessão.</p>", unsafe_allow_html=True)
-        confirmar = st.checkbox("Confirmo que quero apagar tudo", key="oraculof46")
-        if confirmar:
-            if st.button("🗑️ APAGAR TODOS OS DADOS", key="oraculof47"):
-                for k in ["gastos","metas","contas_fixas","outras_rendas","patrimonio_itens","historico_chat","dividas"]:
-                    st.session_state[k] = []
-                st.session_state.renda_total        = 0.0
-                st.session_state.reserva_emergencia = 0.0
-                st.success("Dados apagados com sucesso.")
-                st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# --- RODAPÉ ---
-# ── EXPORTAR PLANILHA FINANCEIRA ──
-import io as _io_csv_or, csv as _csv_mod_or
-_buf_or = _io_csv_or.StringIO()
-_w_or = _csv_mod_or.writer(_buf_or)
-_w_or.writerow(['Tipo', 'Nome/Descricao', 'Valor (R$)', 'Categoria/Info'])
-for _g in st.session_state.get('gastos', []):
-    _w_or.writerow(['Gasto', _g.get('descricao',''), _g.get('valor',''), _g.get('tipo','')])
-for _m in st.session_state.get('metas', []):
-    _w_or.writerow(['Meta', _m.get('nome',''), _m.get('valor',''), f"atual:{_m.get('atual',0)} prazo:{_m.get('prazo','')}m"])
-for _f in st.session_state.get('contas_fixas', []):
-    _w_or.writerow(['Conta Fixa', _f.get('nome',''), _f.get('valor',''), _f.get('cat','')])
-for _dv in st.session_state.get('dividas', []):
-    _w_or.writerow(['Divida', _dv.get('nome',''), _dv.get('valor_total',''), f"parcelas:{_dv.get('parcelas','')}"])
-st.download_button('⬇️ Baixar dados financeiros (.csv)', data=_buf_or.getvalue().encode('utf-8-sig'),
-    file_name='Oraculo_Financeiro.csv', mime='text/csv', use_container_width=True, key='dl_oraculo_csv')
-
-st.markdown(
-    "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;padding-bottom:20px;'>"
-    "© 2026 Oráculo Financeiro IA — Gestão Financeira Inteligente · MeusAgentesIA.com.br"
-    "</div>", unsafe_allow_html=True
-)
-
+    st.divider()
+    st.markdown("**Resumo atual:**")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write(f"📊 Gastos cadastrados: {len(st.session_state.of_gastos)}")
+        st.write(f"💳 Dívidas: {len(st.session_state.of_dividas)}")
+        st.write(f"🎯 Metas: {len(st.session_state.of_metas)}")
+    with col2:
+        st.write(f"📈 Investimentos: {len(st.session_state.of_investimentos)}")
+        st.write(f"🏦 Patrimônios: {len(st.session_state.of_patrimonios)}")
+        st.write(f"💬 Consultas ao Oráculo: {len(st.session_state.of_historico_chat)//2}")
 
 """,
     "seducao_ia": """
@@ -11041,6 +10658,30 @@ elif st.session_state.etapa == "App":
         # ========================
         # BIBLIOTECA
         # ========================
+
+
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_seducao_, datetime as _dt_exp_seducao_
+    _hist_historico_consultas = st.session_state.get('historico_consultas', [])
+    _txt_lines = []
+    for _item in _hist_historico_consultas:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_seducao_ = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_seducao_.encode('utf-8'),
+    file_name="Seducao_IA_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_seducao__txt"
+)
+
 
 # --- RODAPÉ ---
 st.markdown(
@@ -16070,6 +15711,30 @@ elif st.session_state.etapa == "App":
     with _tab_Progresso:
         pass
 
+
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_mente_po, datetime as _dt_exp_mente_po
+    _hist_historico_sessoes = st.session_state.get('historico_sessoes', [])
+    _txt_lines = []
+    for _item in _hist_historico_sessoes:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_mente_po = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_mente_po.encode('utf-8'),
+    file_name="Mente_Poderosa_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_mente_po_txt"
+)
+
+
 # --- RODAPÉ ---
 st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
@@ -16975,7 +16640,36 @@ elif st.session_state.etapa == "App":
 st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
 
-
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_pet_inte, datetime as _dt_exp_pet_inte
+    _hist_hist_chat = st.session_state.get('hist_chat', [])
+    _hist_hist_saude = st.session_state.get('hist_saude', [])
+    _txt_lines = []
+    for _item in _hist_hist_chat:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+    for _item in _hist_hist_saude:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_pet_inte = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_pet_inte.encode('utf-8'),
+    file_name="Pet_Inteligente_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_pet_inte_txt"
+)
 
 """,
     "classicas_motos_ia": """
@@ -19696,6 +19390,30 @@ elif st.session_state.etapa == "App":
         # BIBLIOTECA
         # ========================
 
+
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_classico, datetime as _dt_exp_classico
+    _hist_historico_consultas = st.session_state.get('historico_consultas', [])
+    _txt_lines = []
+    for _item in _hist_historico_consultas:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_classico = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_classico.encode('utf-8'),
+    file_name="Classicos_IA_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_classico_txt"
+)
+
+
 # --- RODAPÉ ---
 st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
@@ -21359,17 +21077,6 @@ st.markdown(f'''
 </div>
 ''', unsafe_allow_html=True)
 
-# --- SOM AMBIENTE ---
-with st.expander("🎵 Som Ambiente Místico (ativar/desativar)"):
-    st.markdown("<p style='font-size:0.88em;color:#888;margin-bottom:6px;'>Clique em ▶ para tocar. Ative o loop manualmente se desejar repetir.</p>", unsafe_allow_html=True)
-    SONS = {
-        "🌙 Atmosfera Mística": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-        "🌊 Sons da Natureza": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-        "🔮 Ambient Profundo": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    }
-    som_escolhido = st.selectbox("Escolha o som:", list(SONS.keys()), key="select_som_ambiente", label_visibility="collapsed")
-    st.audio(SONS[som_escolhido], format="audio/mp3")
-
 
 # --- ABAS ---
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs([
@@ -22078,6 +21785,30 @@ with tab13:
                         st.success("✅ Esta aula já foi concluída!")
 
 st.markdown("<div class='rodape-ravengar'>✦ EXPLORANDO OS MISTÉRIOS DA MENTE E DO DESTINO ✦</div>", unsafe_allow_html=True)
+
+
+
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_tenda_ra, datetime as _dt_exp_tenda_ra
+    _hist_historico = st.session_state.get('historico', [])
+    _txt_lines = []
+    for _item in _hist_historico:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_tenda_ra = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_tenda_ra.encode('utf-8'),
+    file_name="Tenda_Ravengar_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_tenda_ra_txt"
+)
 
 
 # --- RODAPÉ ---
@@ -23097,6 +22828,30 @@ elif st.session_state.etapa == "App":
         "© 2026 Vida Inteligente — Gerente Pessoal de Vida com IA · MeusAgentesIA.com.br"
         "</div>", unsafe_allow_html=True
     )
+
+
+# ── EXPORTAR HISTÓRICO COMPLETO ──
+import io as _io_exp_vida_int, datetime as _dt_exp_vida_int
+    _hist_historico_planos = st.session_state.get('historico_planos', [])
+    _txt_lines = []
+    for _item in _hist_historico_planos:
+        if isinstance(_item, dict):
+            role = _item.get('role', _item.get('tipo', 'item'))
+            content_val = _item.get('content', _item.get('texto', _item.get('resposta', str(_item))))
+            _txt_lines.append(f'[{role}] {content_val}')
+            _txt_lines.append('')
+        else:
+            _txt_lines.append(str(_item))
+_txt_out_vida_int = "\n".join(_txt_lines) if _txt_lines else "Nenhum histórico gerado ainda."
+st.download_button(
+    "⬇️ Baixar histórico completo (.txt)",
+    data=_txt_out_vida_int.encode('utf-8'),
+    file_name="Vida_Inteligente_historico.txt",
+    mime="text/plain",
+    use_container_width=True,
+    key="dl_exp_vida_int_txt"
+)
+
 
 # --- RODAPÉ ---
 st.markdown(
