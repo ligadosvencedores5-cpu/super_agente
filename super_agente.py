@@ -5851,9 +5851,7 @@ Responda APENAS em JSON valido, sem texto extra: {{"questoes": [{{"enunciado": "
                     if st.session_state['quiz_erros']:
                         st.markdown("### ❌ Questões que você errou — Revise:")
                         for _err in st.session_state['quiz_erros']:
-                            with st.expander(f"Q{_err['num']}: {_err['enunciado'][:60]}..."):
-                                st.markdown(f"**Sua resposta:** {_err['sua']} — **Gabarito:** {_err['gabarito']}")
-                                st.markdown(f"**Explicação:** {_err['explicacao']}")
+                            st.markdown(f"<div class='card' style='margin-bottom:10px;'><strong>Questao {_err['num']}:</strong> {_err['enunciado']}<br><br><span style='color:#b91c1c;'>Sua resposta: {_err['sua']}</span> &nbsp;|&nbsp; <span style='color:#15803d;'>Gabarito: {_err['gabarito']}</span><br><br><em>{_err['explicacao']}</em></div>", unsafe_allow_html=True)
 
                     # Salvar no histórico
                     import datetime as _dt
