@@ -1534,13 +1534,12 @@ elif st.session_state.etapa == "App":
             st.header("🏛️ Conheça o Destino")
             # ── EXPORTAR PLANILHA ──
             import io as _io_csv, csv as _csv_mod
-            if st.session_state.get('historico_roteiros'):
-                _buf = _io_csv.StringIO()
-                _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'destino', 'tipo', 'roteiro'], extrasaction='ignore')
-                _writer.writeheader()
-                for _row in st.session_state['historico_roteiros']:
-                    _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'destino', 'tipo', 'roteiro']})
-                st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Guia_Viagens.csv", mime="text/csv", use_container_width=True, key="dl_historico_roteiros")
+            _buf = _io_csv.StringIO()
+            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'destino', 'tipo', 'roteiro'], extrasaction='ignore')
+            _writer.writeheader()
+            for _row in st.session_state['historico_roteiros']:
+                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'destino', 'tipo', 'roteiro']})
+            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Guia_Viagens.csv", mime="text/csv", use_container_width=True, key="dl_historico_roteiros")
 
             st.markdown("Descubra a história, cultura e curiosidades antes de visitar.")
 
@@ -3102,14 +3101,6 @@ elif st.session_state.etapa == "App":
                 st.download_button("⬇️ Exportar histórico completo (.txt)", data=hist_txt, file_name="historico_nutrimind.txt", mime="text/plain",
         key="dl_chef_cal_7"
     )
-                import io as _io_csv, csv as _csv_mod
-                _buf_chef = _io_csv.StringIO()
-                _cols_chef = ['data','tipo','nome','objetivo','calorias','cardapio','conteudo']
-                _wr_chef = _csv_mod.DictWriter(_buf_chef, fieldnames=_cols_chef, extrasaction='ignore')
-                _wr_chef.writeheader()
-                for _r in st.session_state.historico_cardapios:
-                    _wr_chef.writerow({c: str(_r.get(c,'')) for c in _cols_chef})
-                st.download_button('⬇️ Baixar histórico (.csv)', data=_buf_chef.getvalue().encode('utf-8-sig'), file_name='Chef_Calorico.csv', mime='text/csv', use_container_width=True, key='dl_historico_cardapios')
 
                 if st.button("🗑️ Limpar histórico", key="chefcalo51"):
                     st.session_state.historico_cardapios = []
@@ -3118,6 +3109,8 @@ elif st.session_state.etapa == "App":
         # ──────────────────────────────────────────
         # RECEITAS SALVAS
         # ──────────────────────────────────────────
+
+
 
     with _tab_Salvos:
             st.header("❤️ Receitas Salvas")
@@ -3433,12 +3426,23 @@ elif st.session_state.etapa == "App":
                 if st.session_state.get('nutrint_hidra'):
                     st.markdown(f"<div class='card-blue'>{st.session_state['nutrint_hidra']}</div>", unsafe_allow_html=True)
 
+
+
     # --- RODAPÉ ---
     st.markdown(
         "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;'>"
         "© 2026 NutriMind AI — Nutricionista, Chef e Coach em um só lugar · MeusAgentesIA.com.br"
         "</div>", unsafe_allow_html=True
     )
+
+# ── EXPORTAR CHEF CSV (nivel raiz) ──
+import io as _io_chef_r, csv as _csv_chef_r
+_buf_chef_r = _io_chef_r.StringIO()
+_w_chef_r = _csv_chef_r.writer(_buf_chef_r)
+_w_chef_r.writerow(['data','tipo','nome','objetivo','calorias'])
+for _rc_r in st.session_state.get('historico_cardapios', []):
+    _w_chef_r.writerow([str(_rc_r.get(c,'') if isinstance(_rc_r,dict) else '') for c in ['data','tipo','nome','objetivo','calorias']])
+st.download_button('⬇️ Baixar histórico (.csv)', data=_buf_chef_r.getvalue().encode('utf-8-sig'), file_name='Chef_Calorico.csv', mime='text/csv', use_container_width=True, key='dl_chef_root')
 
 # --- RODAPÉ ---
 st.markdown(
@@ -4737,13 +4741,12 @@ elif st.session_state.etapa == "App":
         st.header("📚 Biblioteca de Exercícios")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_treinos'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'duracao', 'treino'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_treinos']:
-                _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'tipo', 'duracao', 'treino']})
-            st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Personal_Trainer.csv', mime='text/csv', use_container_width=True, key='dl_historico_treinos')
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'duracao', 'treino'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_treinos']:
+            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'tipo', 'duracao', 'treino']})
+        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Personal_Trainer.csv', mime='text/csv', use_container_width=True, key='dl_historico_treinos')
 
 
         tab_b1, tab_b2, tab_b3 = st.tabs(["🔄 Substituições","📖 Guia do Exercício","💢 Adaptações para Lesão"])
@@ -6355,13 +6358,12 @@ Responda APENAS em JSON valido, sem texto extra: {{"questoes": [{{"enunciado": "
         st.header("🕰️ História")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_estudos'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'materia', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_estudos']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'materia', 'conteudo']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Tutor_Concursos.csv", mime="text/csv", use_container_width=True, key="dl_historico_estudos")
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'materia', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_estudos']:
+            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'materia', 'conteudo']})
+        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Tutor_Concursos.csv", mime="text/csv", use_container_width=True, key="dl_historico_estudos")
 
         st.markdown("*Estude história do Brasil e geral: períodos coloniais, império, república, história contemporânea e eventos mundiais.*")
         _prompt_hist = st.text_area("Descreva sua dúvida ou peça explicação sobre o tema:", height=120, key="tutorc_hist_in", placeholder="Ex: História do Brasil colonial, período imperial, república velha, Segunda Guerra Mundial, Guerra Fria...")
@@ -6793,13 +6795,12 @@ if st.session_state.etapa == "login":
     st.markdown("<p style='text-align:center;color:#4F46E5;font-size:1.1em;margin-bottom:4px'>Seu professor particular adaptativo de inglês</p>", unsafe_allow_html=True)
     # ── EXPORTAR PLANILHA ──
     import io as _io_csv, csv as _csv_mod
-    if st.session_state.get('aula_historico'):
-        _buf = _io_csv.StringIO()
-        _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
-        _writer.writeheader()
-        for _row in st.session_state['aula_historico']:
-            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['role', 'content']})
-        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Nexus_English.csv", mime="text/csv", use_container_width=True, key="dl_aula_historico")
+    _buf = _io_csv.StringIO()
+    _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
+    _writer.writeheader()
+    for _row in st.session_state['aula_historico']:
+        _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['role', 'content']})
+    st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Nexus_English.csv", mime="text/csv", use_container_width=True, key="dl_aula_historico")
 
     st.markdown("<div style='text-align:center'><span class='badge'>MeusAgentesIA.com.br</span></div>", unsafe_allow_html=True)
     st.markdown("---")
@@ -7891,13 +7892,12 @@ elif st.session_state.etapa == "App":
         st.header("📖 Diário do Investigador")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_casos'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'caso', 'status', 'conclusao'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_casos']:
-                _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'caso', 'status', 'conclusao']})
-            st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Sherlock_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_casos')
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'caso', 'status', 'conclusao'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_casos']:
+            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'caso', 'status', 'conclusao']})
+        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Sherlock_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_casos')
 
 
         col1, col2 = st.columns(2)
@@ -9474,7 +9474,7 @@ with tab_gastos:
     with col_g1:
         st.markdown('<div class="card">', unsafe_allow_html=True)
         st.markdown("<b style='color:#1A1A2E;'>💸 Registrar Gasto</b>", unsafe_allow_html=True)
-        with st.expander("⚙️ Gerenciar categorias"):
+        with st.expander("Gerenciar categorias"):
             nova_c = st.text_input("Nova categoria:", key="oraculof13")
             if st.button("Adicionar categoria", key="oraculof14"):
                 if nova_c and nova_c not in st.session_state.categorias_gastos:
@@ -9540,9 +9540,9 @@ with tab_metas:
             m_nome  = st.text_input("Nome da meta", placeholder="Ex: Viagem Europa", key="oraculof22")
             m_cat   = st.selectbox("Categoria", ["Viagem","Carro","Casa","Educação","Investimento","Reserva","Emergência","Outro"], key="oraculof23")
             c1, c2  = st.columns(2)
-            with c1: m_val   = st.number_input("Valor total (R$)", min_value=1.0, step=100.0, key="oraculof24")
+            with c1: m_val   = st.number_input("Valor total (R$)", min_value=0.0, value=1000.0, step=100.0, key="oraculof24")
             with c2: m_prazo = st.number_input("Prazo (meses)", min_value=1, max_value=360, value=12, key="oraculof25")
-            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, step=100.0, key="oraculof26")
+            m_atual = st.number_input("Já guardei (R$)", min_value=0.0, value=0.0, step=100.0, key="oraculof26")
             if st.form_submit_button("🚀 CRIAR META", key="oraculoffsb505"):
                 if m_nome and m_val:
                     mensal = (m_val - m_atual) / m_prazo if m_prazo > 0 else m_val
@@ -10038,15 +10038,24 @@ with tab_cfg:
         st.markdown("</div>", unsafe_allow_html=True)
 
 # --- RODAPÉ ---
-# ── EXPORTAR PLANILHA ──
-import io as _io_csv, csv as _csv_mod
-if st.session_state.get('historico_chat'):
-    _buf = _io_csv.StringIO()
-    _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
-    _writer.writeheader()
-    for _row in st.session_state['historico_chat']:
-        _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['role', 'content']})
-    st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Oraculo_Financeiro.csv', mime='text/csv', use_container_width=True, key='dl_historico_chat')
+# ── EXPORTAR PLANILHA FINANCEIRA ──
+import io as _io_csv_or, csv as _csv_mod_or
+_tem_dados_or = (st.session_state.get('gastos') or st.session_state.get('metas') or
+                 st.session_state.get('contas_fixas') or st.session_state.get('dividas'))
+if _tem_dados_or:
+    _buf_or = _io_csv_or.StringIO()
+    _w_or = _csv_mod_or.writer(_buf_or)
+    _w_or.writerow(['Tipo', 'Nome/Descrição', 'Valor (R$)', 'Categoria/Info'])
+    for _g in st.session_state.get('gastos', []):
+        _w_or.writerow(['Gasto', _g.get('desc',''), _g.get('valor',''), _g.get('cat','')])
+    for _m in st.session_state.get('metas', []):
+        _w_or.writerow(['Meta', _m.get('nome',''), _m.get('valor',''), f"atual:{_m.get('atual',0)} prazo:{_m.get('prazo','')}m"])
+    for _f in st.session_state.get('contas_fixas', []):
+        _w_or.writerow(['Conta Fixa', _f.get('nome',''), _f.get('valor',''), _f.get('cat','')])
+    for _dv in st.session_state.get('dividas', []):
+        _w_or.writerow(['Dívida', _dv.get('nome',''), _dv.get('valor',''), f"parcelas:{_dv.get('parcelas','')}"])
+    st.download_button('⬇️ Baixar dados financeiros (.csv)', data=_buf_or.getvalue().encode('utf-8-sig'),
+        file_name='Oraculo_Financeiro.csv', mime='text/csv', use_container_width=True, key='dl_oraculo_csv')
 
 st.markdown(
     "<div style='text-align:center;color:#999;font-size:0.8em;margin-top:60px;padding-bottom:20px;'>"
@@ -10790,13 +10799,12 @@ elif st.session_state.etapa == "App":
         st.header("📖 A Arte de Contar Histórias")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_consultas'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_consultas']:
-                _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-            st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Seducao_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_consultas']:
+            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
+        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Seducao_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
 
 
         tab_aprender, tab_praticar = st.tabs(["📖 Aprender a Técnica", "✍️ Transforme Sua História"])
@@ -12475,13 +12483,12 @@ elif st.session_state.etapa == "App":
         st.header("📚 Biblioteca de Projetos")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_projetos'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'nome', 'categoria', 'descricao'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_projetos']:
-                _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'nome', 'categoria', 'descricao']})
-            st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Invencoes_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_projetos')
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'nome', 'categoria', 'descricao'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_projetos']:
+            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'nome', 'categoria', 'descricao']})
+        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Invencoes_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_projetos')
 
 
         if not st.session_state.projetos_salvos:
@@ -15276,13 +15283,12 @@ elif st.session_state.etapa == "App":
         st.header("📚 Biblioteca de Consultas")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_consultas'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_consultas']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Consultor_Juridico.csv", mime="text/csv", use_container_width=True, key="dl_historico_consultas")
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_consultas']:
+            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'modulo', 'pergunta', 'conteudo']})
+        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Consultor_Juridico.csv", mime="text/csv", use_container_width=True, key="dl_historico_consultas")
 
         st.markdown("Todas as suas consultas salvas, organizadas por área.")
 
@@ -15956,13 +15962,12 @@ elif st.session_state.etapa == "App":
         st.header("📖 Diário Mental")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_sessoes'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'tema', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_sessoes']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'tema', 'conteudo']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Mente_Poderosa.csv", mime="text/csv", use_container_width=True, key="dl_historico_sessoes")
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'tema', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_sessoes']:
+            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'tema', 'conteudo']})
+        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Mente_Poderosa.csv", mime="text/csv", use_container_width=True, key="dl_historico_sessoes")
 
         st.markdown("Reflexões guiadas para autoconhecimento profundo — com prompts personalizados pela IA.")
 
@@ -16952,13 +16957,12 @@ elif st.session_state.etapa == "App":
             st.markdown("<hr class='divider'>", unsafe_allow_html=True)
             # ── EXPORTAR PLANILHA ──
             import io as _io_csv, csv as _csv_mod
-            if st.session_state.get('hist_saude'):
-                _buf = _io_csv.StringIO()
-                _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'pet', 'tipo', 'observacao'], extrasaction='ignore')
-                _writer.writeheader()
-                for _row in st.session_state['hist_saude']:
-                    _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'pet', 'tipo', 'observacao']})
-                st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Pet_Inteligente.csv", mime="text/csv", use_container_width=True, key="dl_hist_saude")
+            _buf = _io_csv.StringIO()
+            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'pet', 'tipo', 'observacao'], extrasaction='ignore')
+            _writer.writeheader()
+            for _row in st.session_state['hist_saude']:
+                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'pet', 'tipo', 'observacao']})
+            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Pet_Inteligente.csv", mime="text/csv", use_container_width=True, key="dl_hist_saude")
 
             st.markdown("<div style='text-align:center;font-size:0.75em;color:#94A3B8;'>© 2026 Pet Inteligente · MeusAgentesIA.com.br · <a href='https://meusagentesia.com.br' target='_blank' style='color:#4F46E5;'>meusagentesia.com.br</a></div>", unsafe_allow_html=True)
 
@@ -17919,13 +17923,12 @@ elif st.session_state.etapa == "App":
 
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_consultas'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_consultas']:
-                _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-            st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Classicas_Motos.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_consultas']:
+            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
+        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Classicas_Motos.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
 
         modelo_hist = st.text_input("🏍️ Modelo:", value=st.session_state.moto_padrao.split(' ')[0] if st.session_state.moto_padrao else "", placeholder="ex: CB 450, RD 350...", key="ti_classica_112")
 
@@ -19365,13 +19368,12 @@ elif st.session_state.etapa == "App":
 
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_consultas'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_consultas']:
-                _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
-            st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Classicos_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'modulo', 'pergunta', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_consultas']:
+            _writer.writerow({c: str(_row.get(c,'') if isinstance(_row,dict) else '') for c in ['data', 'modulo', 'pergunta', 'conteudo']})
+        st.download_button('⬇️ Baixar histórico (.csv)', data=_buf.getvalue().encode('utf-8-sig'), file_name='Classicos_IA.csv', mime='text/csv', use_container_width=True, key='dl_historico_consultas')
 
         modelo_hist = st.text_input("🚗 Modelo:", value=st.session_state.veiculo_padrao.split(' ')[0] if st.session_state.veiculo_padrao else "", placeholder="ex: Fusca, Opala, Maverick...", key="ti_classico_112")
 
@@ -20655,13 +20657,12 @@ elif st.session_state.etapa == "App":
         st.header("📚 Histórico de Segurança")
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico_relatorios'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'titulo', 'conteudo'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico_relatorios']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'titulo', 'conteudo']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Guardiao_Pessoal.csv", mime="text/csv", use_container_width=True, key="dl_historico_relatorios")
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'titulo', 'conteudo'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico_relatorios']:
+            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'titulo', 'conteudo']})
+        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Guardiao_Pessoal.csv", mime="text/csv", use_container_width=True, key="dl_historico_relatorios")
 
         st.markdown("Linha do tempo de todas as suas análises, com o selo de risco de cada uma.")
 
@@ -21289,13 +21290,12 @@ if 'chave_api' not in st.session_state or not st.session_state.chave_api:
         padding:14px 18px;margin-bottom:20px;font-size:0.9em;color:#000;line-height:1.8;text-align:center;'>
         # ── EXPORTAR PLANILHA ──
         import io as _io_csv, csv as _csv_mod
-        if st.session_state.get('historico'):
-            _buf = _io_csv.StringIO()
-            _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
-            _writer.writeheader()
-            for _row in st.session_state['historico']:
-                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['role', 'content']})
-            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Tenda_Ravengar.csv", mime="text/csv", use_container_width=True, key="dl_historico")
+        _buf = _io_csv.StringIO()
+        _writer = _csv_mod.DictWriter(_buf, fieldnames=['role', 'content'], extrasaction='ignore')
+        _writer.writeheader()
+        for _row in st.session_state['historico']:
+            _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['role', 'content']})
+        st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Tenda_Ravengar.csv", mime="text/csv", use_container_width=True, key="dl_historico")
 
         🔒 <strong>Exclusivo para Associados MeusAgentesIA.com.br</strong><br>
         🔗 <a href='https://meusagentesia.com.br/' target='_blank'
@@ -22818,13 +22818,12 @@ elif st.session_state.etapa == "App":
             st.header("📖 Diário Inteligente")
             # ── EXPORTAR PLANILHA ──
             import io as _io_csv, csv as _csv_mod
-            if st.session_state.get('historico_planos'):
-                _buf = _io_csv.StringIO()
-                _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'tema', 'conteudo'], extrasaction='ignore')
-                _writer.writeheader()
-                for _row in st.session_state['historico_planos']:
-                    _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'tema', 'conteudo']})
-                st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Vida_Inteligente.csv", mime="text/csv", use_container_width=True, key="dl_historico_planos")
+            _buf = _io_csv.StringIO()
+            _writer = _csv_mod.DictWriter(_buf, fieldnames=['data', 'tipo', 'tema', 'conteudo'], extrasaction='ignore')
+            _writer.writeheader()
+            for _row in st.session_state['historico_planos']:
+                _writer.writerow({c: str(_row.get(c, '') if isinstance(_row, dict) else getattr(_row, c, '')) for c in ['data', 'tipo', 'tema', 'conteudo']})
+            st.download_button("⬇️ Baixar histórico (.csv)", data=_buf.getvalue().encode('utf-8-sig'), file_name="Vida_Inteligente.csv", mime="text/csv", use_container_width=True, key="dl_historico_planos")
 
             st.markdown("Reflexão guiada de fim de dia.")
 
