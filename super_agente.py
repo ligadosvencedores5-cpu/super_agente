@@ -459,27 +459,99 @@ def normalizar_tabelas_frases(texto: str) -> str:
 
     return '\\n'.join(resultado)
 
-# --- MOTOR DE IA ---
-def viagem_ia(prompt: str, system_extra: str = "") -> str:
+# --- IDENTIFICAÇÃO CONFIÁVEL DO DESTINO ---
+# Antes de gerar qualquer conteúdo, a IA confirma que lugar é o destino digitado
+# (ex.: Porto Alegre = Rio Grande do Sul, Brasil — e não Porto ou Lisboa, em Portugal).
+def ficha_destino(nome):
+    nome = (nome or '').strip()
+    if not nome:
+        return None
+    fichas = st.session_state.setdefault('_fichas_destino', {})
+    chave = nome.lower()
+    if chave in fichas:
+        return fichas[chave]
+    pedido = (
+        f"O usuário digitou este destino de viagem: «{nome}».\\n"
+        "Identifique exatamente que lugar é esse. Responda SOMENTE com um JSON com estes campos:\\n"
+        '{"nome_oficial": "nome completo do lugar", "tipo": "cidade, estado, região, país ou idioma", '
+        '"pais": "país onde fica", "regiao": "estado, província ou região (ou vazio)", '
+        '"no_brasil": true ou false, "idioma": "idioma falado no dia a dia", '
+        '"moeda": "nome da moeda", "simbolo": "símbolo da moeda", '
+        '"nao_confundir": ["lugares de nome parecido que NÃO são este"], "certeza": "alta, media ou baixa"}\\n'
+        "Exemplo: «Porto Alegre» é a capital do Rio Grande do Sul, no Brasil (português do Brasil, real) — "
+        "não confundir com Porto nem com Lisboa, que ficam em Portugal.\\n"
+        "Se o usuário digitou um idioma (ex.: Italiano), use o país principal desse idioma. "
+        "Se o nome for ambíguo, escolha o lugar mais provável para um brasileiro e marque certeza media."
+    )
+    ficha = None
     try:
         client = Groq(api_key=st.session_state.api_key)
-        system = f'''Você é um especialista em turismo e planejamento de viagens no Brasil e no mundo. REGRA DE OURO — CONFIABILIDADE 100%%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
+        r = client.chat.completions.create(
+            model="openai/gpt-oss-120b", temperature=0,
+            messages=[{"role": "system", "content": "Você é um geógrafo muito preciso. Responda apenas com JSON válido."},
+                      {"role": "user", "content": pedido}])
+        txt = r.choices[0].message.content or ''
+        ini, fim = txt.find('{'), txt.rfind('}')
+        if ini >= 0 and fim > ini:
+            ficha = json.loads(txt[ini:fim + 1])
+    except Exception:
+        ficha = None
+    if isinstance(ficha, dict):
+        fichas[chave] = ficha
+        return ficha
+    return None
+
+def bloco_destino(nome):
+    fi = ficha_destino(nome)
+    if not fi:
+        return (f"DESTINO DIGITADO PELO USUÁRIO: {nome}. Antes de responder, identifique com certeza que lugar é esse "
+                "e não o confunda com lugares de nome parecido.")
+    regiao = f", {fi.get('regiao')}" if fi.get('regiao') else ""
+    linhas = [f"DESTINO CONFIRMADO: {fi.get('nome_oficial') or nome} — país: {fi.get('pais', '')}{regiao}.",
+              f"Idioma local: {fi.get('idioma', '')}. Moeda: {fi.get('moeda', '')} ({fi.get('simbolo', '')})."]
+    nc = [x for x in (fi.get('nao_confundir') or []) if isinstance(x, str) and x.strip()]
+    if nc:
+        linhas.append("NÃO confunda com: " + ", ".join(nc) + ".")
+    if fi.get('no_brasil'):
+        linhas.append("ESTE DESTINO FICA NO BRASIL: moeda real (R$), idioma português do Brasil, sem câmbio, sem passaporte e sem idioma estrangeiro. "
+                      "Nunca use euro, vocabulário de Portugal ou costumes de outro país.")
+    linhas.append("Tudo o que você escrever — lugares, preços, palavras, costumes, clima e história — deve ser DESTE destino e de nenhum outro.")
+    return "\\n".join(linhas)
+
+# --- MOTOR DE IA ---
+def viagem_ia(prompt: str, system_extra: str = "", destino: str = None) -> str:
+    try:
+        client = Groq(api_key=st.session_state.api_key)
+        ancora = bloco_destino(destino) if destino else ""
+        system = f'''Você é um especialista em turismo e planejamento de viagens no Brasil e no mundo. REGRA DE OURO — CONFIABILIDADE 100%: Forneça APENAS informações que você tem certeza absoluta que são verdadeiras. JAMAIS invente, suponha, extrapole ou preencha lacunas com dados fictícios. Se não souber algo com certeza — preço, endereço, horário, nome, estatística, lei, fato — diga EXPLICITAMENTE: 'Não tenho certeza sobre isso, recomendo verificar em [fonte].' É melhor uma resposta incompleta e honesta do que uma resposta completa e inventada. O usuário depende dessas informações para tomar decisões reais.
 Usuário: {st.session_state.usuario}.
 Cidade de origem: {st.session_state.cidade_origem or 'Brasil'}.
 Perfil de viagem: {st.session_state.perfil_viagem}.
+{ancora}
 {system_extra}
 REGRAS:
-- Seja específico com nomes de lugares, restaurantes, hotéis e atrações reais
+- Cite apenas lugares, restaurantes, hotéis e atrações que você sabe que existem DE VERDADE neste destino. Se não tiver certeza de um nome, descreva o tipo de lugar e o bairro em vez de inventar
+- Nunca invente notas ou avaliações (⭐), estatísticas, links, telefones ou endereços
 - REGRA CRÍTICA DE FORMATAÇÃO: sempre escreva R$30, R$120, R$1.500 — NUNCA escreva "R 30" ou "R 120" sem o cifrão. O símbolo correto é R$ colado ao número, sem espaço entre R e $.
-- Indique horários de funcionamento quando relevante
+- Só informe horários de funcionamento quando tiver certeza; se não tiver, oriente a confirmar no site oficial ou no Google Maps
 - Dê dicas práticas que guias normais não dão
-- Escreva em português brasileiro natural e animado'''
+- Escreva em português brasileiro natural e animado
+REGRAS DE PRECISÃO (valem para todas as respostas):
+- Antes de citar qualquer lugar, confirme que ele fica no destino pedido — não misture cidades nem países
+- Preços são sempre estimativas: diga isso e evite falsa precisão (use faixas, ex.: R$40 a R$70)
+- Câmbio muda todo dia: dê só uma referência aproximada e mande conferir a cotação do dia no app do banco ou no Google
+- Visto, passaporte, vacinas e regras de entrada: diga o que sabe e mande SEMPRE confirmar no site oficial do consulado do país e no Portal Consular do Itamaraty (gov.br/mre); para vacinas, também com a Anvisa ou o Ministério da Saúde
+- Clima: informe médias históricas aproximadas — deixe claro que não é previsão do tempo
+- Tempo de deslocamento: sempre aproximado — sugira conferir no Google Maps
+- Números de emergência, hospitais e telefones: só os que você tem certeza; se não tiver, diga onde encontrar
+- Se não souber alguma informação, escreva "não tenho certeza — confirme em [fonte]" em vez de inventar'''
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user",   "content": prompt},
             ],
             model="openai/gpt-oss-120b",
+            temperature=0.3,
         )
         txt = response.choices[0].message.content
         if txt: st.session_state['res_geral_guiavi1'] = str(txt)
@@ -500,6 +572,7 @@ REGRAS:
         txt = _re.sub(r'\\*\\*R\\s+(\\d)', r'**R$\\1', txt)
         # "R 30 50" sem cifrão (dois números juntos com R na frente)
         txt = _re.sub(r'\\bR\\b\\s*(?!\\$)(\\d)', r'R$\\1', txt)
+        txt = txt.rstrip() + "\\n\\n---\\nℹ️ *Conteúdo gerado por IA. Preços, horários, câmbio e regras de entrada mudam com frequência — confirme nos sites oficiais antes de viajar.*"
         return txt
     except Exception as e:
         return f"⚠️ Erro na API: {e}"
@@ -596,12 +669,12 @@ elif st.session_state.etapa == "App":
             c3.markdown(f"<div class='stat-box'><div class='stat-numero'>{tipos.get('Roteiro Completo',0)}</div><div>Roteiros completos</div></div>", unsafe_allow_html=True)
             c4.markdown(f"<div class='stat-box'><div class='stat-numero'>{tipos.get('Fim de Semana',0)}</div><div>FDS planejados</div></div>", unsafe_allow_html=True)
 
-            st.markdown("<div class='card'>💡 <em>'O mundo é um livro e quem não viaja lê apenas uma página.'</em> — Santo Agostinho</div>", unsafe_allow_html=True)
+            st.markdown("<div class='card'>💡 <em>'O mundo é um livro e quem não viaja lê apenas uma página.'</em> — frase popularmente atribuída a Santo Agostinho</div>", unsafe_allow_html=True)
 
             st.markdown("### 🗺️ O que cada aba faz")
             st.markdown("**Linha 1 — Planejamento principal:**")
             guia1 = {
-                "🗺️ Roteiro Completo":       "Roteiro dia a dia completo para qualquer destino — horários, custos, restaurantes com nota, tempo de deslocamento e análise de orçamento",
+                "🗺️ Roteiro Completo":       "Roteiro dia a dia completo para qualquer destino — horários, custos, restaurantes, tempo de deslocamento e análise de orçamento",
                 "🇧🇷 Fim de Semana no Brasil": "Destinos incríveis perto de você para viajar sem gastar muito",
                 "💰 Estimativa de Custos":    "Planejamento financeiro da viagem — passagem, hotel, alimentação, passeios",
                 "🗣️ Frases Essenciais":       "As frases mais importantes no idioma local — com pronúncia e dica cultural",
@@ -672,10 +745,15 @@ elif st.session_state.etapa == "App":
             if st.button("🗺️ GERAR ROTEIRO COMPLETO", key="guiaviag8"):
                 if destino.strip():
                     with st.spinner(f"Montando seu roteiro para {destino}..."):
-                        # Detecta se é destino internacional com euro
-                        paises_euro = ["portugal","lisboa","porto","espanha","madrid","barcelona","frança","paris","itália","roma","milão","alemanha","berlim","grécia","atenas","holanda","amsterdam","bélgica","bruxelas","áustria","viena","irlanda","dublin"]
-                        usa_euro = any(p in destino.lower() for p in paises_euro)
-                        moeda_info = "O destino usa Euro (€). Mostre os preços em € e também a conversão estimada em R$ (considere câmbio de aproximadamente R$6 por €1). " if usa_euro else ""
+                        # Moeda pelo destino confirmado (evita, por ex., tratar Porto Alegre como Portugal)
+                        _fd = ficha_destino(destino) or {}
+                        if _fd.get('no_brasil'):
+                            moeda_info = "O destino fica no Brasil: use apenas preços em reais (R$). "
+                        elif _fd.get('moeda'):
+                            moeda_info = (f"O destino usa {_fd.get('moeda')} ({_fd.get('simbolo', '')}). Mostre os preços na moeda local e a conversão aproximada em R$, "
+                                          "avisando que o câmbio muda todos os dias. ")
+                        else:
+                            moeda_info = ""
 
                         prompt = (
                             f"Crie um roteiro completo de {dias} dias para {destino}.\\n"
@@ -684,11 +762,11 @@ elif st.session_state.etapa == "App":
                             f"{moeda_info}\\n\\n"
                             f"INSTRUÇÕES IMPORTANTES:\\n"
                             f"- Todos os preços são ESTIMATIVAS e podem variar — informe isso sempre\\n"
-                            f"- Inclua links para sites oficiais ou de compra de ingressos sempre que possível\\n"
-                            f"- Sugira restaurantes com nota média (ex: ⭐4.5) e faixa de preço (€/R$ por pessoa)\\n"
+                            f"- Só inclua links de sites oficiais que você tem certeza que existem — nunca invente links\\n"
+                            f"- Sugira restaurantes conhecidos com faixa de preço por pessoa — sem inventar notas ou avaliações\\n"
                             f"- Informe o tempo de deslocamento entre pontos turísticos (ex: 15 min a pé, 20 min de metrô)\\n"
                             f"- Ao final, calcule o orçamento total e avise se R${orcamento} é suficiente ou não\\n"
-                            f"- Inclua sugestão de restaurante por dia com nome real, prato recomendado e preço\\n\\n"
+                            f"- Inclua sugestão de restaurante por dia com nome real (só se tiver certeza de que existe), prato típico e faixa de preço\\n\\n"
                             f"ESTRUTURA:\\n\\n"
                             f"✈️ ROTEIRO: {destino.upper()} — {dias} DIAS\\n"
                             f"Estilo: {perfil} | {pessoas} | Orçamento: R${orcamento} total\\n\\n"
@@ -707,20 +785,20 @@ elif st.session_state.etapa == "App":
                             f"  🔗 Site/ingresso: [link oficial se existir]\\n"
                             f"  🚶 Deslocamento até próximo ponto: [X min a pé / metrô / táxi]\\n\\n"
                             f"🍽️ Almoço ([horário]):\\n"
-                            f"• [Nome do restaurante] ⭐[nota] — [prato recomendado] — [faixa de preço] p/pessoa\\n\\n"
+                            f"• [Nome do restaurante] — [prato recomendado] — [faixa de preço] p/pessoa\\n\\n"
                             f"🌅 Tarde ([horário]):\\n"
                             f"• [Local] — [dica] — [preço] (⚠️ estimativa)\\n"
                             f"  🔗 [link se existir]\\n"
                             f"  🚶 Deslocamento: [X min]\\n\\n"
                             f"🌙 Noite ([horário]):\\n"
-                            f"• [Jantar: restaurante ⭐nota] — [preço]\\n"
+                            f"• [Jantar: restaurante] — [preço]\\n"
                             f"• [Programa noturno opcional]\\n\\n"
                             f"💰 Gasto estimado do dia: [preço] p/pessoa (⚠️ estimativa)\\n\\n"
                             f"[Repita para todos os {dias} dias]\\n\\n"
                             f"🗺️ ORDEM SUGERIDA DOS PASSEIOS (para reduzir deslocamentos):\\n"
                             f"[Liste os pontos turísticos em ordem geográfica para minimizar trajetos, com bairro de cada um]\\n\\n"
                             f"🍽️ TOP RESTAURANTES DO ROTEIRO:\\n"
-                            f"[Lista dos melhores mencionados com: nome, culinária, nota, faixa de preço, bairro]\\n\\n"
+                            f"[Lista dos melhores mencionados com: nome, culinária, faixa de preço, bairro]\\n\\n"
                             f"🏨 HOSPEDAGEM SUGERIDA:\\n"
                             f"[3 opções: econômico, intermediário, confortável — com bairro e preço/noite]\\n\\n"
                             f"🚗 COMO SE LOCOMOVER:\\n"
@@ -735,9 +813,9 @@ elif st.session_state.etapa == "App":
                             f"⚠️ ANÁLISE DO ORÇAMENTO:\\n"
                             f"[Calcule se R${orcamento} é suficiente para {pessoas}. Se não for, indique quanto falta e onde cortar]\\n\\n"
                             f"💡 DICAS DE OURO:\\n"
-                            f"[5 dicas que só quem conhece {destino} de verdade sabe]"
+                            f"[5 dicas verdadeiras e úteis sobre {destino} — nada de curiosidades inventadas]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino)
                         salvar_roteiro("Roteiro Completo", destino, res)
                         st.session_state['roteiro_temp'] = res
                         st.session_state['roteiro_destino'] = destino
@@ -830,7 +908,7 @@ elif st.session_state.etapa == "App":
                             f"🏆 NOSSA RECOMENDAÇÃO:\\n"
                             f"[Qual dos 3 é melhor para esse perfil e por quê]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, f"A cidade de origem é {origem_br}, no Brasil. Sugira somente destinos reais no Brasil, com distâncias realistas.")
                         salvar_roteiro("Fim de Semana", f"FDS saindo de {origem_br}", res)
                         st.session_state['brasil_temp'] = res
                         st.markdown(f"<div class='card-green'>{res}</div>", unsafe_allow_html=True)
@@ -918,7 +996,7 @@ elif st.session_state.etapa == "App":
                             f"📅 MELHOR ÉPOCA PARA IR (relação custo-benefício):\\n"
                             f"[Meses ideais e por que]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_o)
                         salvar_roteiro("Estimativa de Custos", destino_o, res)
                         st.session_state['orcamento_temp'] = res
                         st.markdown(f"<div class='card-orange'>{res}</div>", unsafe_allow_html=True)
@@ -962,37 +1040,73 @@ elif st.session_state.etapa == "App":
 
             if st.button("🗣️ GERAR FRASES ESSENCIAIS", key="guiaviag23"):
                 if pais_f.strip():
-                    with st.spinner(f"Preparando frases em {pais_f}..."):
+                    with st.spinner(f"Preparando frases para {pais_f}..."):
                         contexts = ", ".join(contexto_f) if contexto_f else "situações gerais"
-                        prompt = (
-                            f"Crie um guia de frases essenciais para {pais_f}.\\n"
-                            f"Situações: {contexts}. Nível: {nivel_f}.\\n"
-                            f"{'Inclua pronúncia fonética entre colchetes.' if fonetica else ''}\\n\\n"
-                            f"REGRAS DE FORMATAÇÃO — siga rigorosamente:\\n"
-                            f"1. Use SEMPRE tabela markdown com pipes | para todas as seções\\n"
-                            f"2. NUNCA use tabulações (tab) para separar colunas\\n"
-                            f"3. O título da situação vai na linha imediatamente ANTES da tabela, sem linhas em branco entre eles\\n"
-                            f"4. Separe as seções com apenas UMA linha em branco\\n\\n"
-                            f"FORMATO EXATO (copie esta estrutura):\\n\\n"
-                            f"🍴 Nome da Situação\\n"
-                            f"| Português | {pais_f} | {'Pronúncia' if fonetica else ''} |\\n"
-                            f"|-----------|---------|{'---------' if fonetica else ''}|\\n"
-                            f"| frase em português | tradução | {'[pronúncia]' if fonetica else ''} |\\n\\n"
-                            f"🚌 Próxima Situação\\n"
-                            f"| Português | {pais_f} | {'Pronúncia' if fonetica else ''} |\\n"
-                            f"|-----------|---------|{'---------' if fonetica else ''}|\\n"
-                            f"| frase | tradução | {'[pronúncia]' if fonetica else ''} |\\n\\n"
-                            f"Mínimo 6 frases por situação. Repita para todas: {contexts}\\n\\n"
-                            f"🆘 FRASES DE EMERGÊNCIA\\n"
-                            f"| Português | {pais_f} | {'Pronúncia' if fonetica else ''} |\\n"
-                            f"|-----------|---------|{'---------' if fonetica else ''}|\\n"
-                            f"[10 frases de emergência]\\n\\n"
-                            f"📱 APPS DE TRADUÇÃO RECOMENDADOS:\\n"
-                            f"[Os melhores apps para {pais_f} — com ou sem internet]\\n\\n"
-                            f"💡 DICA CULTURAL:\\n"
-                            f"[Como os locais reagem quando estrangeiros tentam falar o idioma]"
-                        )
-                        res = viagem_ia(prompt)
+                        _ff = ficha_destino(pais_f) or {}
+                        _idioma = (_ff.get('idioma') or pais_f).strip()
+                        _lugar = _ff.get('nome_oficial') or pais_f
+                        if _ff.get('no_brasil'):
+                            prompt = (
+                                f"{_lugar} fica no BRASIL e lá se fala português do Brasil — não existe tradução a fazer.\\n"
+                                f"Crie um guia de EXPRESSÕES E GÍRIAS LOCAIS de {_lugar} para um brasileiro que vem de outra região.\\n"
+                                f"Situações: {contexts}.\\n\\n"
+                                f"REGRAS:\\n"
+                                f"1. Inclua APENAS expressões realmente usadas nessa região do Brasil e que você tem certeza.\\n"
+                                f"2. NUNCA use palavras ou expressões de Portugal ou de outros países.\\n"
+                                f"3. Se conhecer poucas expressões para alguma situação, mostre poucas — não invente.\\n"
+                                f"4. Use SEMPRE tabela markdown com pipes | e nunca tabulação.\\n\\n"
+                                f"FORMATO:\\n\\n"
+                                f"🗣️ Nome da Situação\\n"
+                                f"| Expressão local | O que significa | Exemplo de uso |\\n"
+                                f"|---|---|---|\\n"
+                                f"| expressão | significado | frase de exemplo |\\n\\n"
+                                f"💡 DICA CULTURAL:\\n"
+                                f"[Como os moradores de {_lugar} reagem quando um visitante usa as expressões locais]"
+                            )
+                        elif 'portugu' in _idioma.lower():
+                            prompt = (
+                                f"Em {_lugar} se fala {_idioma}. Crie um guia das DIFERENÇAS entre o português do Brasil e o português falado lá.\\n"
+                                f"Situações: {contexts}.\\n\\n"
+                                f"REGRAS:\\n"
+                                f"1. Mostre só diferenças reais e conhecidas (palavras e frases que mudam de um lugar para o outro).\\n"
+                                f"2. Se não tiver certeza de uma diferença, não a inclua.\\n"
+                                f"3. Use SEMPRE tabela markdown com pipes | e nunca tabulação.\\n\\n"
+                                f"FORMATO:\\n\\n"
+                                f"🗣️ Nome da Situação\\n"
+                                f"| No Brasil dizemos | Em {_lugar} dizem | Observação |\\n"
+                                f"|---|---|---|\\n"
+                                f"| frase | frase | observação |\\n\\n"
+                                f"💡 DICA CULTURAL:\\n"
+                                f"[Como os locais reagem ao sotaque e ao jeito brasileiro de falar]"
+                            )
+                        else:
+                            prompt = (
+                                f"Crie um guia de frases essenciais em {_idioma} para um brasileiro que vai viajar para {_lugar}.\\n"
+                                f"Situações: {contexts}. Nível: {nivel_f}.\\n"
+                                f"{'Inclua a pronúncia entre colchetes, escrita do jeito que um brasileiro leria em voz alta.' if fonetica else ''}\\n\\n"
+                                f"REGRAS — siga rigorosamente:\\n"
+                                f"1. As traduções devem estar em {_idioma} correto e natural, do jeito que os moradores de {_lugar} falam\\n"
+                                f"2. Se não tiver certeza de uma tradução, NÃO a inclua\\n"
+                                f"3. Use SEMPRE tabela markdown com pipes | para todas as seções\\n"
+                                f"4. NUNCA use tabulações (tab) para separar colunas\\n"
+                                f"5. O título da situação vai na linha imediatamente ANTES da tabela, sem linhas em branco entre eles\\n"
+                                f"6. Separe as seções com apenas UMA linha em branco\\n\\n"
+                                f"FORMATO EXATO (copie esta estrutura):\\n\\n"
+                                f"🍴 Nome da Situação\\n"
+                                f"| Português | {_idioma} | {'Pronúncia' if fonetica else ''} |\\n"
+                                f"|-----------|---------|{'---------' if fonetica else ''}|\\n"
+                                f"| frase em português | tradução | {'[pronúncia]' if fonetica else ''} |\\n\\n"
+                                f"Mínimo 6 frases por situação. Repita para todas: {contexts}\\n\\n"
+                                f"🆘 FRASES DE EMERGÊNCIA\\n"
+                                f"| Português | {_idioma} | {'Pronúncia' if fonetica else ''} |\\n"
+                                f"|-----------|---------|{'---------' if fonetica else ''}|\\n"
+                                f"[10 frases de emergência]\\n\\n"
+                                f"📱 APPS DE TRADUÇÃO RECOMENDADOS:\\n"
+                                f"[Apps de tradução conhecidos que funcionam com {_idioma} — com ou sem internet]\\n\\n"
+                                f"💡 DICA CULTURAL:\\n"
+                                f"[Como os locais reagem quando estrangeiros tentam falar o idioma]"
+                            )
+                        res = viagem_ia(prompt, destino=pais_f)
                         # Normaliza tabelas: converte tabs em pipes e garante cabeçalho separador
                         res = normalizar_tabelas_frases(res)
                         salvar_roteiro("Frases Essenciais", pais_f, res)
@@ -1076,11 +1190,11 @@ elif st.session_state.etapa == "App":
                             f"📱 APPS ESSENCIAIS PARA INSTALAR:\\n"
                             f"[ ] [app — para que serve]\\n\\n"
                             f"⚠️ NÃO LEVE NA MALA DE MÃO:\\n"
-                            f"[Lista do que é proibido — específico para {tipo_c}]\\n\\n"
+                            f"[Regras gerais do que é proibido ou limitado — específico para {tipo_c}. Avise para confirmar com a companhia aérea e com a ANAC, porque as regras variam]\\n\\n"
                             f"💡 DICA DE MALA:\\n"
                             f"[Como organizar a mala para {dias_c} dias em {mala_c}]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_c)
                         salvar_roteiro("Checklist", destino_c, res)
                         st.session_state['check_temp'] = res
                         st.markdown(f"<div class='card-yellow'>{res}</div>", unsafe_allow_html=True)
@@ -1159,7 +1273,7 @@ elif st.session_state.etapa == "App":
                             f"💡 DICA ESPECIAL PARA {perfil_g.upper()}:\\n"
                             f"[Conselho específico para esse tipo de grupo]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_g)
                         salvar_roteiro("Viagem em Grupo", destino_g, res)
                         st.session_state['grupo_temp'] = res
                         st.markdown(f"<div class='card-dark'>{res}</div>", unsafe_allow_html=True)
@@ -1279,8 +1393,8 @@ elif st.session_state.etapa == "App":
                             f"FORMATO:\\n\\n"
                             f"🌍 GUIA COMPLETO — {destino_d.upper()}\\n\\n"
                             f"🌤️ CLIMA NO PERÍODO:\\n"
-                            f"• Temperatura média (máxima e mínima)\\n"
-                            f"• Chance de chuva e precipitação\\n"
+                            f"• Temperatura média histórica (máxima e mínima) — não é previsão\\n"
+                            f"• Como costuma ser a chuva nesse período\\n"
                             f"• Roupas recomendadas — liste peças específicas\\n\\n"
                             f"🛡️ SEGURANÇA:\\n"
                             f"• Nível geral de segurança para turistas\\n"
@@ -1296,7 +1410,7 @@ elif st.session_state.etapa == "App":
                             f"• 10 frases essenciais com pronúncia\\n"
                             f"• Nível de inglês da população local\\n\\n"
                             f"💱 MOEDA, CÂMBIO E PAGAMENTO:\\n"
-                            f"• Moeda oficial e câmbio estimado em R$\\n"
+                            f"• Moeda oficial e câmbio aproximado em R$ (oriente a conferir a cotação do dia)\\n"
                             f"• Formas de pagamento aceitas\\n"
                             f"• Dicas de câmbio (onde trocar, o que evitar)\\n"
                             f"• Taxas de cartão no exterior\\n\\n"
@@ -1310,14 +1424,14 @@ elif st.session_state.etapa == "App":
                             f"• Voltagem (110V/220V)\\n"
                             f"• Precisa de adaptador? Qual modelo?\\n\\n"
                             f"📶 INTERNET, CHIP E ESIM:\\n"
-                            f"• Operadoras locais recomendadas\\n"
-                            f"• Preço médio de chip turista\\n"
+                            f"• Principais operadoras locais (só as que você tem certeza que existem)\\n"
+                            f"• Faixa de preço aproximada de chip turista\\n"
                             f"• eSIM — vale a pena? Quais apps usar\\n"
                             f"• Qualidade da internet local\\n\\n"
                             f"🏥 SAÚDE:\\n"
-                            f"• Vacinas exigidas ou recomendadas para brasileiros\\n"
-                            f"• Seguro viagem — é obrigatório? Qual contratar?\\n"
-                            f"• Hospitais de referência para turistas\\n"
+                            f"• Vacinas exigidas ou recomendadas para brasileiros (mande confirmar no consulado e na Anvisa)\\n"
+                            f"• Seguro viagem — é obrigatório? O que a apólice deve cobrir?\\n"
+                            f"• Hospitais conhecidos para turistas (só os que você tem certeza que existem)\\n"
                             f"• Farmácias e medicamentos básicos a levar\\n\\n"
                             f"📜 COSTUMES LOCAIS:\\n"
                             f"• Etiqueta e boas maneiras locais\\n"
@@ -1329,13 +1443,13 @@ elif st.session_state.etapa == "App":
                             f"• Onde encontrá-los (tipo de restaurante)\\n"
                             f"• Preço médio de cada prato\\n\\n"
                             f"🎉 EVENTOS E FESTIVAIS NO PERÍODO:\\n"
-                            f"• Festivais, feriados ou eventos durante {epoca_d or 'o ano'}\\n"
+                            f"• Festivais, feriados ou eventos que tradicionalmente acontecem em {epoca_d or 'cada época do ano'} (datas exatas mudam — mande conferir)\\n"
                             f"• Impacto nos preços e disponibilidade\\n\\n"
                             f"📱 APLICATIVOS INDISPENSÁVEIS:\\n"
                             f"• Apps de transporte, mapas, tradução, reservas e pagamento específicos para {destino_d}\\n"
                             f"• Quais baixar antes de embarcar"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_d)
                         salvar_roteiro("Guia do Destino", destino_d, res)
                         st.session_state['destino_temp'] = res
 
@@ -1376,7 +1490,7 @@ elif st.session_state.etapa == "App":
                             f"FORMATO:\\n\\n"
                             f"🗺 MAPA DE PASSEIOS — {destino_m.upper()}\\n\\n"
                             f"📍 DISTRIBUIÇÃO POR BAIRRO/REGIÃO:\\n"
-                            f"[Agrupe os pontos por proximidade geográfica]\\n\\n"
+                            f"[Agrupe os pontos por proximidade geográfica. Se algum passeio digitado não ficar em {destino_m}, avise em vez de encaixá-lo]\\n\\n"
                             f"Para cada DIA, organize assim:\\n\\n"
                             f"📅 DIA [N] — BAIRRO/REGIÃO [NOME]\\n"
                             f"• [Ponto 1] — [bairro] — [horário sugerido]\\n"
@@ -1391,7 +1505,7 @@ elif st.session_state.etapa == "App":
                             f"💡 POR QUE ESSA ORDEM FAZ SENTIDO:\\n"
                             f"[Explique a lógica geográfica]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_m)
                         salvar_roteiro("Mapa de Passeios", destino_m, res)
                         st.session_state['mapa_temp'] = res
 
@@ -1429,7 +1543,9 @@ elif st.session_state.etapa == "App":
                             f"• Onde sacar dinheiro local sem pagar abusivo\\n"
                             f"• Gorjeta — quanto e como"
                         )
-                        res = viagem_ia(prompt)
+                        if (ficha_destino(destino_mo) or {}).get('no_brasil'):
+                            prompt += "\\n\\nIMPORTANTE: o destino fica no Brasil, então NÃO existe câmbio. Troque o guia de câmbio por dicas de pagamento no destino (Pix, cartão, dinheiro) e de gorjeta."
+                        res = viagem_ia(prompt, destino=destino_mo)
                         salvar_roteiro("Moeda e Câmbio", destino_mo, res)
                         st.session_state['moeda_temp'] = res
 
@@ -1454,14 +1570,15 @@ elif st.session_state.etapa == "App":
                 if destino_cl.strip():
                     with st.spinner("Consultando clima..."):
                         prompt = (
-                            f"Informe o clima de {destino_cl} em {mes_cl} para um turista brasileiro.\\n\\n"
+                            f"Informe como costuma ser o clima de {destino_cl} em {mes_cl} para um turista brasileiro, com base em médias históricas.\\n"
+                            f"Deixe claro que não é previsão do tempo e sugira consultar a previsão perto da data da viagem.\\n\\n"
                             f"🌤️ CLIMA EM {destino_cl.upper()} — {mes_cl.upper()}\\n\\n"
                             f"🌡️ TEMPERATURA:\\n"
                             f"• Média mínima e máxima\\n"
                             f"• Temperatura da água (se litoral)\\n"
                             f"• Sensação térmica (umidade)\\n\\n"
                             f"🌧️ CHUVA:\\n"
-                            f"• Chance de chuva (%)\\n"
+                            f"• Quantos dias de chuva costuma ter no mês (aproximado)\\n"
                             f"• Tipo de chuva (pancadas rápidas, chuva contínua, neve)\\n"
                             f"• Impacto nos passeios\\n\\n"
                             f"👗 ROUPAS RECOMENDADAS — lista específica:\\n"
@@ -1470,7 +1587,7 @@ elif st.session_state.etapa == "App":
                             f"🧴 ACESSÓRIOS ESSENCIAIS:\\n[protetor solar, guarda-chuva, óculos, etc]\\n\\n"
                             f"⚠️ CUIDADOS ESPECIAIS:\\n[o que o clima de {mes_cl} exige de atenção em {destino_cl}]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_cl)
                         salvar_roteiro("Clima", destino_cl, res)
                         st.session_state['clima_temp'] = res
 
@@ -1503,12 +1620,12 @@ elif st.session_state.etapa == "App":
                             f"• O que fazer em caso de roubo\\n"
                             f"• Número de emergência local\\n\\n"
                             f"🏥 SAÚDE — {destino_sg.upper()}\\n\\n"
-                            f"💉 VACINAS:\\n[Exigidas, recomendadas e dispensáveis para brasileiros]\\n\\n"
-                            f"🏥 HOSPITAIS DE REFERÊNCIA:\\n[Nome e localização dos melhores para turistas]\\n\\n"
-                            f"📋 SEGURO VIAGEM:\\n[Obrigatório? Qual cobrir? Preço médio? Melhores empresas?]\\n\\n"
+                            f"💉 VACINAS:\\n[Exigidas e recomendadas para brasileiros — e avise para confirmar no consulado, na Anvisa e no Ministério da Saúde, porque as regras mudam]\\n\\n"
+                            f"🏥 HOSPITAIS DE REFERÊNCIA:\\n[Só hospitais que você tem certeza que existem no destino, com bairro. Se não souber, oriente como encontrar (seguro viagem, hotel, Google Maps)]\\n\\n"
+                            f"📋 SEGURO VIAGEM:\\n[É obrigatório? O que a apólice deve cobrir? Faixa de preço aproximada]\\n\\n"
                             f"💊 MEDICAMENTOS BÁSICOS A LEVAR:\\n[Lista de itens para farmácia de viagem]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_sg)
                         salvar_roteiro("Segurança e Saúde", destino_sg, res)
                         st.session_state['seg_temp'] = res
 
@@ -1561,9 +1678,15 @@ elif st.session_state.etapa == "App":
                             f"[Parágrafo de introdução vibrante — 3-4 linhas que faça a pessoa querer visitar]\\n\\n"
                             f"[Para cada tema selecionado, use o emoji e o título como cabeçalho, depois o conteúdo detalhado]\\n\\n"
                             f"💡 ANTES DE VISITAR, SAIBA:\\n"
-                            f"[3 fatos que vão transformar a experiência de visitar {destino_h}]"
+                            f"[3 fatos verdadeiros que vão transformar a experiência de visitar {destino_h}]\\n\\n"
+                            f"REGRAS DE VERACIDADE (obrigatórias):\\n"
+                            f"- Datas, nomes e acontecimentos: só o que é historicamente documentado\\n"
+                            f"- Filmes e livros: cite SOMENTE obras que você tem certeza que foram gravadas ou ambientadas em {destino_h}. Se não conhecer, escreva que não encontrou obras confirmadas\\n"
+                            f"- Curiosidades: apenas fatos verdadeiros — nunca invente curiosidades\\n"
+                            f"- Lendas: apresente sempre como lenda ou tradição popular, nunca como fato\\n"
+                            f"- Títulos como Patrimônio Mundial: só os oficiais (UNESCO etc.)"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_h)
                         salvar_roteiro("História do Destino", destino_h, res)
                         st.session_state['historia_temp'] = res
 
@@ -1605,7 +1728,7 @@ elif st.session_state.etapa == "App":
                         prompt = (
                             f"Reformate este roteiro de viagem no formato: {formato_pdf}.\\n"
                             f"Destino: {roteiro_escolhido['destino']}.\\n"
-                            f"Roteiro original:\\n{roteiro_escolhido['conteudo'][:3000]}\\n\\n"
+                            f"Roteiro original:\\n{roteiro_escolhido['conteudo'][:14000]}\\n\\n"
                             f"INSTRUÇÕES:\\n"
                             f"- Formato compacto: destaque APENAS o essencial (endereços, horários, preços, telefones)\\n"
                             f"- Use emojis como marcadores visuais para facilitar a leitura rápida\\n"
@@ -1613,7 +1736,7 @@ elif st.session_state.etapa == "App":
                             f"- Organize por dia de forma clara\\n"
                             f"- Adicione uma checklist rápida de itens para não esquecer no dia"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, "Apenas reorganize o conteúdo do roteiro recebido. NÃO acrescente lugares, preços, telefones ou dados novos — se faltar alguma informação, escreva 'confirmar antes da viagem'.")
                         salvar_roteiro("Resumo PDF", roteiro_escolhido['destino'], res)
                         st.session_state['pdf_temp'] = res
 
@@ -1664,11 +1787,11 @@ elif st.session_state.etapa == "App":
                             f"💡 ESTRATÉGIA DE ECONOMIA:\\n"
                             f"[As 5 principais decisões que vão economizar mais dinheiro nessa viagem]\\n\\n"
                             f"🆓 ATRAÇÕES GRATUITAS OU QUASE:\\n"
-                            f"[Lista de museus gratuitos, parques, mirantes, eventos sem custo]\\n\\n"
+                            f"[Museus, parques, mirantes e eventos gratuitos que você sabe que existem — dias de entrada grátis mudam, então mande conferir no site oficial]\\n\\n"
                             f"Para cada dia:\\n\\n"
                             f"📅 DIA [N]\\n"
                             f"• Manhã: [atividade gratuita ou barata] — R$[X]\\n"
-                            f"• Almoço: [opção econômica com nome real] — R$[X]/pessoa\\n"
+                            f"• Almoço: [opção econômica — nome real só se tiver certeza de que existe] — R$[X]/pessoa\\n"
                             f"• Tarde: [atividade] — R$[X]\\n"
                             f"• Jantar: [opção econômica] — R$[X]/pessoa\\n"
                             f"💰 Total do dia: R$[X]/pessoa\\n\\n"
@@ -1683,7 +1806,7 @@ elif st.session_state.etapa == "App":
                             f"⚠️ ONDE NÃO ECONOMIZAR:\\n"
                             f"[Itens que vale gastar um pouco mais — seguro, transporte no aeroporto, etc]"
                         )
-                        res = viagem_ia(prompt)
+                        res = viagem_ia(prompt, destino=destino_ec)
                         salvar_roteiro("Roteiro Econômico", destino_ec, res)
                         st.session_state['econom_temp'] = res
 
@@ -1719,58 +1842,101 @@ elif st.session_state.etapa == "App":
             if st.button("🚫 DESCOBRIR AS ARMADILHAS", key="guiaviag61"):
                 if pais_arm.strip():
                     with st.spinner(f"Pesquisando micos em {pais_arm}..."):
-                        prompt = (
-                            f"Crie um guia de ARMADILHAS LINGUÍSTICAS entre o português brasileiro e {pais_arm}.\\n\\n"
-                            f"REGRA ABSOLUTA: APENAS inclua palavras que você tem CERTEZA que existem e funcionam assim no destino. "
-                            f"NÃO invente, NÃO suponha, NÃO extrapole. Se não souber 7 exemplos verificáveis reais para {pais_arm}, diga quantos encontrou e explique.\\n\\n"
-                            f"OBJETIVO: Mostrar palavras que causam CHOQUE ou CONFUSÃO porque têm significados OPOSTOS ou MUITO DIFERENTES nos dois lugares.\\n\\n"
-                            f"DOIS TIPOS DE ARMADILHA:\\n"
-                            f"1. Palavra normal no Brasil que é ofensiva/estranha em {pais_arm}\\n"
-                            f"2. Palavra normal em {pais_arm} que choca ou confunde o brasileiro\\n\\n"
-                            f"EXEMPLOS DO TIPO CERTO (para Portugal):\\n"
-                            f"- BICHA: no Brasil = gíria pejorativa para gay | em Portugal = fila de espera (normal). Armadilha: brasileiro se choca quando português diz 'entre na bicha'\\n"
-                            f"- RAPARIGA: no Brasil = prostituta | em Portugal = moça/garota (normal). Armadilha: brasileira se ofende quando chamada de rapariga\\n"
-                            f"- FIXE: no Brasil = não usado | em Portugal = legal/ótimo. Armadilha: brasileiro não entende\\n\\n"
-                            f"EXEMPLOS DO TIPO ERRADO (não faça isso para {pais_arm}):\\n"
-                            f"- Inventar que uma palavra comum em português tem significado ofensivo numa língua que você não domina\\n"
-                            f"- Usar coincidências fonéticas fracas sem contexto real de uso (ex: dizer que 'casa' soa como algo ruim em algum lugar sem prova)\\n\\n"
-                            f"FORMATO para cada palavra:\\n"
-                            f"🔴 **[PALAVRA]**\\n"
-                            f"• No Brasil significa: [significado real atual no pt-BR]\\n"
-                            f"• Em {pais_arm} significa: [significado real lá]\\n"
-                            f"• A armadilha: [situação concreta onde o choque acontece]\\n"
-                            f"• Nível: [leve 😅 / moderado 😬 / grave 😱]\\n"
-                            f"• Como evitar: [solução prática]\\n\\n"
-                            f"Inclua pelo menos 7 exemplos REAIS e VERIFICÁVEIS. Quantidade com qualidade vale mais que 15 inventados.\\n"
-                            f"Destino: {pais_arm}\\n\\n"
-                        )
-                        if incluir_gestos:
-                            prompt += (
-                                f"👋 GESTOS E LINGUAGEM CORPORAL QUE ENGANAM:\\n\\n"
-                                f"[Gestos comuns no Brasil que têm significado diferente ou ofensivo em {pais_arm}. "
-                                f"Ex: jinha de ok, polegar, acenar, etc. Mesmo formato: gesto, o que significa aqui, o que significa lá, nível de problema.]\\n\\n"
+                        _fa = ficha_destino(pais_arm) or {}
+                        _lugar_a = _fa.get('nome_oficial') or pais_arm
+                        _idioma_a = (_fa.get('idioma') or '').strip()
+                        _e_portugal = 'portugal' in ((_fa.get('pais') or '') + ' ' + pais_arm).lower()
+                        if _fa.get('no_brasil'):
+                            prompt = (
+                                f"{_lugar_a} fica no BRASIL. Lá se fala o mesmo português do Brasil — não há idioma estrangeiro.\\n"
+                                f"Crie um guia de PALAVRAS QUE MUDAM DE SENTIDO dentro do Brasil: palavras e expressões usadas em {_lugar_a} "
+                                f"com significado diferente do que têm em outras regiões do país (e vice-versa).\\n\\n"
+                                f"REGRA ABSOLUTA: APENAS diferenças regionais reais e conhecidas. NÃO use palavras de Portugal nem de outros países. "
+                                f"Se houver poucas, mostre poucas e diga isso.\\n\\n"
+                                f"FORMATO para cada palavra:\\n"
+                                f"🔴 **[PALAVRA OU EXPRESSÃO]**\\n"
+                                f"• Em {_lugar_a} significa: [significado lá]\\n"
+                                f"• Em outras regiões do Brasil: [significado ou uso diferente]\\n"
+                                f"• A situação: [onde a confusão pode acontecer]\\n"
+                                f"• Nível: [leve 😅 / moderado 😬 / grave 😱]\\n"
+                                f"• Como evitar: [dica prática]\\n\\n"
+                                f"Liste até 10 exemplos reais.\\n\\n"
+                                f"💡 DICA FINAL:\\n"
+                                f"[Como os moradores de {_lugar_a} costumam reagir quando um visitante confunde as palavras]"
                             )
-                        if incluir_nomes:
-                            prompt += (
-                                f"😬 NOMES PRÓPRIOS E MARCAS QUE SOAM MAL:\\n\\n"
-                                f"[Nomes comuns no Brasil — de pessoas, produtos ou lugares — que soam como algo ofensivo "
-                                f"ou engraçado em {pais_arm}. Explique o porquê.]\\n\\n"
+                        else:
+                            if _e_portugal:
+                                exemplos = (
+                                    f"EXEMPLOS DO TIPO CERTO (Portugal):\\n"
+                                    f"- BICHA: no Brasil = gíria pejorativa para gay | em Portugal = fila de espera (normal). Armadilha: brasileiro se choca quando português diz 'entre na bicha'\\n"
+                                    f"- RAPARIGA: em boa parte do Brasil = termo ofensivo para mulher | em Portugal = moça/garota (normal). Armadilha: brasileira se ofende quando chamada de rapariga\\n"
+                                    f"- FIXE: no Brasil = não usado | em Portugal = legal/ótimo. Armadilha: brasileiro não entende\\n\\n"
+                                )
+                            elif 'espanhol' in _idioma_a.lower() or 'castelhano' in _idioma_a.lower():
+                                exemplos = (
+                                    f"TIPO CERTO DE EXEMPLO: falsos amigos reais entre o português e o espanhol (palavras parecidas com sentidos diferentes), "
+                                    f"desde que sejam usadas desse jeito em {_lugar_a} — o espanhol muda bastante de um país para outro.\\n\\n"
+                                )
+                            elif 'portugu' in _idioma_a.lower():
+                                exemplos = f"TIPO CERTO DE EXEMPLO: palavras do português de {_lugar_a} que têm sentido diferente no português do Brasil.\\n\\n"
+                            else:
+                                exemplos = (
+                                    f"ATENÇÃO: o idioma de {_lugar_a} é {_idioma_a or 'diferente do português'}. Armadilhas entre idiomas diferentes são RARAS. "
+                                    f"Mostre só casos famosos e comprovados (palavras do português que soam como termos ofensivos ou constrangedores no idioma local). "
+                                    f"Se não houver casos confirmados, diga claramente que encontrou poucos ou nenhum — isso é melhor do que inventar.\\n\\n"
+                                )
+                            prompt = (
+                                f"Crie um guia de ARMADILHAS LINGUÍSTICAS entre o português brasileiro e o idioma falado em {_lugar_a} ({_idioma_a or 'idioma local'}).\\n\\n"
+                                f"REGRA ABSOLUTA: APENAS inclua palavras que você tem CERTEZA que existem e funcionam assim em {_lugar_a}. "
+                                f"NÃO invente, NÃO suponha, NÃO extrapole e NÃO use exemplos de outros países.\\n\\n"
+                                f"OBJETIVO: Mostrar palavras que causam CHOQUE ou CONFUSÃO porque têm significados OPOSTOS ou MUITO DIFERENTES nos dois lugares.\\n\\n"
+                                f"DOIS TIPOS DE ARMADILHA:\\n"
+                                f"1. Palavra normal no Brasil que é ofensiva/estranha em {_lugar_a}\\n"
+                                f"2. Palavra normal em {_lugar_a} que choca ou confunde o brasileiro\\n\\n"
+                            ) + exemplos + (
+                                f"EXEMPLOS DO TIPO ERRADO (não faça isso):\\n"
+                                f"- Inventar que uma palavra comum em português tem significado ofensivo numa língua que você não domina\\n"
+                                f"- Usar coincidências fonéticas fracas sem uso real (ex: dizer que 'casa' soa como algo ruim em algum lugar sem prova)\\n"
+                                f"- Repetir exemplos de Portugal ou de outro país que não seja {_lugar_a}\\n\\n"
+                                f"FORMATO para cada palavra:\\n"
+                                f"🔴 **[PALAVRA]**\\n"
+                                f"• No Brasil significa: [significado real atual no pt-BR]\\n"
+                                f"• Em {_lugar_a} significa: [significado real lá]\\n"
+                                f"• A armadilha: [situação concreta onde o choque acontece]\\n"
+                                f"• Nível: [leve 😅 / moderado 😬 / grave 😱]\\n"
+                                f"• Como evitar: [solução prática]\\n\\n"
+                                f"Liste até 10 exemplos REAIS e VERIFICÁVEIS. Se encontrar menos, mostre menos e diga quantos encontrou — 3 verdadeiros valem mais que 10 inventados.\\n"
+                                f"Destino: {_lugar_a}\\n\\n"
                             )
-                        prompt += (
-                            f"🔁 O INVERSO TAMBÉM VALE — PALAVRAS DELES QUE NOS SURPREENDEM:\\n\\n"
-                            f"[Palavras comuns em {pais_arm} que soam ofensivas, engraçadas ou inadequadas para brasileiros. "
-                            f"Para não se ofender à toa quando ouvir.]\\n\\n"
-                            f"💡 DICA FINAL:\\n"
-                            f"[Conselho prático sobre como lidar quando escapar uma palavra errada — "
-                            f"como se desculpar de forma adequada na cultura de {pais_arm}]"
-                        )
+                            if incluir_gestos:
+                                prompt += (
+                                    f"👋 GESTOS E LINGUAGEM CORPORAL QUE ENGANAM:\\n\\n"
+                                    f"[Gestos comuns no Brasil que têm significado diferente ou ofensivo em {_lugar_a}. "
+                                    f"Ex: sinal de ok, polegar, acenar, etc. Mesmo formato: gesto, o que significa aqui, o que significa lá, nível de problema. "
+                                    f"Só gestos comprovados.]\\n\\n"
+                                )
+                            if incluir_nomes:
+                                prompt += (
+                                    f"😬 NOMES PRÓPRIOS E MARCAS QUE SOAM MAL:\\n\\n"
+                                    f"[Somente casos conhecidos e documentados de nomes comuns no Brasil — de pessoas, produtos ou lugares — que soam "
+                                    f"como algo ofensivo ou engraçado em {_lugar_a}. Se não conhecer casos comprovados, escreva: 'Não encontrei casos confirmados.']\\n\\n"
+                                )
+                            prompt += (
+                                f"🔁 O INVERSO TAMBÉM VALE — PALAVRAS DELES QUE NOS SURPREENDEM:\\n\\n"
+                                f"[Palavras comuns em {_lugar_a} que soam ofensivas, engraçadas ou inadequadas para brasileiros. "
+                                f"Para não se ofender à toa quando ouvir. Só casos reais.]\\n\\n"
+                                f"💡 DICA FINAL:\\n"
+                                f"[Conselho prático sobre como lidar quando escapar uma palavra errada — "
+                                f"como se desculpar de forma adequada na cultura de {_lugar_a}]"
+                            )
                         res = viagem_ia(prompt,
                             "Seja RIGOROSAMENTE preciso e honesto. Este guia existe para ajudar brasileiros a evitar situações "
                             "constrangedoras reais. Inclua APENAS exemplos verídicos, conhecidos e verificáveis. "
                             "NUNCA invente armadilhas linguísticas — se não existirem exemplos reais suficientes para o destino, "
                             "diga isso claramente em vez de fabricar coincidências fonéticas sem base real. "
                             "Qualidade e veracidade valem mais que quantidade. Não omita por pudor — "
-                            "o objetivo é exatamente informar sobre o que é delicado e comprovado.")
+                            "o objetivo é exatamente informar sobre o que é delicado e comprovado.",
+                            destino=pais_arm)
                         salvar_roteiro("Palavras Armadilha", pais_arm, res)
                         st.session_state['armadilha_temp'] = res
                 else:
@@ -1891,7 +2057,8 @@ elif st.session_state.etapa == "App":
                         )
                         res = viagem_ia(prompt,
                             "Seja honesto, específico e culturalmente preciso. Evite generalizações vagas. "
-                            "O objetivo é preparar um brasileiro para interações sociais reais — não um guia turístico genérico.")
+                            "O objetivo é preparar um brasileiro para interações sociais reais — não um guia turístico genérico.",
+                            destino=pais_pe)
                         salvar_roteiro("Como São as Pessoas", pais_pe, res)
                         st.session_state['pessoas_temp'] = res
                 else:
